@@ -25,18 +25,19 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	// 아이템 데이터를 지정한다
 	UFUNCTION(BlueprintCallable)
 	void SetItemData(const FBItemData& _Data);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntPoint Location;
+	FIntPoint Location;	// 아이템의 위치 (인벤토리상 위치)
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Count;
+	int32 Count;		// 아이템의 개수
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY()
-	FBItemData Data;
+	FBItemData Data;	// 아이템 데이터
 };

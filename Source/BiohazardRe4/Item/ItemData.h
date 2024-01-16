@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "ItemData.generated.h"
 
+/*
+* 아이템 정보 구조체
+*/
+
 USTRUCT(BlueprintType)
 struct FBItemData : public FTableRowBase
 {

@@ -6,6 +6,7 @@
 #include "InventoryItem.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 ABInventoryActor::ABInventoryActor()
@@ -15,19 +16,7 @@ ABInventoryActor::ABInventoryActor()
 
 	
 
-	BackgroundMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane"));
-	RootComponent = BackgroundMesh;
-	{
-		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
-		BackgroundMesh->SetStaticMesh(Mesh.Object);
-
-		static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Game/UI/Inventory/M_Inventory.M_Inventory'"));
-		BackgroundMesh->SetMaterial(0, Material.Object);
-
-	}
-
 	CaseMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Case"));
-	CaseMesh->SetupAttachment(RootComponent);
 	{
 		static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh(TEXT("/Script/Engine.SkeletalMesh'/Game/UI/Inventory/Mesh/sm77_600.sm77_600'"));
 		CaseMesh->SetSkeletalMesh(Mesh.Object);
@@ -38,16 +27,40 @@ ABInventoryActor::ABInventoryActor()
 		static ConstructorHelpers::FObjectFinder<UMaterial> Material1(TEXT("/Script/Engine.Material'/Game/UI/Inventory/Mesh/Nuno_Mat.Nuno_Mat'"));
 		CaseMesh->SetMaterial(1, Material1.Object);
 	}
-	CaseMesh->SetRelativeLocation({ 0, -3.0, 30 });
-	CaseMesh->SetRelativeScale3D({ 0.3, 0.3, 0.3 });
+	RootComponent = CaseMesh;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
-	Camera->SetRelativeLocation({ 0, 0, 50 });
-	Camera->SetRelativeRotation({ -90, -90, 0 });
+	Camera->SetRelativeLocation({ 0, 25, 70 });
+	Camera->SetRelativeRotation({ -80, -90, 0 });
+
+	BackgroundMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
+		BackgroundMesh->SetStaticMesh(Mesh.Object);
+
+		static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Game/Assets/UI/Inventory/M_Inventory_Background.M_Inventory_Background'"));
+		BackgroundMesh->SetMaterial(0, Material.Object);
+
+	}
+	BackgroundMesh->SetupAttachment(Camera);
+	BackgroundMesh->SetRelativeLocation({ 150, 0, 0 });
+	BackgroundMesh->SetRelativeRotation({ 0, 90, 90 });
+	BackgroundMesh->SetRelativeScale3D({ 2.4, 2.4, 1.0 });
 
 	Inventory = CreateDefaultSubobject<UBInventoryManager>(TEXT("Inventory Manager"));
 	Inventory->SetupAttachment(CaseMesh);
+
+	Boxs.SetNum(10 * 7);
+	for (int i = 0; i < Boxs.Num(); i++)
+	{
+		Boxs[i] = CreateDefaultSubobject<UBoxComponent>(FName(TEXT("Box") + FString::FromInt(i)));
+		Boxs[i]->SetupAttachment(Inventory);
+		Boxs[i]->SetBoxExtent({ 2.5, 2.5, 5 });
+		int x = i % 10;
+		int y = i / 10;
+		Boxs[i]->SetRelativeLocation({ -22.5 + 5 * x, -12.5 + 5 * y, 0 });
+	}
 }
 
 // Called when the game starts or when spawned

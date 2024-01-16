@@ -3,6 +3,7 @@
 
 #include "InventoryManager.h"
 #include "InventoryItem.h"
+#include "Components/BoxComponent.h"
 
 UBInventoryManager::UBInventoryManager()
 {
@@ -19,6 +20,7 @@ UBInventoryManager::UBInventoryManager()
 	{
 		Slot[i].SetNum(CaseSize.X);
 	}
+	
 }
 
 void UBInventoryManager::BeginPlay()
@@ -38,7 +40,12 @@ void UBInventoryManager::AddItem(const FName& _Name)
 	if (nullptr == Data)
 		return;
 
-	
+	FIntPoint Point = FindEmptySlot(Data->Scale);
+	if (Point == FIntPoint::NoneValue)
+	{
+		return;
+	}
+
 	static int32 count = 0;
 	UBInventoryItem* NewItem = NewObject<UBInventoryItem>(GetOwner(), UBInventoryItem::StaticClass(), FName(_Name.ToString() + FString::FromInt(count++)));
 
@@ -49,18 +56,44 @@ void UBInventoryManager::AddItem(const FName& _Name)
 		NewItem->SetItemData(*Data);
 		GetOwner()->RegisterAllComponents();
 		Items.Push(NewItem);
+		PlaceItemSlot(NewItem, Point);
+		NewItem->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
+		NewItem->SetRelativeRotation({ 0, 90, 0 });
 	}
 
-	FIntPoint Point = FindEmptySlot(Data->Scale);
+}
 
-	if (Point == FIntPoint::NoneValue)
+bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Scale)
+{
+	// ºó °ø°£ Ã£±â
+	for (int y = 0; y <= CaseSize.Y - _Scale.Y; y++)
 	{
- 		return;
-	}
+		for (int x = 0; x <= CaseSize.X - _Scale.X; x++)
+		{
+			bool placed = false;
+			for (int i = 0; i < _Scale.Y; i++)
+			{
+				for (int j = 0; j < _Scale.X; j++)
+				{
+					if (Slot[y + i][x + j].HasItem())
+					{
+						placed = true;
+						break;
+					}
+				}
+				if (true == placed)
+				{
+					break;
+				}
+			}
 
-	PlaceItemSlot(NewItem, Point);
-	NewItem->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
-	NewItem->SetRelativeRotation({ 0, 90, 0 });
+			if (false == placed)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
@@ -75,7 +108,7 @@ FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
 			{
 				for (int j = 0; j < _Scale.X; j++)
 				{
-					if (false == Slot[y + i][x + j].IsEmpty())
+					if (Slot[y + i][x + j].HasItem())
 					{
 						placed = true;
 						break;

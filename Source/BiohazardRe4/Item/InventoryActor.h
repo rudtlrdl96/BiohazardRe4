@@ -24,6 +24,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// 아이템을 추가한다
 	UFUNCTION(BlueprintCallable)
 	void AddItem(const FName& _Name);
 
@@ -38,4 +39,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	class UCameraComponent* Camera;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<class UBoxComponent*> Boxs;
 };
