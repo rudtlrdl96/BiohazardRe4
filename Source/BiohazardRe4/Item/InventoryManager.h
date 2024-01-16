@@ -3,23 +3,69 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryItem.h"
+#include "Components/SceneComponent.h"
 #include "InventoryManager.generated.h"
 
 struct InventorySlot
 {
+
 	uint8 bHasItem : 1;
-	UInventoryItem* Item;
+	class UBInventoryItem* Item;
+
+	InventorySlot()
+		: bHasItem(0), Item(nullptr)
+	{
+
+	}
+
+	inline void SetItem(UBInventoryItem* _Item)
+	{
+		Item = _Item;
+		bHasItem = 1;
+	}
+
+	inline bool IsEmpty()
+	{
+		return !bHasItem;
+	}
+
+
 };
 
-UCLASS()
-class BIOHAZARDRE4_API UInventoryManager : public UObject
+UCLASS(ClassGroup = "Inventory", meta = (BlueprintSpawnableComponent))
+class BIOHAZARDRE4_API UBInventoryManager : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:
-	UInventoryManager();
+	UBInventoryManager();
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	const FIntPoint CaseSize = { 10, 7 };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float GridScale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector GridStart;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UDataTable* ItemDataTable;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<UBInventoryItem*> Items;
+
+	TArray<TArray<InventorySlot>> Slot;
+
+	void AddItem(const FName& _Name);
+
+	FIntPoint FindEmptySlot(const FIntPoint& _Scale);
+
+	void PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& _Location);
 };

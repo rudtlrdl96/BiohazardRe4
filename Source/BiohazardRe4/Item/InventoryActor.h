@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ItemData.h"
 #include "InventoryActor.generated.h"
 
 UCLASS()
-class BIOHAZARDRE4_API AInventoryActor : public AActor
+class BIOHAZARDRE4_API ABInventoryActor : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AInventoryActor();
+	ABInventoryActor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,4 +24,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void AddItem(const FName& _Name);
+
+	UPROPERTY(VisibleAnywhere)
+	class UBInventoryManager* Inventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UStaticMeshComponent* BackgroundMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	class USkeletalMeshComponent* CaseMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	class UCameraComponent* Camera;
 };
