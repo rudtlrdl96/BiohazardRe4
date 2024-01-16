@@ -10,7 +10,7 @@ public class BiohazardRe4 : ModuleRules
 
 		PrivateIncludePaths.AddRange(new string[] { "BiohazardRe4" });
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

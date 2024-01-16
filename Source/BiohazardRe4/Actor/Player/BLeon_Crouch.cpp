@@ -2,4 +2,24 @@
 
 
 #include "Actor/Player/BLeon.h"
-#include "Generic/BFsm.h"
+
+void ABLeon::CrouchEnter()
+{
+	UE_LOG(LogTemp, Display, TEXT("FSM : Crouch Enter"));
+
+	bIsCrouch = true;
+	bIsMove = true;
+}
+
+void ABLeon::CrouchUpdate(float _DeltaTime)
+{
+
+}
+
+void ABLeon::CrouchExit()
+{
+	UE_LOG(LogTemp, Display, TEXT("FSM : Crouch Exit"));
+
+	bIsCrouch = false;
+	bIsMove = false;
+}

@@ -2,4 +2,24 @@
 
 
 #include "Actor/Player/BLeon.h"
-#include "Generic/BFsm.h"
+
+void ABLeon::JogEnter()
+{
+	UE_LOG(LogTemp, Display, TEXT("FSM : Jog Enter"));
+
+	bIsJog = true;
+	bIsMove = true;
+}
+
+void ABLeon::JogUpdate(float _DeltaTime)
+{
+
+}
+
+void ABLeon::JogExit()
+{
+	UE_LOG(LogTemp, Display, TEXT("FSM : Jog Exit"));
+
+	bIsJog = false;
+	bIsMove = false;
+}

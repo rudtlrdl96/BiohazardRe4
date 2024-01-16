@@ -8,6 +8,9 @@
   
 struct FInputActionInstance;
 class UBFsm;
+class UInputMappingContext;
+class UInputAction;
+class USpringArmComponent;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -25,6 +28,9 @@ private:
 		Crouch	= 3,
 	};
 
+	static const FVector StandSocketOffset;
+	static const FVector CrouchSocketOffset;
+
 public:
 	// Sets default values for this character's properties
 	ABLeon();
@@ -35,15 +41,62 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* _PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsCrouch() const
+	{
+		return bIsCrouch;
+	}
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
-	void PlayWalk(const FInputActionInstance& _MoveAction);
-	void PlayJog(const FVector& _MoveDirection);
-	void PlayCrouch(const FVector& _MoveDirection);
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	uint32 bIsMove : 1 = false;
+
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	uint32 bIsJog : 1 = false;
+
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	uint32 bIsCrouch : 1 = false;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	float TurnSpeed = 20.0f;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputMappingContext* DefaultMappingContext = nullptr;
+		
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* MoveAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* LookAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* JogAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* CrouchAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+
+	UInputAction* InteractionActor = nullptr;
+
+	USpringArmComponent* SpringArm = nullptr;
+
+	FVector2D MoveDir = FVector2D::ZeroVector;
+
+	UBFsm* FsmComp = nullptr;
+
+	void PlayMove(const FInputActionInstance& _MoveAction);
+	void PlayWalk();
+	void PlayJog();
+	void PlayCrouch();
 	void PlayInteraction();
+
+	virtual void PlayLook(const FInputActionInstance& _LookAction);
+	virtual void PlayLook(const FVector2D& _LookAction);
 
 	void TryJog();
 	void TryCrouch();
@@ -57,11 +110,11 @@ private:
 	void WalkUpdate(float _DeltaTime);
 	void WalkExit();
 
+	void JogEnter();
+	void JogUpdate(float _DeltaTime);
+	void JogExit();
 
-
-	uint32 bIsJog : 1 = false;
-	uint32 bIsCrouch : 1 = false;
-
-	UBFsm* FsmComp = nullptr;
-
+	void CrouchEnter();
+	void CrouchUpdate(float _DeltaTime);
+	void CrouchExit();
 };
