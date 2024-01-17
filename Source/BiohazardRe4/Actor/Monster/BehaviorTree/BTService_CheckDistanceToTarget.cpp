@@ -21,18 +21,42 @@ void UBTService_CheckDistanceToTarget::TickNode(UBehaviorTreeComponent& OwnerCom
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	UObject* TargetPtr = OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET);
-	APawn* CastedTargetPtr = Cast<APawn>(TargetPtr);
+	APawn* MyPawn = OwnerComp.GetAIOwner()->GetPawn();
+	if (MyPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("MyPawn == nullptr, / CheckDistanceToTarget : Line 27"));
+	}
 
-	FVector TargetLocation = CastedTargetPtr->GetActorLocation();
-	ACharacter* MyCastedPtr = Cast<ACharacter>(OwnerComp.GetOwner());
+	UWorld* CurWorld = MyPawn->GetWorld();
+	FVector MyLocation = MyPawn->GetActorLocation();
+	float SearchRadius = 600.0f;
 
-	//if (Distance < 500.0f)
-	//{
-	//	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, true);
-	//}
-	//else
-	//{
-	//	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
-	//}
+	if(CurWorld == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("CurWorld == nullptr, / CheckDistanceToTarget : Line 36"));
+	}
+
+	TArray<FOverlapResult> OverlapResults;
+	FCollisionQueryParams QueryParams(NAME_None, false, MyPawn);
+
+	bool bResult = CurWorld->OverlapMultiByChannel(OverlapResults, MyLocation, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, 
+													FCollisionShape::MakeSphere(SearchRadius), QueryParams);
+
+	if (bResult == true)
+	{
+		for (FOverlapResult OverlapResult : OverlapResults)
+		{
+			APawn* Pawn = Cast<APawn>(OverlapResult.GetActor());
+			if (Pawn != nullptr && Pawn->GetController()->IsPlayerController() == true)
+			{
+				OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, true);
+				
+				return;
+			}
+		}
+	}
+	else
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
+	}
 }
