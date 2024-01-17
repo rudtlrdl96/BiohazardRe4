@@ -16,4 +16,18 @@ class BIOHAZARDRE4_API ABAIChainsawManController : public AAIController
 	
 public:
 	ABAIChainsawManController();
+
+	void RunAI();
+	void StopAI();
+
+protected:
+	virtual void OnPossess(APawn* _InPawn) override;
+
+private:
+	UPROPERTY()
+	TObjectPtr<class UBlackboardData> BBAsset;
+	
+	UPROPERTY()
+	TObjectPtr<class UBehaviorTree> BTAsset;
+
 };

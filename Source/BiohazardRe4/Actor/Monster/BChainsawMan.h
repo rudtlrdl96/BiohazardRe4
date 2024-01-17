@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Actor/Monster/BMonsterBase.h"
 #include "BChainsawMan.generated.h"
-
 /**
  * 
  */
@@ -16,10 +15,13 @@ class BIOHAZARDRE4_API ABChainsawMan : public ABMonsterBase
 
 public:
 	ABChainsawMan();
-protected:
 
+protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USkeletalMeshComponent> Weapon;
+
+private:
+
 };

@@ -13,5 +13,14 @@ ABMonsterBase::ABMonsterBase()
 void ABMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
+MonsterState ABMonsterBase::GetCurrentState()
+{
+	return CurState;
+}
+
+void ABMonsterBase::SetCurrentState(MonsterState _InState)
+{
+	CurState = _InState;
 }

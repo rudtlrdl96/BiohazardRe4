@@ -36,7 +36,11 @@ ABChainsawMan::ABChainsawMan()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
 }
 
+
+
+
 void ABChainsawMan::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
