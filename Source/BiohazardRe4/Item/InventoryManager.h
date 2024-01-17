@@ -6,39 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "InventoryManager.generated.h"
 
-// 인벤토리내 1칸에 대한 정보를 표현하는 클래스
-class InventorySlot
-{
-
-	uint8 bHasItem : 1;				// 해당 칸에 아이템이 있는지 여부
-	class UBInventoryItem* Item;	// 아이템 포인터
-
-public:
-	InventorySlot()
-		: bHasItem(0), Item(nullptr)
-	{
-
-	}
-
-	FORCEINLINE UBInventoryItem* GetItem()
-	{
-		return Item;
-	}
-	// 해당 칸에 아이템을 지정한다. 아이템이 사라지기 전까지 HasItem이 true로 반환
-	FORCEINLINE void SetItem(UBInventoryItem* _Item)
-	{
-		Item = _Item;
-		bHasItem = 1;
-	}
-	// 해당 칸에 아이템이 있는가 여부를 반환
-	FORCEINLINE bool HasItem()
-	{
-		return bHasItem;
-	}
-
-
-};
-
 UCLASS(ClassGroup = "Inventory", meta = (BlueprintSpawnableComponent))
 class BIOHAZARDRE4_API UBInventoryManager : public USceneComponent
 {
@@ -64,9 +31,9 @@ public:
 	UDataTable* ItemDataTable;	// 데이터 테이블 (아이템 데이터베이스)
 
 	UPROPERTY(VisibleAnywhere)
-	TArray<UBInventoryItem*> Items;		// 현재 지닌 모든 아이템들의 배열
+	TArray<class UBInventoryItem*> Items;		// 현재 지닌 모든 아이템들의 배열
 
-	TArray<TArray<InventorySlot>> Slot;	// 2차원 인벤토리 공간
+	TArray<class UBInventorySlot*> Slot;	// 2차원 인벤토리 공간
 
 // Function
 

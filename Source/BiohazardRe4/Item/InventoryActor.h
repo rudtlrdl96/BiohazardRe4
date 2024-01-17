@@ -28,6 +28,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddItem(const FName& _Name);
 
+	void Click();
+
 	UPROPERTY(VisibleAnywhere)
 	class UBInventoryManager* Inventory;
 
@@ -40,7 +42,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	class UCameraComponent* Camera;
 
+	// Input
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputMappingContext* DefaultMappingContext = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TArray<class UBoxComponent*> Boxs;
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* ClickAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UEnhancedInputLocalPlayerSubsystem* Subsystem;
 };

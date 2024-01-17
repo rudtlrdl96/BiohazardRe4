@@ -3,7 +3,7 @@
 
 #include "InventoryManager.h"
 #include "InventoryItem.h"
-#include "Components/BoxComponent.h"
+#include "InventorySlot.h"
 
 UBInventoryManager::UBInventoryManager()
 {
@@ -15,11 +15,7 @@ UBInventoryManager::UBInventoryManager()
 		ItemDataTable = Data.Object;
 	}
 
-	Slot.SetNum(CaseSize.Y);
-	for (int i = 0; i < CaseSize.Y; i++)
-	{
-		Slot[i].SetNum(CaseSize.X);
-	}
+
 	
 }
 
@@ -65,6 +61,7 @@ void UBInventoryManager::AddItem(const FName& _Name)
 
 bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Scale)
 {
+	// 회전해야 들어가는 상황은 고려하지 않았음 추후 수정
 	// 빈 공간 찾기
 	for (int y = 0; y <= CaseSize.Y - _Scale.Y; y++)
 	{
@@ -75,7 +72,7 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Scale)
 			{
 				for (int j = 0; j < _Scale.X; j++)
 				{
-					if (Slot[y + i][x + j].HasItem())
+					if (Slot[(y + i) * CaseSize.Y + x + j]->HasItem())
 					{
 						placed = true;
 						break;
@@ -98,6 +95,7 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Scale)
 
 FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
 {
+	// 회전해야 들어가는 상황은 고려하지 않았음 추후 수정
 	// 빈 공간 찾기
 	for (int y = 0; y <= CaseSize.Y - _Scale.Y; y++)
 	{
@@ -108,7 +106,7 @@ FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
 			{
 				for (int j = 0; j < _Scale.X; j++)
 				{
-					if (Slot[y + i][x + j].HasItem())
+					if (Slot[(y + i) * CaseSize.Y + x + j]->HasItem())
 					{
 						placed = true;
 						break;
@@ -135,7 +133,7 @@ void UBInventoryManager::PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& 
 	{
 		for (int x = 0; x < _Item->Data.Scale.X; x++)
 		{
-			Slot[_Location.Y + y][_Location.X + x].SetItem(_Item);
+			Slot[(_Location.Y + y) * CaseSize.Y + _Location.X + x]->SetItem(_Item);
 		}
 	}
 }
