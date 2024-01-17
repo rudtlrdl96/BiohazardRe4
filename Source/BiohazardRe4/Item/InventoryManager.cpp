@@ -72,7 +72,7 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Scale)
 			{
 				for (int j = 0; j < _Scale.X; j++)
 				{
-					if (Slot[(y + i) * CaseSize.Y + x + j]->HasItem())
+					if (Slot[(y + i) * CaseSize.X + x + j]->HasItem())
 					{
 						placed = true;
 						break;
@@ -106,7 +106,7 @@ FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
 			{
 				for (int j = 0; j < _Scale.X; j++)
 				{
-					if (Slot[(y + i) * CaseSize.Y + x + j]->HasItem())
+					if (Slot[(y + i) * CaseSize.X + x + j]->HasItem())
 					{
 						placed = true;
 						break;
@@ -133,7 +133,7 @@ void UBInventoryManager::PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& 
 	{
 		for (int x = 0; x < _Item->Data.Scale.X; x++)
 		{
-			Slot[(_Location.Y + y) * CaseSize.Y + _Location.X + x]->SetItem(_Item);
+			Slot[(_Location.Y + y) * CaseSize.X + _Location.X + x]->SetItem(_Item);
 		}
 	}
 }

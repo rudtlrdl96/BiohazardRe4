@@ -5,6 +5,7 @@
 #include "InventoryManager.h"
 #include "InventorySlot.h"
 #include "InventoryItem.h"
+#include "InventoryWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,8 +18,7 @@ ABInventoryActor::ABInventoryActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	
-
+	// 인벤토리 가방 메쉬
 	CaseMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Case"));
 	{
 		static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh(TEXT("/Script/Engine.SkeletalMesh'/Game/UI/Inventory/Mesh/sm77_600.sm77_600'"));
@@ -79,9 +79,13 @@ void ABInventoryActor::BeginPlay()
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);
-
+	//CreateWidget<UBInventoryWidget>()
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Controller->InputComponent);
 	Input->BindAction(ClickAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Click);
+	Input->BindAction(DebugAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DebugAddPistol);
+
+	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
+	Widget->AddToViewport();
 }
 
 // Called every frame
@@ -100,8 +104,19 @@ void ABInventoryActor::Tick(float DeltaTime)
 
 	if (GetWorld()->LineTraceSingleByObjectType(Res, MousePos, End, Params))
 	{
-		UE_LOG(LogTemp, Log, TEXT("UI Check"));
-		//Res.Component
+		UBInventorySlot* Slot = Cast<UBInventorySlot>(Res.Component);
+		if (Slot)
+		{
+			SelectSlot = Slot;
+			if (UBInventoryItem* Item = Slot->GetItem())
+			{
+				Widget->ItemName = Item->Data.Name.ToString();
+			}
+		}
+	}
+	else
+	{
+		SelectSlot = nullptr;
 	}
 }
 
@@ -112,4 +127,8 @@ void ABInventoryActor::AddItem(const FName& _Name)
 
 void ABInventoryActor::Click()
 {
+	if (SelectSlot)
+	{
+		int a = 0;
+	}
 }

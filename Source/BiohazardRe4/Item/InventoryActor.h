@@ -27,11 +27,21 @@ public:
 	// 아이템을 추가한다
 	UFUNCTION(BlueprintCallable)
 	void AddItem(const FName& _Name);
+	void DebugAddPistol()
+	{
+		AddItem("PistolAmmo");
+	}
 
 	void Click();
 
 	UPROPERTY(VisibleAnywhere)
 	class UBInventoryManager* Inventory;
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UBInventoryWidget> InventoryWidgetClass;
+	UPROPERTY()
+	UBInventoryWidget* Widget;
+
+	class UBInventorySlot* SelectSlot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	UStaticMeshComponent* BackgroundMesh;
@@ -48,6 +58,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* ClickAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* DebugAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;
