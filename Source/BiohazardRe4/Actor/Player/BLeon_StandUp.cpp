@@ -14,7 +14,7 @@ void ABLeon::StandUpEnter()
  
 void ABLeon::StandUpUpdate(float _DeltaTime)
 {
-	MoveDir = FVector2D::ZeroVector;
+
 }
 
 void ABLeon::StandUpExit()

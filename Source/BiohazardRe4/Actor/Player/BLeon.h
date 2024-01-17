@@ -47,6 +47,12 @@ public:
 		return bIsCrouch;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetMoveDirection() const
+	{
+		return MoveDir;
+	}
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -85,11 +91,12 @@ private:
 
 	USpringArmComponent* SpringArm = nullptr;
 
-	FVector2D MoveDir = FVector2D::ZeroVector;
+	FVector MoveDir = FVector::ZeroVector;
 
 	UBFsm* FsmComp = nullptr;
 
 	void PlayMove(const FInputActionInstance& _MoveAction);
+	void PlayIdle(const FInputActionInstance& _MoveAction);
 	void PlayWalk();
 	void PlayJog();
 	void PlayCrouch();

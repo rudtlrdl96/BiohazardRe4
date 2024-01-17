@@ -127,6 +127,7 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	if (Input != nullptr)
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
+		Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
 
 		Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::TryJog);
@@ -137,7 +138,10 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 void ABLeon::PlayMove(const FInputActionInstance& _MoveAction)
 {
-	MoveDir = _MoveAction.GetValue().Get<FVector2D>();
+	FVector2D MoveInput = _MoveAction.GetValue().Get<FVector2D>();
+	FVector CurInput = FVector(MoveInput.X, MoveInput.Y, 0); 
+
+	MoveDir = FMath::VInterpConstantTo(MoveDir, CurInput, GetWorld()->DeltaTimeSeconds, 3.0f);
 
 	if (true == bIsJog)
 	{
@@ -151,6 +155,11 @@ void ABLeon::PlayMove(const FInputActionInstance& _MoveAction)
 	{
 		PlayWalk();
 	}
+}
+
+void ABLeon::PlayIdle(const FInputActionInstance& _MoveAction)
+{
+	MoveDir = FMath::VInterpConstantTo(MoveDir, FVector::ZeroVector, GetWorld()->DeltaTimeSeconds, 6.0f);
 }
 
 void ABLeon::PlayWalk()
