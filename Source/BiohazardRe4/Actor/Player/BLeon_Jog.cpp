@@ -9,6 +9,7 @@ void ABLeon::JogEnter()
 
 	bIsJog = true;
 	bIsMove = true;
+	bIsCrouch = false;
 }
 
 void ABLeon::JogUpdate(float _DeltaTime)

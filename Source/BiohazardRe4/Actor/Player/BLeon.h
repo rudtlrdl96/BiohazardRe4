@@ -11,6 +11,7 @@ class UBFsm;
 class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
+class UCameraComponent;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -22,10 +23,9 @@ class BIOHAZARDRE4_API ABLeon : public ACharacter
 private:
 	enum class ELeonState
 	{
-		StandUP = 0,
+		Idle	= 0,
 		Walk	= 1,
 		Jog		= 2,
-		Crouch	= 3,
 	};
 
 	static const FVector StandSocketOffset;
@@ -90,6 +90,7 @@ private:
 	UInputAction* InteractionActor = nullptr;
 
 	USpringArmComponent* SpringArm = nullptr;
+	UCameraComponent* PlayerCamera = nullptr;
 
 	FVector MoveDir = FVector::ZeroVector;
 
@@ -109,9 +110,9 @@ private:
 	void TryCrouch();
 
 	/* FSM */
-	void StandUpEnter();
-	void StandUpUpdate(float _DeltaTime);
-	void StandUpExit();
+	void IdleEnter();
+	void IdleUpdate(float _DeltaTime);
+	void IdleExit();
 
 	void WalkEnter();
 	void WalkUpdate(float _DeltaTime);
@@ -120,8 +121,4 @@ private:
 	void JogEnter();
 	void JogUpdate(float _DeltaTime);
 	void JogExit();
-
-	void CrouchEnter();
-	void CrouchUpdate(float _DeltaTime);
-	void CrouchExit();
 };

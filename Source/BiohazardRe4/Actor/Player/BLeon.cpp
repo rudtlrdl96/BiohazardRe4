@@ -9,9 +9,10 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0, 50.0, 80.0);
-const FVector ABLeon::CrouchSocketOffset = FVector(0.0, 50.0, 0.0);
+const FVector ABLeon::CrouchSocketOffset = FVector(0.0, 50.0, 10.0);
 
 
 // Sets default values
@@ -37,17 +38,17 @@ ABLeon::ABLeon()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
-
-	UCameraComponent* Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
-	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	
+	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
+	PlayerCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
 	FsmComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM Component"));
 
 	UBFsm::FStateCallback StandUpState;
-	StandUpState.EnterDel.BindUObject(this, &ABLeon::StandUpEnter);
-	StandUpState.UpdateDel.BindUObject(this, &ABLeon::StandUpUpdate);
-	StandUpState.ExitDel.BindUObject(this, &ABLeon::StandUpExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::StandUP), StandUpState);
+	StandUpState.EnterDel.BindUObject(this, &ABLeon::IdleEnter);
+	StandUpState.UpdateDel.BindUObject(this, &ABLeon::IdleUpdate);
+	StandUpState.ExitDel.BindUObject(this, &ABLeon::IdleExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Idle), StandUpState);
 
 	UBFsm::FStateCallback WalkState;
 	WalkState.EnterDel.BindUObject(this, &ABLeon::WalkEnter);
@@ -61,13 +62,6 @@ ABLeon::ABLeon()
 	JogState.ExitDel.BindUObject(this, &ABLeon::JogExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogState);
 
-	UBFsm::FStateCallback CrouchState;
-	CrouchState.EnterDel.BindUObject(this, &ABLeon::CrouchEnter);
-	CrouchState.UpdateDel.BindUObject(this, &ABLeon::CrouchUpdate);
-	CrouchState.ExitDel.BindUObject(this, &ABLeon::CrouchExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Crouch), CrouchState);
-
-	//USkeletalMeshComponent* BodyMesh = GetMesh();
 }
 
 // Called when the game starts or when spawned
@@ -75,7 +69,7 @@ void ABLeon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FsmComp->ChangeState(TO_KEY(ELeonState::StandUP));
+	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
 
 // Called every frame
@@ -85,11 +79,11 @@ void ABLeon::Tick(float _DeltaTime)
 
 	if (true == bIsCrouch)
 	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, CrouchSocketOffset, _DeltaTime, 140.0f);
+		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, CrouchSocketOffset, _DeltaTime, 180.0f);
 	}
 	else
 	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 140.0f);
+		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 180.0f);
 	}
 }
 
@@ -146,20 +140,24 @@ void ABLeon::PlayMove(const FInputActionInstance& _MoveAction)
 	if (true == bIsJog)
 	{
 		PlayJog();
+		FsmComp->ChangeState(TO_KEY(ELeonState::Jog), true, true, false);
 	}
 	else if (true == bIsCrouch)
 	{
 		PlayCrouch();
+		FsmComp->ChangeState(TO_KEY(ELeonState::Walk), true, true, false);
 	}
 	else
 	{
 		PlayWalk();
+		FsmComp->ChangeState(TO_KEY(ELeonState::Walk), true, true, false);
 	}
 }
 
 void ABLeon::PlayIdle(const FInputActionInstance& _MoveAction)
 {
 	MoveDir = FMath::VInterpConstantTo(MoveDir, FVector::ZeroVector, GetWorld()->DeltaTimeSeconds, 6.0f);
+	FsmComp->ChangeState(TO_KEY(ELeonState::Idle), true, true, false);
 }
 
 void ABLeon::PlayWalk()
@@ -176,7 +174,6 @@ void ABLeon::PlayCrouch()
 
 void ABLeon::PlayInteraction()
 {
-
 }
 
 void ABLeon::PlayLook(const FInputActionInstance& _LookAction)

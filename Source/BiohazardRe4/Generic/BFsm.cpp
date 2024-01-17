@@ -63,8 +63,13 @@ void UBFsm::DestroyState(int32 _Key)
 	FsmStates.Remove(_Key);
 }
 
-void UBFsm::ChangeState(int32 _Key, bool _bIsPlayEnterDel /*= true*/, bool _bIsPlayExitDel /*= true*/)
+void UBFsm::ChangeState(int32 _Key, bool _bIsPlayEnterDel /*= true*/, bool _bIsPlayExitDel /*= true*/, bool _bIsForce /*= true*/)
 {
+	if (false == _bIsForce && _Key == FSMKey)
+	{
+		return;
+	}
+
 	bIsPlay = true;
 
 	if (true == _bIsPlayExitDel && true == FsmStates.Contains(FSMKey))

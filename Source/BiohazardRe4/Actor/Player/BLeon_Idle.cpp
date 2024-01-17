@@ -3,21 +3,20 @@
 
 #include "Actor/Player/BLeon.h"
 
-void ABLeon::StandUpEnter()
+void ABLeon::IdleEnter()
 {
 	UE_LOG(LogTemp, Display, TEXT("FSM : StandUp Enter"));
 
 	bIsMove = false;
 	bIsJog = false;
-	bIsCrouch = false;
 }
  
-void ABLeon::StandUpUpdate(float _DeltaTime)
+void ABLeon::IdleUpdate(float _DeltaTime)
 {
 
 }
 
-void ABLeon::StandUpExit()
+void ABLeon::IdleExit()
 {
 	UE_LOG(LogTemp, Display, TEXT("FSM : StandUp Exit"));
 }

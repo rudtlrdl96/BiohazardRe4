@@ -34,7 +34,7 @@ public:
 	void CreateState(int32 _Key, FStateCallback& _NewState);
 	void DestroyState(int32 _Key);
 	
-	void ChangeState(int32 _Key, bool _bIsPlayEnterDel = true, bool _bIsPlayExitDel = true);
+	void ChangeState(int32 _Key, bool _bIsPlayEnterDel = true, bool _bIsPlayExitDel = true, bool _bIsForce = true);
 	
 	void PlayFSM(bool _bIsPlayEnterDel = true);
 	void StopFSM(bool _bIsPlayExitDel = true);
