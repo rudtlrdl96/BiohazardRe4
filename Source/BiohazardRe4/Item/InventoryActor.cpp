@@ -6,12 +6,16 @@
 #include "InventorySlot.h"
 #include "InventoryItem.h"
 #include "InventoryWidget.h"
-#include "Camera/CameraComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "EnhancedInputComponent.h"
+#include "Generic/BFsm.h"
+
 #include "GameFramework/PlayerController.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
 // Sets default values
 ABInventoryActor::ABInventoryActor()
 {
@@ -32,11 +36,13 @@ ABInventoryActor::ABInventoryActor()
 	}
 	RootComponent = CaseMesh;
 
+	// 카메라
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->SetRelativeLocation({ 0, 25, 70 });
 	Camera->SetRelativeRotation({ -80, -90, 0 });
-
+	
+	// 배경
 	BackgroundMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane"));
 	{
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
@@ -51,21 +57,40 @@ ABInventoryActor::ABInventoryActor()
 	BackgroundMesh->SetRelativeRotation({ 0, 90, 90 });
 	BackgroundMesh->SetRelativeScale3D({ 2.4, 2.4, 1.0 });
 
+	// 인벤토리 관리자
 	Inventory = CreateDefaultSubobject<UBInventoryManager>(TEXT("Inventory Manager"));
 	Inventory->SetupAttachment(CaseMesh);
 
+	// 인벤토리 슬롯
 	auto& Slot = Inventory->Slot;
 	Slot.SetNum(10 * 7);
 	for (int i = 0; i < 10 * 7; i++)
 	{
 		Slot[i] = CreateDefaultSubobject<UBInventorySlot>(FName(TEXT("Slot") + FString::FromInt(i)));
 		Slot[i]->SetupAttachment(Inventory);
-		Slot[i]->SetBoxExtent({ 2.5, 2.5, 5 });
+		Slot[i]->SetBoxExtent({ 2.5, 2.5, 0.1 });
 		Slot[i]->SetCollisionProfileName(TEXT("UI"));
 		int x = i % 10;
 		int y = i / 10;
+		Slot[i]->SetLocation({ x, y });
 		Slot[i]->SetRelativeLocation({ -22.5 + 5 * x, -12.5 + 5 * y, 0 });
 	}
+
+	// ______ FSM
+	FSMComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM"));
+
+	UBFsm::FStateCallback DefaultState;
+	DefaultState.EnterDel.BindUObject(this,	&ABInventoryActor::DefaultEnter);
+	DefaultState.UpdateDel.BindUObject(this, &ABInventoryActor::DefaultUpdate);
+	DefaultState.ExitDel.BindUObject(this, &ABInventoryActor::DefaultExit);
+	UBFsm::FStateCallback DragState;
+	DragState.EnterDel.BindUObject(this, &ABInventoryActor::DragEnter);
+	DragState.UpdateDel.BindUObject(this, &ABInventoryActor::DragUpdate);
+	DragState.ExitDel.BindUObject(this, &ABInventoryActor::DragExit);
+
+	FSMComp->CreateState(TO_KEY(EInventoryState::Default), DefaultState);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Drag), DragState);
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
 // Called when the game starts or when spawned
@@ -79,9 +104,11 @@ void ABInventoryActor::BeginPlay()
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);
-	//CreateWidget<UBInventoryWidget>()
+
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Controller->InputComponent);
-	Input->BindAction(ClickAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Click);
+	Input->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Click);
+	Input->BindAction(DragAction, ETriggerEvent::Started, this, &ABInventoryActor::DragStart);
+	Input->BindAction(DragAction, ETriggerEvent::Completed, this, &ABInventoryActor::DragEnd);
 	Input->BindAction(DebugAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DebugAddPistol);
 
 	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
@@ -93,6 +120,89 @@ void ABInventoryActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABInventoryActor::AddItem(const FName& _Name)
+{
+	Inventory->AddItem(_Name);
+}
+
+void ABInventoryActor::Click()
+{
+	if (SelectSlot)
+	{
+		int a = 0;
+	}
+}
+
+void ABInventoryActor::DragStart()
+{
+	if (SelectItem)
+	{
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Drag));
+	}
+}
+
+void ABInventoryActor::DragEnd()
+{
+	if (SelectItem)
+	{
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	}
+}
+
+void ABInventoryActor::DefaultEnter()
+{
+}
+
+void ABInventoryActor::DefaultUpdate(float _DeltaTime)
+{
+	FHitResult Res;
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	FVector MousePos, MouseRot, End;
+	Controller->DeprojectMousePositionToWorld(MousePos, MouseRot);
+	End = MousePos + MouseRot * 1000;
+	TEnumAsByte<EObjectTypeQuery> ObjectToTrace = EObjectTypeQuery::ObjectTypeQuery1;
+	FCollisionObjectQueryParams Params = FCollisionObjectQueryParams();
+	Params.AddObjectTypesToQuery(ECC_GameTraceChannel1);
+
+	if (GetWorld()->LineTraceSingleByObjectType(Res, MousePos, End, Params))
+	{
+		UBInventorySlot* Slot = Cast<UBInventorySlot>(Res.Component);
+		if (Slot && Slot != SelectSlot)
+		{
+			SelectSlot = Slot;
+			if (UBInventoryItem* Item = Slot->GetItem())
+			{
+				SelectItem = Item;
+				Widget->ItemName = Item->Data.ItemName.ToString();
+			}
+			else
+			{
+				SelectItem = nullptr;
+				Widget->ItemName = TEXT("");
+			}
+		}
+	}
+	else if (SelectSlot)
+	{
+		SelectSlot = nullptr;
+		SelectItem = nullptr;
+		Widget->ItemName = TEXT("");
+	}
+
+}
+
+void ABInventoryActor::DefaultExit()
+{
+}
+
+void ABInventoryActor::DragEnter()
+{
+}
+
+void ABInventoryActor::DragUpdate(float _DeltaTime)
+{
 	FHitResult Res;
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	FVector MousePos, MouseRot, End;
@@ -108,27 +218,16 @@ void ABInventoryActor::Tick(float DeltaTime)
 		if (Slot)
 		{
 			SelectSlot = Slot;
-			if (UBInventoryItem* Item = Slot->GetItem())
-			{
-				Widget->ItemName = Item->Data.Name.ToString();
-			}
+			// 일단 이동시켜놓고 있음.
+			// 다른 아이템을 덮어씌우는 문제 있음
+			Inventory->MoveItem(SelectItem, Slot->GetLocation());
 		}
 	}
-	else
-	{
-		SelectSlot = nullptr;
-	}
 }
 
-void ABInventoryActor::AddItem(const FName& _Name)
+void ABInventoryActor::DragExit()
 {
-	Inventory->AddItem(_Name);
-}
-
-void ABInventoryActor::Click()
-{
-	if (SelectSlot)
-	{
-		int a = 0;
-	}
+	Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetLocation());
+	SelectSlot = nullptr;
+	SelectItem = nullptr;
 }

@@ -29,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetItemData(const FBItemData& _Data);
 
+	uint8 bIsMove : 1;
+	FVector TargetLocation;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntPoint Location;	// 아이템의 위치 (인벤토리상 위치)
 

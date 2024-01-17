@@ -12,6 +12,7 @@ UBInventoryItem::UBInventoryItem()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(this);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 
@@ -30,6 +31,10 @@ void UBInventoryItem::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (bIsMove)
+	{
+		SetRelativeLocation(FMath::VInterpConstantTo(GetRelativeLocation(), TargetLocation, DeltaTime, 200));
+	}
 	// ...
 }
 
@@ -38,5 +43,8 @@ void UBInventoryItem::SetItemData(const FBItemData& _Data)
 	Data = _Data;
 	Mesh->RegisterComponent();
 	Mesh->SetStaticMesh(_Data.Mesh);
+	Mesh->SetRelativeLocation(_Data.Location);
+	Mesh->SetRelativeRotation(_Data.Rotation);
+	Mesh->SetRelativeScale3D(_Data.Scale);
 }
 

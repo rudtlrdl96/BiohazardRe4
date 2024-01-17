@@ -15,20 +15,29 @@ struct FBItemData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	FBItemData()
-		: Name(""), Scale(1, 1)
+		: ItemName(""), ItemSize(1, 1)
 	{
 
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName Name;
+	FName ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntPoint Scale;
+	FIntPoint ItemSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
 	int32 MaxReserves;	// 최대 몇개까지 보유할 수 있는지
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
 	UStaticMesh* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
+	FVector Location;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
+	FRotator Rotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
+	FVector Scale;
 };

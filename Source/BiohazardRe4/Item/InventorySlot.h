@@ -22,6 +22,10 @@ public:
 	{
 		Item = _Item;
 	}
+	void ClearItem()
+	{
+		Item = nullptr;
+	}
 	UBInventoryItem* GetItem()
 	{
 		return Item;
