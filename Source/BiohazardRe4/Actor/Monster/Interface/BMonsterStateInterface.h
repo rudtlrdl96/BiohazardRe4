@@ -13,12 +13,16 @@ class UBMonsterStateInterface : public UInterface
 	GENERATED_BODY()
 };
 
-UENUM()
-enum class MonsterState
+UENUM(BlueprintType)
+enum class MonsterState : uint8
 {
-	Idle,
-	Patrol,
-	Run,
+	Idle UMETA(DisplayName = "Idle"),
+	Patrol UMETA(DisplayName = "Patrol"),
+	Run UMETA(DisplayName = "Run"),
+	LTurn90 UMETA(DisplayName = "LTurn90"),
+	LTurn180 UMETA(DisplayName = "LTurn180"),
+	RTurn90 UMETA(DisplayName = "LTurn90"),
+	RTurn180 UMETA(DisplayName = "RTurn180"),
 };
 
 class BIOHAZARDRE4_API IBMonsterStateInterface

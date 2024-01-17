@@ -4,17 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTaskNode_FindNextPatrolPos.generated.h"
+#include "BTTask_SetTarget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API UBTTaskNode_FindNextPatrolPos : public UBTTaskNode
+class BIOHAZARDRE4_API UBTTask_SetTarget : public UBTTaskNode
 {
 	GENERATED_BODY()
 public:
-	UBTTaskNode_FindNextPatrolPos();
-
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

@@ -3,6 +3,7 @@
 
 #include "Actor/Monster/BChainsawMan.h"
 #include "AIController/BAIChainsawManController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ABChainsawMan::ABChainsawMan()
 {
@@ -34,6 +35,9 @@ ABChainsawMan::ABChainsawMan()
 
 	AIControllerClass = ABAIChainsawManController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
+
+	GetCharacterMovement()->MaxWalkSpeed = 30.0f;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
 
 

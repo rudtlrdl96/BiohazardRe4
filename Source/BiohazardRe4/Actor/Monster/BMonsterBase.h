@@ -15,7 +15,8 @@ class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateI
 public:
 	// Sets default values for this character's properties
 	ABMonsterBase();
-
+	
+	UFUNCTION(BlueprintCallable)
 	virtual MonsterState GetCurrentState() override;
 	virtual void SetCurrentState(MonsterState _InState) override;
 

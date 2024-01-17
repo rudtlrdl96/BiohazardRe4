@@ -9,19 +9,20 @@
 
 ABAIChainsawManController::ABAIChainsawManController()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Script/AIModule.BlackboardData'/Game/Blueprints/Actor/Monster/AIController/BB_ChainsawMan.BB_ChainsawMan'"));
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Script/AIModule.BlackboardData'/Game/Blueprints/Actor/Monster/BehaviorTree/BB_ChainsawMan.BB_ChainsawMan'"));
 
 	if (BBAssetRef.Object != nullptr)
 	{
 		BBAsset = BBAssetRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Script/AIModule.BehaviorTree'/Game/Blueprints/Actor/Monster/AIController/BT_ChainsawMan.BT_ChainsawMan'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Script/AIModule.BehaviorTree'/Game/Blueprints/Actor/Monster/BehaviorTree/BT_ChainsawMan.BT_ChainsawMan'"));
 	
 	if (BTAssetRef.Object != nullptr)
 	{
 		BTAsset = BTAssetRef.Object;
 	}
+
 }
 
 void ABAIChainsawManController::RunAI()
@@ -30,9 +31,6 @@ void ABAIChainsawManController::RunAI()
 	
 	if (UseBlackboard(BBAsset, BlackboardPtr) != false)
 	{
-		//두 번째 인자를 시작 위치로.
-		Blackboard->SetValueAsVector(BBKEY_HOMEPOS, GetPawn()->GetActorLocation());
-
 		bool RunResult = RunBehaviorTree(BTAsset);
 		ensure(RunResult);
 	}
