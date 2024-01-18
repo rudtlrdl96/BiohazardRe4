@@ -2,29 +2,38 @@
 
 
 #include "Actor/Player/BLeon.h"
+#include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void ABLeon::WalkEnter()
 {
-	UE_LOG(LogTemp, Display, TEXT("FSM : Walk Enter"));
-
+	bIsJog = false;
 	bIsMove = true;
+
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
 
 void ABLeon::WalkUpdate(float _DeltaTime)
 {
-	//FRotator PlayerRot = GetActorRotation();
-	//FRotator CameraRot = GetControlRotation();
-	//
-	//SetActorRotation(FMath::RInterpConstantTo(PlayerRot, CameraRot, _DeltaTime, 6.0f));
+	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 3.0f);
+
+	if (MoveInput == FVector::ZeroVector)
+	{
+		FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
+		return;
+	}
+
+	if (true == bIsJogTrigger)
+	{
+		FsmComp->ChangeState(TO_KEY(ELeonState::Jog));
+		return;
+	}
 }
 
 void ABLeon::WalkExit()
 {
-	UE_LOG(LogTemp, Display, TEXT("FSM : Walk Exit"));
-
 	bIsMove = false;
+
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 }

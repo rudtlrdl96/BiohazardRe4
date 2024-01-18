@@ -39,9 +39,9 @@ public:
 	void PlayFSM(bool _bIsPlayEnterDel = true);
 	void StopFSM(bool _bIsPlayExitDel = true);
 
-	inline int32 GetCurrentFSMKey()
+	inline int32 GetCurrentFSMKey() const
 	{
-		return FSMKey;
+		return 	FSMKey;
 	}
 
 protected:
