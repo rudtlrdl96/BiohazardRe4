@@ -131,6 +131,38 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 	}
 }
 
+void ABLeon::GetJogInputForward(FVector& _Result) const
+{
+	FVector CameraLook = PlayerCamera->GetForwardVector();
+	CameraLook.Z = 0.0;
+	CameraLook = CameraLook.GetSafeNormal();
+
+	_Result = MoveInput;
+	_Result.X = -_Result.X;
+
+	double CameraAngle = FMath::Atan2(CameraLook.X, CameraLook.Y);
+	_Result = _Result.RotateAngleAxisRad(CameraAngle, FVector::DownVector);
+}
+
+double ABLeon::JogInputAngle() const
+{
+	FVector InputForward = FVector::ZeroVector;
+	GetJogInputForward(InputForward);
+
+	FVector PlayerForward = GetActorForwardVector();
+
+	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(PlayerForward, InputForward)));
+}
+
+void ABLeon::JogLookAt(float _DeltaTime)
+{
+	FVector JogInput = FVector::ZeroVector;
+	GetJogInputForward(JogInput);
+	FRotator InputRotator = JogInput.Rotation();
+
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), InputRotator, _DeltaTime, 360.0f));
+}
+
 void ABLeon::ActiveJog()
 {
 	// Able Jog Check
@@ -145,10 +177,17 @@ void ABLeon::DisableJog()
 
 void ABLeon::TryCrouch()
 {
+	int32 FSMKey = FsmComp->GetCurrentFSMKey();
+	ELeonState FSMState = static_cast<ELeonState>(FSMKey);
+
+	if (FSMState == ELeonState::Jog)
+	{
+		bIsCrouch = false;
+		return;
+	}
+
 	// Able Crouch Check
 	bIsCrouch = ~bIsCrouch;
-
-	static_cast<int32>(ELeonState::Idle);
 }
 
 void ABLeon::CreateSprintArm()
@@ -156,7 +195,7 @@ void ABLeon::CreateSprintArm()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->PrimaryComponentTick.bCanEverTick = true;
 	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->TargetArmLength = 120.0f;
+	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = true;
 	SpringArm->bInheritYaw = true;
@@ -191,9 +230,10 @@ void ABLeon::CreateFSM()
 	WalkState.ExitDel.BindUObject(this, &ABLeon::WalkExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Walk), WalkState);
 
-	UBFsm::FStateCallback JogState;
-	JogState.EnterDel.BindUObject(this, &ABLeon::JogEnter);
-	JogState.UpdateDel.BindUObject(this, &ABLeon::JogUpdate);
-	JogState.ExitDel.BindUObject(this, &ABLeon::JogExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogState);
+	UBFsm::FStateCallback JogMoveState;
+	JogMoveState.EnterDel.BindUObject(this, &ABLeon::JogEnter);
+	JogMoveState.UpdateDel.BindUObject(this, &ABLeon::JogUpdate);
+	JogMoveState.ExitDel.BindUObject(this, &ABLeon::JogExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogMoveState);
+
 }

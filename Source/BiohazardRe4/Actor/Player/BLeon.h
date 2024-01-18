@@ -67,7 +67,7 @@ public:
 	FVector GetInputDirection() const
 	{
 		return MoveInput;
-	}
+	}	
 
 protected:
 	// Called when the game starts or when spawned
@@ -113,6 +113,7 @@ private:
 
 	FVector MoveDir = FVector::ZeroVector;
 	FVector MoveInput = FVector::ZeroVector;
+	double JogTurnAngle = 0.0;
 
 	UBFsm* FsmComp = nullptr;
 
@@ -123,6 +124,9 @@ private:
 	virtual void PlayLook(const FVector2D& _LookAction);
 
 	void SpringArmUpdate(float _DeltaTime);
+	void GetJogInputForward(FVector& _Result) const;
+	double JogInputAngle() const;
+	void JogLookAt(float _DeltaTime);
 
 	void ActiveJog();
 	void DisableJog();
