@@ -13,5 +13,8 @@ UCLASS()
 class BIOHAZARDRE4_API ABBiohazardRe4GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	ABBiohazardRe4GameModeBase();
+
 };
