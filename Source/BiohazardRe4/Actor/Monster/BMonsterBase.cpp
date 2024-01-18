@@ -7,7 +7,7 @@
 ABMonsterBase::ABMonsterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	bUseControllerRotationYaw = false;
 }
 
 void ABMonsterBase::BeginPlay()
@@ -24,3 +24,14 @@ void ABMonsterBase::SetCurrentState(MonsterState _InState)
 {
 	CurState = _InState;
 }
+
+bool ABMonsterBase::IsAttacking()
+{
+	return bIsAttacking;
+}
+
+void ABMonsterBase::SetIsAttack(bool _IsAttacking)
+{
+	bIsAttacking = _IsAttacking;
+}
+

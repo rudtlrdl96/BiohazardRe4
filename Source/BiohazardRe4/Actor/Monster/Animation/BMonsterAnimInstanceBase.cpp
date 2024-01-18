@@ -3,10 +3,12 @@
 
 #include "Actor/Monster/Animation/BMonsterAnimInstanceBase.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 UBMonsterAnimInstanceBase::UBMonsterAnimInstanceBase()
 {
-
+	GroundSpeedThreshold = 0.0f;
 }
 
 void UBMonsterAnimInstanceBase::NativeInitializeAnimation()
@@ -19,17 +21,29 @@ void UBMonsterAnimInstanceBase::NativeInitializeAnimation()
 	{
 		Movement = Owner->GetCharacterMovement();
 	}
-
 }
 
 void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(_DeltaSeconds);
 
+	if (Movement != nullptr)
+	{
+		GroundSpeed = Movement->Velocity.Size2D();
+	}
+
 	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(GetOwningActor());
 	
 	if (StateInterface != nullptr)
 	{
 		CurState = StaticCast<uint8>(StateInterface->GetCurrentState());
+
+		if (CurState == static_cast<uint8>(MonsterState::Idle))
+		{
+			StateInterface->SetCurrentState(MonsterState::Walk);
+			CurState = static_cast<uint8>(MonsterState::Walk);
+		}
 	}
+
+
 }

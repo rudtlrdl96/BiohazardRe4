@@ -18,11 +18,9 @@ enum class MonsterState : uint8
 {
 	Idle UMETA(DisplayName = "Idle"),
 	Patrol UMETA(DisplayName = "Patrol"),
+	Walk UMETA(DisplayName = "Walk"),
 	Run UMETA(DisplayName = "Run"),
-	LTurn90 UMETA(DisplayName = "LTurn90"),
-	LTurn180 UMETA(DisplayName = "LTurn180"),
-	RTurn90 UMETA(DisplayName = "LTurn90"),
-	RTurn180 UMETA(DisplayName = "RTurn180"),
+	Attack UMETA(DisplayName = "Attack"),
 };
 
 class BIOHAZARDRE4_API IBMonsterStateInterface
@@ -33,7 +31,8 @@ class BIOHAZARDRE4_API IBMonsterStateInterface
 public:
 	virtual MonsterState GetCurrentState() = 0;
 	virtual void SetCurrentState(MonsterState _InState) = 0;
-
+	virtual bool IsAttacking() = 0;
+	virtual void SetIsAttack(bool _IsAttacking) = 0;
 protected:
 
 private:

@@ -29,4 +29,10 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State)
 	uint8 CurState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
+	float GroundSpeed;
+
+private:
+	float GroundSpeedThreshold = 0.0f;
 };

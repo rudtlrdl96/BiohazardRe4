@@ -19,6 +19,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual MonsterState GetCurrentState() override;
 	virtual void SetCurrentState(MonsterState _InState) override;
+	virtual bool IsAttacking() override;
+	virtual void SetIsAttack(bool _IsAttacking) override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,4 +29,8 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	MonsterState CurState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
+	uint8 bIsAttacking : 1;
+
 };

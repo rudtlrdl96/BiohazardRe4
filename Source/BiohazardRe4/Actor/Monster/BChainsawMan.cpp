@@ -36,12 +36,9 @@ ABChainsawMan::ABChainsawMan()
 	AIControllerClass = ABAIChainsawManController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
 
-	GetCharacterMovement()->MaxWalkSpeed = 30.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
-
-
-
 
 void ABChainsawMan::BeginPlay()
 {
