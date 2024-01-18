@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(BLog, Log, All)
+DECLARE_LOG_CATEGORY_EXTERN(CustomLog, Log, All)
 //DECLARE_LOG_CATEGORY_EXTERN(BWarning, Warning, All)
 //DECLARE_LOG_CATEGORY_EXTERN(BError, Error, All)
 //DECLARE_LOG_CATEGORY_EXTERN(BFatal, Fatal, All)
@@ -13,12 +13,12 @@ DECLARE_LOG_CATEGORY_EXTERN(BLog, Log, All)
 
 #define LINEINFO					  (FString(__FUNCTION__) + TEXT("(") + FString::FromInt(__LINE__) + TEXT(")"))
 
-#define LOG_LOG(Format, ...)		  UE_LOG(BLog, Log, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
-#define LOG_WARNING(Format, ...)	  UE_LOG(BLog, Warning, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
-#define LOG_ERROR(Format, ...)		  UE_LOG(BLog, Error, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
-#define LOG_FATAL(Format, ...)		  UE_LOG(BLog, Fatal, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
-#define LOG_VERBOSE(Format, ...)	  UE_LOG(BLog, Verbose, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
-#define LOG_VERYVERBOSE(Format, ...)  UE_LOG(BLog, VeryVerbose, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define LOG_MSG(Format, ...)		  UE_LOG(CustomLog, Log, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define LOG_WARNING(Format, ...)	  UE_LOG(CustomLog, Warning, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define LOG_ERROR(Format, ...)		  UE_LOG(CustomLog, Error, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define LOG_FATAL(Format, ...)		  UE_LOG(CustomLog, Fatal, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define LOG_VERBOSE(Format, ...)	  UE_LOG(CustomLog, Verbose, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define LOG_VERYVERBOSE(Format, ...)  UE_LOG(CustomLog, VeryVerbose, TEXT("%s %s"), *LINEINFO, *FString::Printf(Format, ##__VA_ARGS__))
 
 // BLog        : 그냥 텍스트 띄우고 싶을 떄
 // BWarning    : 문제있음
