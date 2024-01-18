@@ -108,7 +108,8 @@ void ABInventoryActor::BeginPlay()
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Controller->InputComponent);
 	Input->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Click);
 	Input->BindAction(DragAction, ETriggerEvent::Started, this, &ABInventoryActor::DragStart);
-	Input->BindAction(DragAction, ETriggerEvent::Completed, this, &ABInventoryActor::DragEnd);
+	Input->BindAction(DragAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DragTrigger);
+	Input->BindAction(DragAction, ETriggerEvent::Canceled, this, &ABInventoryActor::DragCancel);
 	Input->BindAction(DebugAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DebugAddPistol);
 
 	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
@@ -129,23 +130,28 @@ void ABInventoryActor::AddItem(const FName& _Name)
 
 void ABInventoryActor::Click()
 {
-	if (SelectSlot)
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag))
 	{
-		int a = 0;
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 	}
 }
 
 void ABInventoryActor::DragStart()
 {
-	if (SelectItem)
+	if (SelectItem && FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Default))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Drag));
 	}
 }
 
-void ABInventoryActor::DragEnd()
+void ABInventoryActor::DragTrigger()
 {
-	if (SelectItem)
+	bIsDragMove = 1;
+}
+
+void ABInventoryActor::DragCancel()
+{
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 	}
@@ -199,6 +205,11 @@ void ABInventoryActor::DefaultExit()
 
 void ABInventoryActor::DragEnter()
 {
+	if (!SelectItem)
+	{
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	}
+	bIsDragMove = 0;
 }
 
 void ABInventoryActor::DragUpdate(float _DeltaTime)
@@ -220,14 +231,21 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 			SelectSlot = Slot;
 			// 일단 이동시켜놓고 있음.
 			// 다른 아이템을 덮어씌우는 문제 있음
-			Inventory->MoveItem(SelectItem, Slot->GetLocation());
+			if (bIsDragMove == 1)
+			{
+				Inventory->MoveItem(SelectItem, Slot->GetLocation());
+			}
 		}
 	}
 }
 
 void ABInventoryActor::DragExit()
 {
-	Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetLocation());
-	SelectSlot = nullptr;
-	SelectItem = nullptr;
+	if (SelectItem && bIsDragMove)
+	{
+		Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetLocation());
+		SelectSlot = nullptr;
+		SelectItem = nullptr;
+	}
+	bIsDragMove = 0;
 }
