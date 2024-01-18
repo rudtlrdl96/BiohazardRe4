@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BiohazardRe4.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0, 50.0, 80.0);
 const FVector ABLeon::CrouchSocketOffset = FVector(0.0, 50.0, 10.0);
@@ -48,40 +49,53 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 	APlayerController* PlayerController = Cast<APlayerController>(Controller);
 
-	if (PlayerController != nullptr)
+	if (PlayerController == nullptr)
 	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-
-		if (Subsystem != nullptr)
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
+		LOG_FATAL(TEXT("Failed Find APlayerController"));
 	}
 
-	// Failed Find InputComponent
-	check(nullptr != Input);
-	// is Not Set MoveAction
-	check(nullptr != MoveAction);
-	// is Not Set LookAction
-	check(nullptr != LookAction);
-	// is Not Set JogAction
-	check(nullptr != JogAction);
-	// is Not Set RunAction
-	check(nullptr != CrouchAction);
-	// is Not Set GunFireAction
-	check(nullptr != InteractionActor);
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 
-	if (Input != nullptr)
+	if (Subsystem == nullptr)
 	{
-		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
-		Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
-		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
-
-		Input->BindAction(JogAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveJog);
-		Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);
-		Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
-		Input->BindAction(InteractionActor, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
+		LOG_FATAL(TEXT("Failed Get GetSubsystem<UEnhancedInputLocalPlayerSubsystem>"));
 	}
+
+	Subsystem->AddMappingContext(DefaultMappingContext, 0);
+
+	if (nullptr == Input)
+	{
+		LOG_FATAL(TEXT("Failed Find InputComponent"));	
+	}
+	if (nullptr == MoveAction)
+	{
+		LOG_FATAL(TEXT("is Not Set MoveAction"));
+	}
+	if (nullptr == LookAction)
+	{
+		LOG_FATAL(TEXT("is Not Set LookAction"));
+	}
+	if (nullptr == JogAction)
+	{
+		LOG_FATAL(TEXT("is Not Set JogAction"));
+	}
+	if (nullptr == CrouchAction)
+	{
+		LOG_FATAL(TEXT("is Not Set RunAction"));
+	}
+	if (nullptr == InteractionActor)
+	{
+		LOG_FATAL(TEXT("is Not Set InteractionActor"));
+	}
+
+	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
+	Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
+	Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
+
+	Input->BindAction(JogAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveJog);
+	Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);
+	Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
+	Input->BindAction(InteractionActor, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
 }
 
 ELeonState ABLeon::GetCurrentFSMState() const
@@ -165,8 +179,6 @@ void ABLeon::JogLookAt(float _DeltaTime)
 
 void ABLeon::ActiveJog()
 {
-	// Able Jog Check
-
 	bIsJogTrigger = true;
 }
 
@@ -186,7 +198,6 @@ void ABLeon::TryCrouch()
 		return;
 	}
 
-	// Able Crouch Check
 	bIsCrouch = ~bIsCrouch;
 }
 

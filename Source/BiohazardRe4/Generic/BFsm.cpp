@@ -2,6 +2,7 @@
 
 
 #include "BFsm.h"
+#include "BiohazardRe4.h"
 
 // Sets default values for this component's properties
 UBFsm::UBFsm()
@@ -45,7 +46,7 @@ void UBFsm::CreateState(int32 _Key, FStateCallback& _NewState)
 {
 	if (true == FsmStates.Contains(_Key))
 	{
-		UE_LOG(LogTemp, Display, TEXT("FSM State Create Error : Create a duplicate State"));
+		LOG_ERROR(TEXT("FSM State Create Error : Create a duplicate State"));
 		return;
 	}
 
@@ -56,7 +57,7 @@ void UBFsm::DestroyState(int32 _Key)
 {
 	if (false == FsmStates.Contains(_Key))
 	{
-		// Todo : Log추가
+		LOG_WARNING(TEXT("is Not Contains FSM Key"));
 		return;
 	}
 
@@ -84,7 +85,7 @@ void UBFsm::ChangeState(int32 _Key, bool _bIsPlayEnterDel /*= true*/, bool _bIsP
 
 	if (false == FsmStates.Contains(_Key))
 	{
-		// Tood : Error Log 추가
+		LOG_WARNING(TEXT("is Not Contains FSM Key"));
 
 		StopFSM(false);
 		FSMKey = INT32_MIN;
