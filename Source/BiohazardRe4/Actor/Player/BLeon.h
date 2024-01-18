@@ -15,19 +15,20 @@ class UCameraComponent;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
+UENUM(BlueprintType)
+enum class ELeonState : uint8
+{
+	Idle	UMETA(DisplayName = "Idle"),
+	Walk	UMETA(DisplayName = "Walk"),
+	Jog		UMETA(DisplayName = "Jog"),
+};
+
 UCLASS()
 class BIOHAZARDRE4_API ABLeon : public ACharacter
 {
 	GENERATED_BODY()
 
 private:
-	enum class ELeonState
-	{
-		Idle	= 0,
-		Walk	= 1,
-		Jog		= 2,
-	};
-
 	static const FVector StandSocketOffset;
 	static const FVector CrouchSocketOffset;
 
@@ -46,11 +47,26 @@ public:
 	{
 		return bIsCrouch;
 	}
+	
+	UFUNCTION(BlueprintCallable)
+	ELeonState GetCurrentFSMState() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsJog() const
+	{
+		return bIsJog;
+	}
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetMoveDirection() const
 	{
 		return MoveDir;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetInputDirection() const
+	{
+		return MoveInput;
 	}
 
 protected:
@@ -63,6 +79,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsJog : 1 = false;
+
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	uint32 bIsJogTrigger : 1 = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsCrouch : 1 = false;
@@ -93,21 +112,25 @@ private:
 	UCameraComponent* PlayerCamera = nullptr;
 
 	FVector MoveDir = FVector::ZeroVector;
+	FVector MoveInput = FVector::ZeroVector;
 
 	UBFsm* FsmComp = nullptr;
 
 	void PlayMove(const FInputActionInstance& _MoveAction);
 	void PlayIdle(const FInputActionInstance& _MoveAction);
-	void PlayWalk();
-	void PlayJog();
-	void PlayCrouch();
-	void PlayInteraction();
 
 	virtual void PlayLook(const FInputActionInstance& _LookAction);
 	virtual void PlayLook(const FVector2D& _LookAction);
 
-	void TryJog();
+	void SpringArmUpdate(float _DeltaTime);
+
+	void ActiveJog();
+	void DisableJog();
 	void TryCrouch();
+	void TryInteraction();
+
+	void CreateSprintArm();
+	void CreateFSM();
 
 	/* FSM */
 	void IdleEnter();
@@ -121,4 +144,5 @@ private:
 	void JogEnter();
 	void JogUpdate(float _DeltaTime);
 	void JogExit();
+
 };

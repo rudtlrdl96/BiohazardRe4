@@ -21,54 +21,14 @@ ABLeon::ABLeon()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	SpringArm->PrimaryComponentTick.bCanEverTick = true;
-	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->TargetArmLength = 120.0f;
-	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->bInheritPitch = true;
-	SpringArm->bInheritYaw = true;
-	SpringArm->bInheritRoll = true;
-	SpringArm->bEnableCameraLag = true;
-	SpringArm->CameraLagSpeed = 10.0f;
-	SpringArm->bEnableCameraRotationLag = true;
-	SpringArm->CameraRotationLagSpeed = 10.0f;
-	SpringArm->SocketOffset = StandSocketOffset;
-
-	bUseControllerRotationRoll = false;
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	
-	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
-	PlayerCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-
-	FsmComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM Component"));
-
-	UBFsm::FStateCallback StandUpState;
-	StandUpState.EnterDel.BindUObject(this, &ABLeon::IdleEnter);
-	StandUpState.UpdateDel.BindUObject(this, &ABLeon::IdleUpdate);
-	StandUpState.ExitDel.BindUObject(this, &ABLeon::IdleExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Idle), StandUpState);
-
-	UBFsm::FStateCallback WalkState;
-	WalkState.EnterDel.BindUObject(this, &ABLeon::WalkEnter);
-	WalkState.UpdateDel.BindUObject(this, &ABLeon::WalkUpdate);
-	WalkState.ExitDel.BindUObject(this, &ABLeon::WalkExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Walk), WalkState);
-
-	UBFsm::FStateCallback JogState;
-	JogState.EnterDel.BindUObject(this, &ABLeon::JogEnter);
-	JogState.UpdateDel.BindUObject(this, &ABLeon::JogUpdate);
-	JogState.ExitDel.BindUObject(this, &ABLeon::JogExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogState);
-
+	CreateSprintArm();
+	CreateFSM();
 }
 
 // Called when the game starts or when spawned
 void ABLeon::BeginPlay()
 {
 	Super::BeginPlay();
-
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
 
@@ -76,15 +36,7 @@ void ABLeon::BeginPlay()
 void ABLeon::Tick(float _DeltaTime)
 {
 	Super::Tick(_DeltaTime);
-
-	if (true == bIsCrouch)
-	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, CrouchSocketOffset, _DeltaTime, 180.0f);
-	}
-	else
-	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 180.0f);
-	}
+	SpringArmUpdate(_DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -106,6 +58,7 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 		}
 	}
 
+	// Failed Find InputComponent
 	check(nullptr != Input);
 	// is Not Set MoveAction
 	check(nullptr != MoveAction);
@@ -124,56 +77,32 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 		Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
 
-		Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::TryJog);
+		Input->BindAction(JogAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveJog);
+		Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);
 		Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
-		Input->BindAction(InteractionActor, ETriggerEvent::Completed, this, &ABLeon::PlayInteraction);
+		Input->BindAction(InteractionActor, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
 	}
+}
+
+ELeonState ABLeon::GetCurrentFSMState() const
+{
+	return static_cast<ELeonState>(FsmComp->GetCurrentFSMKey());
 }
 
 void ABLeon::PlayMove(const FInputActionInstance& _MoveAction)
 {
-	FVector2D MoveInput = _MoveAction.GetValue().Get<FVector2D>();
-	FVector CurInput = FVector(MoveInput.X, MoveInput.Y, 0); 
-
-	MoveDir = FMath::VInterpConstantTo(MoveDir, CurInput, GetWorld()->DeltaTimeSeconds, 3.0f);
-
-	if (true == bIsJog)
-	{
-		PlayJog();
-		FsmComp->ChangeState(TO_KEY(ELeonState::Jog), true, true, false);
-	}
-	else if (true == bIsCrouch)
-	{
-		PlayCrouch();
-		FsmComp->ChangeState(TO_KEY(ELeonState::Walk), true, true, false);
-	}
-	else
-	{
-		PlayWalk();
-		FsmComp->ChangeState(TO_KEY(ELeonState::Walk), true, true, false);
-	}
+	FVector2D MoveInput2D = _MoveAction.GetValue().Get<FVector2D>();
+	MoveInput = FVector(MoveInput2D.X, MoveInput2D.Y, 0);
 }
 
 void ABLeon::PlayIdle(const FInputActionInstance& _MoveAction)
 {
-	MoveDir = FMath::VInterpConstantTo(MoveDir, FVector::ZeroVector, GetWorld()->DeltaTimeSeconds, 6.0f);
-	FsmComp->ChangeState(TO_KEY(ELeonState::Idle), true, true, false);
+	MoveInput = FVector::ZeroVector;
 }
 
-void ABLeon::PlayWalk()
+void ABLeon::TryInteraction()
 {
-}
-
-void ABLeon::PlayJog()
-{
-}
-
-void ABLeon::PlayCrouch()
-{
-}
-
-void ABLeon::PlayInteraction()
-{
+	// Todo :: 상호작용 처리
 }
 
 void ABLeon::PlayLook(const FInputActionInstance& _LookAction)
@@ -190,15 +119,81 @@ void ABLeon::PlayLook(const FVector2D& _LookAction)
 	}
 }
 
-void ABLeon::TryJog()
+void ABLeon::SpringArmUpdate(float _DeltaTime)
+{
+	if (true == bIsCrouch)
+	{
+		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, CrouchSocketOffset, _DeltaTime, 200.0f);
+	}
+	else
+	{
+		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 200.0f);
+	}
+}
+
+void ABLeon::ActiveJog()
 {
 	// Able Jog Check
 
-	bIsJog = true;
+	bIsJogTrigger = true;
+}
+
+void ABLeon::DisableJog()
+{
+	bIsJogTrigger = false;
 }
 
 void ABLeon::TryCrouch()
 {
 	// Able Crouch Check
 	bIsCrouch = ~bIsCrouch;
+
+	static_cast<int32>(ELeonState::Idle);
+}
+
+void ABLeon::CreateSprintArm()
+{
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+	SpringArm->PrimaryComponentTick.bCanEverTick = true;
+	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->TargetArmLength = 120.0f;
+	SpringArm->bUsePawnControlRotation = true;
+	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritYaw = true;
+	SpringArm->bInheritRoll = true;
+	SpringArm->bEnableCameraLag = true;
+	SpringArm->CameraLagSpeed = 10.0f;
+	SpringArm->bEnableCameraRotationLag = true;
+	SpringArm->CameraRotationLagSpeed = 10.0f;
+	SpringArm->SocketOffset = StandSocketOffset;
+
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+
+	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
+	PlayerCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+}
+
+void ABLeon::CreateFSM()
+{
+	FsmComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM Component"));
+
+	UBFsm::FStateCallback StandUpState;
+	StandUpState.EnterDel.BindUObject(this, &ABLeon::IdleEnter);
+	StandUpState.UpdateDel.BindUObject(this, &ABLeon::IdleUpdate);
+	StandUpState.ExitDel.BindUObject(this, &ABLeon::IdleExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Idle), StandUpState);
+
+	UBFsm::FStateCallback WalkState;
+	WalkState.EnterDel.BindUObject(this, &ABLeon::WalkEnter);
+	WalkState.UpdateDel.BindUObject(this, &ABLeon::WalkUpdate);
+	WalkState.ExitDel.BindUObject(this, &ABLeon::WalkExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Walk), WalkState);
+
+	UBFsm::FStateCallback JogState;
+	JogState.EnterDel.BindUObject(this, &ABLeon::JogEnter);
+	JogState.UpdateDel.BindUObject(this, &ABLeon::JogUpdate);
+	JogState.ExitDel.BindUObject(this, &ABLeon::JogExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogState);
 }
