@@ -51,8 +51,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	class USkeletalMeshComponent* CaseMesh;	// 가방 메쉬
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;			// 카메라
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	class UBInventoryCursor* Cursor;			// 커서
 
 	// __________________Input
 

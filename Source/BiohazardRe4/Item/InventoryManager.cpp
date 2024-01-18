@@ -144,11 +144,24 @@ void UBInventoryManager::MoveItemConfirm(UBInventoryItem* _Item, const FIntPoint
 		_Item->SetPut(CaseLocation(_Pos));
 		PlaceItemSlot(_Item, _Pos);
 	}
-	else
-	{
-		_Item->SetPut(CaseLocation(_Item->GetItemPosition()));
-		PlaceItemSlot(_Item, _Item->GetItemPosition());
-	}
+}
+
+bool UBInventoryManager::CheckChange(UBInventoryItem* _Item, const FIntPoint& _Pos)
+{
+	TArray<UBInventoryItem*> FindItems;
+	FindItemRange(_Pos, _Item->GetItemSize(), FindItems);
+	return FindItems.Num() == 1;
+}
+
+UBInventoryItem* UBInventoryManager::ChangeItem(UBInventoryItem* Item, const FIntPoint& Pos)
+{
+	UBInventoryItem* ChangeItem = FindItemRange(Pos, Item->GetItemSize());
+	RaiseItem(ChangeItem);
+
+	Item->SetPut(CaseLocation(Pos));
+	PlaceItemSlot(Item, Pos);
+
+	return ChangeItem;
 }
 
 FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
@@ -185,6 +198,47 @@ FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
 	return FIntPoint::NoneValue;
 }
 
+UBInventoryItem* UBInventoryManager::FindItem(const FIntPoint& Pos)
+{
+	if (IsVaildSlot(Pos))
+	{
+		return Slot[Pos.Y * CaseSize.X + Pos.X]->GetItem();
+	}
+	return nullptr;
+}
+
+void UBInventoryManager::FindItemRange(const FIntPoint& Pos, const FIntPoint& Size, TArray<UBInventoryItem*>& FindItems)
+{
+	for (int y = 0; y < Size.Y; y++)
+	{
+		for (int x = 0; x < Size.X; x++)
+		{
+			if (UBInventoryItem* FItem = FindItem((Pos + FIntPoint(x, y))))
+			{
+				if (false == FindItems.Contains(FItem))
+				{
+					FindItems.Add(FItem);
+				}
+			}
+		}
+	}
+}
+
+UBInventoryItem* UBInventoryManager::FindItemRange(const FIntPoint& Pos, const FIntPoint& Size)
+{
+	for (int y = 0; y < Size.Y; y++)
+	{
+		for (int x = 0; x < Size.X; x++)
+		{
+			if (UBInventoryItem* FItem = FindItem((Pos + FIntPoint(x, y))))
+			{
+				return FItem;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void UBInventoryManager::PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& _Pos)
 {
 	for (int y = 0; y < _Item->GetItemSize().Y; y++)
@@ -195,6 +249,28 @@ void UBInventoryManager::PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& 
 		}
 	}
 	_Item->SetItemPosition(_Pos);
+}
+
+bool UBInventoryManager::IsVaildSlot(const FIntPoint& Pos)
+{
+	if (CaseSize.X <= Pos.X) { return false; }
+	if (CaseSize.Y <= Pos.Y) { return false; }
+	return true;
+}
+
+bool UBInventoryManager::IsVaildRange(const FIntPoint& Pos, const FIntPoint& Size)
+{
+	for (int y = 0; y < Size.Y; y++)
+	{
+		for (int x = 0; x < Size.X; x++)
+		{
+			if (false == CheckSlot(Pos + FIntPoint(x, y)))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 bool UBInventoryManager::CheckSlot(const FIntPoint& Pos)
@@ -212,6 +288,21 @@ bool UBInventoryManager::CheckSlot(const FIntPoint& Pos, const UBInventoryItem* 
 
 	UBInventoryItem* Item = Slot[Pos.Y * CaseSize.X + Pos.X]->GetItem();
 	return Item == nullptr || Item == IgnoreItem;
+}
+
+bool UBInventoryManager::CheckSlotRange(const FIntPoint& Pos, const FIntPoint& Size)
+{
+	for (int y = 0; y < Size.Y; y++)
+	{
+		for (int x = 0; x < Size.X; x++)
+		{
+			if (false == CheckSlot(Pos + FIntPoint(x, y)))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 void UBInventoryManager::ClearSlot(const FIntPoint& _Pos, const FIntPoint& Size)

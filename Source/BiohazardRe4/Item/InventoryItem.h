@@ -41,7 +41,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	const float MoveSpeed = 10.0f;
+	const float MoveSpeed = 15.0f;
 	const float RaiseSpeed = 5.0f;
 	const float TurnSpeed = 5.0f;
 

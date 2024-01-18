@@ -6,6 +6,7 @@
 #include "InventorySlot.h"
 #include "InventoryItem.h"
 #include "InventoryWidget.h"
+#include "InventoryCursor.h"
 #include "Generic/BFsm.h"
 
 #include "GameFramework/PlayerController.h"
@@ -39,8 +40,9 @@ ABInventoryActor::ABInventoryActor()
 	// 카메라
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
-	Camera->SetRelativeLocation({ 0, 25, 70 });
+	Camera->SetRelativeLocation({ 0, 65, 300 });
 	Camera->SetRelativeRotation({ -80, -90, 0 });
+	Camera->FieldOfView = 25.0f;
 	
 	// 배경
 	BackgroundMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane"));
@@ -50,12 +52,11 @@ ABInventoryActor::ABInventoryActor()
 
 		static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Game/Assets/UI/Inventory/M_Inventory_Background.M_Inventory_Background'"));
 		BackgroundMesh->SetMaterial(0, Material.Object);
-
 	}
 	BackgroundMesh->SetupAttachment(Camera);
-	BackgroundMesh->SetRelativeLocation({ 150, 0, 0 });
+	BackgroundMesh->SetRelativeLocation({ 675.0f, 0, 0 });
 	BackgroundMesh->SetRelativeRotation({ 0, 90, 90 });
-	BackgroundMesh->SetRelativeScale3D({ 2.4, 2.4, 1.0 });
+	BackgroundMesh->SetRelativeScale3D({ 3.0, 3.0, 1.0 });
 
 	// 인벤토리 관리자
 	Inventory = CreateDefaultSubobject<UBInventoryManager>(TEXT("Inventory Manager"));
@@ -75,6 +76,22 @@ ABInventoryActor::ABInventoryActor()
 		Slot[i]->SetPosition({ x, y });
 		Slot[i]->SetRelativeLocation({ -22.5 + 5 * x, -12.5 + 5 * y, 0 });
 	}
+
+	// 커서
+	Cursor = CreateDefaultSubobject<UBInventoryCursor>(TEXT("Cursor"));
+	Cursor->SetupAttachment(RootComponent);
+	// 커서메시
+	Cursor->CursorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CursorMesh"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
+		Cursor->CursorMesh->SetStaticMesh(Mesh.Object);
+
+		static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Engine/EditorResources/FieldNodes/_Resources/M_FieldRadiusPreview.M_FieldRadiusPreview'"));
+		Cursor->CursorMesh->SetMaterial(0, Material.Object);
+	}
+	Cursor->CursorMesh->SetupAttachment(Cursor);
+	Cursor->CursorMesh->SetRelativeLocation({ 2.5, 2.5, 2 });
+	Cursor->CursorMesh->SetRelativeScale3D({ 0.05, 0.05, 0.05 });
 
 	// ______ FSM
 	FSMComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM"));
@@ -131,9 +148,19 @@ void ABInventoryActor::AddItem(const FName& _Name)
 
 void ABInventoryActor::Click()
 {
-	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag))
+	if (bIsDragMove)
 	{
-		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+		if (Inventory->IsEmptySlot(SelectSlot->GetPosition(), SelectItem))
+		{
+			Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetPosition());
+			FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+		}
+		else if (Inventory->CheckChange(SelectItem, SelectSlot->GetPosition()))
+		{
+			SelectItem = Inventory->ChangeItem(SelectItem, SelectSlot->GetPosition());
+			Inventory->MoveItem(SelectItem, SelectSlot->GetPosition());
+			Cursor->SetCursorSize(SelectItem->GetItemSize());
+		}
 	}
 }
 
@@ -147,17 +174,19 @@ void ABInventoryActor::DragStart()
 
 void ABInventoryActor::DragTrigger()
 {
-	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag))
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag) && !bIsDragMove)
 	{
 		bIsDragMove = 1;
 		Inventory->RaiseItem(SelectItem);
 		Inventory->MoveItem(SelectItem, SelectSlot->GetPosition());
+		Cursor->SetCursorRaise(true);
+		Cursor->SetCursorPosition(SelectSlot->GetPosition());
 	}
 }
 
 void ABInventoryActor::DragCancel()
 {
-	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag))
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag) && !bIsDragMove)
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 	}
@@ -171,6 +200,7 @@ void ABInventoryActor::Turn()
 	}
 
 	SelectItem->Turn();
+	Cursor->SetCursorSize(SelectItem->GetItemSize());
 }
 
 void ABInventoryActor::DefaultEnter()
@@ -198,12 +228,17 @@ void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 			{
 				SelectItem = Item;
 				Widget->ItemName = Item->GetItemName().ToString();
+				Cursor->SetCursorPosition(Item->GetItemPosition());
+				Cursor->SetCursorSize(Item->GetItemSize());
 			}
 			else
 			{
 				SelectItem = nullptr;
 				Widget->ItemName = TEXT("");
+				Cursor->SetCursorPosition(Slot->GetPosition());
+				Cursor->SetCursorSize({1, 1});
 			}
+
 		}
 	}
 	else if (SelectSlot)
@@ -251,6 +286,7 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 			if (bIsDragMove == 1)
 			{
 				Inventory->MoveItem(SelectItem, Slot->GetPosition());
+				Cursor->SetCursorPosition(Slot->GetPosition());
 			}
 		}
 	}
@@ -258,11 +294,11 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 
 void ABInventoryActor::DragExit()
 {
-	if (SelectItem && bIsDragMove)
+	if (bIsDragMove)
 	{
-		Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetPosition());
 		SelectSlot = nullptr;
 		SelectItem = nullptr;
 	}
 	bIsDragMove = 0;
+	Cursor->SetCursorRaise(false);
 }
