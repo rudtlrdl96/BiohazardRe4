@@ -146,7 +146,11 @@ void ABInventoryActor::DragStart()
 
 void ABInventoryActor::DragTrigger()
 {
-	bIsDragMove = 1;
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag))
+	{
+		bIsDragMove = 1;
+		SelectItem->SetRaise();
+	}
 }
 
 void ABInventoryActor::DragCancel()
@@ -181,7 +185,7 @@ void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 			if (UBInventoryItem* Item = Slot->GetItem())
 			{
 				SelectItem = Item;
-				Widget->ItemName = Item->Data.ItemName.ToString();
+				Widget->ItemName = Item->GetItemName().ToString();
 			}
 			else
 			{
@@ -208,6 +212,7 @@ void ABInventoryActor::DragEnter()
 	if (!SelectItem)
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+		return;
 	}
 	bIsDragMove = 0;
 }
@@ -226,7 +231,7 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 	if (GetWorld()->LineTraceSingleByObjectType(Res, MousePos, End, Params))
 	{
 		UBInventorySlot* Slot = Cast<UBInventorySlot>(Res.Component);
-		if (Slot)
+		if (Slot && SelectSlot != Slot)
 		{
 			SelectSlot = Slot;
 			// 일단 이동시켜놓고 있음.

@@ -6,6 +6,9 @@
 #include "Components/SceneComponent.h"
 #include "InventoryManager.generated.h"
 
+#define CaseLocation(X, Y) FVector(X * GridScale, Y * GridScale, 0) + GridStart
+#define CaseLocation(Position) FVector(Position.X * GridScale, Position.Y * GridScale, 0) + GridStart
+
 UCLASS(ClassGroup = "Inventory", meta = (BlueprintSpawnableComponent))
 class BIOHAZARDRE4_API UBInventoryManager : public USceneComponent
 {
@@ -44,12 +47,12 @@ public:
 	// 특정 크기의 아이템이 들어갈 공간이 존재한다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& _Scale);
 	// 입력된 크기와 위치에 아이템을 놓을 수 있다면 true를 반환한다
-	bool IsEmptySlot(const FIntPoint& _Location, const FIntPoint& _Scale);
+	bool IsEmptySlot(const FIntPoint& _Pos, const FIntPoint& _Scale);
 	// 아이템이 해당 슬롯에 놓을 수 있다면 true를 반환한다
-	bool IsEmptySlot(const FIntPoint& _Location, const UBInventoryItem* _Item);
+	bool IsEmptySlot(const FIntPoint& _Pos, const UBInventoryItem* _Item);
 	
-	void MoveItem(UBInventoryItem* _Item, const FIntPoint& _Location);
-	void MoveItemConfirm(UBInventoryItem* _Item, const FIntPoint& _Location);
+	void MoveItem(UBInventoryItem* _Item, const FIntPoint& _Pos);
+	void MoveItemConfirm(UBInventoryItem* _Item, const FIntPoint& _Pos);
 
 private:
 
@@ -57,7 +60,7 @@ private:
 	FIntPoint FindEmptySlot(const FIntPoint& _Scale);
 
 	// 아이템을 배치한다
-	void PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& _Location);
+	void PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& _Pos);
 
 	// 아이템의 기존 위치에 있는 슬롯을 정리한다
 	void ClearSlot(const FIntPoint& Location, const FIntPoint& Size);
