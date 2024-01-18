@@ -8,25 +8,40 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../Define/MonsterDefine.h"
+#include "BiohazardRe4.h"
 
 EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(OwnerComp.GetAIOwner()->GetPawn());
-
-	if (StateInterface != nullptr)
+	AAIController* OwnerAI = OwnerComp.GetAIOwner();
+	if (OwnerAI == nullptr)
 	{
-		StateInterface->SetCurrentState(MonsterState::Attack);
-		StateInterface->SetIsAttack(true);
-
-		OwnerComp.GetAIOwner()->GetCharacter()->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISATTACKING, StateInterface->IsAttacking());
-
-		UE_LOG(LogTemp, Log, TEXT("Monster : Attack To Player"));
+		LOG_FATAL(TEXT("OwnerAI == nullptr : UBTTask_AttackToPlayer::ExecuteTask - 15"));
+		return EBTNodeResult::Failed;
 	}
-	else
+
+	APawn* OwnerPawn = OwnerAI->GetPawn();
+	if (OwnerPawn == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Interface Casting Failed : UBTTask_AttackToPlayer::ExecuteTask - 18"));
+		LOG_FATAL(TEXT("OwnerPawn == nullptr : UBTTask_AttackToPlayer::ExecuteTask - 22"));
+		return EBTNodeResult::Failed;
 	}
+
+
+	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(OwnerPawn);
+	if (StateInterface == nullptr)
+	{
+		LOG_FATAL(TEXT("Interface Casting Failed : UBTTask_AttackToPlayer::ExecuteTask - 30"));
+		return EBTNodeResult::Failed;
+	}
+
+	StateInterface->SetCurrentState(MonsterState::Attack);
+	StateInterface->SetIsAttack(true);
+
+	OwnerComp.GetAIOwner()->GetCharacter()->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISATTACKING, StateInterface->IsAttacking());
+	
+	LOG_MSG(TEXT("Monster Attack To Player"));
+
 
 	return EBTNodeResult::Succeeded;
 }

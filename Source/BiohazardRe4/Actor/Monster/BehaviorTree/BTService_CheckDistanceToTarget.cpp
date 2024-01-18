@@ -10,11 +10,12 @@
 #include "GameFramework/Controller.h"
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
+#include "BiohazardRe4.h"
 
 UBTService_CheckDistanceToTarget::UBTService_CheckDistanceToTarget()
 {
 	NodeName = TEXT("CheckDistanceToTarget");
-	Interval = 1.0f;
+	Interval = 0.25f;
 }
 
 void UBTService_CheckDistanceToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -24,13 +25,15 @@ void UBTService_CheckDistanceToTarget::TickNode(UBehaviorTreeComponent& OwnerCom
 	APawn* MyPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (MyPawn == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("MyPawn == nullptr : UBTService_CheckDistanceToTarget::TickNode - 27"));
+		LOG_FATAL(TEXT("MyPawn == nullptr : UBTService_CheckDistanceToTarget::TickNode - 26"));
+		return;
 	}
 
 	UWorld* CurWorld = MyPawn->GetWorld();
 	if(CurWorld == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("CurWorld == nullptr : UBTService_CheckDistanceToTarget::TickNode - 36"));
+		LOG_FATAL(TEXT("CurWorld == nullptr : UBTService_CheckDistanceToTarget::TickNode - 32"));
+		return;
 	}
 
 	FVector MyLocation = MyPawn->GetActorLocation();
@@ -50,12 +53,12 @@ void UBTService_CheckDistanceToTarget::TickNode(UBehaviorTreeComponent& OwnerCom
 			if (Pawn != nullptr && Pawn->GetController()->IsPlayerController() == true)
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, true);	
-				UE_LOG(LogTemp, Log, TEXT("Monster : Player is in AttackRange of ChainsawMan"));
+				LOG_MSG(TEXT("Monster : Player is in AttackRange of ChainsawMan"));
 				return;
 			}
 		}
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
-	UE_LOG(LogTemp, Log, TEXT("Monster : Player is out AttackRange of ChainsawMan"));
+	LOG_MSG(TEXT("Monster : Player is out AttackRange of ChainsawMan"));
 }

@@ -6,19 +6,18 @@
 #include "AIController.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BiohazardRe4.h"
 
 void UBTTask_ChainsawManWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(OwnerComp.GetAIOwner()->GetPawn());
+	if (StateInterface == nullptr)
+	{
+		LOG_FATAL(TEXT("Monster : Interface casting failed : UBTTask_ChainsawManWait::TickTask - 15"));
+		return;
+	}
 
-	if (StateInterface != nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Monster : Chainsaw Man State Changed To Idle"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Monster : Interface casting failed : UBTTask_ChainsawManWait::TickTask"));
-	}
+	LOG_MSG(TEXT("Monster : Chainsaw Man State Changed To Idle"));
 }
