@@ -27,7 +27,7 @@ struct FBItemData : public FTableRowBase
 	FIntPoint ItemSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
-	int32 MaxReserves;	// 최대 몇개까지 보유할 수 있는지
+	int32 MaxCount;	// 최대 몇개까지 보유할 수 있는지
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
 	UStaticMesh* Mesh;

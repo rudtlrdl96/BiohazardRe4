@@ -92,13 +92,13 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Scale)
 	return false;
 }
 
-bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Location, const FIntPoint& _Scale)
+bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Pos, const FIntPoint& _Scale)
 {
 	for (int y = 0; y < _Scale.Y; y++)
 	{
 		for (int x = 0; x < _Scale.X; x++)
 		{
-			if (Slot[(_Location.Y + y) * CaseSize.X + _Location.X + x]->HasItem())
+			if (Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->HasItem())
 			{
 				return false;
 			}
@@ -107,13 +107,13 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Location, const FIntPoint
 	return true;
 }
 
-bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Location, const UBInventoryItem* _Item)
+bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Pos, const UBInventoryItem* _Item)
 {
-	for (int y = 0; y < _Item->Data.ItemSize.Y; y++)
+	for (int y = 0; y < _Item->GetItemSize().Y; y++)
 	{
-		for (int x = 0; x < _Item->Data.ItemSize.X; x++)
+		for (int x = 0; x < _Item->GetItemSize().X; x++)
 		{
-			if (Slot[(_Location.Y + y) * CaseSize.X + _Location.X + x]->HasItem() && Slot[(_Location.Y + y) * CaseSize.X + _Location.X + x]->GetItem() != _Item)
+			if (Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->HasItem() && Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->GetItem() != _Item)
 			{
 				return false;
 			}
@@ -122,29 +122,26 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Location, const UBInvento
 	return true;
 }
 
-void UBInventoryManager::MoveItem(UBInventoryItem* _Item, const FIntPoint& _Location)
+void UBInventoryManager::MoveItem(UBInventoryItem* _Item, const FIntPoint& _Pos)
 {
-	_Item->bIsMove = 1;
-	_Item->TargetLocation = FVector(_Location.X * GridScale, _Location.Y * GridScale, 0) + GridStart;
+	_Item->SetMove(CaseLocation(_Pos));
 }
 
-void UBInventoryManager::MoveItemConfirm(UBInventoryItem* _Item, const FIntPoint& _Location)
+void UBInventoryManager::MoveItemConfirm(UBInventoryItem* _Item, const FIntPoint& _Pos)
 {
 	// 드래그를 때서 이동이 결정된 상황에서 실행
 	// 아이템을 놓을 장소에 아이템이 한개 있다면 커서에 있는 아이템과 놓인 아이템을 교체한다
 	// 
 
-	_Item->bIsMove = 0;
-
-	if (IsEmptySlot(_Location, _Item))
+	if (IsEmptySlot(_Pos, _Item))
 	{
-		_Item->SetRelativeLocation(FVector(_Location.X * GridScale, _Location.Y * GridScale, 0) + GridStart);
-		ClearSlot(_Item->Location, _Item->Data.ItemSize);
-		PlaceItemSlot(_Item, _Location);
+		_Item->SetPut(CaseLocation(_Pos));
+		ClearSlot(_Item->GetItemPosition(), _Item->GetItemSize());
+		PlaceItemSlot(_Item, _Pos);
 	}
 	else
 	{
-		_Item->SetRelativeLocation(FVector(_Item->Location.X * GridScale, _Item->Location.Y * GridScale, 0) + GridStart);
+		_Item->SetPut(CaseLocation(_Item->GetItemPosition()));
 	}
 }
 
@@ -182,25 +179,25 @@ FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& _Scale)
 	return FIntPoint::NoneValue;
 }
 
-void UBInventoryManager::PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& _Location)
+void UBInventoryManager::PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& _Pos)
 {
-	for (int y = 0; y < _Item->Data.ItemSize.Y; y++)
+	for (int y = 0; y < _Item->GetItemSize().Y; y++)
 	{
-		for (int x = 0; x < _Item->Data.ItemSize.X; x++)
+		for (int x = 0; x < _Item->GetItemSize().X; x++)
 		{
-			Slot[(_Location.Y + y) * CaseSize.X + _Location.X + x]->SetItem(_Item);
+			Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->SetItem(_Item);
 		}
 	}
-	_Item->Location = _Location;
+	_Item->SetItemPosition(_Pos);
 }
 
-void UBInventoryManager::ClearSlot(const FIntPoint& Location, const FIntPoint& Size)
+void UBInventoryManager::ClearSlot(const FIntPoint& _Pos, const FIntPoint& Size)
 {
 	for (int y = 0; y < Size.Y; y++)
 	{
 		for (int x = 0; x < Size.X; x++)
 		{
-			Slot[(Location.Y + y) * CaseSize.X + Location.X + x]->SetItem(nullptr);
+			Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->SetItem(nullptr);
 		}
 	}
 }

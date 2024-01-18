@@ -7,6 +7,7 @@
 #include "ItemData.h"
 #include "InventoryItem.generated.h"
 
+#define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BIOHAZARDRE4_API UBInventoryItem : public USceneComponent
@@ -17,30 +18,58 @@ public:
 	// Sets default values for this component's properties
 	UBInventoryItem();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	// 아이템 데이터를 지정한다
-	UFUNCTION(BlueprintCallable)
 	void SetItemData(const FBItemData& _Data);
+	// 아이템을 이동시키기 전에 들어올린다
+	void SetRaise();
+	// 지정 Locataion으로 아이템을 이동시킨다
+	void SetMove(const FVector& _Location);
+	// 아이템 이동이 끝나 제자리에 놓는다
+	void SetPut(const FVector& _Location);
 
-	uint8 bIsMove : 1;
+	inline void SetItemPosition(const FIntPoint& _Pos) { ItemPosition = _Pos; }
+	inline const FBItemData& GetData() const { return Data; }
+	inline const FIntPoint& GetItemSize() const { return Data.ItemSize; }
+	inline const FIntPoint& GetItemPosition() const { return ItemPosition; }
+	inline const FName& GetItemName() const { return Data.ItemName; }
+
+	UPROPERTY(EditAnywhere)
+	float MoveSpeed = 10.0f;
+	UPROPERTY(EditAnywhere)
+	float RaiseSpeed = 5.0f;
+
+private:
+
+	enum class ItemState
+	{
+		Wait,
+		Move,
+		Put
+	};
+
+	class UBFsm* FSMComp;
+
+	FVector StartLocation;
 	FVector TargetLocation;
+	float MoveAlpha = 0;
+	float RaiseAlpha = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntPoint Location;	// 아이템의 위치 (인벤토리상 위치)
+	UPROPERTY()
+	FIntPoint ItemPosition;	// 아이템의 위치 (인벤토리상 위치)
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	int32 Count;		// 아이템의 개수
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY()
 	FBItemData Data;	// 아이템 데이터
+
+	void MoveEnter();
+	void MoveUpdate(float DeltaTime);
+
+	void PutEnter();
+	void PutUpdate(float DeltaTime);
+
 };
