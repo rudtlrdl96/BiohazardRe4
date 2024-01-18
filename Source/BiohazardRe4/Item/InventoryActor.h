@@ -28,6 +28,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddItem(const FName& _Name);
 
+	UFUNCTION(BlueprintCallable)
+	void OpenInventory();
+
+	UFUNCTION(BlueprintCallable)
+	void Drag();
+
+	UFUNCTION(BlueprintCallable)
+	void ReverseDrag();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,6 +66,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UBInventoryCursor* Cursor;			// Ä¿¼­
+	
+	// _________________Animation
+	
+	class UAnimSequence* OpenAnim;
+	class UAnimSequence* DragAnim;
+	class UAnimSequence* ReverseDragAnim;
 
 	// __________________Input
 

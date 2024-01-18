@@ -34,6 +34,14 @@ ABInventoryActor::ABInventoryActor()
 
 		static ConstructorHelpers::FObjectFinder<UMaterial> Material1(TEXT("/Script/Engine.Material'/Game/UI/Inventory/Mesh/Nuno_Mat.Nuno_Mat'"));
 		CaseMesh->SetMaterial(1, Material1.Object);
+
+		static ConstructorHelpers::FObjectFinder<UAnimSequence> Anim0(TEXT("/Script/Engine.AnimSequence'/Game/Assets/UI/Inventory/Animation/AS_CaseOpen.AS_CaseOpen'"));
+		OpenAnim = Anim0.Object;
+		static ConstructorHelpers::FObjectFinder<UAnimSequence> Anim1(TEXT("/Script/Engine.AnimSequence'/Game/Assets/UI/Inventory/Animation/AS_CaseDrag.AS_CaseDrag'"));
+		DragAnim = Anim1.Object;
+		static ConstructorHelpers::FObjectFinder<UAnimSequence> Anim2(TEXT("/Script/Engine.AnimSequence'/Game/Assets/UI/Inventory/Animation/AS_CaseReverseDrag.AS_CaseReverseDrag'"));
+		ReverseDragAnim = Anim2.Object;
+
 	}
 	RootComponent = CaseMesh;
 
@@ -144,6 +152,21 @@ void ABInventoryActor::Tick(float DeltaTime)
 void ABInventoryActor::AddItem(const FName& _Name)
 {
 	Inventory->AddItem(_Name);
+}
+
+void ABInventoryActor::OpenInventory()
+{
+	CaseMesh->PlayAnimation(OpenAnim, false);
+}
+
+void ABInventoryActor::Drag()
+{
+	CaseMesh->PlayAnimation(DragAnim, false);
+}
+
+void ABInventoryActor::ReverseDrag()
+{
+	CaseMesh->PlayAnimation(ReverseDragAnim, false);
 }
 
 void ABInventoryActor::Click()
