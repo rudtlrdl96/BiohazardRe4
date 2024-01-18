@@ -98,7 +98,7 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Pos, const FIntPoint& _Sc
 	{
 		for (int x = 0; x < _Scale.X; x++)
 		{
-			if (Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->HasItem())
+			if (false == CheckSlot(_Pos + FIntPoint(x, y)))
 			{
 				return false;
 			}
@@ -113,13 +113,19 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& _Pos, const UBInventoryIte
 	{
 		for (int x = 0; x < _Item->GetItemSize().X; x++)
 		{
-			if (Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->HasItem() && Slot[(_Pos.Y + y) * CaseSize.X + _Pos.X + x]->GetItem() != _Item)
+			if (false == CheckSlot(_Pos + FIntPoint(x, y), _Item))
 			{
 				return false;
 			}
 		}
 	}
 	return true;
+}
+
+void UBInventoryManager::RaiseItem(UBInventoryItem* _Item)
+{
+	ClearSlot(_Item->GetItemPosition(), _Item->GetItemSize());
+	_Item->SetRaise();
 }
 
 void UBInventoryManager::MoveItem(UBInventoryItem* _Item, const FIntPoint& _Pos)
@@ -133,15 +139,15 @@ void UBInventoryManager::MoveItemConfirm(UBInventoryItem* _Item, const FIntPoint
 	// 아이템을 놓을 장소에 아이템이 한개 있다면 커서에 있는 아이템과 놓인 아이템을 교체한다
 	// 
 
-	if (IsEmptySlot(_Pos, _Item))
+	if (IsEmptySlot(_Pos, _Item->GetItemSize()))
 	{
 		_Item->SetPut(CaseLocation(_Pos));
-		ClearSlot(_Item->GetItemPosition(), _Item->GetItemSize());
 		PlaceItemSlot(_Item, _Pos);
 	}
 	else
 	{
 		_Item->SetPut(CaseLocation(_Item->GetItemPosition()));
+		PlaceItemSlot(_Item, _Item->GetItemPosition());
 	}
 }
 
@@ -189,6 +195,23 @@ void UBInventoryManager::PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& 
 		}
 	}
 	_Item->SetItemPosition(_Pos);
+}
+
+bool UBInventoryManager::CheckSlot(const FIntPoint& Pos)
+{
+	if (CaseSize.X <= Pos.X) { return false; }
+	if (CaseSize.Y <= Pos.Y) { return false; }
+
+	return false == Slot[Pos.Y * CaseSize.X + Pos.X]->HasItem();
+}
+
+bool UBInventoryManager::CheckSlot(const FIntPoint& Pos, const UBInventoryItem* IgnoreItem)
+{
+	if (CaseSize.X <= Pos.X) { return false; }
+	if (CaseSize.Y <= Pos.Y) { return false; }
+
+	UBInventoryItem* Item = Slot[Pos.Y * CaseSize.X + Pos.X]->GetItem();
+	return Item == nullptr || Item == IgnoreItem;
 }
 
 void UBInventoryManager::ClearSlot(const FIntPoint& _Pos, const FIntPoint& Size)

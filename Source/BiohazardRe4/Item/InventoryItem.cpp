@@ -9,7 +9,7 @@ UBInventoryItem::UBInventoryItem()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(this);
@@ -37,6 +37,7 @@ void UBInventoryItem::SetItemData(const FBItemData& _Data)
 	Data = _Data;
 	Mesh->RegisterComponent();
 	Mesh->SetStaticMesh(_Data.Mesh);
+	MeshLocation = _Data.Location;
 	Mesh->SetRelativeLocation(_Data.Location);
 	Mesh->SetRelativeRotation(_Data.Rotation);
 	Mesh->SetRelativeScale3D(_Data.Scale);
@@ -63,6 +64,44 @@ void UBInventoryItem::SetPut(const FVector& _Location)
 	FSMComp->ChangeState(TO_KEY(ItemState::Put));
 }
 
+void UBInventoryItem::Turn()
+{
+	bIsTurn = ~bIsTurn;
+	bIsCurrentTurn = 1;
+	TurnAlpha = 0;
+	if (bIsTurn)
+	{
+		MeshStartLocation = Data.Location;
+		MeshStartRotate = Data.Rotation;
+		MeshTargetLocation = Data.TurnLocation;
+		MeshTargetRotate = Data.TurnRotation;
+	}
+	else
+	{
+		MeshStartLocation = Data.TurnLocation;
+		MeshStartRotate = Data.TurnRotation;
+		MeshTargetLocation = Data.Location;
+		MeshTargetRotate = Data.Rotation;
+	}
+}
+
+void UBInventoryItem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bIsCurrentTurn)
+	{
+		TurnAlpha += DeltaTime * TurnSpeed;
+		MeshLocation = FMath::Lerp(MeshStartLocation, MeshTargetLocation, TurnAlpha);
+		Mesh->SetRelativeRotation(FMath::LerpRange(MeshStartRotate, MeshTargetRotate, TurnAlpha));
+		if (1 < TurnAlpha)
+		{
+			Mesh->SetRelativeRotation(MeshTargetRotate);
+			bIsCurrentTurn = 0;
+		}
+	}
+}
+
 void UBInventoryItem::MoveEnter()
 {
 	MoveAlpha = 0;
@@ -75,7 +114,7 @@ void UBInventoryItem::MoveUpdate(float DeltaTime)
 	RaiseAlpha = FMath::Min(1.0f, RaiseAlpha + DeltaTime * RaiseSpeed);
 	
 	SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, MoveAlpha));
-	Mesh->SetRelativeLocation(FMath::Lerp<FVector>(Data.Location, Data.Location + FVector(0, 0, 5), RaiseAlpha));
+	Mesh->SetRelativeLocation(FMath::Lerp<FVector>(MeshLocation, MeshLocation + FVector(0, 0, 5), RaiseAlpha));
 }
 
 void UBInventoryItem::PutEnter()
@@ -90,12 +129,12 @@ void UBInventoryItem::PutUpdate(float DeltaTime)
 	RaiseAlpha = FMath::Min(1.0f, RaiseAlpha + DeltaTime * RaiseSpeed);
 
 	SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, MoveAlpha));
-	Mesh->SetRelativeLocation(FMath::Lerp<FVector>(Data.Location + FVector(0, 0, 5), Data.Location, RaiseAlpha));
+	Mesh->SetRelativeLocation(FMath::Lerp<FVector>(MeshLocation + FVector(0, 0, 5), MeshLocation, RaiseAlpha));
 
 	if (.99f <= RaiseAlpha)
 	{
 		SetRelativeLocation(TargetLocation);
-		Mesh->SetRelativeLocation(Data.Location);
+		Mesh->SetRelativeLocation(MeshLocation);
 		FSMComp->ChangeState(TO_KEY(ItemState::Wait));
 	}
 }

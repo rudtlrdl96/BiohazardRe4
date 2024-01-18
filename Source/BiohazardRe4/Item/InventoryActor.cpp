@@ -72,7 +72,7 @@ ABInventoryActor::ABInventoryActor()
 		Slot[i]->SetCollisionProfileName(TEXT("UI"));
 		int x = i % 10;
 		int y = i / 10;
-		Slot[i]->SetLocation({ x, y });
+		Slot[i]->SetPosition({ x, y });
 		Slot[i]->SetRelativeLocation({ -22.5 + 5 * x, -12.5 + 5 * y, 0 });
 	}
 
@@ -110,6 +110,7 @@ void ABInventoryActor::BeginPlay()
 	Input->BindAction(DragAction, ETriggerEvent::Started, this, &ABInventoryActor::DragStart);
 	Input->BindAction(DragAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DragTrigger);
 	Input->BindAction(DragAction, ETriggerEvent::Canceled, this, &ABInventoryActor::DragCancel);
+	Input->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Turn);
 	Input->BindAction(DebugAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DebugAddPistol);
 
 	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
@@ -149,7 +150,8 @@ void ABInventoryActor::DragTrigger()
 	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag))
 	{
 		bIsDragMove = 1;
-		SelectItem->SetRaise();
+		Inventory->RaiseItem(SelectItem);
+		Inventory->MoveItem(SelectItem, SelectSlot->GetPosition());
 	}
 }
 
@@ -159,6 +161,16 @@ void ABInventoryActor::DragCancel()
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 	}
+}
+
+void ABInventoryActor::Turn()
+{
+	if (!bIsDragMove)
+	{
+		return;
+	}
+
+	SelectItem->Turn();
 }
 
 void ABInventoryActor::DefaultEnter()
@@ -238,7 +250,7 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 			// 다른 아이템을 덮어씌우는 문제 있음
 			if (bIsDragMove == 1)
 			{
-				Inventory->MoveItem(SelectItem, Slot->GetLocation());
+				Inventory->MoveItem(SelectItem, Slot->GetPosition());
 			}
 		}
 	}
@@ -248,7 +260,7 @@ void ABInventoryActor::DragExit()
 {
 	if (SelectItem && bIsDragMove)
 	{
-		Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetLocation());
+		Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetPosition());
 		SelectSlot = nullptr;
 		SelectItem = nullptr;
 	}

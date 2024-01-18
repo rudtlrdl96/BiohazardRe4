@@ -30,13 +30,13 @@ public:
 	{
 		return Item;
 	}
-	void SetLocation(const FIntPoint& _Location)
+	void SetPosition(const FIntPoint& _Position)
 	{
-		Location = _Location;
+		Position = _Position;
 	}
-	FIntPoint GetLocation()
+	FIntPoint GetPosition()
 	{
-		return Location;
+		return Position;
 	}
 
 	// 해당 칸에 아이템이 있는가 여부를 반환
@@ -49,6 +49,6 @@ private:
 	class UBInventoryItem* Item;	// 아이템 포인터
 	
 	UPROPERTY()
-	FIntPoint Location;
+	FIntPoint Position;
 
 };

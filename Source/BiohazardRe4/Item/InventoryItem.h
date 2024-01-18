@@ -27,16 +27,23 @@ public:
 	// 아이템 이동이 끝나 제자리에 놓는다
 	void SetPut(const FVector& _Location);
 
+	void Turn();
+	inline uint8 GetIsTurn()
+	{
+		return bIsTurn;
+	}
+
 	inline void SetItemPosition(const FIntPoint& _Pos) { ItemPosition = _Pos; }
 	inline const FBItemData& GetData() const { return Data; }
-	inline const FIntPoint& GetItemSize() const { return Data.ItemSize; }
+	inline const FIntPoint GetItemSize() const { return bIsTurn ? FIntPoint(Data.ItemSize.Y, Data.ItemSize.X) : Data.ItemSize; }
 	inline const FIntPoint& GetItemPosition() const { return ItemPosition; }
 	inline const FName& GetItemName() const { return Data.ItemName; }
 
-	UPROPERTY(EditAnywhere)
-	float MoveSpeed = 10.0f;
-	UPROPERTY(EditAnywhere)
-	float RaiseSpeed = 5.0f;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	const float MoveSpeed = 10.0f;
+	const float RaiseSpeed = 5.0f;
+	const float TurnSpeed = 5.0f;
 
 private:
 
@@ -51,12 +58,19 @@ private:
 
 	FVector StartLocation;
 	FVector TargetLocation;
+	FVector MeshLocation;
+	FVector MeshStartLocation;
+	FVector MeshTargetLocation;
+	FRotator MeshStartRotate;
+	FRotator MeshTargetRotate;
 	float MoveAlpha = 0;
 	float RaiseAlpha = 0;
+	float TurnAlpha = 0;
 
 	UPROPERTY()
 	FIntPoint ItemPosition;	// 아이템의 위치 (인벤토리상 위치)
-
+	uint8 bIsTurn : 1;		// 아이템 회전 여부
+	uint8 bIsCurrentTurn : 1;		// 아이템 회전 여부
 	UPROPERTY()
 	int32 Count;		// 아이템의 개수
 

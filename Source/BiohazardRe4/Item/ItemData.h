@@ -40,4 +40,10 @@ struct FBItemData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
 	FVector Scale;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
+	FVector TurnLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
+	FRotator TurnRotation;
 };

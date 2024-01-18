@@ -6,7 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "InventoryManager.generated.h"
 
-#define CaseLocation(X, Y) FVector(X * GridScale, Y * GridScale, 0) + GridStart
 #define CaseLocation(Position) FVector(Position.X * GridScale, Position.Y * GridScale, 0) + GridStart
 
 UCLASS(ClassGroup = "Inventory", meta = (BlueprintSpawnableComponent))
@@ -51,7 +50,11 @@ public:
 	// 아이템이 해당 슬롯에 놓을 수 있다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& _Pos, const UBInventoryItem* _Item);
 	
+	// 아이템을 들어올린다
+	void RaiseItem(UBInventoryItem* _Item);
+	// 아이템을 이동
 	void MoveItem(UBInventoryItem* _Item, const FIntPoint& _Pos);
+	// 아이템 이동을 확정짓는다
 	void MoveItemConfirm(UBInventoryItem* _Item, const FIntPoint& _Pos);
 
 private:
@@ -62,6 +65,10 @@ private:
 	// 아이템을 배치한다
 	void PlaceItemSlot(UBInventoryItem* _Item, const FIntPoint& _Pos);
 
+	// 해당 슬롯에 아이템이 있거나 범위 밖이면 false를 리턴한다 (유효한 슬롯일 시 true)
+	bool CheckSlot(const FIntPoint& Pos);
+	// 해당 슬롯에 아이템이 있거나 범위 밖이면 false를 리턴한다, IgnoreItem이 곂친 경우에는 무시한다
+	bool CheckSlot(const FIntPoint& Pos, const UBInventoryItem* IgnoreItem);
 	// 아이템의 기존 위치에 있는 슬롯을 정리한다
 	void ClearSlot(const FIntPoint& Location, const FIntPoint& Size);
 };

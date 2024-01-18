@@ -66,6 +66,9 @@ public:
 	class UInputAction* DragAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* TurnAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* DebugAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -92,6 +95,7 @@ private:
 	void DragStart();
 	void DragTrigger();
 	void DragCancel();
+	void Turn();
 
 	void DefaultEnter();
 	void DefaultUpdate(float _DeltaTime);
