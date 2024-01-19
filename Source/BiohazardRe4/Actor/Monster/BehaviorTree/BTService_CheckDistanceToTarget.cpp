@@ -54,6 +54,13 @@ void UBTService_CheckDistanceToTarget::TickNode(UBehaviorTreeComponent& OwnerCom
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, true);	
 				LOG_MSG(TEXT("Monster : Player is in AttackRange of ChainsawMan"));
+
+#if ENABLE_DRAW_DEBUG
+				DrawDebugSphere(CurWorld, MyLocation, SearchRadius, 16, FColor::Green, false, 0.25f);
+				DrawDebugPoint(CurWorld, Pawn->GetActorLocation(), 10.0f, FColor::Red, false, 0.25f);
+				DrawDebugLine(CurWorld, MyPawn->GetActorLocation(), Pawn->GetActorLocation(), FColor::Blue, false, 0.25f);
+#endif
+
 				return;
 			}
 		}
