@@ -34,9 +34,11 @@ public:
 	}
 
 	inline void SetItemPosition(const FIntPoint& _Pos) { ItemPosition = _Pos; }
+	inline void SetIsSubSlot(bool IsSubSlot) { bIsSubSlot = IsSubSlot; }
 	inline const FBItemData& GetData() const { return Data; }
 	inline const FIntPoint GetItemSize() const { return bIsTurn ? FIntPoint(Data.ItemSize.Y, Data.ItemSize.X) : Data.ItemSize; }
 	inline const FIntPoint& GetItemPosition() const { return ItemPosition; }
+	inline bool IsSubSlot() const { return bIsSubSlot; }
 	inline const FName& GetItemName() const { return Data.ItemName; }
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -71,6 +73,7 @@ private:
 	FIntPoint ItemPosition;	// 아이템의 위치 (인벤토리상 위치)
 	uint8 bIsTurn : 1;		// 아이템 회전 여부
 	uint8 bIsCurrentTurn : 1;		// 아이템 회전 여부
+	uint8 bIsSubSlot : 1;		// 아이템 회전 여부
 	UPROPERTY()
 	int32 Count;		// 아이템의 개수
 

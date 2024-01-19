@@ -17,7 +17,8 @@ public:
 	UBInventoryCursor();
 
 	void SetCursorSize(const FIntPoint& Size);
-	void SetCursorPosition(const FIntPoint& Pos);
+	void SetCursorPosition(class UBInventorySlot* Slot);
+	void SetCursorPosition(const FIntPoint& Pos, bool IsSubSlot = false);
 	void SetCursorRaise(bool Raise);
 
 protected:

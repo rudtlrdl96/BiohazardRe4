@@ -26,24 +26,17 @@ ABInventoryActor::ABInventoryActor()
 	// 인벤토리 가방 메쉬
 	CaseMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Case"));
 	{
-		static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh(TEXT("/Script/Engine.SkeletalMesh'/Game/UI/Inventory/Mesh/sm77_600.sm77_600'"));
+		static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/UI/Inventory/Mesh/SK_Case.SK_Case'"));
 		CaseMesh->SetSkeletalMesh(Mesh.Object);
-
-		static ConstructorHelpers::FObjectFinder<UMaterial> Material0(TEXT("/Script/Engine.Material'/Game/UI/Inventory/Mesh/Alumi_Mat.Alumi_Mat'"));
-		CaseMesh->SetMaterial(0, Material0.Object);
-
-		static ConstructorHelpers::FObjectFinder<UMaterial> Material1(TEXT("/Script/Engine.Material'/Game/UI/Inventory/Mesh/Nuno_Mat.Nuno_Mat'"));
-		CaseMesh->SetMaterial(1, Material1.Object);
-
-		static ConstructorHelpers::FObjectFinder<UAnimSequence> Anim0(TEXT("/Script/Engine.AnimSequence'/Game/Assets/UI/Inventory/Animation/AS_CaseOpen.AS_CaseOpen'"));
-		OpenAnim = Anim0.Object;
-		static ConstructorHelpers::FObjectFinder<UAnimSequence> Anim1(TEXT("/Script/Engine.AnimSequence'/Game/Assets/UI/Inventory/Animation/AS_CaseDrag.AS_CaseDrag'"));
-		DragAnim = Anim1.Object;
-		static ConstructorHelpers::FObjectFinder<UAnimSequence> Anim2(TEXT("/Script/Engine.AnimSequence'/Game/Assets/UI/Inventory/Animation/AS_CaseReverseDrag.AS_CaseReverseDrag'"));
-		ReverseDragAnim = Anim2.Object;
-
 	}
 	RootComponent = CaseMesh;
+
+	SubCaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SubCase"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/Inventory/Mesh/SM_SubCase.SM_SubCase'"));
+		SubCaseMesh->SetStaticMesh(Mesh.Object);
+	}
+	SubCaseMesh->SetupAttachment(RootComponent);
 
 	// 카메라
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -71,7 +64,7 @@ ABInventoryActor::ABInventoryActor()
 	Inventory->SetupAttachment(CaseMesh);
 
 	// 인벤토리 슬롯
-	auto& Slot = Inventory->Slot;
+	auto& Slot = Inventory->MainSlot;
 	Slot.SetNum(10 * 7);
 	for (int i = 0; i < 10 * 7; i++)
 	{
@@ -83,6 +76,21 @@ ABInventoryActor::ABInventoryActor()
 		int y = i / 10;
 		Slot[i]->SetPosition({ x, y });
 		Slot[i]->SetRelativeLocation({ -22.5 + 5 * x, -12.5 + 5 * y, 0 });
+	}
+
+	auto& SubSlot = Inventory->SubSlot;
+	SubSlot.SetNum(5 * 9);
+	for (int i = 0; i < 5 * 9; i++)
+	{
+		SubSlot[i] = CreateDefaultSubobject<UBInventorySlot>(FName(TEXT("SubSlot") + FString::FromInt(i)));
+		SubSlot[i]->SetupAttachment(SubCaseMesh);
+		SubSlot[i]->SetBoxExtent({ 2.5, 2.5, 0.1 });
+		SubSlot[i]->SetCollisionProfileName(TEXT("UI"));
+		int x = i % 5;
+		int y = i / 5;
+		SubSlot[i]->SetPosition({ x, y });
+		SubSlot[i]->SetRelativeLocation({ -10.0 + 5 * x, -20.0 + 5 * y, 2 });
+		SubSlot[i]->SetSubSlot();
 	}
 
 	// 커서
@@ -140,6 +148,12 @@ void ABInventoryActor::BeginPlay()
 
 	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
+
+	FOnTimelineFloatStatic F;
+	F.BindLambda([this](float Value) {
+		SubCaseMesh->SetRelativeLocation(FMath::Lerp(FVector(100, 7.4, -2), FVector(45, 7.4, -2), Value));
+		});
+	Timeline.AddInterpFloat(CurveFloat, F);
 }
 
 // Called every frame
@@ -147,6 +161,7 @@ void ABInventoryActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Timeline.TickTimeline(DeltaTime);
 }
 
 void ABInventoryActor::AddItem(const FName& _Name)
@@ -156,32 +171,31 @@ void ABInventoryActor::AddItem(const FName& _Name)
 
 void ABInventoryActor::OpenInventory()
 {
-	CaseMesh->PlayAnimation(OpenAnim, false);
 }
 
 void ABInventoryActor::Drag()
 {
-	CaseMesh->PlayAnimation(DragAnim, false);
+	Timeline.Play();
 }
 
 void ABInventoryActor::ReverseDrag()
 {
-	CaseMesh->PlayAnimation(ReverseDragAnim, false);
+	Timeline.Reverse();
 }
 
 void ABInventoryActor::Click()
 {
 	if (bIsDragMove)
 	{
-		if (Inventory->IsEmptySlot(SelectSlot->GetPosition(), SelectItem))
+		if (Inventory->IsEmptySlot(SelectSlot, SelectItem))
 		{
-			Inventory->MoveItemConfirm(SelectItem, SelectSlot->GetPosition());
+			Inventory->MoveItemConfirm(SelectItem, SelectSlot);
 			FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 		}
-		else if (Inventory->CheckChange(SelectItem, SelectSlot->GetPosition()))
+		else if (Inventory->CheckChange(SelectItem, SelectSlot))
 		{
-			SelectItem = Inventory->ChangeItem(SelectItem, SelectSlot->GetPosition());
-			Inventory->MoveItem(SelectItem, SelectSlot->GetPosition());
+			SelectItem = Inventory->ChangeItem(SelectItem, SelectSlot);
+			Inventory->MoveItem(SelectItem, SelectSlot);
 			Cursor->SetCursorSize(SelectItem->GetItemSize());
 		}
 	}
@@ -201,9 +215,9 @@ void ABInventoryActor::DragTrigger()
 	{
 		bIsDragMove = 1;
 		Inventory->RaiseItem(SelectItem);
-		Inventory->MoveItem(SelectItem, SelectSlot->GetPosition());
+		Inventory->MoveItem(SelectItem, SelectSlot);
 		Cursor->SetCursorRaise(true);
-		Cursor->SetCursorPosition(SelectSlot->GetPosition());
+		Cursor->SetCursorPosition(SelectSlot);
 	}
 }
 
@@ -247,18 +261,18 @@ void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 		if (Slot && Slot != SelectSlot)
 		{
 			SelectSlot = Slot;
+			Cursor->SetCursorPosition(SelectSlot);
+
 			if (UBInventoryItem* Item = Slot->GetItem())
 			{
 				SelectItem = Item;
 				Widget->ItemName = Item->GetItemName().ToString();
-				Cursor->SetCursorPosition(Item->GetItemPosition());
 				Cursor->SetCursorSize(Item->GetItemSize());
 			}
 			else
 			{
 				SelectItem = nullptr;
 				Widget->ItemName = TEXT("");
-				Cursor->SetCursorPosition(Slot->GetPosition());
 				Cursor->SetCursorSize({1, 1});
 			}
 
@@ -308,8 +322,8 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 			// 다른 아이템을 덮어씌우는 문제 있음
 			if (bIsDragMove == 1)
 			{
-				Inventory->MoveItem(SelectItem, Slot->GetPosition());
-				Cursor->SetCursorPosition(Slot->GetPosition());
+				Inventory->MoveItem(SelectItem, Slot);
+				Cursor->SetCursorPosition(Slot->GetPosition(), Slot->IsSubSlot());
 			}
 		}
 	}

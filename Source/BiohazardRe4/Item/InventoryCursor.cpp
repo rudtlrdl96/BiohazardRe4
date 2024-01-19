@@ -3,6 +3,8 @@
 
 #include "InventoryCursor.h"
 #include "InventoryManager.h"
+#include "InventorySlot.h"
+#include "InventoryItem.h"
 
 // Sets default values for this component's properties
 UBInventoryCursor::UBInventoryCursor()
@@ -17,9 +19,42 @@ void UBInventoryCursor::SetCursorSize(const FIntPoint& Size)
 	SetRelativeScale3D(FVector(Size.X, Size.Y, 1));
 }
 
-void UBInventoryCursor::SetCursorPosition(const FIntPoint& Pos)
+void UBInventoryCursor::SetCursorPosition(UBInventorySlot* Slot)
 {
-	SetRelativeLocation(FVector(-25 + Pos.X * 5, -15 + Pos.Y * 5, 0));
+	if (Slot->IsSubSlot())
+	{
+		if (UBInventoryItem* Item = Slot->GetItem())
+		{
+			SetRelativeLocation(SubCaseLocation(Item->GetItemPosition()) - FVector(2.5, 2.5, 0));
+		}
+		else
+		{
+			SetRelativeLocation(SubCaseLocation(Slot->GetPosition()) - FVector(2.5, 2.5, 0));
+		}
+	}
+	else
+	{
+		if (UBInventoryItem* Item = Slot->GetItem())
+		{
+			SetRelativeLocation(CaseLocation(Item->GetItemPosition()) - FVector(2.5, 2.5, 0));
+		}
+		else
+		{
+			SetRelativeLocation(CaseLocation(Slot->GetPosition()) - FVector(2.5, 2.5, 0));
+		}
+	}
+}
+
+void UBInventoryCursor::SetCursorPosition(const FIntPoint& Pos, bool IsSubSlot)
+{
+	if (IsSubSlot)
+	{
+		SetRelativeLocation(SubCaseLocation(Pos) - FVector(2.5, 2.5, 0));
+	}
+	else
+	{
+		SetRelativeLocation(CaseLocation(Pos) - FVector(2.5, 2.5, 0));
+	}
 }
 
 void UBInventoryCursor::SetCursorRaise(bool Raise)

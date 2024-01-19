@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "ItemData.h"
 #include "InventoryActor.generated.h"
@@ -61,17 +62,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	class USkeletalMeshComponent* CaseMesh;	// 가방 메쉬
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UStaticMeshComponent* SubCaseMesh;	// 버리는 가방 메쉬
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;			// 카메라
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UBInventoryCursor* Cursor;			// 커서
 	
-	// _________________Animation
+	// _________________Timeline
 	
-	class UAnimSequence* OpenAnim;
-	class UAnimSequence* DragAnim;
-	class UAnimSequence* ReverseDragAnim;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Timeline", Meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* CurveFloat;
+	FTimeline Timeline;
 
 	// __________________Input
 

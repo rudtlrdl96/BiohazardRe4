@@ -18,37 +18,45 @@ public:
 	UBInventorySlot();
 
 	// 해당 칸에 아이템을 지정한다. 아이템이 사라지기 전까지 HasItem이 true로 반환
-	void SetItem(class UBInventoryItem* _Item)
+	inline void SetItem(class UBInventoryItem* _Item)
 	{
 		Item = _Item;
 	}
-	void ClearItem()
+	inline void ClearItem()
 	{
 		Item = nullptr;
 	}
-	UBInventoryItem* GetItem()
+	inline UBInventoryItem* GetItem()
 	{
 		return Item;
 	}
-	void SetPosition(const FIntPoint& _Position)
+	inline void SetPosition(const FIntPoint& _Position)
 	{
 		Position = _Position;
 	}
-	FIntPoint GetPosition()
+	inline FIntPoint GetPosition() const
 	{
 		return Position;
 	}
-
 	// 해당 칸에 아이템이 있는가 여부를 반환
-	bool HasItem()
+	inline bool HasItem() const
 	{
 		return Item != nullptr;
 	}
-
+	inline void SetSubSlot()
+	{
+		bIsSubSlot = true;
+	}
+	inline bool IsSubSlot() const
+	{
+		return bIsSubSlot;
+	}
 private:
 	class UBInventoryItem* Item;	// 아이템 포인터
 	
 	UPROPERTY()
 	FIntPoint Position;
 
+	UPROPERTY()
+	uint32 bIsSubSlot : 1 = false;
 };
