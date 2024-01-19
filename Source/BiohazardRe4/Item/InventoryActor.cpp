@@ -28,6 +28,9 @@ ABInventoryActor::ABInventoryActor()
 	{
 		static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/UI/Inventory/Mesh/SK_Case.SK_Case'"));
 		CaseMesh->SetSkeletalMesh(Mesh.Object);
+
+		static ConstructorHelpers::FObjectFinder<UAnimSequence> Anim(TEXT("/Script/Engine.AnimSequence'/Game/Assets/UI/Inventory/Animation/AS_CaseOpen.AS_CaseOpen'"));
+		OpenAnim = Anim.Object;
 	}
 	RootComponent = CaseMesh;
 
@@ -171,14 +174,15 @@ void ABInventoryActor::AddItem(const FName& _Name)
 
 void ABInventoryActor::OpenInventory()
 {
+	CaseMesh->PlayAnimation(OpenAnim, false);
 }
 
-void ABInventoryActor::Drag()
+void ABInventoryActor::OpenSub()
 {
 	Timeline.Play();
 }
 
-void ABInventoryActor::ReverseDrag()
+void ABInventoryActor::CloseSub()
 {
 	Timeline.Reverse();
 }
@@ -218,6 +222,7 @@ void ABInventoryActor::DragTrigger()
 		Inventory->MoveItem(SelectItem, SelectSlot);
 		Cursor->SetCursorRaise(true);
 		Cursor->SetCursorPosition(SelectSlot);
+		OpenSub();
 	}
 }
 
@@ -338,4 +343,9 @@ void ABInventoryActor::DragExit()
 	}
 	bIsDragMove = 0;
 	Cursor->SetCursorRaise(false);
+
+	if (false == Inventory->HasItemInSubSlot())
+	{
+		CloseSub();
+	}
 }

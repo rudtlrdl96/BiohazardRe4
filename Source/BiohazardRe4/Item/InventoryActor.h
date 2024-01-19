@@ -33,10 +33,10 @@ public:
 	void OpenInventory();
 
 	UFUNCTION(BlueprintCallable)
-	void Drag();
+	void OpenSub();
 
 	UFUNCTION(BlueprintCallable)
-	void ReverseDrag();
+	void CloseSub();
 
 
 protected:
@@ -76,6 +76,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Timeline", Meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* CurveFloat;
 	FTimeline Timeline;
+
+	// _________________Animation
+
+	UPROPERTY()
+	UAnimSequence* OpenAnim;
 
 	// __________________Input
 

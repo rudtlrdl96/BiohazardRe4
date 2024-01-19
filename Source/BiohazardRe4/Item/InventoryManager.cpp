@@ -31,23 +31,32 @@ void UBInventoryManager::AddItem(const FName& Name)
 {
 	if (nullptr == ItemDataTable)
 	{
-		LOG_FATAL(TEXT("ItemDataTable Not Setting."));
+		LOG_WARNING(TEXT("ItemDataTable Not Setting."));
+		return;
 	}
 
+	// 데이터 테이블에서 아이템 찾기
 	FBItemData* Data = ItemDataTable->FindRow<FBItemData>(Name, FString("Fail Find ItemData"));
 
 	if (nullptr == Data)
+	{
+		LOG_WARNING(TEXT("Can't Found Name in ItemDataTable"));
 		return;
+	}
 
+	// 아이템이 들어갈 공간 찾기
 	FIntPoint Point = FindEmptySlot(Data->ItemSize);
 	if (Point == FIntPoint::NoneValue)
 	{
+		// 못 찾은 경우
+		LOG_WARNING(TEXT("Inventory Is Full. Check Please"));
 		return;
 	}
 
 	static int32 count = 0;
 	UBInventoryItem* NewItem = NewObject<UBInventoryItem>(GetOwner(), UBInventoryItem::StaticClass(), FName(Name.ToString() + FString::FromInt(count++)));
 
+	// 아이템 생성
 	if (NewItem)
 	{
 		NewItem->RegisterComponent();
@@ -64,7 +73,7 @@ void UBInventoryManager::AddItem(const FName& Name)
 bool UBInventoryManager::IsEmptySlot(const FIntPoint& Scale)
 {
 	// 회전해야 들어가는 상황은 고려하지 않았음 추후 수정
-	// 빈 공간 찾기
+	// 크기 만큼 비어있는 공간을 찾는 과정
 	for (int y = 0; y <= CaseSize.Y - Scale.Y; y++)
 	{
 		for (int x = 0; x <= CaseSize.X - Scale.X; x++)
@@ -445,6 +454,21 @@ bool UBInventoryManager::CheckSlotRange(const FIntPoint& Pos, const FIntPoint& S
 		}
 	}
 	return true;
+}
+
+bool UBInventoryManager::HasItemInSubSlot()
+{
+	for (int y = 0; y < SubCaseSize.Y; y++)
+	{
+		for (int x = 0; x < SubCaseSize.X; x++)
+		{
+			if (SubSlot[y * SubCaseSize.X + x]->HasItem())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void UBInventoryManager::ClearSlot(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot)

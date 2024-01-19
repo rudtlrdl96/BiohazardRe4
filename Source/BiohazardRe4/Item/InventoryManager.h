@@ -81,6 +81,8 @@ public:
 	bool CheckSubSlot(const FIntPoint& Pos);
 	// 해당 범위에 아이템이 있거나 범위 밖이면 false를 리턴한다 (유효한 슬롯일 시 true)
 	bool CheckSlotRange(const FIntPoint& Pos, const FIntPoint& Size);
+	// 서브 슬롯에 아이템이 있다면 true를 리턴한다
+	bool HasItemInSubSlot();
 
 private:
 	// 아이템을 배치한다
