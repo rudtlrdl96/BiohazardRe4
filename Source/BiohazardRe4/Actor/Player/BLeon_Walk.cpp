@@ -16,7 +16,7 @@ void ABLeon::WalkEnter()
 
 void ABLeon::WalkUpdate(float _DeltaTime)
 {
-	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 3.0f);
+	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 4.5f);
 
 	if (MoveInput == FVector::ZeroVector)
 	{

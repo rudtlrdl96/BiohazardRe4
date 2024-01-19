@@ -26,6 +26,46 @@ ABLeon::ABLeon()
 	CreateFSM();
 }
 
+ELeonDirection ABLeon::GetLeonDirection() const
+{
+	FVector DirVector = GetInputDirection().GetSafeNormal();
+
+	double Angle = FMath::RadiansToDegrees(FMath::Atan2(DirVector.X, DirVector.Y));
+
+	if (Angle > -22.5 && Angle <= 22.5)
+	{
+		return ELeonDirection::F;
+	}
+	else if (Angle > 22.5 && Angle <= 67.5)
+	{
+		return ELeonDirection::FR;
+	}
+	else if (Angle > 67.5 && Angle <= 112.5)
+	{
+		return ELeonDirection::R;
+	}
+	else if (Angle > 112.5 && Angle <= 157.5)
+	{
+		return ELeonDirection::BR;
+	}
+	else if (Angle > -67.5 && Angle <= -22.5)
+	{
+		return ELeonDirection::FL;
+	}
+	else if (Angle > -112.5 && Angle <= -67.5)
+	{
+		return ELeonDirection::L;
+	}
+	else if (Angle > -157.5 && Angle <= -112.5)
+	{
+		return ELeonDirection::BL;
+	}
+	else
+	{
+		return ELeonDirection::B;
+	}
+}
+
 // Called when the game starts or when spawned
 void ABLeon::BeginPlay()
 {

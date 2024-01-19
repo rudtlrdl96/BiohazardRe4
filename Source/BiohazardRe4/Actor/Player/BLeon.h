@@ -23,6 +23,38 @@ enum class ELeonState : uint8
 	Jog		UMETA(DisplayName = "Jog"),
 };
 
+UENUM(BlueprintType)
+enum class ELeonHealth : uint8
+{
+	Normal	UMETA(DisplayName = "Normal"),
+	Danger	UMETA(DisplayName = "Danger"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonWeapon : uint8
+{
+	Empty	UMETA(DisplayName = "Empty"),
+	Pistol	UMETA(DisplayName = "Pistol"),
+	Shotgun UMETA(DisplayName = "Shotgun"),
+	Rifle   UMETA(DisplayName = "Rifle"),
+	Knife   UMETA(DisplayName = "Knife"),
+	Grenade UMETA(DisplayName = "Grenade"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonDirection : uint8
+{
+	F	UMETA(DisplayName = "F"),
+	FR  UMETA(DisplayName = "FR"),
+	R   UMETA(DisplayName = "R"),
+	BR  UMETA(DisplayName = "BR"),
+	B   UMETA(DisplayName = "B"),
+	BL  UMETA(DisplayName = "BL"),
+	L   UMETA(DisplayName = "L"),
+	FL  UMETA(DisplayName = "FL"),
+};
+
+
 UCLASS()
 class BIOHAZARDRE4_API ABLeon : public ACharacter
 {
@@ -49,7 +81,19 @@ public:
 	}
 	
 	UFUNCTION(BlueprintCallable)
-	ELeonState GetCurrentFSMState() const;
+	ELeonState GetCurrentFSMState() const;	
+	
+	UFUNCTION(BlueprintCallable)
+	inline ELeonWeapon GetWeaponState() const
+	{
+		return LeonWeaponState;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	inline ELeonHealth GetHealthState() const
+	{
+		return LeonHealth;
+	}
 
 	UFUNCTION(BlueprintCallable)
 	bool IsJog() const
@@ -69,6 +113,9 @@ public:
 		return MoveInput;
 	}	
 
+	UFUNCTION(BlueprintCallable)
+	ELeonDirection GetLeonDirection() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -84,7 +131,13 @@ private:
 	uint32 bIsJogTrigger : 1 = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
-	uint32 bIsCrouch : 1 = false;
+	uint32 bIsCrouch : 1 = false;	
+	
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	ELeonWeapon LeonWeaponState = ELeonWeapon::Empty;	
+	
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	ELeonHealth LeonHealth = ELeonHealth::Normal;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	float TurnSpeed = 20.0f;
