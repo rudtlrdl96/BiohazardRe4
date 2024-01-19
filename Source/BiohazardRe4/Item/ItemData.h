@@ -24,6 +24,9 @@ struct FBItemData : public FTableRowBase
 	FName ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ItemInformation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntPoint ItemSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")

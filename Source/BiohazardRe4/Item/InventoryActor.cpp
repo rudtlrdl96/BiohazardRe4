@@ -6,6 +6,7 @@
 #include "InventorySlot.h"
 #include "InventoryItem.h"
 #include "InventoryWidget.h"
+#include "InventoryBehavior.h"
 #include "InventoryCursor.h"
 #include "Generic/BFsm.h"
 
@@ -94,6 +95,8 @@ ABInventoryActor::ABInventoryActor()
 		SubSlot[i]->SetPosition({ x, y });
 		SubSlot[i]->SetRelativeLocation({ -10.0 + 5 * x, -20.0 + 5 * y, 2 });
 		SubSlot[i]->SetSubSlot();
+
+		SubSlot[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
 	// Ä¿¼­
@@ -152,6 +155,9 @@ void ABInventoryActor::BeginPlay()
 	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
 
+	BehaviorWidget = CreateWidget<UBInventoryBehavior>(GetWorld(), BehaviorWidgetClass);
+	BehaviorWidget->AddToViewport();
+
 	FOnTimelineFloatStatic F;
 	F.BindLambda([this](float Value) {
 		SubCaseMesh->SetRelativeLocation(FMath::Lerp(FVector(100, 7.4, -2), FVector(45, 7.4, -2), Value));
@@ -180,11 +186,21 @@ void ABInventoryActor::OpenInventory()
 void ABInventoryActor::OpenSub()
 {
 	Timeline.Play();
+	auto& SubSlot = Inventory->SubSlot;
+	for (int i = 0; i < 5 * 9; i++)
+	{
+		SubSlot[i]->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
 }
 
 void ABInventoryActor::CloseSub()
 {
 	Timeline.Reverse();
+	auto& SubSlot = Inventory->SubSlot;
+	for (int i = 0; i < 5 * 9; i++)
+	{
+		SubSlot[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void ABInventoryActor::Click()
@@ -271,13 +287,13 @@ void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 			if (UBInventoryItem* Item = Slot->GetItem())
 			{
 				SelectItem = Item;
-				Widget->ItemName = Item->GetItemName().ToString();
+				Widget->SetItemData(Item->GetData());
 				Cursor->SetCursorSize(Item->GetItemSize());
 			}
 			else
 			{
 				SelectItem = nullptr;
-				Widget->ItemName = TEXT("");
+				Widget->ClearItemData();
 				Cursor->SetCursorSize({1, 1});
 			}
 
@@ -287,7 +303,7 @@ void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 	{
 		SelectSlot = nullptr;
 		SelectItem = nullptr;
-		Widget->ItemName = TEXT("");
+		Widget->ClearItemData();
 	}
 
 }

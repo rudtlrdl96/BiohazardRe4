@@ -3,3 +3,14 @@
 
 #include "InventoryWidget.h"
 
+void UBInventoryWidget::SetItemData(const FBItemData& Data)
+{
+	ItemName = Data.ItemName.ToString();
+	ItemInformation = Data.ItemInformation;
+}
+
+inline void UBInventoryWidget::ClearItemData()
+{
+	ItemName = "";
+	ItemInformation = "";
+}

@@ -56,6 +56,12 @@ public:
 	UPROPERTY()
 	UBInventoryWidget* Widget;									// 인벤토리 위젯
 
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UBInventoryBehavior> BehaviorWidgetClass;	// 아이템 행동 위젯 클래스
+
+	UPROPERTY()
+	UBInventoryBehavior* BehaviorWidget;							// 아이템 행동 위젯
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	UStaticMeshComponent* BackgroundMesh;	// 배경 매쉬
 

@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemData.h"
 #include "Blueprint/UserWidget.h"
 #include "InventoryWidget.generated.h"
-
 /**
  * 
  */
@@ -15,6 +15,13 @@ class BIOHAZARDRE4_API UBInventoryWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+
+	void SetItemData(const FBItemData& Data);
+	inline void ClearItemData();
+
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemName;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	FString ItemInformation;
 };
