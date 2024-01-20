@@ -30,7 +30,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
+protected:
 	UPROPERTY(EditAnywhere)
 	FVector StartLocation = { 5000.f,0.f,0.f };
 	UPROPERTY(EditAnywhere)
