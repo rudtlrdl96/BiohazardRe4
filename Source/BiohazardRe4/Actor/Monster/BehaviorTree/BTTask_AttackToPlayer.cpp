@@ -12,36 +12,32 @@
 
 EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	AAIController* OwnerAI = OwnerComp.GetAIOwner();
-	if (OwnerAI == nullptr)
+	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
+
+	APawn* MyPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
+	if (nullptr == MyPawn)
 	{
-		LOG_FATAL(TEXT("OwnerAI == nullptr : UBTTask_AttackToPlayer::ExecuteTask - 15"));
 		return EBTNodeResult::Failed;
 	}
 
-	APawn* OwnerPawn = OwnerAI->GetPawn();
-	if (OwnerPawn == nullptr)
+	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(MyPawn);
+	if (nullptr == StateInterface)
 	{
-		LOG_FATAL(TEXT("OwnerPawn == nullptr : UBTTask_AttackToPlayer::ExecuteTask - 22"));
 		return EBTNodeResult::Failed;
 	}
 
 
-	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(OwnerPawn);
-	if (StateInterface == nullptr)
-	{
-		LOG_FATAL(TEXT("Interface Casting Failed : UBTTask_AttackToPlayer::ExecuteTask - 30"));
-		return EBTNodeResult::Failed;
-	}
+	FMonsterAttackEnd OnAttackFinished;
+	OnAttackFinished.BindLambda(
+		[&]()
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
+		}
+	);
 
+	StateInterface->SetMonsterAttackEndDelegate(OnAttackFinished);
 	StateInterface->SetCurrentState(MonsterState::Attack);
-	StateInterface->SetIsAttack(true);
 
-	OwnerComp.GetAIOwner()->GetCharacter()->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISATTACKING, StateInterface->IsAttacking());
-	
-	LOG_MSG(TEXT("Monster Attack To Player"));
-
-
-	return EBTNodeResult::Succeeded;
+	return EBTNodeResult::InProgress;
 }

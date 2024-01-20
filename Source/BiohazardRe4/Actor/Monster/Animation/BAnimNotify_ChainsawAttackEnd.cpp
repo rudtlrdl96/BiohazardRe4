@@ -11,7 +11,7 @@ void UBAnimNotify_ChainsawAttackEnd::Notify(USkeletalMeshComponent* MeshComp, UA
 {
 	if (MeshComp == nullptr)
 	{
-		LOG_FATAL(TEXT("MeshComp == nullptr : UBAnimNotify_ChainsawAttackEnd::Notify - Parameter"));
+		LOG_WARNING(TEXT("MeshComp == nullptr : UBAnimNotify_ChainsawAttackEnd::Notify - Parameter"));
 		return;
 	}
 	Super::Notify(MeshComp, Animation, EventReference);
@@ -23,14 +23,14 @@ void UBAnimNotify_ChainsawAttackEnd::Notify(USkeletalMeshComponent* MeshComp, UA
 		if (StateInterface != nullptr)
 		{
 			StateInterface->SetCurrentState(MonsterState::Walk);
-			StateInterface->SetIsAttack(false);
+			StateInterface->GetMonsterAttackEndDelegate().ExecuteIfBound();
 		}
 	}
 
 	ACharacter* MeshCharacter = Cast<ACharacter>(MeshComp->GetOwner());
 	if (MeshCharacter == nullptr)
 	{
-		LOG_FATAL(TEXT("MeshCharacter is Nullptr : UBAnimNotify_ChainsawAttackEnd::Notify - 30"));
+		LOG_WARNING(TEXT("MeshCharacter is Nullptr : UBAnimNotify_ChainsawAttackEnd::Notify - 30"));
 		return;
 	}
 

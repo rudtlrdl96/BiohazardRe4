@@ -2,12 +2,15 @@
 
 
 #include "Actor/Monster/BMonsterBase.h"
+#include "Component/BMonsterStatComponent.h"
 
 // Sets default values
 ABMonsterBase::ABMonsterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
+
+	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
 }
 
 void ABMonsterBase::BeginPlay()
@@ -33,5 +36,20 @@ bool ABMonsterBase::IsAttacking()
 void ABMonsterBase::SetIsAttack(bool _IsAttacking)
 {
 	bIsAttacking = _IsAttacking;
+}
+
+void ABMonsterBase::SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd)
+{
+	OnAttackEnd = _InAttackEnd;
+}
+
+const FMonsterAttackEnd& ABMonsterBase::GetMonsterAttackEndDelegate()
+{
+	return OnAttackEnd;
+}
+
+float ABMonsterBase::GetAttackRange()
+{
+	return Stat->GetAttackRange();
 }
 

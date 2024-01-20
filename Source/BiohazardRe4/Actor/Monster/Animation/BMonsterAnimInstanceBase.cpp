@@ -30,6 +30,7 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 	if (Movement != nullptr)
 	{
 		GroundSpeed = Movement->Velocity.Size2D();
+		GroundRotation = Owner->GetActorRotation();
 	}
 
 	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(GetOwningActor());

@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interface/BMonsterStateInterface.h"
+#include "Interface/BMonsterStatInterface.h"
 #include "BMonsterBase.generated.h"
 
 UCLASS()
-class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface
+class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface
 {
 	GENERATED_BODY()
 
@@ -21,11 +22,18 @@ public:
 	virtual void SetCurrentState(MonsterState _InState) override;
 	virtual bool IsAttacking() override;
 	virtual void SetIsAttack(bool _IsAttacking) override;
+	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
+	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
+	virtual float GetAttackRange() override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UBMonsterStatComponent> Stat;
+
+	FMonsterAttackEnd OnAttackEnd;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	MonsterState CurState;

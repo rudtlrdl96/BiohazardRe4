@@ -4,17 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "BTService_CheckDistanceToTarget.generated.h"
+#include "BBTService_RangeCheck.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API UBTService_CheckDistanceToTarget : public UBTService
+class BIOHAZARDRE4_API UBBTService_RangeCheck : public UBTService
 {
 	GENERATED_BODY()
-
 public:
-	UBTService_CheckDistanceToTarget();
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };
