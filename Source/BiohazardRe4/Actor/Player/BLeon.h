@@ -128,15 +128,21 @@ private:
 	uint32 bIsJog : 1 = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
-	uint32 bIsJogTrigger : 1 = false;
+	uint32 bIsJogTrigger : 1 = false;	
+	
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	uint32 bIsAimTrigger : 1 = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsCrouch : 1 = false;	
 	
 	UPROPERTY(VisibleAnywhere, Category = Animation)
-	ELeonWeapon LeonWeaponState = ELeonWeapon::Empty;	
+	ELeonState LeonFSMState = ELeonState::Idle;
 	
 	UPROPERTY(VisibleAnywhere, Category = Animation)
+	ELeonWeapon LeonWeaponState = ELeonWeapon::Empty;	
+	
+	UPROPERTY(EditAnywhere, Category = Animation)
 	ELeonHealth LeonHealth = ELeonHealth::Normal;
 
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -149,7 +155,10 @@ private:
 	UInputAction* MoveAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	UInputAction* LookAction = nullptr;
+	UInputAction* LookAction = nullptr;	
+	
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* AimAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* JogAction = nullptr;
@@ -159,7 +168,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 
-	UInputAction* InteractionActor = nullptr;
+	UInputAction* InteractionAction = nullptr;
 
 	USpringArmComponent* SpringArm = nullptr;
 	UCameraComponent* PlayerCamera = nullptr;
@@ -183,6 +192,8 @@ private:
 
 	void ActiveJog();
 	void DisableJog();
+	void ActiveAim();
+	void DisableAim();
 	void TryCrouch();
 	void TryInteraction();
 

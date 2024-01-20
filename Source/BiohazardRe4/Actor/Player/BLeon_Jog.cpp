@@ -24,6 +24,9 @@ void ABLeon::JogUpdate(float _DeltaTime)
 
 	if (MoveInput == FVector::ZeroVector)
 	{
+		LOG_MSG(TEXT("Moo Ya Hooooooo"));
+		LOG_MSG(TEXT("Yappe"));
+
 		FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 		return;
 	}

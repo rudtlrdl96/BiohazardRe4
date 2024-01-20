@@ -78,6 +78,8 @@ void ABLeon::Tick(float _DeltaTime)
 {
 	Super::Tick(_DeltaTime);
 	SpringArmUpdate(_DeltaTime);
+
+	LeonFSMState = GetCurrentFSMState();
 }
 
 // Called to bind functionality to input
@@ -123,19 +125,26 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	{
 		LOG_FATAL(TEXT("is Not Set RunAction"));
 	}
-	if (nullptr == InteractionActor)
+	if (nullptr == AimAction)
 	{
-		LOG_FATAL(TEXT("is Not Set InteractionActor"));
+		LOG_FATAL(TEXT("is Not Set AimAction"));
 	}
+	if (nullptr == InteractionAction)
+	{
+		LOG_FATAL(TEXT("is Not Set InteractionAction"));
+	}		
 
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
 	Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
 	Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
 
 	Input->BindAction(JogAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveJog);
-	Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);
+	Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);	
+	Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveAim);
+	Input->BindAction(AimAction, ETriggerEvent::Completed, this, &ABLeon::DisableAim);
+
 	Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
-	Input->BindAction(InteractionActor, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
+	Input->BindAction(InteractionAction, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
 }
 
 ELeonState ABLeon::GetCurrentFSMState() const
@@ -225,6 +234,16 @@ void ABLeon::ActiveJog()
 void ABLeon::DisableJog()
 {
 	bIsJogTrigger = false;
+}
+
+void ABLeon::ActiveAim()
+{
+	bIsAimTrigger = true;
+}
+
+void ABLeon::DisableAim()
+{
+	bIsAimTrigger = false;
 }
 
 void ABLeon::TryCrouch()
