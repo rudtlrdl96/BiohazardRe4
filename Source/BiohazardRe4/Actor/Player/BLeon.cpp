@@ -226,6 +226,14 @@ void ABLeon::JogLookAt(float _DeltaTime)
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), InputRotator, _DeltaTime, 360.0f));
 }
 
+void ABLeon::Aim(float _DeltaTime)
+{
+	FVector CameraForward = PlayerCamera->GetForwardVector();
+	CameraForward.Z = 0.0;
+	FRotator CameraRotator = CameraForward.Rotation();
+
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), CameraRotator, _DeltaTime, 600.0f));
+}
 void ABLeon::ActiveJog()
 {
 	bIsJogTrigger = true;
@@ -238,12 +246,12 @@ void ABLeon::DisableJog()
 
 void ABLeon::ActiveAim()
 {
-	bIsAimTrigger = true;
+	bIsAim = true;
 }
 
 void ABLeon::DisableAim()
 {
-	bIsAimTrigger = false;
+	bIsAim = false;
 }
 
 void ABLeon::TryCrouch()
@@ -306,4 +314,9 @@ void ABLeon::CreateFSM()
 	JogMoveState.ExitDel.BindUObject(this, &ABLeon::JogExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogMoveState);
 
+	UBFsm::FStateCallback AimState;
+	AimState.EnterDel.BindUObject(this, &ABLeon::AimEnter);
+	AimState.UpdateDel.BindUObject(this, &ABLeon::AimUpdate);
+	AimState.ExitDel.BindUObject(this, &ABLeon::AimExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Aim), AimState);
 }

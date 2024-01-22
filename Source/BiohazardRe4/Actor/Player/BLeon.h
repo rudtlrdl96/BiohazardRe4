@@ -18,9 +18,18 @@ class UCameraComponent;
 UENUM(BlueprintType)
 enum class ELeonState : uint8
 {
-	Idle	UMETA(DisplayName = "Idle"),
-	Walk	UMETA(DisplayName = "Walk"),
-	Jog		UMETA(DisplayName = "Jog"),
+	Idle			UMETA(DisplayName = "Idle"),
+	Walk			UMETA(DisplayName = "Walk"),
+	Jog				UMETA(DisplayName = "Jog"),
+	Aim				UMETA(DisplayName = "Aim"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonAim : uint8
+{
+	Start	UMETA(DisplayName = "Start"),
+	Loop	UMETA(DisplayName = "Loop"),
+	End		UMETA(DisplayName = "End"),
 };
 
 UENUM(BlueprintType)
@@ -93,12 +102,24 @@ public:
 	inline ELeonHealth GetHealthState() const
 	{
 		return LeonHealth;
+	}	
+	
+	UFUNCTION(BlueprintCallable)
+	inline ELeonAim GetAimState() const
+	{
+		return LeonAim;
 	}
 
 	UFUNCTION(BlueprintCallable)
 	bool IsJog() const
 	{
 		return bIsJog;
+	}	
+	
+	UFUNCTION(BlueprintCallable)
+	bool IsCombat() const
+	{
+		return bIsCombat;
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -125,25 +146,37 @@ private:
 	uint32 bIsMove : 1 = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
-	uint32 bIsJog : 1 = false;
+	uint32 bIsJog : 1 = false;	
+	
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	uint32 bIsAim : 1 = false;	
+	
+	UPROPERTY(EditAnywhere, Category = Animation)
+	uint32 bIsCombat : 1 = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsJogTrigger : 1 = false;	
 	
-	UPROPERTY(VisibleAnywhere, Category = Animation)
-	uint32 bIsAimTrigger : 1 = false;
-
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsCrouch : 1 = false;	
 	
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	ELeonState LeonFSMState = ELeonState::Idle;
 	
-	UPROPERTY(VisibleAnywhere, Category = Animation)
+	UPROPERTY(EditAnywhere, Category = Animation)
 	ELeonWeapon LeonWeaponState = ELeonWeapon::Empty;	
 	
 	UPROPERTY(EditAnywhere, Category = Animation)
-	ELeonHealth LeonHealth = ELeonHealth::Normal;
+	ELeonHealth LeonHealth = ELeonHealth::Normal;	
+	
+	UPROPERTY(EditAnywhere, Category = Animation)
+	ELeonAim LeonAim = ELeonAim::Start;
+
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	float AimUpdateTime = 0.0f;	
+
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	float CombatTime = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	float TurnSpeed = 20.0f;
@@ -188,7 +221,9 @@ private:
 	void SpringArmUpdate(float _DeltaTime);
 	void GetJogInputForward(FVector& _Result) const;
 	double JogInputAngle() const;
+
 	void JogLookAt(float _DeltaTime);
+	void Aim(float _DeltaTime);
 
 	void ActiveJog();
 	void DisableJog();
@@ -199,6 +234,7 @@ private:
 
 	void CreateSprintArm();
 	void CreateFSM();
+
 
 	/* FSM */
 	void IdleEnter();
@@ -212,5 +248,9 @@ private:
 	void JogEnter();
 	void JogUpdate(float _DeltaTime);
 	void JogExit();
+
+	void AimEnter();
+	void AimUpdate(float _DeltaTime);
+	void AimExit();
 
 };

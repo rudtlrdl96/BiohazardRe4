@@ -12,8 +12,14 @@ void ABLeon::IdleEnter()
  
 void ABLeon::IdleUpdate(float _DeltaTime)
 {
-	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
+	if (true == bIsAim)
+	{
+		FsmComp->ChangeState(TO_KEY(ELeonState::Aim));
+		return;
+	}
 
+	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
+	
 	if (MoveInput == FVector::ZeroVector)
 	{
 		return;
