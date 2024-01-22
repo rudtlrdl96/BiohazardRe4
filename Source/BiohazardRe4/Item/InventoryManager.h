@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "ItemData.h"
 #include "InventoryManager.generated.h"
-
 static const FIntPoint CaseSize = { 10, 7 };			// 인벤토리의 크기
 static const FIntPoint SubCaseSize = { 5, 9 };			// 인벤토리의 크기
 static const float GridScale = 5.0f;					// 그리드 한칸의 크기
@@ -45,6 +45,8 @@ public:
 
 	// 아이템을 추가한다
 	void AddItem(const FName& Name);
+	// 아이템을 추가한다
+	void AddItem(EItemCode ItemCode);
 	// 특정 크기의 아이템이 들어갈 공간이 존재한다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& Scale);
 	// 입력된 크기와 위치에 아이템을 놓을 수 있다면 true를 반환한다
@@ -85,6 +87,8 @@ public:
 	bool HasItemInSubSlot();
 
 private:
+	// 아이템을 추가한다
+	void CreateItem(const FBItemData& Data);
 	// 아이템을 배치한다
 	void PlaceItemSlot(UBInventoryItem* Item, const FIntPoint& Pos);
 	// 아이템을 배치한다

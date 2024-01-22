@@ -26,7 +26,9 @@ public:
 	ABInventoryActor();
 
 	// 아이템을 추가한다
-	UFUNCTION(BlueprintCallable)
+	
+	void AddItem(EItemCode ItemCode);
+
 	void AddItem(const FName& _Name);
 
 	UFUNCTION(BlueprintCallable)
@@ -103,9 +105,6 @@ public:
 	class UInputAction* TurnAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputAction* DebugAction = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
 
 	// _________Inventory__________
@@ -118,12 +117,13 @@ public:
 	class UBInventoryItem* SelectItem;		// 현재 선택한 슬롯
 	uint8 bIsDragMove : 1;
 
+	UFUNCTION(BlueprintCallable)
+	void DebugAdd(EItemCode Code)
+	{
+		AddItem(Code);
+	}
 private:
 
-	void DebugAddPistol()
-	{
-		AddItem("PistolAmmo");
-	}
 
 	void Click();
 	void DragStart();
