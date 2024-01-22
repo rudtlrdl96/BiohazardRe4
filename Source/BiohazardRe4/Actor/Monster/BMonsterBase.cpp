@@ -9,7 +9,7 @@
 // Sets default values
 ABMonsterBase::ABMonsterBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	bUseControllerRotationYaw = false;
 
 	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
