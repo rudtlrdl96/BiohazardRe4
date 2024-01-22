@@ -19,6 +19,7 @@ class BIOHAZARDRE4_API ABInventoryActor : public AActor
 	{
 		Default = 0,
 		Drag = 1,
+		Select = 2,
 	};
 
 public:	
@@ -105,6 +106,9 @@ public:
 	class UInputAction* TurnAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* CancelAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
 
 	// _________Inventory__________
@@ -126,6 +130,7 @@ private:
 
 
 	void Click();
+	void Cancel();
 	void DragStart();
 	void DragTrigger();
 	void DragCancel();
