@@ -127,8 +127,11 @@ ABInventoryActor::ABInventoryActor()
 	DragState.UpdateDel.BindUObject(this, &ABInventoryActor::DragUpdate);
 	DragState.ExitDel.BindUObject(this, &ABInventoryActor::DragExit);
 
+	UBFsm::FStateCallback SelectState;
+
 	FSMComp->CreateState(TO_KEY(EInventoryState::Default), DefaultState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drag), DragState);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Select), SelectState);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
@@ -142,7 +145,7 @@ void ABInventoryActor::BeginPlay()
 	// Subsystem에 MappingContext를 추가한다 (우선순위를 1번으로 두어서 0번으로 Mapping한 조작을 무시한다)
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
-	Subsystem->AddMappingContext(DefaultMappingContext, 1);
+	//Subsystem->AddMappingContext(DefaultMappingContext, 1);
 
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Controller->InputComponent);
 	Input->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Click);
@@ -150,6 +153,7 @@ void ABInventoryActor::BeginPlay()
 	Input->BindAction(DragAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DragTrigger);
 	Input->BindAction(DragAction, ETriggerEvent::Canceled, this, &ABInventoryActor::DragCancel);
 	Input->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Turn);
+	Input->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Cancel);
 
 	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
@@ -185,6 +189,8 @@ void ABInventoryActor::AddItem(EItemCode ItemCode)
 void ABInventoryActor::OpenInventory()
 {
 	CaseMesh->PlayAnimation(OpenAnim, false);
+	Subsystem->AddMappingContext(DefaultMappingContext, 1);
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);
 }
 
 void ABInventoryActor::OpenSub()
@@ -223,10 +229,32 @@ void ABInventoryActor::Click()
 			Cursor->SetCursorSize(SelectItem->GetItemSize());
 		}
 	}
-	else if (SelectItem)
+	else if (SelectItem && FSMComp->GetCurrentFSMKey() != TO_KEY(EInventoryState::Select))
 	{
+		FVector2D Pos;
+		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), SelectItem->GetMeshLocation() + SelectItem->GetData().UIPivot, Pos);
+		BehaviorWidget->SetPositionInViewport(Pos);
 		BehaviorWidget->SetItemData(SelectItem->GetData());
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 	}
+}
+
+void ABInventoryActor::Cancel()
+{
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Select))
+	{
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+		BehaviorWidget->SetHide();
+		return;
+	}
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Default))
+	{
+		UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));
+		Subsystem->RemoveMappingContext(DefaultMappingContext);
+		// 인벤토리 종료
+		return;
+	}
+
 }
 
 void ABInventoryActor::DragStart()

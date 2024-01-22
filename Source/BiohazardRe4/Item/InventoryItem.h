@@ -40,6 +40,7 @@ public:
 	inline const FIntPoint& GetItemPosition() const { return ItemPosition; }
 	inline bool IsSubSlot() const { return bIsSubSlot; }
 	inline const FName& GetItemName() const { return Data.ItemName; }
+	inline FVector GetMeshLocation() const { return Mesh->GetComponentLocation(); }
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

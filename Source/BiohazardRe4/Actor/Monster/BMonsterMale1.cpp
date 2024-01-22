@@ -4,6 +4,7 @@
 #include "Actor/Monster/BMonsterMale1.h"
 #include "AIController/BAIBasicMonsterController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
 ABMonsterMale1::ABMonsterMale1()
 {
 	AIControllerClass = ABAIBasicMonsterController::StaticClass();
@@ -11,3 +12,4 @@ ABMonsterMale1::ABMonsterMale1()
 
 	GetCharacterMovement()->MaxWalkSpeed = 50.0f;
 }
+

@@ -32,4 +32,6 @@ class BIOHAZARDRE4_API UBInventoryBehavior : public UUserWidget
 
 public:
 	void SetItemData(const FBItemData& Data);
+
+	void SetHide();
 };
