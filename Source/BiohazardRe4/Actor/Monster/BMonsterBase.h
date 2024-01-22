@@ -20,11 +20,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual MonsterState GetCurrentState() override;
 	virtual void SetCurrentState(MonsterState _InState) override;
+	virtual void Attack() override;
 	virtual bool IsAttacking() override;
 	virtual void SetIsAttack(bool _IsAttacking) override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
 	virtual float GetAttackRange() override;
+	virtual float GetWeaponAttackRadius() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,6 +35,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UBMonsterStatComponent> Stat;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USkeletalMeshComponent> Weapon;
+
 	FMonsterAttackEnd OnAttackEnd;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
@@ -40,5 +45,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	uint8 bIsAttacking : 1;
+
 
 };
