@@ -10,6 +10,7 @@
 void ABLeon::AimEnter()
 {
 	bIsJog = false;
+	bIsCrouch = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
