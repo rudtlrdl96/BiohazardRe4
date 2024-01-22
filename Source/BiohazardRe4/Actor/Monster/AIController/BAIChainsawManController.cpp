@@ -22,7 +22,6 @@ ABAIChainsawManController::ABAIChainsawManController()
 	{
 		BTAsset = BTAssetRef.Object;
 	}
-
 }
 
 void ABAIChainsawManController::RunAI()

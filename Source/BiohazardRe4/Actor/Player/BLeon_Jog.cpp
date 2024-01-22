@@ -5,7 +5,6 @@
 #include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "BiohazardRe4.h"
 
 void ABLeon::JogEnter()
 {
@@ -19,19 +18,24 @@ void ABLeon::JogEnter()
 }
 
 void ABLeon::JogUpdate(float _DeltaTime)
-{
-	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
-
-	if (MoveInput == FVector::ZeroVector)
+{	
+	if (true == bIsAim)
 	{
-		LOG_MSG(TEXT("Moo Ya Hooooooo"));
-		LOG_MSG(TEXT("Yappe"));
-
-		FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
+		FsmComp->ChangeState(TO_KEY(ELeonState::Aim));
 		return;
 	}
 
+	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
 	JogLookAt(_DeltaTime);
+
+	if (MoveInput == FVector::ZeroVector)
+	{
+		FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
+	}
+	else if (false == bIsJogTrigger)
+	{
+		FsmComp->ChangeState(TO_KEY(ELeonState::Walk));
+	}
 }
 
 void ABLeon::JogExit()

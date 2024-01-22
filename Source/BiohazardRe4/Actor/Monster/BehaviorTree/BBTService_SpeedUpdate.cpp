@@ -35,20 +35,18 @@ void UBBTService_SpeedUpdate::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	APlayerController* TargetController = CurWorld->GetFirstPlayerController();
 	if (TargetController == nullptr)
 	{
-		LOG_FATAL(TEXT("CurWorld == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
+		LOG_FATAL(TEXT("TargetController == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
 	}
 
 	ACharacter* TargetCharacter = TargetController->GetCharacter();
 	if (TargetCharacter == nullptr)
 	{
-		LOG_FATAL(TEXT("CurWorld == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
+		LOG_FATAL(TEXT("TargetCharacter == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
 	}
 
 	float DistanceToTarget = MyCharacter->GetDistanceTo(TargetCharacter);
 	float DistanceThreshold = 600.0f;
 	float DeltaTime = CurWorld->GetDeltaSeconds();
-
-	LOG_MSG(TEXT("%f"), DistanceToTarget);
 
 	//몬스터와 플레이어간의 거리 (뛸 거냐 걸을 거냐)
 	if (DistanceToTarget > DistanceThreshold)

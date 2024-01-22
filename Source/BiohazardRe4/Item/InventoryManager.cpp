@@ -44,8 +44,37 @@ void UBInventoryManager::AddItem(const FName& Name)
 		return;
 	}
 
+	CreateItem(*Data);
+}
+
+void UBInventoryManager::AddItem(EItemCode ItemCode)
+{
+	TArray<FName> RowNames = ItemDataTable->GetRowNames();
+	FBItemData* FindItem = nullptr;
+
+	for (FName Name : RowNames)
+	{
+		FBItemData* ItemData = ItemDataTable->FindRow<FBItemData>(Name, "");
+		if (ItemData->ItemCode == ItemCode)
+		{
+			FindItem = ItemData;
+			break;
+		}
+	}
+
+	if (nullptr == FindItem)
+	{
+		LOG_ERROR(TEXT("Can't Find ItemCode in ItemData"));
+		return;
+	}
+
+	CreateItem(*FindItem);
+}
+
+void UBInventoryManager::CreateItem(const FBItemData& Data)
+{
 	// 아이템이 들어갈 공간 찾기
-	FIntPoint Point = FindEmptySlot(Data->ItemSize);
+	FIntPoint Point = FindEmptySlot(Data.ItemSize);
 	if (Point == FIntPoint::NoneValue)
 	{
 		// 못 찾은 경우
@@ -54,20 +83,19 @@ void UBInventoryManager::AddItem(const FName& Name)
 	}
 
 	static int32 count = 0;
-	UBInventoryItem* NewItem = NewObject<UBInventoryItem>(GetOwner(), UBInventoryItem::StaticClass(), FName(Name.ToString() + FString::FromInt(count++)));
+	UBInventoryItem* NewItem = NewObject<UBInventoryItem>(GetOwner(), UBInventoryItem::StaticClass(), FName(TEXT("Item") + FString::FromInt(count++)));
 
 	// 아이템 생성
 	if (NewItem)
 	{
 		NewItem->RegisterComponent();
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
-		NewItem->SetItemData(*Data);
+		NewItem->SetItemData(Data);
 		GetOwner()->RegisterAllComponents();
 		Items.Push(NewItem);
 		PlaceItemSlot(NewItem, Point);
 		NewItem->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
 	}
-
 }
 
 bool UBInventoryManager::IsEmptySlot(const FIntPoint& Scale)

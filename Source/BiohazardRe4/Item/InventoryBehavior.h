@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "ItemData.h"
 #include "InventoryBehavior.generated.h"
 
 /**
@@ -17,8 +18,18 @@ class BIOHAZARDRE4_API UBInventoryBehavior : public UUserWidget
 	virtual void NativeOnInitialized() override;
 
 	UPROPERTY()
-	class UButton* Button;
+	TArray<class UCanvasPanel*> Panels;
+	UPROPERTY()
+	TArray<class UButton*> Buttons;
+	UPROPERTY()
+	TArray<class UImage*> Images;
+
+	UPROPERTY()
+	TArray<class UTextBlock*> Texts;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UObject*> Icons;
 
 public:
-	void SetButton();
+	void SetItemData(const FBItemData& Data);
 };

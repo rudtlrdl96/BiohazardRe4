@@ -33,10 +33,12 @@ class BIOHAZARDRE4_API IBMonsterStateInterface
 public:
 	virtual MonsterState GetCurrentState() = 0;
 	virtual void SetCurrentState(MonsterState _InState) = 0;
-	virtual bool IsAttacking() = 0;
 	virtual void SetIsAttack(bool _IsAttacking) = 0;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) = 0;
+	virtual void Attack() = 0;
+	virtual bool IsAttacking() = 0;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() = 0;
+
 protected:
 
 private:

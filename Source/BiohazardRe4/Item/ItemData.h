@@ -5,6 +5,30 @@
 #include "CoreMinimal.h"
 #include "ItemData.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemCode : uint8
+{
+	// π´±‚
+	Handgun_SR09R	UMETA(DisplayName = "Handgun"),	// ±«√— (Ω√¿€π´±‚)
+	Shotgun_W870	UMETA(DisplayName = "Shotgun"),	// º¶∞«
+	Rifle_SRM1903	UMETA(DisplayName = "Rifle"),	// º“√—
+	CombatKnife		UMETA(DisplayName = "Combat Knife"),	// ≥™¿Ã«¡
+	// ≈∫æ‡
+	HandgunAmmo		UMETA(DisplayName = "Handgun Ammo"),	// ±«√—≈∫
+	ShotgunShells	UMETA(DisplayName = "Shotgun Ammo"),	// º¶∞«≈∫
+	RifleAmmo		UMETA(DisplayName = "Rifle Ammo"),		// º“√—≈∫
+	// »∏∫π
+	GreenHerb		UMETA(DisplayName = "Green Herb"),		// ≥Ïªˆ æ‡√ 
+	RedHerb			UMETA(DisplayName = "Red Herb"),		// ª°∞£ æ‡√ 	 
+	MixedHerb_GG	UMETA(DisplayName = "MixedHerb (G + G)"),	// »•«’ æ‡√  (≥Ï + ≥Ï)
+	MixedHerb_GR	UMETA(DisplayName = "MixedHerb (G + R)"),	// »•«’ æ‡√  (≥Ï + ¿˚)
+	FirstAidSpray	UMETA(DisplayName = "First Aid Spary (Max Heal)"),	// ±∏±ﬁ Ω∫«¡∑π¿Ã
+	// ¡∂«’æ∆¿Ã≈€	
+	Gunpowder		UMETA(DisplayName = "Gunpowder"),		// »≠æ‡
+	Resources_S		UMETA(DisplayName = "Resources S"),	// º“¿Á S
+	Resources_L		UMETA(DisplayName = "Resources L"),	// º“¿Á L
+};
+
 /*
 * æ∆¿Ã≈€ ¡§∫∏ ±∏¡∂√º
 */
@@ -19,6 +43,9 @@ struct FBItemData : public FTableRowBase
 	{
 
 	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EItemCode ItemCode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName ItemName;

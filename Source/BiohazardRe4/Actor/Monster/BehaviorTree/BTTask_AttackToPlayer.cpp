@@ -26,7 +26,6 @@ EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& 
 		return EBTNodeResult::Failed;
 	}
 
-
 	FMonsterAttackEnd OnAttackFinished;
 	OnAttackFinished.BindLambda(
 		[&]()

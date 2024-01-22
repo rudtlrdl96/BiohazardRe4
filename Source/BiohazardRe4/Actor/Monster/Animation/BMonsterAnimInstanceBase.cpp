@@ -45,6 +45,4 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 			CurState = static_cast<uint8>(MonsterState::Walk);
 		}
 	}
-
-
 }

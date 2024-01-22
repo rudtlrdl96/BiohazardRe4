@@ -150,7 +150,6 @@ void ABInventoryActor::BeginPlay()
 	Input->BindAction(DragAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DragTrigger);
 	Input->BindAction(DragAction, ETriggerEvent::Canceled, this, &ABInventoryActor::DragCancel);
 	Input->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Turn);
-	Input->BindAction(DebugAction, ETriggerEvent::Triggered, this, &ABInventoryActor::DebugAddPistol);
 
 	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
@@ -176,6 +175,11 @@ void ABInventoryActor::Tick(float DeltaTime)
 void ABInventoryActor::AddItem(const FName& _Name)
 {
 	Inventory->AddItem(_Name);
+}
+
+void ABInventoryActor::AddItem(EItemCode ItemCode)
+{
+	Inventory->AddItem(ItemCode);
 }
 
 void ABInventoryActor::OpenInventory()
@@ -218,6 +222,10 @@ void ABInventoryActor::Click()
 			Inventory->MoveItem(SelectItem, SelectSlot);
 			Cursor->SetCursorSize(SelectItem->GetItemSize());
 		}
+	}
+	else if (SelectItem)
+	{
+		BehaviorWidget->SetItemData(SelectItem->GetData());
 	}
 }
 
