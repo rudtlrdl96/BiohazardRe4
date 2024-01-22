@@ -37,6 +37,8 @@ public:
 	virtual void SetIsAttack(bool _IsAttacking) = 0;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) = 0;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() = 0;
+
+	virtual void Attack() = 0;
 protected:
 
 private:

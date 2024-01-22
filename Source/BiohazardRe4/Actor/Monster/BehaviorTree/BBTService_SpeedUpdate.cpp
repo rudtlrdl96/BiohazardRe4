@@ -35,13 +35,13 @@ void UBBTService_SpeedUpdate::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	APlayerController* TargetController = CurWorld->GetFirstPlayerController();
 	if (TargetController == nullptr)
 	{
-		LOG_FATAL(TEXT("CurWorld == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
+		LOG_FATAL(TEXT("TargetController == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
 	}
 
 	ACharacter* TargetCharacter = TargetController->GetCharacter();
 	if (TargetCharacter == nullptr)
 	{
-		LOG_FATAL(TEXT("CurWorld == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
+		LOG_FATAL(TEXT("TargetCharacter == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
 	}
 
 	float DistanceToTarget = MyCharacter->GetDistanceTo(TargetCharacter);

@@ -34,5 +34,5 @@ void UBAnimNotify_ChainsawAttackEnd::Notify(USkeletalMeshComponent* MeshComp, UA
 		return;
 	}
 
-	MeshCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	//MeshCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }

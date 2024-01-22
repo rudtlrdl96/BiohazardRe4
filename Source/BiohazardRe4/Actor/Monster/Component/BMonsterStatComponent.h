@@ -16,17 +16,21 @@ public:
 	UBMonsterStatComponent();
 
 	float GetAttackRange() { return AttackRange; };
+	float GetWeaponAttackRadius() { return WeaponAttackRadius; };
+
 protected:
 	virtual void BeginPlay() override;
 
 protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
-	float MaxHp;
+	float MaxHp = 0.0f;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
-	float CurrentHp;
+	float CurrentHp = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
-	float AttackRange;
-		
+	float AttackRange = 0.0f;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float WeaponAttackRadius = 0.0f;
 };
