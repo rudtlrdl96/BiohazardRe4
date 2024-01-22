@@ -9,6 +9,8 @@ UBMonsterStatComponent::UBMonsterStatComponent()
 	AttackRange = 125.0f;
 	MaxHp = 100;
 	WeaponAttackRadius = 15.0f;
+	DetectRange = 200.0f;
+	PatrolRadius = 500.0f;
 }
 
 // Called when the game starts

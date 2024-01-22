@@ -13,6 +13,10 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
+	if (OwnerComp.GetBlackboardComponent()->GetValueAsBool(BBKEY_ISNEAR) == true)
+	{
+		return;
+	}
 
 	APawn* MyPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (MyPawn == nullptr)

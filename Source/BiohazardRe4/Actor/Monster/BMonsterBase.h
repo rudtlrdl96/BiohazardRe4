@@ -27,6 +27,9 @@ public:
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
 	virtual float GetAttackRange() override;
 	virtual float GetWeaponAttackRadius() override;
+	virtual float GetDetectRange() override;
+	virtual float GetPatrolRadius() override;
+
 
 protected:
 	// Called when the game starts or when spawned

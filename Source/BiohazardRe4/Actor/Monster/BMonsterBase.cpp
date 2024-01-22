@@ -94,3 +94,13 @@ float ABMonsterBase::GetWeaponAttackRadius()
 	return Stat->GetWeaponAttackRadius();
 }
 
+float ABMonsterBase::GetDetectRange()
+{
+	return Stat->GetDetectRange();
+}
+
+float ABMonsterBase::GetPatrolRadius()
+{
+	return Stat->GetPatrolRadius();
+}
+

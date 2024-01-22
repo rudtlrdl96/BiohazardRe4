@@ -48,8 +48,6 @@ void UBBTService_SpeedUpdate::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	float DistanceThreshold = 600.0f;
 	float DeltaTime = CurWorld->GetDeltaSeconds();
 
-	LOG_MSG(TEXT("%f"), DistanceToTarget);
-
 	//몬스터와 플레이어간의 거리 (뛸 거냐 걸을 거냐)
 	if (DistanceToTarget > DistanceThreshold)
 	{

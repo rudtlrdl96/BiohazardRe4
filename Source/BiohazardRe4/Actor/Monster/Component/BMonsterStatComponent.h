@@ -17,7 +17,8 @@ public:
 
 	float GetAttackRange() { return AttackRange; };
 	float GetWeaponAttackRadius() { return WeaponAttackRadius; };
-
+	float GetDetectRange() { return DetectRange; };
+	float GetPatrolRadius() { return PatrolRadius; };
 protected:
 	virtual void BeginPlay() override;
 
@@ -29,8 +30,15 @@ protected:
 	float CurrentHp = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float DetectRange = 0.0f;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float AttackRange = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float WeaponAttackRadius = 0.0f;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float PatrolRadius = 0.0f;
+
 };

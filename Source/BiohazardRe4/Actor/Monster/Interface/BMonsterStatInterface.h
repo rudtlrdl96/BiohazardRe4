@@ -23,6 +23,8 @@ class BIOHAZARDRE4_API IBMonsterStatInterface
 public:
 	virtual float GetAttackRange() = 0;
 	virtual float GetWeaponAttackRadius() = 0;
+	virtual float GetDetectRange() = 0;
+	virtual float GetPatrolRadius() = 0;
 };
 
 
