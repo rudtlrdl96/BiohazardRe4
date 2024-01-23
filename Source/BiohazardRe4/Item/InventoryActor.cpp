@@ -7,6 +7,7 @@
 #include "InventoryItem.h"
 #include "InventoryWidget.h"
 #include "InventoryBehavior.h"
+#include "InventoryCraft.h"
 #include "InventoryCursor.h"
 #include "Generic/BFsm.h"
 
@@ -128,10 +129,12 @@ ABInventoryActor::ABInventoryActor()
 	DragState.ExitDel.BindUObject(this, &ABInventoryActor::DragExit);
 
 	UBFsm::FStateCallback SelectState;
+	UBFsm::FStateCallback CraftState;
 
 	FSMComp->CreateState(TO_KEY(EInventoryState::Default), DefaultState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drag), DragState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Select), SelectState);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), CraftState);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
@@ -160,7 +163,13 @@ void ABInventoryActor::BeginPlay()
 
 	BehaviorWidget = CreateWidget<UBInventoryBehavior>(GetWorld(), BehaviorWidgetClass);
 	BehaviorWidget->AddToViewport();
+	BehaviorWidget->InventoryActor = this;
 	BehaviorWidget->SetHide();
+
+	CraftWidget = CreateWidget<UBInventoryCraft>(GetWorld(), CraftWidgetClass);
+	CraftWidget->AddToViewport();
+	CraftWidget->Inventory = Inventory;
+	CraftWidget->SetHide();
 
 	FOnTimelineFloatStatic F;
 	F.BindLambda([this](float Value) {
@@ -190,7 +199,7 @@ void ABInventoryActor::AddItem(EItemCode ItemCode)
 void ABInventoryActor::OpenInventory()
 {
 	CaseMesh->PlayAnimation(OpenAnim, false);
-	Subsystem->AddMappingContext(DefaultMappingContext, 1);
+	Subsystem->AddMappingContext(DefaultMappingContext, 1);	// 매핑컨텍스트 추가해서 조작 할 수 있게 만듬
 	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);
 }
 
@@ -214,8 +223,20 @@ void ABInventoryActor::CloseSub()
 	}
 }
 
+void ABInventoryActor::OpenCraft()
+{
+	BehaviorWidget->SetHide();
+	CraftWidget->SetItemData(SelectItem->GetData());
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Craft));
+}
+
 void ABInventoryActor::Click()
 {
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag) && !bIsDragMove)
+	{
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	}
+
 	if (bIsDragMove)
 	{
 		if (Inventory->IsEmptySlot(SelectSlot, SelectItem))
@@ -230,7 +251,7 @@ void ABInventoryActor::Click()
 			Cursor->SetCursorSize(SelectItem->GetItemSize());
 		}
 	}
-	else if (SelectItem && FSMComp->GetCurrentFSMKey() != TO_KEY(EInventoryState::Select))
+	else if (SelectItem && FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Default))
 	{
 		FVector Location = Inventory->GetItemWorldLocation(SelectItem);
 		Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0) ;
@@ -240,7 +261,7 @@ void ABInventoryActor::Click()
 		BehaviorWidget->SetItemData(SelectItem->GetData());
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 	}
-	}
+}
 
 void ABInventoryActor::Cancel()
 {
@@ -257,7 +278,11 @@ void ABInventoryActor::Cancel()
 		// 인벤토리 종료
 		return;
 	}
-
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Craft))
+	{
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
+		return;
+	}
 }
 
 void ABInventoryActor::DragStart()

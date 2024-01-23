@@ -87,6 +87,9 @@ public:
 	bool HasItemInSubSlot();
 	// 해당 아이템에 월드 위치값을 받아옵니다
 	FVector GetItemWorldLocation(UBInventoryItem* Item);
+	// 해당 코드의 아이템이 인벤토리에 몇개 있는지 받아옵니다
+	int GetItemNum(EItemCode Code);
+
 private:
 	// 아이템을 추가한다
 	void CreateItem(const FBItemData& Data);

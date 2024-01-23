@@ -18,8 +18,9 @@ class BIOHAZARDRE4_API ABInventoryActor : public AActor
 	enum class EInventoryState
 	{
 		Default = 0,
-		Drag = 1,
-		Select = 2,
+		Drag,
+		Select,
+		Craft,
 	};
 
 public:	
@@ -41,6 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CloseSub();
 
+	UFUNCTION()
+	void OpenCraft();
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,6 +55,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UBInventoryManager* Inventory;						// 인벤토리 관리 컴포넌트
+
+	// ___________________________ Widget ___________________________________
 
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<class UBInventoryWidget> InventoryWidgetClass;	// 인벤토리 위젯 클래스
@@ -65,13 +70,21 @@ public:
 	UPROPERTY()
 	UBInventoryBehavior* BehaviorWidget;							// 아이템 행동 위젯
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UBInventoryCraft> CraftWidgetClass;	// 아이템 행동 위젯 클래스
+
+	UPROPERTY()
+	UBInventoryCraft* CraftWidget;							// 아이템 행동 위젯
+
+	// ___________________________ Component ___________________________________
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	UStaticMeshComponent* BackgroundMesh;	// 배경 매쉬
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class USkeletalMeshComponent* CaseMesh;	// 가방 메쉬
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	UStaticMeshComponent* SubCaseMesh;	// 버리는 가방 메쉬
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
@@ -121,18 +134,12 @@ public:
 	class UBInventoryItem* SelectItem;		// 현재 선택한 슬롯
 	uint8 bIsDragMove : 1;
 
-	UPROPERTY(EditAnywhere, Category = "Debug")
-	float DebugValue;	// 인벤토리 위젯 클래스
-	UPROPERTY(EditAnywhere, Category = "Debug")
-	float DebugX;	// 인벤토리 위젯 클래스
-	UPROPERTY(EditAnywhere, Category = "Debug")
-	float DebugY;	// 인벤토리 위젯 클래스
-
 	UFUNCTION(BlueprintCallable)
 	void DebugAdd(EItemCode Code)
 	{
 		AddItem(Code);
 	}
+
 private:
 
 

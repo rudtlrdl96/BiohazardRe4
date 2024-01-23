@@ -8,6 +8,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "BiohazardRe4.h"
+#include "InventoryActor.h"
 
 void UBInventoryBehavior::NativeOnInitialized()
 {
@@ -141,7 +142,7 @@ void UBInventoryBehavior::SetButton(int Index, State_BehaviorButton State)
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Crafting", "제조하기"));
 		{
 			FScriptDelegate Delegate;
-			Delegate.BindUFunction(this, FName("SetCraft"));
+			Delegate.BindUFunction(InventoryActor, FName("OpenCraft"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
 		}

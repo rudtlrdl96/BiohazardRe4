@@ -48,6 +48,8 @@ public:
 	const float RaiseSpeed = 5.0f;
 	const float TurnSpeed = 5.0f;
 
+	int32 Count = 1;		// 아이템의 개수
+
 private:
 
 	enum class ItemState
@@ -75,8 +77,6 @@ private:
 	uint8 bIsTurn : 1;		// 아이템 회전 여부
 	uint8 bIsCurrentTurn : 1;		// 아이템 회전 여부
 	uint8 bIsSubSlot : 1;		// 아이템 회전 여부
-	UPROPERTY()
-	int32 Count;		// 아이템의 개수
 
 	UPROPERTY()
 	UStaticMeshComponent* Mesh;

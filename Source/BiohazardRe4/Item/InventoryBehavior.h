@@ -15,12 +15,7 @@ class BIOHAZARDRE4_API UBInventoryBehavior : public UUserWidget
 {
 	GENERATED_BODY()
 
-	friend class ABInventoryActor;
-
 	virtual void NativeOnInitialized() override;
-
-	UPROPERTY()
-	ABInventoryActor* InventoryActor;
 
 	UPROPERTY()
 	TArray<class UCanvasPanel*> Panels;
@@ -36,10 +31,11 @@ class BIOHAZARDRE4_API UBInventoryBehavior : public UUserWidget
 	TArray<UObject*> Icons;
 
 public:
+	class ABInventoryActor* InventoryActor;
+
 	void SetItemData(const FBItemData& Data);
 
 	void SetHide();
-
 
 
 private:

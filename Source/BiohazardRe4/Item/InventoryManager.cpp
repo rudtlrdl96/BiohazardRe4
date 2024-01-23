@@ -82,6 +82,7 @@ void UBInventoryManager::CreateItem(const FBItemData& Data)
 		return;
 	}
 
+	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
 	static int32 count = 0;
 	UBInventoryItem* NewItem = NewObject<UBInventoryItem>(GetOwner(), UBInventoryItem::StaticClass(), FName(TEXT("Item") + FString::FromInt(count++)));
 
@@ -507,6 +508,19 @@ FVector UBInventoryManager::GetItemWorldLocation(UBInventoryItem* Item)
 		return SubSlot[Pos.Y * SubCaseSize.X + Pos.X]->GetComponentLocation();
 	}
 	return MainSlot[Pos.Y * CaseSize.X + Pos.X]->GetComponentLocation();
+}
+
+int UBInventoryManager::GetItemNum(EItemCode Code)
+{
+	int Num = 0;
+	for (UBInventoryItem* Item : Items)
+	{
+		if (Code == Item->GetData().ItemCode)
+		{
+			Num += Item->Count;
+		}
+	}
+	return Num;
 }
 
 void UBInventoryManager::ClearSlot(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot)
