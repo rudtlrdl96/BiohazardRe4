@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/StaticMesh.h"
 #include "BLeonWeapon.generated.h"
 
 UCLASS()
@@ -25,4 +26,9 @@ protected:
 public:
 	virtual void Trigger();
 	virtual void Reload();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
+	UStaticMeshComponent* WeaponMesh = nullptr;
+
 };
