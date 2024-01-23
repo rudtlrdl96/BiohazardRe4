@@ -15,7 +15,6 @@
 const FVector ABLeon::StandSocketOffset = FVector(0.0, 50.0, 80.0);
 const FVector ABLeon::CrouchSocketOffset = FVector(0.0, 50.0, 10.0);
 
-
 // Sets default values
 ABLeon::ABLeon()
 {
@@ -132,11 +131,16 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	if (nullptr == InteractionAction)
 	{
 		LOG_FATAL(TEXT("is Not Set InteractionAction"));
+	}			
+	if (nullptr == WeaponPutAwayAction)
+	{
+		LOG_FATAL(TEXT("is Not Set WeaponPutAwayAction"));
 	}		
 
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
 	Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
 	Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
+	Input->BindAction(LookAction, ETriggerEvent::None, this, &ABLeon::StopLook);
 
 	Input->BindAction(JogAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveJog);
 	Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);	
@@ -145,6 +149,20 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 	Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
 	Input->BindAction(InteractionAction, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
+
+	for (uint32 i = 0; i < 8; ++i)
+	{
+		if (nullptr == QuickSlotActions[i])
+		{
+			LOG_FATAL(TEXT("is Not Set QuickSlotActions[%d]"), i);
+		}
+
+		Input->BindAction(QuickSlotActions[i], ETriggerEvent::Started, this, &ABLeon::UseQuickSlot, i);
+	}
+}
+
+void ABLeon::ChangeUseWeapon(EItemCode _WeaponCode)
+{
 }
 
 ELeonState ABLeon::GetCurrentFSMState() const
@@ -168,6 +186,16 @@ void ABLeon::TryInteraction()
 	// Todo :: 상호작용 처리
 }
 
+bool ABLeon::AbleAim() const
+{
+	if (LeonWeaponState == ELeonWeaponAnim::Empty)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void ABLeon::PlayLook(const FInputActionInstance& _LookAction)
 {
 	PlayLook(_LookAction.GetValue().Get<FVector2D>());
@@ -177,9 +205,24 @@ void ABLeon::PlayLook(const FVector2D& _LookAction)
 {
 	if (Controller != nullptr)
 	{
-		AddControllerYawInput(_LookAction.X * TurnSpeed * GetWorld()->GetDeltaSeconds());
-		AddControllerPitchInput(_LookAction.Y * TurnSpeed * GetWorld()->GetDeltaSeconds());
+		LookInput.X = _LookAction.X;
+		LookInput.Y = _LookAction.Y;
+
+		LookInput.X = FMath::Min(LookInput.X, MaxTurnSpeed);
+		LookInput.Y = FMath::Min(LookInput.Y, MaxTurnSpeed);
+
+		float TurnX = LookInput.X * TurnSpeed * GetWorld()->GetDeltaSeconds();
+		float TurnY = LookInput.Y * TurnSpeed * GetWorld()->GetDeltaSeconds();
+
+		AddControllerYawInput(TurnX);
+		AddControllerPitchInput(TurnY);
 	}
+}
+
+
+void ABLeon::StopLook()
+{
+	LookInput = FVector::ZeroVector;
 }
 
 void ABLeon::SpringArmUpdate(float _DeltaTime)
@@ -194,33 +237,47 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 	}
 }
 
-void ABLeon::GetJogInputForward(FVector& _Result) const
+void ABLeon::VPlayerCameraToWorld(FVector& _Vector) const
 {
 	FVector CameraLook = PlayerCamera->GetForwardVector();
 	CameraLook.Z = 0.0;
 	CameraLook = CameraLook.GetSafeNormal();
 
-	_Result = MoveInput;
-	_Result.X = -_Result.X;
+	_Vector.X = -_Vector.X;
 
 	double CameraAngle = FMath::Atan2(CameraLook.X, CameraLook.Y);
-	_Result = _Result.RotateAngleAxisRad(CameraAngle, FVector::DownVector);
+	_Vector = _Vector.RotateAngleAxisRad(CameraAngle, FVector::DownVector);
 }
 
-double ABLeon::JogInputAngle() const
+double ABLeon::GetMoveAngle() const
 {
-	FVector InputForward = FVector::ZeroVector;
-	GetJogInputForward(InputForward);
+	FVector CameraForward = PlayerCamera->GetForwardVector();
+	CameraForward.Z = 0.0f;
+
+	FVector PlayerForward = GetActorForwardVector();
+	PlayerForward.Z = 0.0f;
+
+	float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CameraForward.GetSafeNormal(), PlayerForward.GetSafeNormal())));
+
+	LOG_MSG(TEXT("%f"), Angle);
+
+	return Angle;
+}
+
+double ABLeon::GetInputAngle() const
+{
+	FVector InputVector = MoveInput;
+	VPlayerCameraToWorld(InputVector);
 
 	FVector PlayerForward = GetActorForwardVector();
 
-	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(PlayerForward, InputForward)));
+	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(PlayerForward, InputVector)));
 }
 
 void ABLeon::JogLookAt(float _DeltaTime)
 {
-	FVector JogInput = FVector::ZeroVector;
-	GetJogInputForward(JogInput);
+	FVector JogInput = MoveDir;
+	VPlayerCameraToWorld(JogInput);
 	FRotator InputRotator = JogInput.Rotation();
 
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), InputRotator, _DeltaTime, 360.0f));
@@ -232,7 +289,7 @@ void ABLeon::Aim(float _DeltaTime)
 	CameraForward.Z = 0.0;
 	FRotator CameraRotator = CameraForward.Rotation();
 
-	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), CameraRotator, _DeltaTime, 600.0f));
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), CameraRotator, _DeltaTime, 360.0f));
 }
 void ABLeon::ActiveJog()
 {
@@ -319,4 +376,15 @@ void ABLeon::CreateFSM()
 	AimState.UpdateDel.BindUObject(this, &ABLeon::AimUpdate);
 	AimState.ExitDel.BindUObject(this, &ABLeon::AimExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Aim), AimState);
+}
+
+void ABLeon::UseQuickSlot(const uint32 _Index)
+{
+	if (_Index > 7)
+	{
+		LOG_ERROR(TEXT("Wrong QuickSlot Index"));
+		return;
+	}
+
+
 }

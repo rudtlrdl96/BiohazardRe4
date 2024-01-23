@@ -19,7 +19,7 @@ void ABLeon::JogEnter()
 
 void ABLeon::JogUpdate(float _DeltaTime)
 {	
-	if (true == bIsAim)
+	if (true == AbleAim() && true == bIsAim)
 	{
 		FsmComp->ChangeState(TO_KEY(ELeonState::Aim));
 		return;
@@ -31,10 +31,6 @@ void ABLeon::JogUpdate(float _DeltaTime)
 	if (MoveInput == FVector::ZeroVector)
 	{
 		FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
-	}
-	else if (false == bIsJogTrigger)
-	{
-		FsmComp->ChangeState(TO_KEY(ELeonState::Walk));
 	}
 }
 

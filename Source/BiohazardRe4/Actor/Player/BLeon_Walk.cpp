@@ -16,7 +16,7 @@ void ABLeon::WalkEnter()
 
 void ABLeon::WalkUpdate(float _DeltaTime)
 {
-	if (true == bIsAim)
+	if (true == AbleAim() && true == bIsAim)
 	{
 		FsmComp->ChangeState(TO_KEY(ELeonState::Aim));
 		return;
