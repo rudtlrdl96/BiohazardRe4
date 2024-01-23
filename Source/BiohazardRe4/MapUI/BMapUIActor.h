@@ -9,10 +9,10 @@
 UENUM()
 enum class EFloor : uint8
 {
-	TE_B1 UMETA(DisplayName = "B1"),
-	TE_1F UMETA(DisplayName = "1F"),
-	TE_2F UMETA(DisplayName = "2F"),
-	TE_3F UMETA(DisplayName = "3F"),
+	E_B1 UMETA(DisplayName = "B1"),
+	E_1F UMETA(DisplayName = "1F"),
+	E_2F UMETA(DisplayName = "2F"),
+	E_3F UMETA(DisplayName = "3F"),
 };
 
 UCLASS()
@@ -27,6 +27,26 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetFloor(EFloor Floor);
 
+	UFUNCTION(BlueprintCallable)
+	void MapUIOn();
+
+	UFUNCTION(BlueprintCallable)
+	void MapUIOff();
+
+
+	UFUNCTION(BlueprintCallable)
+	void MapUISwitch()
+	{
+		if (bMapUIOnOffSwitch)
+		{
+			MapUIOff();
+		}
+		else
+		{
+			MapUIOn();
+		}
+	}
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,27 +55,23 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// __________________Mesh
+	// __________________Component
 	UPROPERTY()
 	UStaticMeshComponent* RootPivotComponent;
 
 	UPROPERTY()
 	UStaticMeshComponent* BackgroundMesh;	// 배경 매쉬
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-	TArray<UStaticMeshComponent*> StageMapMesh;	// 지도 메쉬(층별로 분류), 해당 스테이지가 몇층으로 이루어져있는지에 대한 정보 필요
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	TArray<UStaticMeshComponent*> StageMapMesh;
 
 	uint8 CurrentFloor = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;
 
-	// __________________Input
+private:
+	UPROPERTY()
+	bool bMapUIOnOffSwitch = false;
 
-	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputMappingContext* DefaultMappingContext = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = Input)
-	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
-
-
+	
 };

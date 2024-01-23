@@ -52,7 +52,7 @@ ABMapUIActor::ABMapUIActor()
 	StageMapMesh[0]->SetupAttachment(RootComponent);
 	StageMapMesh[0]->SetVisibility(false);
 
-	SetFloor(EFloor::TE_1F); // 보여지는 층 초기화
+	SetFloor(EFloor::E_1F); // 보여지는 층 초기화
 
 	// 카메라
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -60,6 +60,7 @@ ABMapUIActor::ABMapUIActor()
 	Camera->SetRelativeLocation({ 0, 65, 300 });
 	Camera->SetRelativeRotation({ -80, -90, 0 });
 	Camera->FieldOfView = 25.0f;
+
 }
 
 void ABMapUIActor::SetFloor(EFloor Floor)
@@ -69,14 +70,16 @@ void ABMapUIActor::SetFloor(EFloor Floor)
 	StageMapMesh[CurrentFloor]->SetVisibility(true);
 }
 
+
 // Called when the game starts or when spawned
 void ABMapUIActor::BeginPlay()
 {
 	Super::BeginPlay();
+	bMapUIOnOffSwitch = false;
 
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
-	Subsystem->AddMappingContext(DefaultMappingContext, 1);
+	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
+	SetHidden(!bMapUIOnOffSwitch);
+	SetActorTickEnabled(bMapUIOnOffSwitch);
 }
 
 // Called every frame
@@ -86,3 +89,22 @@ void ABMapUIActor::Tick(float DeltaTime)
 
 }
 
+void ABMapUIActor::MapUIOn()
+{
+	bMapUIOnOffSwitch = true;
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);
+	
+	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
+	SetHidden(!bMapUIOnOffSwitch);
+	SetActorTickEnabled(bMapUIOnOffSwitch);
+}
+
+void ABMapUIActor::MapUIOff()
+{
+	bMapUIOnOffSwitch = false;
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));
+	
+	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
+	SetHidden(!bMapUIOnOffSwitch);
+	SetActorTickEnabled(bMapUIOnOffSwitch);
+}
