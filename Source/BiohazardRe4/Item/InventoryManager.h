@@ -85,7 +85,8 @@ public:
 	bool CheckSlotRange(const FIntPoint& Pos, const FIntPoint& Size);
 	// 서브 슬롯에 아이템이 있다면 true를 리턴한다
 	bool HasItemInSubSlot();
-
+	// 해당 아이템에 월드 위치값을 받아옵니다
+	FVector GetItemWorldLocation(UBInventoryItem* Item);
 private:
 	// 아이템을 추가한다
 	void CreateItem(const FBItemData& Data);

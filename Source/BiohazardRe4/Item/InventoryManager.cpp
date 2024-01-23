@@ -499,6 +499,16 @@ bool UBInventoryManager::HasItemInSubSlot()
 	return false;
 }
 
+FVector UBInventoryManager::GetItemWorldLocation(UBInventoryItem* Item)
+{
+	FIntPoint Pos = Item->GetItemPosition();
+	if (Item->IsSubSlot())
+	{
+		return SubSlot[Pos.Y * SubCaseSize.X + Pos.X]->GetComponentLocation();
+	}
+	return MainSlot[Pos.Y * CaseSize.X + Pos.X]->GetComponentLocation();
+}
+
 void UBInventoryManager::ClearSlot(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot)
 {
 	if (IsSubSlot)
