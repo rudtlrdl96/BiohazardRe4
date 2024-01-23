@@ -231,13 +231,15 @@ void ABInventoryActor::Click()
 	}
 	else if (SelectItem && FSMComp->GetCurrentFSMKey() != TO_KEY(EInventoryState::Select))
 	{
+		FVector Location = Inventory->GetItemWorldLocation(SelectItem);
+		Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0) ;
 		FVector2D Pos;
-		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), SelectItem->GetMeshLocation() + SelectItem->GetData().UIPivot, Pos);
+		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Location, Pos);
 		BehaviorWidget->SetPositionInViewport(Pos);
 		BehaviorWidget->SetItemData(SelectItem->GetData());
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 	}
-}
+	}
 
 void ABInventoryActor::Cancel()
 {

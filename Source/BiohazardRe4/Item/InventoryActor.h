@@ -121,6 +121,13 @@ public:
 	class UBInventoryItem* SelectItem;		// 현재 선택한 슬롯
 	uint8 bIsDragMove : 1;
 
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	float DebugValue;	// 인벤토리 위젯 클래스
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	float DebugX;	// 인벤토리 위젯 클래스
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	float DebugY;	// 인벤토리 위젯 클래스
+
 	UFUNCTION(BlueprintCallable)
 	void DebugAdd(EItemCode Code)
 	{
