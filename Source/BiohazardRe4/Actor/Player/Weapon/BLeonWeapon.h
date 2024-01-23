@@ -4,26 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BLeonGun.generated.h"
+#include "BLeonWeapon.generated.h"
 
 UCLASS()
-class BIOHAZARDRE4_API ABLeonGun : public AActor
+class BIOHAZARDRE4_API ABLeonWeapon : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABLeonGun();
+	ABLeonWeapon();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Trigger();
-	virtual void Shoot();
-	virtual void Reload();
-
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts or when spawned	
 	virtual void BeginPlay() override;
 
+public:
+	virtual void Trigger();
+	virtual void Reload();
 };

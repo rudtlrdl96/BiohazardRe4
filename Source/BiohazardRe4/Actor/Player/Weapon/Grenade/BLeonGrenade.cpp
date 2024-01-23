@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/BLeonShotgun.h"
+#include "Actor/Player/Weapon/Grenade/BLeonGrenade.h"
 

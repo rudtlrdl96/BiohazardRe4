@@ -1,16 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/BLeon.h"
+#include "Actor/Player/Body/BLeon.h"
 #include "Generic/BFsm.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
-void ABLeon::IdleEnter()
+void ABLeon::WalkEnter()
 {
-	bIsMove = false;
 	bIsJog = false;
+	bIsMove = true;
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
- 
-void ABLeon::IdleUpdate(float _DeltaTime)
+
+void ABLeon::WalkUpdate(float _DeltaTime)
 {
 	if (true == AbleAim() && true == bIsAim)
 	{
@@ -19,22 +23,23 @@ void ABLeon::IdleUpdate(float _DeltaTime)
 	}
 
 	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
-	
+
 	if (MoveInput == FVector::ZeroVector)
 	{
+		FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 		return;
 	}
 
 	if (true == bIsJogTrigger)
 	{
 		FsmComp->ChangeState(TO_KEY(ELeonState::Jog));
-	}
-	else
-	{
-		FsmComp->ChangeState(TO_KEY(ELeonState::Walk));
+		return;
 	}
 }
 
-void ABLeon::IdleExit()
+void ABLeon::WalkExit()
 {
+	bIsMove = false;
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 }

@@ -1,39 +1,31 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/BLeonGun.h"
+#include "Actor/Player/Weapon/BLeonWeapon.h"
 
 // Sets default values
-ABLeonGun::ABLeonGun()
+ABLeonWeapon::ABLeonWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
-void ABLeonGun::BeginPlay()
+void ABLeonWeapon::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	Super::BeginPlay();	
 }
 
 // Called every frame
-void ABLeonGun::Tick(float DeltaTime)
+void ABLeonWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ABLeonGun::Trigger()
+void ABLeonWeapon::Trigger()
 {
 }
 
-void ABLeonGun::Shoot()
+void ABLeonWeapon::Reload()
 {
 }
-
-void ABLeonGun::Reload()
-{
-}
-
