@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "BiohazardRe4.h"
 
 void UBInventoryBehavior::NativeOnInitialized()
 {
@@ -48,41 +49,45 @@ void UBInventoryBehavior::SetItemData(const FBItemData& Data)
 	case EItemCode::Handgun_SR09R:
 	case EItemCode::Shotgun_W870:
 	case EItemCode::Rifle_SRM1903:
-		Images[0]->SetBrushResourceObject(Icons[0]);
-		Texts[0]->SetText(NSLOCTEXT("UI", "Equip", "장비하기"));
-		Images[1]->SetBrushResourceObject(Icons[1]);
-		Texts[1]->SetText(NSLOCTEXT("UI", "Investigate", "조사하기"));
-		Images[2]->SetBrushResourceObject(Icons[2]);
-		Texts[2]->SetText(NSLOCTEXT("UI", "Hotkey", "단축키 등록"));
-		Images[3]->SetBrushResourceObject(Icons[3]);
-		Texts[3]->SetText(NSLOCTEXT("UI", "Drop", "버리기"));
-		Panels[2]->SetVisibility(ESlateVisibility::Visible);
-		Panels[3]->SetVisibility(ESlateVisibility::Visible);
+		SetButton(0, State_BehaviorButton::Equip);
+		SetButton(1, State_BehaviorButton::Investigate);
+		SetButton(2, State_BehaviorButton::Hotkey);
+		SetButton(3, State_BehaviorButton::Drop);
 		break;
 	case EItemCode::CombatKnife:
 	case EItemCode::HandgunAmmo:
 	case EItemCode::ShotgunShells:
 	case EItemCode::RifleAmmo:
-		Texts[0]->SetText(NSLOCTEXT("UI", "Investigate", "조사하기"));
-		Images[0]->SetBrushResourceObject(Icons[1]);
-		Texts[1]->SetText(NSLOCTEXT("UI", "Drop", "버리기"));
-		Images[1]->SetBrushResourceObject(Icons[3]);
-		Panels[2]->SetVisibility(ESlateVisibility::Hidden);
-		Panels[3]->SetVisibility(ESlateVisibility::Hidden);
+		SetButton(0, State_BehaviorButton::Investigate);
+		SetButton(1, State_BehaviorButton::Drop);
+		SetButton(2, State_BehaviorButton::None);
+		SetButton(3, State_BehaviorButton::None);
 		// 조사하기, 보관고(버리기)
 		break;
 	case EItemCode::GreenHerb:
 		// 사용하기, 조사하기, 제조하기, 보관고(버리기)
+		SetButton(0, State_BehaviorButton::Use);
+		SetButton(1, State_BehaviorButton::Investigate);
+		SetButton(2, State_BehaviorButton::Crafting);
+		SetButton(3, State_BehaviorButton::Drop);
 		break;
 	case EItemCode::MixedHerb_GG:
 	case EItemCode::MixedHerb_GR:
 	case EItemCode::FirstAidSpray:
+		SetButton(0, State_BehaviorButton::Use);
+		SetButton(1, State_BehaviorButton::Investigate);
+		SetButton(2, State_BehaviorButton::Drop);
+		SetButton(3, State_BehaviorButton::None);
 		// 사용하기	
 		break;
 	case EItemCode::Gunpowder:
 	case EItemCode::RedHerb:
 	case EItemCode::Resources_S:
 	case EItemCode::Resources_L:
+		SetButton(0, State_BehaviorButton::Crafting);
+		SetButton(1, State_BehaviorButton::Investigate);
+		SetButton(2, State_BehaviorButton::Drop);
+		SetButton(3, State_BehaviorButton::None);
 		// 제조하기
 		break;
 	default:
@@ -96,4 +101,68 @@ void UBInventoryBehavior::SetHide()
 	{
 		Panel->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void UBInventoryBehavior::SetButton(int Index, State_BehaviorButton State)
+{
+	switch (State)
+	{
+	case UBInventoryBehavior::None:
+		Panels[Index]->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	case UBInventoryBehavior::Equip:
+		Images[Index]->SetBrushResourceObject(Icons[0]);
+		Texts[Index]->SetText(NSLOCTEXT("UI", "Equip", "장비하기"));
+		{
+			FScriptDelegate Delegate;
+			Delegate.BindUFunction(this, FName("ButtonTest"));
+			Buttons[Index]->OnClicked.Clear();
+			Buttons[Index]->OnClicked.Add(Delegate);
+		}
+		break;
+	case UBInventoryBehavior::Unequip:
+		Images[Index]->SetBrushResourceObject(Icons[1]);
+		Texts[Index]->SetText(NSLOCTEXT("UI", "Unequip", "해제하기"));
+		break;
+	case UBInventoryBehavior::Investigate:
+		Images[Index]->SetBrushResourceObject(Icons[2]);
+		Texts[Index]->SetText(NSLOCTEXT("UI", "Investigate", "조사하기"));
+		break;
+	case UBInventoryBehavior::Hotkey:
+		Images[Index]->SetBrushResourceObject(Icons[3]);
+		Texts[Index]->SetText(NSLOCTEXT("UI", "Hotkey", "단축키 등록"));
+		break;
+	case UBInventoryBehavior::Drop:
+		Images[Index]->SetBrushResourceObject(Icons[4]);
+		Texts[Index]->SetText(NSLOCTEXT("UI", "Drop", "버리기"));
+		break;
+	case UBInventoryBehavior::Crafting:
+		Images[Index]->SetBrushResourceObject(Icons[5]);
+		Texts[Index]->SetText(NSLOCTEXT("UI", "Crafting", "제조하기"));
+		{
+			FScriptDelegate Delegate;
+			Delegate.BindUFunction(this, FName("SetCraft"));
+			Buttons[Index]->OnClicked.Clear();
+			Buttons[Index]->OnClicked.Add(Delegate);
+		}
+		break;
+	case UBInventoryBehavior::Use:
+		Images[Index]->SetBrushResourceObject(Icons[6]);
+		Texts[Index]->SetText(NSLOCTEXT("UI", "Use", "사용하기"));
+		break;
+	default:
+		break;
+	}
+
+	Panels[Index]->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UBInventoryBehavior::ButtonTest()
+{
+	LOG_MSG(TEXT("Button Click"));
+}
+
+void UBInventoryBehavior::SetCraft()
+{
+	LOG_MSG(TEXT("Craft Click"));
 }

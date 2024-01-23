@@ -14,8 +14,13 @@ UCLASS()
 class BIOHAZARDRE4_API UBInventoryBehavior : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+	friend class ABInventoryActor;
+
 	virtual void NativeOnInitialized() override;
+
+	UPROPERTY()
+	ABInventoryActor* InventoryActor;
 
 	UPROPERTY()
 	TArray<class UCanvasPanel*> Panels;
@@ -34,4 +39,28 @@ public:
 	void SetItemData(const FBItemData& Data);
 
 	void SetHide();
+
+
+
+private:
+	enum State_BehaviorButton
+	{
+		None,
+		Equip,			// 장비
+		Unequip,		// 장비해제
+		Investigate,	// 조사
+		Hotkey,			// 단축키 등록
+		Drop,			// 버리기
+		Crafting,		// 제조하기
+		Use,			// 사용하기
+	};
+
+	void SetButton(int Index, State_BehaviorButton State);
+
+	UFUNCTION()
+	void ButtonTest();
+
+	UFUNCTION()
+	void SetCraft();
+
 };

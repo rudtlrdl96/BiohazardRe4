@@ -160,6 +160,7 @@ void ABInventoryActor::BeginPlay()
 
 	BehaviorWidget = CreateWidget<UBInventoryBehavior>(GetWorld(), BehaviorWidgetClass);
 	BehaviorWidget->AddToViewport();
+	BehaviorWidget->SetHide();
 
 	FOnTimelineFloatStatic F;
 	F.BindLambda([this](float Value) {
