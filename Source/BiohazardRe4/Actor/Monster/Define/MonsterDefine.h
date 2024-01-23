@@ -7,5 +7,6 @@
 #define BBKEY_PLAYERPOS TEXT("PlayerPos")
 #define BBKEY_TARGET TEXT("Target")
 #define BBKEY_ISNEAR TEXT("IsNear")
+#define BBKEY_ISDETECTED TEXT("IsDetected")
 #define BBKEY_ISATTACKING TEXT("IsAttacking")
 #define BBKEY_PATROLPOS TEXT("PatrolPos")

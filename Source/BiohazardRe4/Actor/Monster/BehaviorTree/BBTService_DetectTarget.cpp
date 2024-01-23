@@ -38,7 +38,7 @@ void UBBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 
 	FVector MyLocation = MyPawn->GetActorLocation();
-	float DetectRange = MyStatInterface->GetDetectRange();
+	float DetectRange = MyStatInterface->GetDetectRadius();
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, MyPawn);
@@ -58,7 +58,6 @@ void UBBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 			APawn* Pawn = Cast<APawn>(OverlapResult.GetActor());
 			if (Pawn && Pawn->GetController()->IsPlayerController())
 			{
-				LOG_MSG(TEXT("Player Detected By Monster"));
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Pawn);
 
 				break;

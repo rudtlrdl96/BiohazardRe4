@@ -43,7 +43,7 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 	}
 
 	FVector MyLocation = MyCharacter->GetActorLocation();
-	float AttackRange = MyStatInterface->GetAttackRange();
+	float AttackRange = MyStatInterface->GetAttackRadius();
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, MyPawn);

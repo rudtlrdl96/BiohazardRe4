@@ -20,8 +20,20 @@ public:
 	void RunAI();
 	void StopAI();
 
+	UFUNCTION()
+	void OnTargetPerceptionUpdated(AActor* _Actor, FAIStimulus const _Stimulus);
+	
+	UFUNCTION()
+	void OnTargetPerceptionForgotten(AActor* _Actor);
+
 protected:
 	virtual void OnPossess(APawn* _InPawn) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	class UAIPerceptionComponent* AIPerceptionComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	class UAISenseConfig_Sight* SightConfig;
 
 private:
 	UPROPERTY()
@@ -29,4 +41,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UBehaviorTree> BTAsset;
+
+	void InitPerceptionSystem(APawn* _InPawn);
+	void SetPerceptionSystem();
 };

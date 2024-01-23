@@ -17,5 +17,6 @@ public:
 	ABChainsawMan();
 
 protected:
+	virtual void Attack() override;
 	virtual void BeginPlay() override;
 };

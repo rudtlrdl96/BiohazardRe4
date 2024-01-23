@@ -25,9 +25,9 @@ public:
 	virtual void SetIsAttack(bool _IsAttacking) override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
-	virtual float GetAttackRange() override;
-	virtual float GetWeaponAttackRadius() override;
-	virtual float GetDetectRange() override;
+	virtual float GetAttackRadius() override;
+	virtual float GetAttackSweepRadius() override;
+	virtual float GetDetectRadius() override;
 	virtual float GetPatrolRadius() override;
 
 

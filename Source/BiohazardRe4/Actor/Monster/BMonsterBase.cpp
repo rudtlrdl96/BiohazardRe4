@@ -32,14 +32,8 @@ void ABMonsterBase::SetCurrentState(MonsterState _InState)
 
 void ABMonsterBase::Attack()
 {
-	if (Weapon == nullptr)
-	{
-		LOG_WARNING(TEXT("Monster Weapon - Nullptr : ABMonsterBase::Attack()"));
-		return;
-	}
-
-	float AttackRadius = GetWeaponAttackRadius();
-	float AttackRange = GetAttackRange();
+	float SweepRadius = GetAttackSweepRadius();
+	float AttackRange = GetAttackRadius();
 
 	const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
 	const FVector End = Start + GetActorForwardVector() * AttackRange;
@@ -47,7 +41,12 @@ void ABMonsterBase::Attack()
 	FHitResult OutHitResult;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
-	bool HitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(AttackRadius), Params);
+	bool HitDetected = GetWorld()->SweepSingleByChannel(
+		                           OutHitResult, 
+		                           Start, End, 
+		                           FQuat::Identity, 
+		                           ECC_EngineTraceChannel2, 
+		                           FCollisionShape::MakeSphere(SweepRadius), Params);
 
 #if ENABLE_DRAW_DEBUG
 	
@@ -60,7 +59,7 @@ void ABMonsterBase::Attack()
 	FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
 	float CapsuleHalfHeight = AttackRange * 0.5f;
 
-	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DebugColor, false, 5.0f);
+	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, SweepRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DebugColor, false, 5.0f);
 #endif
 }
 
@@ -84,19 +83,19 @@ const FMonsterAttackEnd& ABMonsterBase::GetMonsterAttackEndDelegate()
 	return OnAttackEnd;
 }
 
-float ABMonsterBase::GetAttackRange()
+float ABMonsterBase::GetAttackRadius()
 {
-	return Stat->GetAttackRange();
+	return Stat->GetAttackRadius();
 }
 
-float ABMonsterBase::GetWeaponAttackRadius()
+float ABMonsterBase::GetAttackSweepRadius()
 {
-	return Stat->GetWeaponAttackRadius();
+	return Stat->GetAttackSweepRadius();
 }
 
-float ABMonsterBase::GetDetectRange()
+float ABMonsterBase::GetDetectRadius()
 {
-	return Stat->GetDetectRange();
+	return Stat->GetDetectRadius();
 }
 
 float ABMonsterBase::GetPatrolRadius()

@@ -6,10 +6,10 @@
 // Sets default values for this component's properties
 UBMonsterStatComponent::UBMonsterStatComponent()
 {
-	AttackRange = 125.0f;
+	AttackRadius = 100.0f;
 	MaxHp = 100;
-	WeaponAttackRadius = 15.0f;
-	DetectRange = 200.0f;
+	AttackSweepRadius = 30.0f;
+	DetectRadius = 200.0f;
 	PatrolRadius = 500.0f;
 }
 

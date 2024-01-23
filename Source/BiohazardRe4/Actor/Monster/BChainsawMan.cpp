@@ -4,6 +4,8 @@
 #include "Actor/Monster/BChainsawMan.h"
 #include "AIController/BAIChainsawManController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Component/BMonsterStatComponent.h"
+#include "BiohazardRe4.h"
 
 ABChainsawMan::ABChainsawMan()
 {
@@ -23,6 +25,19 @@ ABChainsawMan::ABChainsawMan()
 
 	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+	Stat->SetAttackRadius(120);
+}
+
+void ABChainsawMan::Attack()
+{
+	if (Weapon == nullptr)
+	{
+		LOG_WARNING(TEXT("Monster Weapon - Nullptr : ABMonsterBase::Attack()"));
+		return;
+	}
+
+	Super::Attack();
 }
 
 void ABChainsawMan::BeginPlay()
