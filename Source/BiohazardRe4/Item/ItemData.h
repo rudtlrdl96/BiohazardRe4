@@ -9,7 +9,7 @@ UENUM(BlueprintType)
 enum class EItemCode : uint8
 {
 	// null 체크용 Empty 데이터가 비어있음을 표현
-	Empty			UMETA(DisplayName = "Handgun"),
+	Empty			UMETA(DisplayName = "Empty"),
 	// 무기
 	Handgun_SR09R	UMETA(DisplayName = "Handgun"),	// 권총 (시작무기)
 	Shotgun_W870	UMETA(DisplayName = "Shotgun"),	// 샷건
