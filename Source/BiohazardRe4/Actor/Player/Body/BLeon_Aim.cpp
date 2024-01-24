@@ -20,6 +20,8 @@ void ABLeon::AimEnter()
 
 void ABLeon::AimUpdate(float _DeltaTime)
 {
+	bIsCrouch = false;
+
 	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
 	Aim(_DeltaTime);
 
