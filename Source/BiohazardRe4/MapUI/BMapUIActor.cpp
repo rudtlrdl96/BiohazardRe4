@@ -80,6 +80,14 @@ void ABMapUIActor::BeginPlay()
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
+
+	Controller = UGameplayStatics::GetPlayerController(this, 0);
+	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
+
+	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Controller->InputComponent);
+	Input->BindAction(CameraDragStart, ETriggerEvent::Started, this, &ABMapUIActor::CameraDragStartFunc);
+	Input->BindAction(CameraMove, ETriggerEvent::Triggered, this, &ABMapUIActor::CameraMoveFunc);
+	Input->BindAction(CameraDragEnd, ETriggerEvent::Completed, this, &ABMapUIActor::CameraDragEndFunc);
 }
 
 // Called every frame
@@ -89,22 +97,72 @@ void ABMapUIActor::Tick(float DeltaTime)
 
 }
 
+void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
+{
+	if (!bCameraDrageState)
+	{
+		return;
+	}
+
+	FVector MovementVector = Value.Get<FVector>();
+	
+	FVector CurLoc = Camera->GetRelativeLocation();
+	CurLoc += MovementVector;
+	Camera->SetRelativeLocation(CurLoc);
+}
+
+void ABMapUIActor::CameraDragStartFunc()
+{
+	bCameraDrageState = true;
+	Controller->SetShowMouseCursor(false);
+}
+
+void ABMapUIActor::CameraDragEndFunc()
+{
+	bCameraDrageState = false;
+	Controller->SetShowMouseCursor(true);
+}
+
+void ABMapUIActor::ViewUpperFloorFunc()
+{
+	UE_LOG(LogTemp, Display, TEXT("ViewUpperFloor Is T"))
+}
+
+void ABMapUIActor::ViewLowerFloorFunc()
+{
+	UE_LOG(LogTemp, Display, TEXT("ViewUpperFloor Is G"))
+}
+
 void ABMapUIActor::MapUIOn()
 {
+	if (Controller == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("MapUI Controller is nullptr"))
+	}
+
 	bMapUIOnOffSwitch = true;
-	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);
-	
+	Controller->SetViewTarget(this);
+	Subsystem->AddMappingContext(DefaultMappingContext, 1);
+
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
+	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 }
 
 void ABMapUIActor::MapUIOff()
 {
+	if (Controller == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("MapUI Controller is nullptr"))
+	}
+
 	bMapUIOnOffSwitch = false;
-	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));
-	
+	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));
+	Subsystem->RemoveMappingContext(DefaultMappingContext);
+
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
+	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 }
