@@ -88,6 +88,9 @@ void ABMapUIActor::BeginPlay()
 	Input->BindAction(CameraDragStart, ETriggerEvent::Started, this, &ABMapUIActor::CameraDragStartFunc);
 	Input->BindAction(CameraMove, ETriggerEvent::Triggered, this, &ABMapUIActor::CameraMoveFunc);
 	Input->BindAction(CameraDragEnd, ETriggerEvent::Completed, this, &ABMapUIActor::CameraDragEndFunc);
+	Input->BindAction(CameraZoom, ETriggerEvent::Triggered, this, &ABMapUIActor::CameraZoomFunc);
+	Input->BindAction(ViewUpperFloor, ETriggerEvent::Triggered, this, &ABMapUIActor::ViewUpperFloorFunc);
+	Input->BindAction(ViewLowerFloor, ETriggerEvent::Triggered, this, &ABMapUIActor::ViewLowerFloorFunc);
 }
 
 // Called every frame
@@ -95,42 +98,6 @@ void ABMapUIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
-{
-	if (!bCameraDrageState)
-	{
-		return;
-	}
-
-	FVector MovementVector = Value.Get<FVector>();
-	
-	FVector CurLoc = Camera->GetRelativeLocation();
-	CurLoc += MovementVector;
-	Camera->SetRelativeLocation(CurLoc);
-}
-
-void ABMapUIActor::CameraDragStartFunc()
-{
-	bCameraDrageState = true;
-	Controller->SetShowMouseCursor(false);
-}
-
-void ABMapUIActor::CameraDragEndFunc()
-{
-	bCameraDrageState = false;
-	Controller->SetShowMouseCursor(true);
-}
-
-void ABMapUIActor::ViewUpperFloorFunc()
-{
-	UE_LOG(LogTemp, Display, TEXT("ViewUpperFloor Is T"))
-}
-
-void ABMapUIActor::ViewLowerFloorFunc()
-{
-	UE_LOG(LogTemp, Display, TEXT("ViewUpperFloor Is G"))
 }
 
 void ABMapUIActor::MapUIOn()
@@ -166,3 +133,59 @@ void ABMapUIActor::MapUIOff()
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 }
+
+void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
+{
+	if (!bCameraDrageState)
+	{
+		return;
+	}
+
+	FVector MovementVector = Value.Get<FVector>();
+	
+	FVector CurLoc = Camera->GetRelativeLocation();
+	CurLoc += MovementVector;
+	Camera->SetRelativeLocation(CurLoc);
+}
+
+void ABMapUIActor::CameraDragStartFunc()
+{
+	bCameraDrageState = true;
+	Controller->SetShowMouseCursor(false);
+}
+
+void ABMapUIActor::CameraDragEndFunc()
+{
+	bCameraDrageState = false;
+	Controller->SetShowMouseCursor(true);
+}
+
+void ABMapUIActor::ViewUpperFloorFunc()
+{
+	uint8 UpperFloor = CurrentFloor + 1;
+	if (UpperFloor == static_cast<uint8>(EFloor::E_MAX))
+	{
+		UpperFloor = 0;
+	}
+	SetFloor(static_cast<EFloor>(UpperFloor));
+}
+
+void ABMapUIActor::ViewLowerFloorFunc()
+{
+	uint8 LowerFloor = CurrentFloor - 1;
+	if (LowerFloor == UINT8_MAX)
+	{
+		LowerFloor = static_cast<uint8>(EFloor::E_3F);
+	}
+	SetFloor(static_cast<EFloor>(LowerFloor));
+}
+
+void ABMapUIActor::CameraZoomFunc(const struct FInputActionValue& Value)
+{
+	float MovementVector = Value.Get<float>();
+	Camera->FieldOfView += MovementVector * 5;
+	UE_LOG(LogTemp, Display, TEXT("Zoom"))
+}
+
+
+

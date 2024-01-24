@@ -13,6 +13,7 @@ enum class EFloor : uint8
 	E_1F UMETA(DisplayName = "1F"),
 	E_2F UMETA(DisplayName = "2F"),
 	E_3F UMETA(DisplayName = "3F"),
+	E_MAX UMETA(DisplayName = "MAX")
 };
 
 UCLASS()
@@ -97,6 +98,9 @@ private:
 	class UInputAction* ViewLowerFloor = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* CameraZoom = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
 
 	bool bCameraDrageState = false;
@@ -104,6 +108,7 @@ private:
 	void CameraDragStartFunc();
 	void CameraMoveFunc(const struct FInputActionValue& Value);
 	void CameraDragEndFunc();
+	void CameraZoomFunc(const struct FInputActionValue& Value);
 	void ViewUpperFloorFunc();
 	void ViewLowerFloorFunc();
 };
