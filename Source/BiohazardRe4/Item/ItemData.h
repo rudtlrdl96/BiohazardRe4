@@ -29,6 +29,9 @@ enum class EItemCode : uint8
 	Gunpowder		UMETA(DisplayName = "Gunpowder"),		// È­¾à
 	Resources_S		UMETA(DisplayName = "Resources S"),	// ¼ÒÀç S
 	Resources_L		UMETA(DisplayName = "Resources L"),	// ¼ÒÀç L
+	// ¼ö·ùÅº
+	Grenade			UMETA(DisplayName = "Grenade"),     // ¼ö·ùÅº
+	Flashbang		UMETA(DisplayName = "Flashbang"),   // ¼¶±¤Åº
 };
 
 /*

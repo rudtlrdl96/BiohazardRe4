@@ -82,6 +82,7 @@ void ABLeon::Tick(float _DeltaTime)
 {
 	Super::Tick(_DeltaTime);
 	SpringArmUpdate(_DeltaTime);
+	UseWeaponUpdate(_DeltaTime);
 
 	LeonFSMState = GetCurrentFSMState();
 }
@@ -168,6 +169,36 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 void ABLeon::ChangeUseWeapon(EItemCode _WeaponCode)
 {
+	if (_WeaponCode == UseWeaponCode)
+	{
+		return;
+	}
+
+	switch (LeonWeaponSwap)
+	{
+	case ELeonWeaponSwap::PutAway:
+	{
+		WeaponPutOutAnim = GetUseWeaponAnimation(_WeaponCode);
+	}
+		break;
+	default:
+	{
+		WeaponPutAwayAnim = GetUseWeaponAnimation(UseWeaponCode);
+		WeaponPutOutAnim = GetUseWeaponAnimation(_WeaponCode);
+
+		if (WeaponPutAwayAnim == ELeonWeaponAnim::Empty)
+		{
+			LeonWeaponSwap = ELeonWeaponSwap::PutOut;
+		}
+		else
+		{
+			LeonWeaponSwap = ELeonWeaponSwap::PutAway;
+		}
+	}
+		break;
+	}
+
+	UseWeaponCode = _WeaponCode;
 }
 
 ELeonState ABLeon::GetCurrentFSMState() const
@@ -242,6 +273,31 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 	}
 }
 
+void ABLeon::UseWeaponUpdate(float _DeltaTime)
+{
+	switch (LeonWeaponSwap)
+	{
+	case ELeonWeaponSwap::None:
+	{
+		LeonWeaponState = WeaponPutOutAnim;
+	}
+		break;
+	case ELeonWeaponSwap::PutOut:
+	{	
+		LeonWeaponState = WeaponPutOutAnim;
+	}
+		break;
+	case ELeonWeaponSwap::PutAway:
+	{
+		LeonWeaponState = WeaponPutAwayAnim;
+	}		
+		break;
+	default:
+		break;
+	}
+
+}
+
 void ABLeon::VPlayerCameraToWorld(FVector& _Vector) const
 {
 	FVector CameraLook = PlayerCamera->GetForwardVector();
@@ -263,8 +319,6 @@ double ABLeon::GetMoveAngle() const
 	PlayerForward.Z = 0.0f;
 
 	float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CameraForward.GetSafeNormal(), PlayerForward.GetSafeNormal())));
-
-	LOG_MSG(TEXT("%f"), Angle);
 
 	return Angle;
 }
@@ -391,5 +445,75 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 		return;
 	}
 
+	LOG_MSG(TEXT("Swap Slot : %d"), _Index);
 
+	// Todo : 디버그용 퀵슬롯 정보가 완성되면 교체
+	switch (_Index)
+	{
+	case 0:
+	{
+		ChangeUseWeapon(EItemCode::Empty);
+	}
+		break;
+	case 1:
+	{
+		ChangeUseWeapon(EItemCode::Handgun_SR09R);
+	}
+	break;
+	case 2:
+	{
+		ChangeUseWeapon(EItemCode::Shotgun_W870);
+	}
+	break;
+	case 3:
+	{
+		ChangeUseWeapon(EItemCode::Rifle_SRM1903);
+	}
+	break;
+	case 4:
+	{
+		ChangeUseWeapon(EItemCode::CombatKnife);
+	}
+	break;
+	case 5:
+	{
+		ChangeUseWeapon(EItemCode::Grenade);
+	}
+	break;
+	case 6:
+	{
+		ChangeUseWeapon(EItemCode::Flashbang);
+	}
+	break;
+
+	default:
+		break;
+	}
+
+}
+
+ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode)
+{
+	switch (_WeaponCode)
+	{
+	case EItemCode::Empty:
+		return ELeonWeaponAnim::Empty;
+	case EItemCode::Handgun_SR09R:
+		return ELeonWeaponAnim::Pistol;
+	case EItemCode::Shotgun_W870:
+		return ELeonWeaponAnim::Shotgun;
+	case EItemCode::Rifle_SRM1903:
+		return ELeonWeaponAnim::Rifle;
+	case EItemCode::CombatKnife:
+		return ELeonWeaponAnim::Knife;
+	case EItemCode::Grenade:
+		return ELeonWeaponAnim::Grenade;
+	case EItemCode::Flashbang:
+		return ELeonWeaponAnim::Grenade;
+	default:
+	{
+		LOG_ERROR(TEXT("Wrong Use Weapon Code"));
+	}
+		return ELeonWeaponAnim::Empty;
+	}
 }

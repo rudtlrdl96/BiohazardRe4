@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Item/ItemData.h"
+#include "BInterface_WeaponPutOut.h"
+#include "BInterface_WeaponPutAway.h"
 #include "BLeon.generated.h"
 
 struct FInputActionInstance;
@@ -41,6 +43,14 @@ enum class ELeonHealth : uint8
 };
 
 UENUM(BlueprintType)
+enum class ELeonWeaponSwap : uint8
+{
+	None	UMETA(DisplayName = "None"),
+	PutOut	UMETA(DisplayName = "PutOut"),
+	PutAway	UMETA(DisplayName = "PutAway"),
+};
+
+UENUM(BlueprintType)
 enum class ELeonWeaponAnim : uint8
 {
 	Empty	UMETA(DisplayName = "Empty"),
@@ -65,7 +75,7 @@ enum class ELeonDirection : uint8
 };
 
 UCLASS()
-class BIOHAZARDRE4_API ABLeon : public ACharacter
+class BIOHAZARDRE4_API ABLeon : public ACharacter, public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut
 {
 	GENERATED_BODY()
 
@@ -160,12 +170,37 @@ public:
 		return LookInput;
 	}
 
+	// 플레이어의 무기 변경 상태를 반환합니다
+	UFUNCTION(BlueprintCallable)
+	inline ELeonWeaponSwap GetWeaponSwapState() const
+	{
+		return LeonWeaponSwap;
+	}
+
+	// 플레이어 PutOut 애니메이션 타입을 반환합니다
+	UFUNCTION(BlueprintCallable)
+	inline ELeonWeaponAnim GetPutOutAnim() const
+	{
+		return WeaponPutOutAnim;
+	}
+
+	// 플레이어 PutAway 애니메이션 타입을 반환합니다
+	UFUNCTION(BlueprintCallable)
+	inline ELeonWeaponAnim GetPutAwayAnim() const
+	{
+		return WeaponPutAwayAnim;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	FVector GetCameraDirection() const;
 
 	// 현재 플레이어의 입력 방향을 Enum으로 반환합니다
 	UFUNCTION(BlueprintCallable)
 	ELeonDirection GetLeonDirection() const;
+
+
+	virtual void WeaponPutOut() override {}
+	virtual void WeaponPutAway() override {}
 
 protected:
 	// Called when the game starts or when spawned
@@ -189,18 +224,30 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsCrouch : 1 = false;		
-		
+
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	ELeonState LeonFSMState = ELeonState::Idle;
 	
 	UPROPERTY(EditAnywhere, Category = Animation)
 	ELeonWeaponAnim LeonWeaponState = ELeonWeaponAnim::Empty;
-	
+
+	UPROPERTY(EditAnywhere, Category = Animation)
+	ELeonWeaponAnim WeaponPutAwayAnim = ELeonWeaponAnim::Empty;
+
+	UPROPERTY(EditAnywhere, Category = Animation)
+	ELeonWeaponAnim WeaponPutOutAnim = ELeonWeaponAnim::Empty;
+		
 	UPROPERTY(EditAnywhere, Category = Animation)
 	ELeonHealth LeonHealth = ELeonHealth::Normal;	
 	
-	UPROPERTY(EditAnywhere, Category = Animation)
-	ELeonAim LeonAim = ELeonAim::Start;
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	ELeonAim LeonAim = ELeonAim::Start;	
+	
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	ELeonWeaponSwap  LeonWeaponSwap = ELeonWeaponSwap::None;
+
+	UPROPERTY(VisibleAnywhere, Category = Animation)
+	EItemCode  UseWeaponCode = EItemCode::Empty;
 
 	UPROPERTY(VisibleAnywhere, Category = Animation)
 	float AimUpdateTime = 0.0f;	
@@ -240,9 +287,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* WeaponPutAwayAction = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = Animation)
-	EItemCode  UseWeaponCode = EItemCode::Empty;
-
 	USpringArmComponent* SpringArm = nullptr;
 	UCameraComponent* PlayerCamera = nullptr;
 
@@ -262,6 +306,8 @@ private:
 	void StopLook();
 
 	void SpringArmUpdate(float _DeltaTime);
+	void UseWeaponUpdate(float _DeltaTime);
+
 	void VPlayerCameraToWorld(FVector& _Result) const;
 
 	void JogLookAt(float _DeltaTime);
@@ -279,6 +325,8 @@ private:
 	void CreateFSM();
 
 	void UseQuickSlot(const uint32 _Index);
+
+	ELeonWeaponAnim GetUseWeaponAnimation(EItemCode _WeaponCode);
 
 	/* FSM */
 	void IdleEnter();
