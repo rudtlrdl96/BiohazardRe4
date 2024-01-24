@@ -25,6 +25,103 @@ ABLeon::ABLeon()
 	CreateFSM();
 }
 
+// Called when the game starts or when spawned
+void ABLeon::BeginPlay()
+{
+	Super::BeginPlay();
+	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
+}
+
+// Called every frame
+void ABLeon::Tick(float _DeltaTime)
+{
+	Super::Tick(_DeltaTime);
+	SpringArmUpdate(_DeltaTime);
+	UseWeaponUpdate(_DeltaTime);
+
+	LeonFSMState = GetCurrentFSMState();
+}
+
+// Called to bind functionality to input
+void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(_PlayerInputComponent);
+
+	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(_PlayerInputComponent);
+
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+
+	if (PlayerController == nullptr)
+	{
+		LOG_FATAL(TEXT("Failed Find APlayerController"));
+	}
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+
+	if (Subsystem == nullptr)
+	{
+		LOG_FATAL(TEXT("Failed Get GetSubsystem<UEnhancedInputLocalPlayerSubsystem>"));
+	}
+
+	Subsystem->AddMappingContext(DefaultMappingContext, 0);
+
+	if (nullptr == Input)
+	{
+		LOG_FATAL(TEXT("Failed Find InputComponent"));
+	}
+	if (nullptr == MoveAction)
+	{
+		LOG_FATAL(TEXT("is Not Set MoveAction"));
+	}
+	if (nullptr == LookAction)
+	{
+		LOG_FATAL(TEXT("is Not Set LookAction"));
+	}
+	if (nullptr == JogAction)
+	{
+		LOG_FATAL(TEXT("is Not Set JogAction"));
+	}
+	if (nullptr == CrouchAction)
+	{
+		LOG_FATAL(TEXT("is Not Set RunAction"));
+	}
+	if (nullptr == AimAction)
+	{
+		LOG_FATAL(TEXT("is Not Set AimAction"));
+	}
+	if (nullptr == InteractionAction)
+	{
+		LOG_FATAL(TEXT("is Not Set InteractionAction"));
+	}
+	if (nullptr == WeaponPutAwayAction)
+	{
+		LOG_FATAL(TEXT("is Not Set WeaponPutAwayAction"));
+	}
+
+	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
+	Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
+	Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
+	Input->BindAction(LookAction, ETriggerEvent::None, this, &ABLeon::StopLook);
+
+	Input->BindAction(JogAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveJog);
+	Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);
+	Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveAim);
+	Input->BindAction(AimAction, ETriggerEvent::Completed, this, &ABLeon::DisableAim);
+
+	Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
+	Input->BindAction(InteractionAction, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
+
+	for (uint32 i = 0; i < 8; ++i)
+	{
+		if (nullptr == QuickSlotActions[i])
+		{
+			LOG_FATAL(TEXT("is Not Set QuickSlotActions[%d]"), i);
+		}
+
+		Input->BindAction(QuickSlotActions[i], ETriggerEvent::Started, this, &ABLeon::UseQuickSlot, i);
+	}
+}
+
 FVector ABLeon::GetCameraDirection() const
 {
 	return PlayerCamera->GetForwardVector();
@@ -70,135 +167,66 @@ ELeonDirection ABLeon::GetLeonDirection() const
 	}
 }
 
-// Called when the game starts or when spawned
-void ABLeon::BeginPlay()
+void ABLeon::WeaponPutOut()
 {
-	Super::BeginPlay();
-	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
+	LeonWeaponSwap = ELeonWeaponSwap::None;
+
+	LOG_MSG(TEXT("Leon Weapon PutOut"));
 }
 
-// Called every frame
-void ABLeon::Tick(float _DeltaTime)
+void ABLeon::WeaponPutAway()
 {
-	Super::Tick(_DeltaTime);
-	SpringArmUpdate(_DeltaTime);
-	UseWeaponUpdate(_DeltaTime);
+	UseWeaponCode = PutOutWeapon;
+	PutOutWeapon = EItemCode::Empty;
 
-	LeonFSMState = GetCurrentFSMState();
-}
+	ELeonWeaponAnim CurAnimation = GetUseWeaponAnimation(UseWeaponCode);
 
-// Called to bind functionality to input
-void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(_PlayerInputComponent);
-
-	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(_PlayerInputComponent);
-
-	APlayerController* PlayerController = Cast<APlayerController>(Controller);
-
-	if (PlayerController == nullptr)
+	if (CurAnimation == ELeonWeaponAnim::Empty)
 	{
-		LOG_FATAL(TEXT("Failed Find APlayerController"));
+		LeonWeaponSwap = ELeonWeaponSwap::None;
+	}
+	else
+	{
+		LeonWeaponSwap = ELeonWeaponSwap::PutOut;
 	}
 
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-
-	if (Subsystem == nullptr)
-	{
-		LOG_FATAL(TEXT("Failed Get GetSubsystem<UEnhancedInputLocalPlayerSubsystem>"));
-	}
-
-	Subsystem->AddMappingContext(DefaultMappingContext, 0);
-
-	if (nullptr == Input)
-	{
-		LOG_FATAL(TEXT("Failed Find InputComponent"));	
-	}
-	if (nullptr == MoveAction)
-	{
-		LOG_FATAL(TEXT("is Not Set MoveAction"));
-	}
-	if (nullptr == LookAction)
-	{
-		LOG_FATAL(TEXT("is Not Set LookAction"));
-	}
-	if (nullptr == JogAction)
-	{
-		LOG_FATAL(TEXT("is Not Set JogAction"));
-	}
-	if (nullptr == CrouchAction)
-	{
-		LOG_FATAL(TEXT("is Not Set RunAction"));
-	}
-	if (nullptr == AimAction)
-	{
-		LOG_FATAL(TEXT("is Not Set AimAction"));
-	}
-	if (nullptr == InteractionAction)
-	{
-		LOG_FATAL(TEXT("is Not Set InteractionAction"));
-	}			
-	if (nullptr == WeaponPutAwayAction)
-	{
-		LOG_FATAL(TEXT("is Not Set WeaponPutAwayAction"));
-	}		
-
-	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
-	Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
-	Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABLeon::PlayLook);
-	Input->BindAction(LookAction, ETriggerEvent::None, this, &ABLeon::StopLook);
-
-	Input->BindAction(JogAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveJog);
-	Input->BindAction(JogAction, ETriggerEvent::Completed, this, &ABLeon::DisableJog);	
-	Input->BindAction(AimAction, ETriggerEvent::Triggered, this, &ABLeon::ActiveAim);
-	Input->BindAction(AimAction, ETriggerEvent::Completed, this, &ABLeon::DisableAim);
-
-	Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
-	Input->BindAction(InteractionAction, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
-
-	for (uint32 i = 0; i < 8; ++i)
-	{
-		if (nullptr == QuickSlotActions[i])
-		{
-			LOG_FATAL(TEXT("is Not Set QuickSlotActions[%d]"), i);
-		}
-
-		Input->BindAction(QuickSlotActions[i], ETriggerEvent::Started, this, &ABLeon::UseQuickSlot, i);
-	}
+	LOG_MSG(TEXT("Leon Weapon PutAway"));
 }
 
 void ABLeon::ChangeUseWeapon(EItemCode _WeaponCode)
 {
-	if (_WeaponCode == UseWeaponCode)
-	{
-		return;
-	}
-
 	switch (LeonWeaponSwap)
 	{
 	case ELeonWeaponSwap::PutAway:
 	{
-		WeaponPutOutAnim = GetUseWeaponAnimation(_WeaponCode);
+		PutOutWeapon = _WeaponCode;
 	}
-		break;
+	break;
 	default:
 	{
-		WeaponPutAwayAnim = GetUseWeaponAnimation(UseWeaponCode);
-		WeaponPutOutAnim = GetUseWeaponAnimation(_WeaponCode);
-
-		if (WeaponPutAwayAnim == ELeonWeaponAnim::Empty)
+		if (UseWeaponCode == _WeaponCode)
 		{
+			return;
+		}
+
+		ELeonWeaponAnim CurAnimation = GetUseWeaponAnimation(UseWeaponCode);
+
+		if (CurAnimation == ELeonWeaponAnim::Empty)
+		{
+			LOG_MSG(TEXT("Case 1"));
 			LeonWeaponSwap = ELeonWeaponSwap::PutOut;
+			UseWeaponCode = _WeaponCode;
 		}
 		else
 		{
+			LOG_MSG(TEXT("Case 2"));
 			LeonWeaponSwap = ELeonWeaponSwap::PutAway;
+			PutOutWeapon = _WeaponCode;
 		}
 	}
-		break;
+	break;
 	}
 
-	UseWeaponCode = _WeaponCode;
 }
 
 ELeonState ABLeon::GetCurrentFSMState() const
@@ -224,6 +252,11 @@ void ABLeon::TryInteraction()
 
 bool ABLeon::AbleAim() const
 {
+	if (LeonWeaponSwap != ELeonWeaponSwap::None)
+	{
+		return false;
+	}
+
 	if (LeonWeaponState == ELeonWeaponAnim::Empty)
 	{
 		return false;
@@ -275,27 +308,7 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 
 void ABLeon::UseWeaponUpdate(float _DeltaTime)
 {
-	switch (LeonWeaponSwap)
-	{
-	case ELeonWeaponSwap::None:
-	{
-		LeonWeaponState = WeaponPutOutAnim;
-	}
-		break;
-	case ELeonWeaponSwap::PutOut:
-	{	
-		LeonWeaponState = WeaponPutOutAnim;
-	}
-		break;
-	case ELeonWeaponSwap::PutAway:
-	{
-		LeonWeaponState = WeaponPutAwayAnim;
-	}		
-		break;
-	default:
-		break;
-	}
-
+	LeonWeaponState = GetUseWeaponAnimation(UseWeaponCode);
 }
 
 void ABLeon::VPlayerCameraToWorld(FVector& _Vector) const
@@ -492,7 +505,7 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 
 }
 
-ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode)
+ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode) const
 {
 	switch (_WeaponCode)
 	{

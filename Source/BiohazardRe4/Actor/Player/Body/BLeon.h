@@ -177,20 +177,6 @@ public:
 		return LeonWeaponSwap;
 	}
 
-	// 플레이어 PutOut 애니메이션 타입을 반환합니다
-	UFUNCTION(BlueprintCallable)
-	inline ELeonWeaponAnim GetPutOutAnim() const
-	{
-		return WeaponPutOutAnim;
-	}
-
-	// 플레이어 PutAway 애니메이션 타입을 반환합니다
-	UFUNCTION(BlueprintCallable)
-	inline ELeonWeaponAnim GetPutAwayAnim() const
-	{
-		return WeaponPutAwayAnim;
-	}
-
 	UFUNCTION(BlueprintCallable)
 	FVector GetCameraDirection() const;
 
@@ -199,8 +185,8 @@ public:
 	ELeonDirection GetLeonDirection() const;
 
 
-	virtual void WeaponPutOut() override {}
-	virtual void WeaponPutAway() override {}
+	virtual void WeaponPutOut() override;
+	virtual void WeaponPutAway() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -232,11 +218,8 @@ private:
 	ELeonWeaponAnim LeonWeaponState = ELeonWeaponAnim::Empty;
 
 	UPROPERTY(EditAnywhere, Category = Animation)
-	ELeonWeaponAnim WeaponPutAwayAnim = ELeonWeaponAnim::Empty;
-
-	UPROPERTY(EditAnywhere, Category = Animation)
-	ELeonWeaponAnim WeaponPutOutAnim = ELeonWeaponAnim::Empty;
-		
+	EItemCode PutOutWeapon = EItemCode::Empty;
+			
 	UPROPERTY(EditAnywhere, Category = Animation)
 	ELeonHealth LeonHealth = ELeonHealth::Normal;	
 	
@@ -326,7 +309,7 @@ private:
 
 	void UseQuickSlot(const uint32 _Index);
 
-	ELeonWeaponAnim GetUseWeaponAnimation(EItemCode _WeaponCode);
+	ELeonWeaponAnim GetUseWeaponAnimation(EItemCode _WeaponCode) const;
 
 	/* FSM */
 	void IdleEnter();

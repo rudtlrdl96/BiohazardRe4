@@ -25,6 +25,12 @@ void ABLeon::AimUpdate(float _DeltaTime)
 	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
 	Aim(_DeltaTime);
 
+	if (LeonWeaponSwap != ELeonWeaponSwap::None)
+	{
+		bIsAim = false;
+		AimUpdateTime = 0.0f;
+	}
+
 	if (true == bIsAim)
 	{
 		AimUpdateTime = FMath::FInterpConstantTo(AimUpdateTime, 1.0f, _DeltaTime, 3.0f);
