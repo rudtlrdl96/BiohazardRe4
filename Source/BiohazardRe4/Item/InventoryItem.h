@@ -3,20 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
+#include "GameFramework/Actor.h"
 #include "ItemData.h"
 #include "InventoryItem.generated.h"
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class BIOHAZARDRE4_API UBInventoryItem : public USceneComponent
+class BIOHAZARDRE4_API ABInventoryItem : public AActor
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UBInventoryItem();
+	ABInventoryItem();
 
 	// 아이템 데이터를 지정한다
 	void SetItemData(const FBItemData& _Data);
@@ -42,7 +42,7 @@ public:
 	inline const FName& GetItemName() const { return Data.ItemName; }
 	inline FVector GetMeshLocation() const { return Mesh->GetComponentLocation(); }
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void Tick(float DeltaTime) override;
 
 	const float MoveSpeed = 15.0f;
 	const float RaiseSpeed = 5.0f;

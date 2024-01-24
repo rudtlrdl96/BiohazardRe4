@@ -4,26 +4,24 @@
 #include "InventoryItem.h"
 #include "Generic/BFsm.h"
 
-// Sets default values for this component's properties
-UBInventoryItem::UBInventoryItem()
+ABInventoryItem::ABInventoryItem()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(this);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetupAttachment(RootComponent);
 
 	FSMComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM"));
-
+	
 	UBFsm::FStateCallback WaitState;
 	UBFsm::FStateCallback MoveState;
 	UBFsm::FStateCallback PutState;
-	MoveState.EnterDel.BindUObject(this, &UBInventoryItem::MoveEnter);
-	MoveState.UpdateDel.BindUObject(this, &UBInventoryItem::MoveUpdate);
-	PutState.EnterDel.BindUObject(this, &UBInventoryItem::PutEnter);
-	PutState.UpdateDel.BindUObject(this, &UBInventoryItem::PutUpdate);
+	MoveState.EnterDel.BindUObject(this, &ABInventoryItem::MoveEnter);
+	MoveState.UpdateDel.BindUObject(this, &ABInventoryItem::MoveUpdate);
+	PutState.EnterDel.BindUObject(this, &ABInventoryItem::PutEnter);
+	PutState.UpdateDel.BindUObject(this, &ABInventoryItem::PutUpdate);
 
 	FSMComp->CreateState(TO_KEY(ItemState::Wait), WaitState);
 	FSMComp->CreateState(TO_KEY(ItemState::Move), MoveState);
@@ -32,7 +30,7 @@ UBInventoryItem::UBInventoryItem()
 	FSMComp->ChangeState(TO_KEY(ItemState::Wait));
 }
 
-void UBInventoryItem::SetItemData(const FBItemData& _Data)
+void ABInventoryItem::SetItemData(const FBItemData& _Data)
 {
 	Data = _Data;
 	Mesh->RegisterComponent();
@@ -43,28 +41,28 @@ void UBInventoryItem::SetItemData(const FBItemData& _Data)
 	Mesh->SetRelativeScale3D(_Data.Scale);
 }
 
-void UBInventoryItem::SetRaise()
+void ABInventoryItem::SetRaise()
 {
-	StartLocation = GetRelativeLocation();
+	StartLocation = RootComponent->GetRelativeLocation();
 	TargetLocation = StartLocation;
 	FSMComp->ChangeState(TO_KEY(ItemState::Move));
 }
 
-void UBInventoryItem::SetMove(const FVector& _Location)
+void ABInventoryItem::SetMove(const FVector& _Location)
 {
-	StartLocation = GetRelativeLocation();
+	StartLocation = RootComponent->GetRelativeLocation();
 	TargetLocation = _Location;
 	MoveAlpha = 0;
 }
 
-void UBInventoryItem::SetPut(const FVector& _Location)
+void ABInventoryItem::SetPut(const FVector& _Location)
 {
-	StartLocation = GetRelativeLocation();
+	StartLocation = RootComponent->GetRelativeLocation();
 	TargetLocation = _Location;
 	FSMComp->ChangeState(TO_KEY(ItemState::Put));
 }
 
-void UBInventoryItem::Turn()
+void ABInventoryItem::Turn()
 {
 	bIsTurn = ~bIsTurn;
 	bIsCurrentTurn = 1;
@@ -85,9 +83,9 @@ void UBInventoryItem::Turn()
 	}
 }
 
-void UBInventoryItem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void ABInventoryItem::Tick(float DeltaTime)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::Tick(DeltaTime);
 
 	if (bIsCurrentTurn)
 	{
@@ -102,38 +100,40 @@ void UBInventoryItem::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	}
 }
 
-void UBInventoryItem::MoveEnter()
+void ABInventoryItem::MoveEnter()
 {
 	MoveAlpha = 0;
 	RaiseAlpha = 0;
-	StartLocation = GetRelativeLocation();
+	StartLocation = RootComponent->GetRelativeLocation();
 }
-void UBInventoryItem::MoveUpdate(float DeltaTime)
+
+void ABInventoryItem::MoveUpdate(float DeltaTime)
 {
 	MoveAlpha = FMath::Min(1.0f, MoveAlpha + DeltaTime * MoveSpeed);
 	RaiseAlpha = FMath::Min(1.0f, RaiseAlpha + DeltaTime * RaiseSpeed);
 	
-	SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, MoveAlpha));
+	RootComponent->SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, MoveAlpha));
 	Mesh->SetRelativeLocation(FMath::Lerp<FVector>(MeshLocation, MeshLocation + FVector(0, 0, 5), RaiseAlpha));
 }
 
-void UBInventoryItem::PutEnter()
+void ABInventoryItem::PutEnter()
 {
 	MoveAlpha = 0;
 	RaiseAlpha = 0;
-	StartLocation = GetRelativeLocation();
+	StartLocation = RootComponent->GetRelativeLocation();
 }
-void UBInventoryItem::PutUpdate(float DeltaTime)
+
+void ABInventoryItem::PutUpdate(float DeltaTime)
 {
 	MoveAlpha = FMath::Min(1.0f, MoveAlpha + DeltaTime * MoveSpeed);
 	RaiseAlpha = FMath::Min(1.0f, RaiseAlpha + DeltaTime * RaiseSpeed);
 
-	SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, MoveAlpha));
+	RootComponent->SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, MoveAlpha));
 	Mesh->SetRelativeLocation(FMath::Lerp<FVector>(MeshLocation + FVector(0, 0, 5), MeshLocation, RaiseAlpha));
 
 	if (.99f <= RaiseAlpha)
 	{
-		SetRelativeLocation(TargetLocation);
+		RootComponent->SetRelativeLocation(TargetLocation);
 		Mesh->SetRelativeLocation(MeshLocation);
 		FSMComp->ChangeState(TO_KEY(ItemState::Wait));
 	}

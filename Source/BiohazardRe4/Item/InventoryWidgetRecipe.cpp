@@ -8,11 +8,12 @@
 #include "InventoryWidgetCraft.h"
 #include "InventoryManager.h"
 
-UBInventoryWidgetCraft* UBInventoryWidgetRecipe::CraftWidget = nullptr;
-
 void UBInventoryWidgetRecipe::NativeOnInitialized()
 {
 	Button = Cast<UButton>(GetWidgetFromName(TEXT("Button")));
+	FScriptDelegate Delegate;
+	Delegate.BindUFunction(this, TEXT("Create"));
+	Button->OnClicked.Add(Delegate);
 	ItemImage = Cast<UImage>(GetWidgetFromName(TEXT("Image")));
 	ItemName = Cast<UTextBlock>(GetWidgetFromName(TEXT("Text")));
 	ItemNum = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemNum")));
@@ -31,8 +32,40 @@ void UBInventoryWidgetRecipe::SetRecipe(const FBCraftRecipe& Recipe)
 	// 이름
 	ItemName->SetText(FText::FromName(Recipe.ResultName));
 	// 개수
-	ItemNum->SetText(FText::FromString(FString::FromInt(CraftWidget->Inventory->GetItemNum(Recipe.ResultItem))));
+	ItemNum->SetText(FText::FromString(FString::FromInt(UBInventoryManager::Instance->GetItemNum(Recipe.ResultItem))));
 	ItemANum->SetText(FText::FromString(FString::FromInt(Recipe.ANum)));
 	ItemBNum->SetText(FText::FromString(FString::FromInt(Recipe.BNum)));
 
+	if (Recipe.AItem == Recipe.BItem)
+	{
+		// 조합 아이템 2개가 같은 종류인 경우 (녹 + 녹) 허브에 한정된 케이스
+		if (UBInventoryManager::Instance->GetItemNum(Recipe.AItem) < Recipe.ANum + Recipe.BNum)
+		{
+			// A요구량 B요구량을 합친것보다 소지수가 적다면
+			Button->SetIsEnabled(false);
+			return;
+		}
+	}
+	else
+	{
+		if (UBInventoryManager::Instance->GetItemNum(Recipe.AItem) < Recipe.ANum)
+		{
+			Button->SetIsEnabled(false);
+			return;
+		}
+		if (UBInventoryManager::Instance->GetItemNum(Recipe.BItem) < Recipe.BNum)
+		{
+			Button->SetIsEnabled(false);
+			return;
+		}
+	}
+	CurRecipe = Recipe;
+	Button->SetIsEnabled(true);
+}
+
+void UBInventoryWidgetRecipe::Create()
+{
+	UBInventoryManager::Instance->RemoveItem(CurRecipe.AItem, CurRecipe.ANum);
+	UBInventoryManager::Instance->RemoveItem(CurRecipe.BItem, CurRecipe.BNum);
+	UBInventoryManager::Instance->AddItem(CurRecipe.ResultItem);
 }

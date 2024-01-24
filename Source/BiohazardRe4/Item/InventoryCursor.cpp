@@ -23,7 +23,7 @@ void UBInventoryCursor::SetCursorPosition(UBInventorySlot* Slot)
 {
 	if (Slot->IsSubSlot())
 	{
-		if (UBInventoryItem* Item = Slot->GetItem())
+		if (ABInventoryItem* Item = Slot->GetItem())
 		{
 			SetRelativeLocation(SubCaseLocation(Item->GetItemPosition()) - FVector(2.5, 2.5, 0));
 		}
@@ -34,7 +34,7 @@ void UBInventoryCursor::SetCursorPosition(UBInventorySlot* Slot)
 	}
 	else
 	{
-		if (UBInventoryItem* Item = Slot->GetItem())
+		if (ABInventoryItem* Item = Slot->GetItem())
 		{
 			SetRelativeLocation(CaseLocation(Item->GetItemPosition()) - FVector(2.5, 2.5, 0));
 		}

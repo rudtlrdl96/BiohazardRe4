@@ -40,10 +40,7 @@ void UBInventoryWidgetBehavior::NativeOnInitialized()
 
 void UBInventoryWidgetBehavior::SetItemData(const FBItemData& Data)
 {
-	for (UCanvasPanel* Panel : Panels)
-	{
-		Panel->SetVisibility(ESlateVisibility::Visible);
-	}
+
 	// 공용 기능 = 조사, 버리기(보관고 보내기)
 	switch (Data.ItemCode)
 	{
@@ -93,14 +90,6 @@ void UBInventoryWidgetBehavior::SetItemData(const FBItemData& Data)
 		break;
 	default:
 		break;
-	}
-}
-
-void UBInventoryWidgetBehavior::SetHide()
-{
-	for (UCanvasPanel* Panel : Panels)
-	{
-		Panel->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

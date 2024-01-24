@@ -15,11 +15,6 @@ void UBInventoryWidgetCraft::NativeOnInitialized()
 	MainPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("MainPanel")));
 	SelectItemName = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemName")));
 	ScrollBox = Cast<UScrollBox>(GetWidgetFromName(TEXT("Scroll")));
-	UBInventoryWidgetRecipe::CraftWidget = this;
-}
-
-void UBInventoryWidgetCraft::SetHide()
-{
 }
 
 void UBInventoryWidgetCraft::SetItemData(const FBItemData& Item)

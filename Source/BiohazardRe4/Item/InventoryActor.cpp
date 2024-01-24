@@ -164,12 +164,11 @@ void ABInventoryActor::BeginPlay()
 	BehaviorWidget = CreateWidget<UBInventoryWidgetBehavior>(GetWorld(), BehaviorWidgetClass);
 	BehaviorWidget->AddToViewport();
 	BehaviorWidget->InventoryActor = this;
-	BehaviorWidget->SetHide();
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	CraftWidget = CreateWidget<UBInventoryWidgetCraft>(GetWorld(), CraftWidgetClass);
 	CraftWidget->AddToViewport();
-	CraftWidget->Inventory = Inventory;
-	CraftWidget->SetHide();
+	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	FOnTimelineFloatStatic F;
 	F.BindLambda([this](float Value) {
@@ -225,8 +224,16 @@ void ABInventoryActor::CloseSub()
 
 void ABInventoryActor::OpenCraft()
 {
-	BehaviorWidget->SetHide();
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	FVector Location = Inventory->GetItemWorldLocation(SelectItem);
+	Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0);
+	FVector2D Pos;
+	UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Location, Pos);
+	CraftWidget->SetPositionInViewport(Pos);
 	CraftWidget->SetItemData(SelectItem->GetData());
+	CraftWidget->SetVisibility(ESlateVisibility::Visible);
+
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Craft));
 }
 
@@ -259,6 +266,7 @@ void ABInventoryActor::Click()
 		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Location, Pos);
 		BehaviorWidget->SetPositionInViewport(Pos);
 		BehaviorWidget->SetItemData(SelectItem->GetData());
+		BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 	}
 }
@@ -268,7 +276,7 @@ void ABInventoryActor::Cancel()
 	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Select))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
-		BehaviorWidget->SetHide();
+		BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
 	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Default))
@@ -281,6 +289,8 @@ void ABInventoryActor::Cancel()
 	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Craft))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
+		CraftWidget->SetVisibility(ESlateVisibility::Hidden);
+		BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
 		return;
 	}
 }
@@ -348,7 +358,7 @@ void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 			SelectSlot = Slot;
 			Cursor->SetCursorPosition(SelectSlot);
 
-			if (UBInventoryItem* Item = Slot->GetItem())
+			if (ABInventoryItem* Item = Slot->GetItem())
 			{
 				SelectItem = Item;
 				Widget->SetItemData(Item->GetData());

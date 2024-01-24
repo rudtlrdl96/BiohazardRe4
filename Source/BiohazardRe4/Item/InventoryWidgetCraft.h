@@ -37,10 +37,5 @@ public:
 
 	TArray<UBInventoryWidgetRecipe*> RecipeWidgets;
 
-	UPROPERTY()
-	class UBInventoryManager* Inventory;
-
-	void SetHide();
-
 	void SetItemData(const FBItemData& Item);
 };

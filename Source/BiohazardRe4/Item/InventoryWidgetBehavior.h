@@ -35,9 +35,6 @@ public:
 
 	void SetItemData(const FBItemData& Data);
 
-	void SetHide();
-
-
 private:
 	enum State_BehaviorButton
 	{

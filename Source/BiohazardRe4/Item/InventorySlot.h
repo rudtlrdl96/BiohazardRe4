@@ -18,7 +18,7 @@ public:
 	UBInventorySlot();
 
 	// 해당 칸에 아이템을 지정한다. 아이템이 사라지기 전까지 HasItem이 true로 반환
-	inline void SetItem(class UBInventoryItem* _Item)
+	inline void SetItem(class ABInventoryItem* _Item)
 	{
 		Item = _Item;
 	}
@@ -26,7 +26,7 @@ public:
 	{
 		Item = nullptr;
 	}
-	inline UBInventoryItem* GetItem()
+	inline ABInventoryItem* GetItem()
 	{
 		return Item;
 	}
@@ -52,7 +52,7 @@ public:
 		return bIsSubSlot;
 	}
 private:
-	class UBInventoryItem* Item;	// 아이템 포인터
+	class ABInventoryItem* Item;	// 아이템 포인터
 	
 	UPROPERTY()
 	FIntPoint Position;

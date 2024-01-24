@@ -22,8 +22,6 @@ class BIOHAZARDRE4_API UBInventoryWidgetRecipe : public UUserWidget
 
 	friend UBInventoryWidgetCraft;
 
-	static UBInventoryWidgetCraft* CraftWidget;
-
 	virtual void NativeOnInitialized() override;
 
 	UButton* Button;		// 조합 버튼
@@ -42,8 +40,13 @@ class BIOHAZARDRE4_API UBInventoryWidgetRecipe : public UUserWidget
 	UPROPERTY()
 	UTextBlock* ItemBNum;	// 재료 B의 개수
 
+	FBCraftRecipe CurRecipe;
+
 public:
 	void SetRecipe(const FBCraftRecipe& Recipe);
+
+	UFUNCTION()
+	void Create();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<EItemCode, UObject*> ItemIconMap;

@@ -6,8 +6,11 @@
 #include "InventorySlot.h"
 #include "BiohazardRe4.h"
 
+UBInventoryManager* UBInventoryManager::Instance = nullptr;
+
 UBInventoryManager::UBInventoryManager()
 {
+	Instance = this;
 	PrimaryComponentTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> Data(TEXT("/Script/Engine.DataTable'/Game/Assets/Data/Item/DT_Items.DT_Items'"));
@@ -71,6 +74,33 @@ void UBInventoryManager::AddItem(EItemCode ItemCode)
 	CreateItem(*FindItem);
 }
 
+void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
+{
+	TArray<ABInventoryItem*> Items;
+	ItemMap.MultiFind(ItemCode, Items, true);
+	
+	for (ABInventoryItem* Item : Items)
+	{
+		if (Item->Count <= Num)
+		{
+			Num -= Item->Count;
+			ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
+			Item->Destroy();
+			ItemMap.Remove(ItemCode, Item);
+		}
+		else
+		{
+			Item->Count -= Num;
+			break;
+		}
+	}
+
+	if (0 < Num)
+	{
+		LOG_ERROR(TEXT("RemoveItem Error. Item Lack"))
+	}
+}
+
 void UBInventoryManager::CreateItem(const FBItemData& Data)
 {
 	// 아이템이 들어갈 공간 찾기
@@ -84,18 +114,15 @@ void UBInventoryManager::CreateItem(const FBItemData& Data)
 
 	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
 	static int32 count = 0;
-	UBInventoryItem* NewItem = NewObject<UBInventoryItem>(GetOwner(), UBInventoryItem::StaticClass(), FName(TEXT("Item") + FString::FromInt(count++)));
-
+	ABInventoryItem* NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
 	// 아이템 생성
 	if (NewItem)
 	{
-		NewItem->RegisterComponent();
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		NewItem->SetItemData(Data);
-		GetOwner()->RegisterAllComponents();
-		Items.Push(NewItem);
+		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
 		PlaceItemSlot(NewItem, Point);
-		NewItem->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
+		NewItem->GetRootComponent()->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
 	}
 }
 
@@ -148,7 +175,7 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& Pos, const FIntPoint& Scal
 	return true;
 }
 
-bool UBInventoryManager::IsEmptySlot(const UBInventorySlot* Slot, const UBInventoryItem* Item)
+bool UBInventoryManager::IsEmptySlot(const UBInventorySlot* Slot, const ABInventoryItem* Item)
 {
 	if (false == IsVaildSlotRange(Slot, Item->GetItemSize()))
 	{
@@ -183,13 +210,13 @@ bool UBInventoryManager::IsEmptySlot(const UBInventorySlot* Slot, const UBInvent
 	return true;
 }
 
-void UBInventoryManager::RaiseItem(UBInventoryItem* Item)
+void UBInventoryManager::RaiseItem(ABInventoryItem* Item)
 {
 	ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
 	Item->SetRaise();
 }
 
-void UBInventoryManager::MoveItem(UBInventoryItem* Item, const UBInventorySlot* Slot)
+void UBInventoryManager::MoveItem(ABInventoryItem* Item, const UBInventorySlot* Slot)
 {
 	FIntPoint Pos = Slot->GetPosition();
 
@@ -203,7 +230,7 @@ void UBInventoryManager::MoveItem(UBInventoryItem* Item, const UBInventorySlot* 
 	}
 }
 
-void UBInventoryManager::MoveItemConfirm(UBInventoryItem* Item, const UBInventorySlot* Slot)
+void UBInventoryManager::MoveItemConfirm(ABInventoryItem* Item, const UBInventorySlot* Slot)
 {
 	// 드래그를 때서 이동이 결정된 상황에서 실행
 	// 아이템을 놓을 장소에 아이템이 한개 있다면 커서에 있는 아이템과 놓인 아이템을 교체한다
@@ -222,21 +249,21 @@ void UBInventoryManager::MoveItemConfirm(UBInventoryItem* Item, const UBInventor
 	}
 }
 
-bool UBInventoryManager::CheckChange(UBInventoryItem* Item, const UBInventorySlot* Slot)
+bool UBInventoryManager::CheckChange(ABInventoryItem* Item, const UBInventorySlot* Slot)
 {
 	if (false == IsVaildSlotRange(Slot, Item->GetItemSize()))
 	{
 		return false;
 	}
 
-	UBInventoryItem* CheckItem = nullptr;
+	ABInventoryItem* CheckItem = nullptr;
 	FIntPoint Pos = Slot->GetPosition();
 
 	for (int y = 0; y < Item->GetItemSize().Y; y++)
 	{
 		for (int x = 0; x < Item->GetItemSize().X; x++)
 		{
-			if (UBInventoryItem* FItem = FindItem(Pos + FIntPoint(x, y), Slot->IsSubSlot()))
+			if (ABInventoryItem* FItem = FindItem(Pos + FIntPoint(x, y), Slot->IsSubSlot()))
 			{
 				if (CheckItem == nullptr)
 				{
@@ -255,10 +282,10 @@ bool UBInventoryManager::CheckChange(UBInventoryItem* Item, const UBInventorySlo
 	return true;
 }
 
-UBInventoryItem* UBInventoryManager::ChangeItem(UBInventoryItem* Item, const UBInventorySlot* Slot)
+ABInventoryItem* UBInventoryManager::ChangeItem(ABInventoryItem* Item, const UBInventorySlot* Slot)
 {
-	//UBInventoryItem* ChangeItem = FindItemRange(Pos, Item->GetItemSize());
-	UBInventoryItem* ChangeItem = FindItemRange(Slot->GetPosition(), Item->GetItemSize(), Slot->IsSubSlot());
+	//ABInventoryItem* ChangeItem = FindItemRange(Pos, Item->GetItemSize());
+	ABInventoryItem* ChangeItem = FindItemRange(Slot->GetPosition(), Item->GetItemSize(), Slot->IsSubSlot());
 	if (nullptr == ChangeItem) { return nullptr; }
 	RaiseItem(ChangeItem);
 
@@ -309,7 +336,7 @@ FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& Scale)
 	return FIntPoint::NoneValue;
 }
 
-UBInventoryItem* UBInventoryManager::FindItem(const UBInventorySlot* Slot)
+ABInventoryItem* UBInventoryManager::FindItem(const UBInventorySlot* Slot)
 {
 	if (false == IsVaildSlot(Slot))
 	{
@@ -325,7 +352,7 @@ UBInventoryItem* UBInventoryManager::FindItem(const UBInventorySlot* Slot)
 	return MainSlot[Pos.Y * CaseSize.X + Pos.X]->GetItem();
 }
 
-UBInventoryItem* UBInventoryManager::FindItem(const FIntPoint& Pos, bool IsSubSlot)
+ABInventoryItem* UBInventoryManager::FindItem(const FIntPoint& Pos, bool IsSubSlot)
 {
 	if (IsSubSlot)
 	{
@@ -334,14 +361,14 @@ UBInventoryItem* UBInventoryManager::FindItem(const FIntPoint& Pos, bool IsSubSl
 	return MainSlot[Pos.Y * CaseSize.X + Pos.X]->GetItem();
 }
 
-UBInventoryItem* UBInventoryManager::FindItemRange(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot)
+ABInventoryItem* UBInventoryManager::FindItemRange(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot)
 {
 	for (int y = 0; y < Size.Y; y++)
 	{
 		for (int x = 0; x < Size.X; x++)
 		{
 			FIntPoint FindPos = Pos + FIntPoint(x, y);
-			if (UBInventoryItem* FItem = FindItem(FindPos, IsSubSlot))
+			if (ABInventoryItem* FItem = FindItem(FindPos, IsSubSlot))
 			{
 				return FItem;
 			}
@@ -364,7 +391,7 @@ bool UBInventoryManager::IsVaildSlot(const FIntPoint& Pos, bool IsSubSlot)
 	return true;
 }
 
-void UBInventoryManager::PlaceItemSlot(UBInventoryItem* Item, const FIntPoint& Pos)
+void UBInventoryManager::PlaceItemSlot(ABInventoryItem* Item, const FIntPoint& Pos)
 {
 	for (int y = 0; y < Item->GetItemSize().Y; y++)
 	{
@@ -377,7 +404,7 @@ void UBInventoryManager::PlaceItemSlot(UBInventoryItem* Item, const FIntPoint& P
 	Item->SetIsSubSlot(false);
 }
 
-void UBInventoryManager::PlaceItemSlot(UBInventoryItem* Item, const UBInventorySlot* Slot)
+void UBInventoryManager::PlaceItemSlot(ABInventoryItem* Item, const UBInventorySlot* Slot)
 {
 	FIntPoint Pos = Slot->GetPosition();
 	Item->SetItemPosition(Pos);
@@ -466,7 +493,7 @@ bool UBInventoryManager::CheckSubSlot(const FIntPoint& Pos)
 	if (SubCaseSize.X <= Pos.X) { return false; }
 	if (SubCaseSize.Y <= Pos.Y) { return false; }
 
-	UBInventoryItem* Item = SubSlot[Pos.Y * SubCaseSize.X + Pos.X]->GetItem();
+	ABInventoryItem* Item = SubSlot[Pos.Y * SubCaseSize.X + Pos.X]->GetItem();
 	return Item == nullptr;
 }
 
@@ -500,7 +527,7 @@ bool UBInventoryManager::HasItemInSubSlot()
 	return false;
 }
 
-FVector UBInventoryManager::GetItemWorldLocation(UBInventoryItem* Item)
+FVector UBInventoryManager::GetItemWorldLocation(ABInventoryItem* Item)
 {
 	FIntPoint Pos = Item->GetItemPosition();
 	if (Item->IsSubSlot())
@@ -513,13 +540,14 @@ FVector UBInventoryManager::GetItemWorldLocation(UBInventoryItem* Item)
 int UBInventoryManager::GetItemNum(EItemCode Code)
 {
 	int Num = 0;
-	for (UBInventoryItem* Item : Items)
+	TArray<ABInventoryItem*> Items;
+	ItemMap.MultiFind(Code, Items, true);
+
+	for (ABInventoryItem* Item : Items)
 	{
-		if (Code == Item->GetData().ItemCode)
-		{
-			Num += Item->Count;
-		}
+		Num += Item->Count;
 	}
+
 	return Num;
 }
 

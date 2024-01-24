@@ -131,7 +131,7 @@ public:
 
 	UPROPERTY()
 	class UBInventorySlot* SelectSlot;		// 현재 선택한 슬롯
-	class UBInventoryItem* SelectItem;		// 현재 선택한 슬롯
+	class ABInventoryItem* SelectItem;		// 현재 선택한 슬롯
 	uint8 bIsDragMove : 1;
 
 	UFUNCTION(BlueprintCallable)

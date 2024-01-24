@@ -31,11 +31,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	static UBInventoryManager* Instance;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UDataTable* ItemDataTable;	// 데이터 테이블 (아이템 데이터베이스)
 
-	UPROPERTY(VisibleAnywhere)
-	TArray<class UBInventoryItem*> Items;		// 현재 지닌 모든 아이템들의 배열
+	TMultiMap<EItemCode, class ABInventoryItem*> ItemMap;		// 현재 지닌 모든 아이템들의 배열
 
 	TArray<class UBInventorySlot*> MainSlot;	// 2차원 인벤토리 공간
 
@@ -47,30 +48,32 @@ public:
 	void AddItem(const FName& Name);
 	// 아이템을 추가한다
 	void AddItem(EItemCode ItemCode);
+	// 아이템을 제거한다. Num개 만큼 제거합니다
+	void RemoveItem(EItemCode ItemCode, int Num = 1);
 	// 특정 크기의 아이템이 들어갈 공간이 존재한다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& Scale);
 	// 입력된 크기와 위치에 아이템을 놓을 수 있다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& Pos, const FIntPoint& Scale);
 	// 아이템이 해당 슬롯에 놓을 수 있다면 true를 반환한다
-	bool IsEmptySlot(const UBInventorySlot* Slot, const UBInventoryItem* Item);
+	bool IsEmptySlot(const UBInventorySlot* Slot, const ABInventoryItem* Item);
 	// 아이템을 들어올린다
-	void RaiseItem(UBInventoryItem* Item);
+	void RaiseItem(ABInventoryItem* Item);
 	// 아이템을 이동
-	void MoveItem(UBInventoryItem* Item, const UBInventorySlot* Slot);
+	void MoveItem(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 아이템 이동을 확정짓는다
-	void MoveItemConfirm(UBInventoryItem* Item, const UBInventorySlot* Slot);
+	void MoveItemConfirm(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 아이템을 교환할 수 있는지 여부를 알아낸다
-	bool CheckChange(UBInventoryItem* Item, const UBInventorySlot* Slot);
+	bool CheckChange(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 현재 들고있는 아이템을 내려 놓고 그 자리에 있는 아이템을 들어올린다
-	UBInventoryItem* ChangeItem(UBInventoryItem* Item, const UBInventorySlot* Slot);
+	ABInventoryItem* ChangeItem(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 특정 크기의 아이템이 들어갈 공간이 있다면 그 위치를 반환한다. 아이템이 들어갈 공간이 없다면 FIntPoint::NoneValue를 리턴
 	FIntPoint FindEmptySlot(const FIntPoint& Scale);
 	// 해당 위치에 아이템의 포인터를 받는다
-	UBInventoryItem* FindItem(const UBInventorySlot* Slot);
+	ABInventoryItem* FindItem(const UBInventorySlot* Slot);
 	// 해당 위치에 아이템의 포인터를 받는다
-	UBInventoryItem* FindItem(const FIntPoint& Pos, bool IsSubSlot = false);
+	ABInventoryItem* FindItem(const FIntPoint& Pos, bool IsSubSlot = false);
 	// 해당 범위에서 아이템을 찾아서 리턴한다
-	UBInventoryItem* FindItemRange(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot = false);
+	ABInventoryItem* FindItemRange(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot = false);
 	// 해당 위치가 유효한 슬롯인지 검사합니다
 	bool IsVaildSlot(const FIntPoint& Pos, bool IsSubSlot = false);
 	// 해당 위치가 유효한 슬롯인지 검사합니다
@@ -86,7 +89,7 @@ public:
 	// 서브 슬롯에 아이템이 있다면 true를 리턴한다
 	bool HasItemInSubSlot();
 	// 해당 아이템에 월드 위치값을 받아옵니다
-	FVector GetItemWorldLocation(UBInventoryItem* Item);
+	FVector GetItemWorldLocation(ABInventoryItem* Item);
 	// 해당 코드의 아이템이 인벤토리에 몇개 있는지 받아옵니다
 	int GetItemNum(EItemCode Code);
 
@@ -94,9 +97,9 @@ private:
 	// 아이템을 추가한다
 	void CreateItem(const FBItemData& Data);
 	// 아이템을 배치한다
-	void PlaceItemSlot(UBInventoryItem* Item, const FIntPoint& Pos);
+	void PlaceItemSlot(ABInventoryItem* Item, const FIntPoint& Pos);
 	// 아이템을 배치한다
-	void PlaceItemSlot(UBInventoryItem* Item, const UBInventorySlot* Slot);
+	void PlaceItemSlot(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 아이템의 기존 위치에 있는 슬롯을 정리한다
 	void ClearSlot(const FIntPoint& Location, const FIntPoint& Size, bool IsSubSlot = false);
 
