@@ -7,12 +7,13 @@
 #include "Components/TextBlock.h"
 #include "InventoryWidgetCraft.h"
 #include "InventoryManager.h"
+#include "InventoryActor.h"
 
 void UBInventoryWidgetRecipe::NativeOnInitialized()
 {
 	Button = Cast<UButton>(GetWidgetFromName(TEXT("Button")));
 	FScriptDelegate Delegate;
-	Delegate.BindUFunction(this, TEXT("Create"));
+	Delegate.BindUFunction(this, TEXT("Craft"));
 	Button->OnClicked.Add(Delegate);
 	ItemImage = Cast<UImage>(GetWidgetFromName(TEXT("Image")));
 	ItemName = Cast<UTextBlock>(GetWidgetFromName(TEXT("Text")));
@@ -63,9 +64,8 @@ void UBInventoryWidgetRecipe::SetRecipe(const FBCraftRecipe& Recipe)
 	Button->SetIsEnabled(true);
 }
 
-void UBInventoryWidgetRecipe::Create()
+void UBInventoryWidgetRecipe::Craft()
 {
-	UBInventoryManager::Instance->RemoveItem(CurRecipe.AItem, CurRecipe.ANum);
-	UBInventoryManager::Instance->RemoveItem(CurRecipe.BItem, CurRecipe.BNum);
-	UBInventoryManager::Instance->AddItem(CurRecipe.ResultItem);
+	UBInventoryManager::Instance->CraftItem(CurRecipe);
+	ABInventoryActor::Instance->CompleteCraft();
 }

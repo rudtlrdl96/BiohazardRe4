@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "ItemData.h"
+#include "CraftRecipe.h"
 #include "InventoryManager.generated.h"
 static const FIntPoint CaseSize = { 10, 7 };			// 인벤토리의 크기
 static const FIntPoint SubCaseSize = { 5, 9 };			// 인벤토리의 크기
@@ -48,8 +48,14 @@ public:
 	void AddItem(const FName& Name);
 	// 아이템을 추가한다
 	void AddItem(EItemCode ItemCode);
+	// 아이템을 해당 위치에 추가한다
+	void AddItem(EItemCode ItemCode, const FIntPoint& Pos);
 	// 아이템을 제거한다. Num개 만큼 제거합니다
 	void RemoveItem(EItemCode ItemCode, int Num = 1);
+	// Item을 Num만큼 제거합니다. Item의 수가 부족하면 같은 종류의 다른 아이템을 제거합니다
+	void RemoveItem(ABInventoryItem* Item, int Num = 1);
+	// 아이템을 제작한다
+	void CraftItem(const FBCraftRecipe& Recipe);
 	// 특정 크기의 아이템이 들어갈 공간이 존재한다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& Scale);
 	// 입력된 크기와 위치에 아이템을 놓을 수 있다면 true를 반환한다
@@ -96,6 +102,8 @@ public:
 private:
 	// 아이템을 추가한다
 	void CreateItem(const FBItemData& Data);
+	// 아이템을 해당 위치에 추가합니다
+	void CreateItem(const FBItemData& Data, const FIntPoint& Pos);
 	// 아이템을 배치한다
 	void PlaceItemSlot(ABInventoryItem* Item, const FIntPoint& Pos);
 	// 아이템을 배치한다

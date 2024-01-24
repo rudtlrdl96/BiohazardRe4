@@ -2,10 +2,10 @@
 
 
 #include "InventoryManager.h"
+#include "InventoryActor.h"
 #include "InventoryItem.h"
 #include "InventorySlot.h"
 #include "BiohazardRe4.h"
-
 UBInventoryManager* UBInventoryManager::Instance = nullptr;
 
 UBInventoryManager::UBInventoryManager()
@@ -74,33 +74,96 @@ void UBInventoryManager::AddItem(EItemCode ItemCode)
 	CreateItem(*FindItem);
 }
 
+void UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos)
+{
+	TArray<FName> RowNames = ItemDataTable->GetRowNames();
+	FBItemData* FindItem = nullptr;
+
+	for (FName Name : RowNames)
+	{
+		FBItemData* ItemData = ItemDataTable->FindRow<FBItemData>(Name, "");
+		if (ItemData->ItemCode == ItemCode)
+		{
+			FindItem = ItemData;
+			break;
+		}
+	}
+
+	if (nullptr == FindItem)
+	{
+		LOG_ERROR(TEXT("Can't Find ItemCode in ItemData"));
+		return;
+	}
+
+	CreateItem(*FindItem, Pos);
+}
+
 void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 {
+	int RemoveNum = Num;
 	TArray<ABInventoryItem*> Items;
 	ItemMap.MultiFind(ItemCode, Items, true);
 	
 	for (ABInventoryItem* Item : Items)
 	{
-		if (Item->Count <= Num)
+		if (Item->Count <= RemoveNum)
 		{
-			Num -= Item->Count;
+			RemoveNum -= Item->Count;
 			ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
 			Item->Destroy();
 			ItemMap.Remove(ItemCode, Item);
 		}
 		else
 		{
-			Item->Count -= Num;
+			Item->Count -= RemoveNum;
 			break;
 		}
 	}
 
-	if (0 < Num)
+	if (0 < RemoveNum)
 	{
 		LOG_ERROR(TEXT("RemoveItem Error. Item Lack"))
 	}
 }
 
+void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
+{
+	int RemoveNum = Num;
+	RemoveNum -= Item->Count;
+	Item->Count -= Num;
+
+	if (Item->Count <= 0)
+	{
+		ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
+		Item->Destroy();
+		ItemMap.Remove(Item->GetData().ItemCode, Item);
+	}
+	if (0 < RemoveNum)
+	{
+		RemoveItem(Item->GetData().ItemCode, RemoveNum);
+	}
+}
+
+void UBInventoryManager::CraftItem(const FBCraftRecipe& Recipe)
+{
+	ABInventoryItem* SelectItem = ABInventoryActor::Instance->SelectItem;
+	FIntPoint Pos = SelectItem->GetItemPosition();
+
+	if (Recipe.AItem == SelectItem->GetData().ItemCode)
+	{
+		RemoveItem(SelectItem, Recipe.ANum);
+		RemoveItem(Recipe.BItem, Recipe.BNum);
+	}
+	else
+	{
+		RemoveItem(SelectItem, Recipe.BNum);
+		RemoveItem(Recipe.AItem, Recipe.ANum);
+	}
+
+	AddItem(Recipe.ResultItem, Pos);
+}
+
+static int32 count = 0;
 void UBInventoryManager::CreateItem(const FBItemData& Data)
 {
 	// 아이템이 들어갈 공간 찾기
@@ -113,16 +176,39 @@ void UBInventoryManager::CreateItem(const FBItemData& Data)
 	}
 
 	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
-	static int32 count = 0;
 	ABInventoryItem* NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
 	// 아이템 생성
 	if (NewItem)
 	{
+		NewItem->Count = 1;
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		NewItem->SetItemData(Data);
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
 		PlaceItemSlot(NewItem, Point);
 		NewItem->GetRootComponent()->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
+	}
+}
+
+void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos)
+{
+	// 아이템이 들어갈 공간 찾기
+	if (false == IsEmptySlot(Pos, Data.ItemSize))
+	{
+		LOG_ERROR(TEXT("CreateItem Faild"));
+		return;
+	}
+
+	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
+	ABInventoryItem* NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
+	// 아이템 생성
+	if (NewItem)
+	{
+		NewItem->Count = 1;
+		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+		NewItem->SetItemData(Data);
+		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
+		PlaceItemSlot(NewItem, Pos);
+		NewItem->GetRootComponent()->SetRelativeLocation(FVector(Pos.X * GridScale, Pos.Y * GridScale, 0) + GridStart);
 	}
 }
 

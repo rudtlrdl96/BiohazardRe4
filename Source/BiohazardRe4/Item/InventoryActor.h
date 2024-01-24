@@ -27,6 +27,7 @@ public:
 	// Sets default values for this actor's properties
 	ABInventoryActor();
 
+	static ABInventoryActor* Instance;
 	// 아이템을 추가한다
 	
 	void AddItem(EItemCode ItemCode);
@@ -44,6 +45,9 @@ public:
 
 	UFUNCTION()
 	void OpenCraft();
+
+	UFUNCTION()
+	void CompleteCraft();
 
 protected:
 	// Called when the game starts or when spawned
@@ -157,4 +161,5 @@ private:
 	void DragEnter();
 	void DragUpdate(float _DeltaTime);
 	void DragExit();
+
 };

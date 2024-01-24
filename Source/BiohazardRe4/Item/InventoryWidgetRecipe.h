@@ -46,7 +46,7 @@ public:
 	void SetRecipe(const FBCraftRecipe& Recipe);
 
 	UFUNCTION()
-	void Create();
+	void Craft();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<EItemCode, UObject*> ItemIconMap;
