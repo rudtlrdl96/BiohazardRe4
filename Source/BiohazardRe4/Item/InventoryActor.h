@@ -59,22 +59,22 @@ public:
 	// ___________________________ Widget ___________________________________
 
 	UPROPERTY(EditAnywhere, Category = "Widget")
-	TSubclassOf<class UBInventoryWidget> InventoryWidgetClass;	// 인벤토리 위젯 클래스
+	TSubclassOf<class UBInventoryWidgetMain> InventoryWidgetClass;	// 인벤토리 위젯 클래스
 
 	UPROPERTY()
-	UBInventoryWidget* Widget;									// 인벤토리 위젯
+	UBInventoryWidgetMain* Widget;									// 인벤토리 위젯
 
 	UPROPERTY(EditAnywhere, Category = "Widget")
-	TSubclassOf<class UBInventoryBehavior> BehaviorWidgetClass;	// 아이템 행동 위젯 클래스
+	TSubclassOf<class UBInventoryWidgetBehavior> BehaviorWidgetClass;	// 아이템 행동 위젯 클래스
 
 	UPROPERTY()
-	UBInventoryBehavior* BehaviorWidget;							// 아이템 행동 위젯
+	UBInventoryWidgetBehavior* BehaviorWidget;							// 아이템 행동 위젯
 
 	UPROPERTY(EditAnywhere, Category = "Widget")
-	TSubclassOf<class UBInventoryCraft> CraftWidgetClass;	// 아이템 행동 위젯 클래스
+	TSubclassOf<class UBInventoryWidgetCraft> CraftWidgetClass;	// 아이템 행동 위젯 클래스
 
 	UPROPERTY()
-	UBInventoryCraft* CraftWidget;							// 아이템 행동 위젯
+	UBInventoryWidgetCraft* CraftWidget;							// 아이템 행동 위젯
 
 	// ___________________________ Component ___________________________________
 

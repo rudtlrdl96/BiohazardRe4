@@ -5,9 +5,9 @@
 #include "InventoryManager.h"
 #include "InventorySlot.h"
 #include "InventoryItem.h"
-#include "InventoryWidget.h"
-#include "InventoryBehavior.h"
-#include "InventoryCraft.h"
+#include "InventoryWidgetMain.h"
+#include "InventoryWidgetBehavior.h"
+#include "InventoryWidgetCraft.h"
 #include "InventoryCursor.h"
 #include "Generic/BFsm.h"
 
@@ -158,15 +158,15 @@ void ABInventoryActor::BeginPlay()
 	Input->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Turn);
 	Input->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Cancel);
 
-	Widget = CreateWidget<UBInventoryWidget>(GetWorld(), InventoryWidgetClass);
+	Widget = CreateWidget<UBInventoryWidgetMain>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
 
-	BehaviorWidget = CreateWidget<UBInventoryBehavior>(GetWorld(), BehaviorWidgetClass);
+	BehaviorWidget = CreateWidget<UBInventoryWidgetBehavior>(GetWorld(), BehaviorWidgetClass);
 	BehaviorWidget->AddToViewport();
 	BehaviorWidget->InventoryActor = this;
 	BehaviorWidget->SetHide();
 
-	CraftWidget = CreateWidget<UBInventoryCraft>(GetWorld(), CraftWidgetClass);
+	CraftWidget = CreateWidget<UBInventoryWidgetCraft>(GetWorld(), CraftWidgetClass);
 	CraftWidget->AddToViewport();
 	CraftWidget->Inventory = Inventory;
 	CraftWidget->SetHide();
