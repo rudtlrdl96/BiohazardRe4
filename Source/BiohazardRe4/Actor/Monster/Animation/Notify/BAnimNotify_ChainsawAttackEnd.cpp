@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/Animation/BAnimNotify_ChainsawAttackEnd.h"
-#include "../Interface/BMonsterStateInterface.h"
+#include "Actor/Monster/Animation/Notify/BAnimNotify_ChainsawAttackEnd.h"
+#include "../../Interface/BMonsterStateInterface.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BiohazardRe4.h"

@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interface/BMonsterStateInterface.h"
-#include "Interface/BMonsterStatInterface.h"
+#include "../Interface/BMonsterStateInterface.h"
+#include "../Interface/BMonsterStatInterface.h"
 #include "BMonsterBase.generated.h"
 
 UCLASS()
@@ -30,16 +30,19 @@ public:
 	virtual float GetDetectRadius() override;
 	virtual float GetPatrolRadius() override;
 
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void AttackStart();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UBMonsterStatComponent> Stat;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USkeletalMeshComponent> Weapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> AttackMontage;
 
 	FMonsterAttackEnd OnAttackEnd;
 private:

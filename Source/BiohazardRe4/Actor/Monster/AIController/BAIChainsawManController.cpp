@@ -9,6 +9,8 @@
 
 ABAIChainsawManController::ABAIChainsawManController()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Script/AIModule.BlackboardData'/Game/Blueprints/Actor/Monster/BehaviorTree/BB_ChainsawMan.BB_ChainsawMan'"));
 
 	if (BBAssetRef.Object != nullptr)

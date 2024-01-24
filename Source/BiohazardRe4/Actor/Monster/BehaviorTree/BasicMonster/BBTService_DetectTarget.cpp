@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/BehaviorTree/BBTService_DetectTarget.h"
-#include "../Interface/BMonsterStatInterface.h"
+#include "Actor/Monster/BehaviorTree/BasicMonster/BBTService_DetectTarget.h"
+#include "../../Interface/BMonsterStatInterface.h"
 #include "AIController.h"
-#include "../Define/MonsterDefine.h"
+#include "../../Define/MonsterDefine.h"
 #include "BiohazardRe4.h"
 #include "BehaviorTree/BlackboardComponent.h"
 

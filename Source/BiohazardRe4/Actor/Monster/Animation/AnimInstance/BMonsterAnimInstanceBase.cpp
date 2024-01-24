@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/Animation/BMonsterAnimInstanceBase.h"
+#include "Actor/Monster/Animation/AnimInstance/BMonsterAnimInstanceBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 

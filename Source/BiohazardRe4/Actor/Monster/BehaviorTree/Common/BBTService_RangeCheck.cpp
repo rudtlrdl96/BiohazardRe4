@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/BehaviorTree/BBTService_RangeCheck.h"
+#include "Actor/Monster/BehaviorTree/Common/BBTService_RangeCheck.h"
 #include "BiohazardRe4.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
-#include "../Interface/BMonsterStatInterface.h"
+#include "../../Interface/BMonsterStatInterface.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "../Define/MonsterDefine.h"
+#include "../../Define/MonsterDefine.h"
 
 void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {

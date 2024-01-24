@@ -19,6 +19,7 @@ UENUM(BlueprintType)
 enum class MonsterState : uint8
 {
 	Idle UMETA(DisplayName = "Idle"),
+	Turn UMETA(DisplayName = "Turn"),
 	Patrol UMETA(DisplayName = "Patrol"),
 	Walk UMETA(DisplayName = "Walk"),
 	Run UMETA(DisplayName = "Run"),

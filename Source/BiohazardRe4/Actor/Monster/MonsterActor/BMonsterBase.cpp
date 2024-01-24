@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/BMonsterBase.h"
-#include "Component/BMonsterStatComponent.h"
+#include "Actor/Monster/MonsterActor/BMonsterBase.h"
+#include "../Component/BMonsterStatComponent.h"
 #include "BiohazardRe4.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABMonsterBase::ABMonsterBase()
@@ -20,14 +21,19 @@ void ABMonsterBase::BeginPlay()
 	Super::BeginPlay();
 }
 
-MonsterState ABMonsterBase::GetCurrentState()
+void ABMonsterBase::AttackStart()
 {
-	return CurState;
-}
+	if (AttackMontage == nullptr)
+	{
+		return;
+	}
 
-void ABMonsterBase::SetCurrentState(MonsterState _InState)
-{
-	CurState = _InState;
+	int SectionNumber = FMath::RandRange(1, 2);
+	FName SectionName = *FString::Printf(TEXT("Attack%d"), SectionNumber);
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(AttackMontage, 1.0f/*공속이 있다면, 바꿔줘야겠지?*/);
+	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 }
 
 void ABMonsterBase::Attack()
@@ -47,11 +53,33 @@ void ABMonsterBase::Attack()
 		                           FQuat::Identity, 
 		                           ECC_EngineTraceChannel2, 
 		                           FCollisionShape::MakeSphere(SweepRadius), Params);
+	
+	AActor* HitActor = OutHitResult.GetActor();
+
+	ACharacter* HitCharacter = Cast<ACharacter>(HitActor);
+	if (HitCharacter == nullptr)
+	{
+		LOG_WARNING(TEXT("HitCharacter 타입캐스팅에 실패하였습니다."));
+		return;
+	}
+
+	AController* HitController = HitCharacter->GetController();
+	if (HitController == nullptr)
+	{
+		LOG_WARNING(TEXT("HitController가 nullptr입니다."));
+		return;
+	}
+
+	if (HitController->IsPlayerController() == true)
+	{
+		//때린다.
+	}
 
 #if ENABLE_DRAW_DEBUG
 	
 	FColor DebugColor = FColor::Green;
-	if (HitDetected == true)
+
+	if (HitController->IsPlayerController() == true)
 	{
 		DebugColor = FColor::Red;
 	}
@@ -103,3 +131,17 @@ float ABMonsterBase::GetPatrolRadius()
 	return Stat->GetPatrolRadius();
 }
 
+MonsterState ABMonsterBase::GetCurrentState()
+{
+	return CurState;
+}
+
+void ABMonsterBase::SetCurrentState(MonsterState _InState)
+{
+	CurState = _InState;
+
+	if (_InState == MonsterState::Attack)
+	{
+		AttackStart();
+	}
+}

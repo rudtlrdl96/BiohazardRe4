@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/BChainsawMan.h"
-#include "AIController/BAIChainsawManController.h"
+#include "Actor/Monster/MonsterActor/BChainsawMan.h"
+#include "../AIController/BAIChainsawManController.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Component/BMonsterStatComponent.h"
+#include "../Component/BMonsterStatComponent.h"
 #include "BiohazardRe4.h"
 
 ABChainsawMan::ABChainsawMan()
@@ -13,12 +13,20 @@ ABChainsawMan::ABChainsawMan()
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SK_Chainsaw"));
 	Weapon->SetupAttachment(GetMesh(), TEXT("ChainsawSocket"));
-	//
+	
 	if (ChainsawSkeletalMeshRef.Object != nullptr)
 	{
 		Weapon->SetSkeletalMesh(ChainsawSkeletalMeshRef.Object);
 		Weapon->SetCollisionProfileName(TEXT("NoCollision"));
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ChainsawAttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_ChainsawManAttack.AM_ChainsawManAttack'"));
+	
+	if (ChainsawAttackMontageRef.Object != nullptr)
+	{
+		AttackMontage = ChainsawAttackMontageRef.Object;
+	}
+	//AttackMontage =
 
 	AIControllerClass = ABAIChainsawManController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
