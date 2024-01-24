@@ -19,9 +19,12 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+ABInventoryActor* ABInventoryActor::Instance = nullptr;
+
 // Sets default values
 ABInventoryActor::ABInventoryActor()
 {
+	Instance = this;
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -235,6 +238,14 @@ void ABInventoryActor::OpenCraft()
 	CraftWidget->SetVisibility(ESlateVisibility::Visible);
 
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Craft));
+}
+
+void ABInventoryActor::CompleteCraft()
+{
+	SelectItem = nullptr;
+	SelectSlot = nullptr;
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ABInventoryActor::Click()
