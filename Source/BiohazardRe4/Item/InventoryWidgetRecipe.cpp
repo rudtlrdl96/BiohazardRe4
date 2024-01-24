@@ -12,9 +12,6 @@
 void UBInventoryWidgetRecipe::NativeOnInitialized()
 {
 	Button = Cast<UButton>(GetWidgetFromName(TEXT("Button")));
-	FScriptDelegate Delegate;
-	Delegate.BindUFunction(this, TEXT("Craft"));
-	Button->OnClicked.Add(Delegate);
 	ItemImage = Cast<UImage>(GetWidgetFromName(TEXT("Image")));
 	ItemName = Cast<UTextBlock>(GetWidgetFromName(TEXT("Text")));
 	ItemNum = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemNum")));

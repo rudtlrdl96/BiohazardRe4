@@ -45,7 +45,7 @@ class BIOHAZARDRE4_API UBInventoryWidgetRecipe : public UUserWidget
 public:
 	void SetRecipe(const FBCraftRecipe& Recipe);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void Craft();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
