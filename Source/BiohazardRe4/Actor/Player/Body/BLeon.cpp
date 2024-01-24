@@ -25,6 +25,11 @@ ABLeon::ABLeon()
 	CreateFSM();
 }
 
+FVector ABLeon::GetCameraDirection() const
+{
+	return PlayerCamera->GetForwardVector();
+}
+
 ELeonDirection ABLeon::GetLeonDirection() const
 {
 	FVector DirVector = GetInputDirection().GetSafeNormal();

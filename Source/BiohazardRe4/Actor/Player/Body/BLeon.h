@@ -160,6 +160,9 @@ public:
 		return LookInput;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetCameraDirection() const;
+
 	// 현재 플레이어의 입력 방향을 Enum으로 반환합니다
 	UFUNCTION(BlueprintCallable)
 	ELeonDirection GetLeonDirection() const;
