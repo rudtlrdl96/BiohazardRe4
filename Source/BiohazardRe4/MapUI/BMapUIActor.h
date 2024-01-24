@@ -73,5 +73,37 @@ private:
 	UPROPERTY()
 	bool bMapUIOnOffSwitch = false;
 
+	// __________________Input
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	APlayerController* Controller = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputMappingContext* DefaultMappingContext = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* CameraDragStart = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* CameraMove = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* CameraDragEnd = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* ViewUpperFloor = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* ViewLowerFloor = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
+
+	bool bCameraDrageState = false;
 	
+	void CameraDragStartFunc();
+	void CameraMoveFunc(const struct FInputActionValue& Value);
+	void CameraDragEndFunc();
+	void ViewUpperFloorFunc();
+	void ViewLowerFloorFunc();
 };
