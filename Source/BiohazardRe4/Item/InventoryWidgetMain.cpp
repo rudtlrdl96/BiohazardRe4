@@ -74,6 +74,11 @@ void UBInventoryWidgetMain::CloseCheck()
 	WarningPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
+void UBInventoryWidgetMain::SetDefault()
+{
+	WarningPanel->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UBInventoryWidgetMain::Drop()
 {
 	OffDropItem();

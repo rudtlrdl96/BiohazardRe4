@@ -50,6 +50,12 @@ public:
 
 	int32 Count = 1;		// 아이템의 개수
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UTextRenderComponent* TextRender;
+
 private:
 
 	enum class ItemState
@@ -77,9 +83,6 @@ private:
 	uint8 bIsTurn : 1;		// 아이템 회전 여부
 	uint8 bIsCurrentTurn : 1;		// 아이템 회전 여부
 	uint8 bIsSubSlot : 1;		// 아이템 회전 여부
-
-	UPROPERTY()
-	UStaticMeshComponent* Mesh;
 
 	UPROPERTY()
 	FBItemData Data;	// 아이템 데이터

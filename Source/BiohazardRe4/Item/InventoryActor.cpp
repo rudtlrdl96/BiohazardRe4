@@ -122,6 +122,7 @@ ABInventoryActor::ABInventoryActor()
 	// ______ FSM
 	FSMComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM"));
 
+	// FSM설정
 	UBFsm::FStateCallback DefaultState;
 	DefaultState.EnterDel.BindUObject(this,	&ABInventoryActor::DefaultEnter);
 	DefaultState.UpdateDel.BindUObject(this, &ABInventoryActor::DefaultUpdate);
@@ -131,15 +132,18 @@ ABInventoryActor::ABInventoryActor()
 	DragState.UpdateDel.BindUObject(this, &ABInventoryActor::DragUpdate);
 	DragState.ExitDel.BindUObject(this, &ABInventoryActor::DragExit);
 
+	UBFsm::FStateCallback SelectState;
+	SelectState.EnterDel.BindUObject(this, &ABInventoryActor::SelectEnter);
 	UBFsm::FStateCallback EmptyCallback;
 
+	FSMComp->CreateState(TO_KEY(EInventoryState::Wait), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Default), DefaultState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drag), DragState);
-	FSMComp->CreateState(TO_KEY(EInventoryState::Select), EmptyCallback);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Select), SelectState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drop), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::CloseCheck), EmptyCallback);
-	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
 
 // Called when the game starts or when spawned
@@ -174,7 +178,8 @@ void ABInventoryActor::BeginPlay()
 	CraftWidget = CreateWidget<UBInventoryWidgetCraft>(GetWorld(), CraftWidgetClass);
 	CraftWidget->AddToViewport();
 	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
-
+	
+	// 타임라인 설정 (SubCase 애니메이션)
 	FOnTimelineFloatStatic F;
 	F.BindLambda([this](float Value) {
 		SubCaseMesh->SetRelativeLocation(FMath::Lerp(FVector(100, 7.4, -2), FVector(45, 7.4, -2), Value));
@@ -200,12 +205,14 @@ void ABInventoryActor::AddItem(EItemCode ItemCode)
 	Inventory->AddItem(ItemCode);
 }
 
+// 인벤토리UI 켜기
 void ABInventoryActor::OpenInventory()
 {
-	Timeline.SetNewTime(0);
-	CaseMesh->PlayAnimation(OpenAnim, false);
+	Timeline.SetNewTime(0);		// SubCase의 위치를 조정
+	CaseMesh->PlayAnimation(OpenAnim, false);	// 애니메이션 재생
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);	// 매핑컨텍스트 추가해서 조작 할 수 있게 만듬
-	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);	// 뷰타겟을 이 엑터로 지정
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
 void ABInventoryActor::OpenSub()
@@ -230,8 +237,12 @@ void ABInventoryActor::CloseSub()
 
 void ABInventoryActor::OpenCraft()
 {
+	// 버튼을 눌러서 제작UI로 넘어감
+
+	// 기존 행동 UI 숨김
 	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 
+	// CraftWidget 위치 이동 및 표시
 	FVector Location = Inventory->GetItemWorldLocation(SelectItem);
 	Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0);
 	FVector2D Pos;
@@ -240,91 +251,109 @@ void ABInventoryActor::OpenCraft()
 	CraftWidget->SetItemData(SelectItem->GetData());
 	CraftWidget->SetVisibility(ESlateVisibility::Visible);
 
+	// State 변경
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Craft));
 }
 
 void ABInventoryActor::CompleteCraft()
 {
+	// 제작 완료시 Default 상태로 돌아감
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
-	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ABInventoryActor::ItemUse()
 {
+	// SelectItem을 사용
+	// 아직 Item종류별 효과를 처리하지 않음
+	// 아이템 사용후 Default 상태로 돌아감
 	Inventory->RemoveItem(SelectItem);
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ABInventoryActor::DropItem()
 {
-	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
+	// 아이템 버리기를 선택하여
+	// 버리기를 확인하는 문구를 표시.
 	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 	Widget->OnDropItem();
+	// State를 변경
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
 }
 
 void ABInventoryActor::CompleteDrop()
 {
+	// 아이템 버리기 확인을 하여 SelectItem을 버림
+	// Default 상태로 돌아감
 	Inventory->RemoveItem(SelectItem);
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ABInventoryActor::DropCancel()
 {
+	// 버리기를 취소하여 Select상태로 돌아감
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
-	BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
 void ABInventoryActor::CloseCancel()
 {
+	// 아이템을 버리고 인벤토리를 닫는 선택을 취소함
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
 void ABInventoryActor::CloseInventory()
 {
+	// 인벤토리를 닫는다
+	// Subslot에 있는 아이템은 버림
 	Inventory->RemoveAllItemInSubSlot();
 	Widget->OffCloseCheck();
-	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));
-	Subsystem->RemoveMappingContext(DefaultMappingContext);
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
+	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
 
 void ABInventoryActor::Click()
 {
-	// 클릭 시 실행
-	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag) && !bIsDragMove)
+	// 클릭 시 실행 (일정 시간 이내에 마우스를 누르고 땜)
+	int32 Key = FSMComp->GetCurrentFSMKey();
+
+	if (Key == TO_KEY(EInventoryState::Drag) && !bIsDragMove)
 	{
-		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+		// Drag상태이지만 충분히 지속되지 않음 (아이템을 이동시키지 않음)
+		Key = TO_KEY(EInventoryState::Default);
 	}
 	if (bIsDragMove)
 	{
+		// Drag상태에 충분히 지속됨	(아이템을 이동시킴)
 		if (Inventory->IsEmptySlot(SelectSlot, SelectItem))
 		{
-			Inventory->MoveItemConfirm(SelectItem, SelectSlot);
-			FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+			// 이동시킨 아이템이 내려놓을 수 있다면
+			Inventory->MoveItemConfirm(SelectItem, SelectSlot);			// 아이템을 내려놓는다
+			FSMComp->ChangeState(TO_KEY(EInventoryState::Default));		// Default 상태로
 		}
 		else if (Inventory->CheckChange(SelectItem, SelectSlot))
 		{
-			SelectItem = Inventory->ChangeItem(SelectItem, SelectSlot);
+			// 이동시킨 아이템을 내려놓고 다른 아이템을 받아올 수 있는 상태 (교환가능상태)
+			SelectItem = Inventory->ChangeItem(SelectItem, SelectSlot);		// 아이템을 교환한다
 			Inventory->MoveItem(SelectItem, SelectSlot);
 			Cursor->SetCursorSize(SelectItem->GetItemSize());
 		}
 	}
-	else if (SelectItem && FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Default))
+	else if (SelectItem && Key == TO_KEY(EInventoryState::Default))
 	{
+		// 커서가 아이템을 가르키고 있는 경우
+		// 해당 아이템을 선택하는 상태로 전환
 		FVector Location = Inventory->GetItemWorldLocation(SelectItem);
 		Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0) ;
 		FVector2D Pos;
 		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Location, Pos);
 		BehaviorWidget->SetPositionInViewport(Pos);
 		BehaviorWidget->SetItemData(SelectItem->GetData());
-		BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 	}
 }
@@ -336,8 +365,8 @@ void ABInventoryActor::Cancel()
 
 	if (Key == TO_KEY(EInventoryState::Select))
 	{
+		// 선택하는 상태일때는 기본상태로 돌아온다
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
-		BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
 	if (Key == TO_KEY(EInventoryState::Default))
@@ -360,8 +389,6 @@ void ABInventoryActor::Cancel()
 	if (Key == TO_KEY(EInventoryState::Craft))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
-		CraftWidget->SetVisibility(ESlateVisibility::Hidden);
-		BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
 		return;
 	}
 	if (Key == TO_KEY(EInventoryState::Drop))
@@ -381,8 +408,11 @@ void ABInventoryActor::DragStart()
 
 void ABInventoryActor::DragTrigger()
 {
+	// 마우스를 일정시간 누르고 있으면 실행
+
 	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag) && !bIsDragMove)
 	{
+		// 현재 드래그 상태라면 아이템을 이동시킬 수 있게 한다
 		bIsDragMove = 1;
 		Inventory->RaiseItem(SelectItem);
 		Inventory->MoveItem(SelectItem, SelectSlot);
@@ -413,6 +443,10 @@ void ABInventoryActor::Turn()
 
 void ABInventoryActor::DefaultEnter()
 {
+	Widget->SetVisibility(ESlateVisibility::Visible);
+	Widget->SetDefault();
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ABInventoryActor::DefaultUpdate(float _DeltaTime)
@@ -514,4 +548,10 @@ void ABInventoryActor::DragExit()
 	{
 		CloseSub();
 	}
+}
+
+void ABInventoryActor::SelectEnter()
+{
+	BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
+	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 }

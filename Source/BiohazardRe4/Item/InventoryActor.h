@@ -17,12 +17,13 @@ class BIOHAZARDRE4_API ABInventoryActor : public AActor
 
 	enum class EInventoryState
 	{
-		Default = 0,
-		Drag,
-		Select,
-		Craft,
-		Drop,
-		CloseCheck,
+		Wait = -1,		// 인벤토리를 열지 않은 상태
+		Default = 0,	// 인벤토리를 연 기본 상태
+		Drag,			// 아이템을 드래그하여 이동시키는 상태
+		Select,			// 아이템을 선택하여 아이템 행동창이 열린 상태
+		Craft,			// 아이템을 조합하는 상태
+		Drop,			// 아이템을 버리는 것을 확인하는 상태
+		CloseCheck,		// 아이템을 버리고 인벤토리를 닫는 것을 확인하는 상태
 	};
 
 public:	
@@ -30,42 +31,34 @@ public:
 	ABInventoryActor();
 
 	static ABInventoryActor* Instance;
-	// 아이템을 추가한다
 	
+	// 아이템을 추가한다
 	void AddItem(EItemCode ItemCode);
-
+	// 아이템을 추가한다
 	void AddItem(const FName& _Name);
 
+	// * 인벤토리를 연다, UI를 킬때 이걸 실행해주세요
 	UFUNCTION(BlueprintCallable)
 	void OpenInventory();
 
 	UFUNCTION(BlueprintCallable)
 	void OpenSub();
-
-	UFUNCTION(BlueprintCallable)
-	void CloseSub();
-
 	UFUNCTION()
 	void OpenCraft();
-
 	UFUNCTION()
 	void CompleteCraft();
-
+	UFUNCTION(BlueprintCallable)
+	void CloseSub();
 	UFUNCTION()
 	void ItemUse();
-
 	UFUNCTION()
 	void DropItem();
-
 	UFUNCTION()
 	void CompleteDrop();
-
 	UFUNCTION()
 	void DropCancel();
-
 	UFUNCTION()
 	void CloseCancel();
-
 	UFUNCTION()
 	void CloseInventory();
 
@@ -174,6 +167,7 @@ private:
 	void DragCancel();
 	void Turn();
 
+	// FSM
 	void DefaultEnter();
 	void DefaultUpdate(float _DeltaTime);
 	void DefaultExit();
@@ -182,4 +176,5 @@ private:
 	void DragUpdate(float _DeltaTime);
 	void DragExit();
 
+	void SelectEnter();
 };

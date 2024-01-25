@@ -50,6 +50,8 @@ public:
 	UFUNCTION()
 	void CloseCheck();
 
+	void SetDefault();
+
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemName;
 
