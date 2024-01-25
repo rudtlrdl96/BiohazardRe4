@@ -45,11 +45,9 @@ public:
 // Function
 
 	// 아이템을 추가한다
-	void AddItem(const FName& Name);
-	// 아이템을 추가한다
-	void AddItem(EItemCode ItemCode);
+	void AddItem(EItemCode ItemCode, int Num = 1);
 	// 아이템을 해당 위치에 추가한다
-	void AddItem(EItemCode ItemCode, const FIntPoint& Pos);
+	void AddItem(EItemCode ItemCode, const FIntPoint& Pos, int Num = 1);
 	// 아이템을 제거한다. Num개 만큼 제거합니다
 	void RemoveItem(EItemCode ItemCode, int Num = 1);
 	// Item을 Num만큼 제거합니다. Item의 수가 부족하면 같은 종류의 다른 아이템을 제거합니다
@@ -70,6 +68,8 @@ public:
 	void MoveItemConfirm(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 아이템을 교환할 수 있는지 여부를 알아낸다
 	bool CheckChange(ABInventoryItem* Item, const UBInventorySlot* Slot);
+	// 해당 아이템을 병합하고 남는 개수를 리턴한다
+	int ItemMerge(const FBItemData& Data, int Num);
 	// 현재 들고있는 아이템을 내려 놓고 그 자리에 있는 아이템을 들어올린다
 	ABInventoryItem* ChangeItem(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 특정 크기의 아이템이 들어갈 공간이 있다면 그 위치를 반환한다. 아이템이 들어갈 공간이 없다면 FIntPoint::NoneValue를 리턴
@@ -103,9 +103,9 @@ public:
 
 private:
 	// 아이템을 추가한다
-	void CreateItem(const FBItemData& Data);
+	void CreateItem(const FBItemData& Data, int Num = 1);
 	// 아이템을 해당 위치에 추가합니다
-	void CreateItem(const FBItemData& Data, const FIntPoint& Pos);
+	void CreateItem(const FBItemData& Data, const FIntPoint& Pos, int Num = 1);
 	// 아이템을 배치한다
 	void PlaceItemSlot(ABInventoryItem* Item, const FIntPoint& Pos);
 	// 아이템을 배치한다

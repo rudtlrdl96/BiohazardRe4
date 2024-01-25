@@ -195,14 +195,9 @@ void ABInventoryActor::Tick(float DeltaTime)
 	Timeline.TickTimeline(DeltaTime);
 }
 
-void ABInventoryActor::AddItem(const FName& _Name)
+void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 {
-	Inventory->AddItem(_Name);
-}
-
-void ABInventoryActor::AddItem(EItemCode ItemCode)
-{
-	Inventory->AddItem(ItemCode);
+	Inventory->AddItem(ItemCode, Num);
 }
 
 // 인벤토리UI 켜기

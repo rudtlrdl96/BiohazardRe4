@@ -3,7 +3,7 @@
 
 #include "InventoryItem.h"
 #include "Generic/BFsm.h"
-#include "Components/TextRenderComponent.h"
+#include "Components/WidgetComponent.h"
 
 ABInventoryItem::ABInventoryItem()
 {
@@ -13,17 +13,6 @@ ABInventoryItem::ABInventoryItem()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetupAttachment(RootComponent);
-
-	TextRender = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRender"));
-	TextRender->SetupAttachment(RootComponent);
-	TextRender->SetText(FText::FromString(FString::FromInt(0)));
-	TextRender->SetWorldSize(2.8);
-	TextRender->SetRelativeRotation({ 90, 90, 0 });
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Game/Assets/Font/M_OutlineTextMaterialOpaque.M_OutlineTextMaterialOpaque'"));
-	TextRender->SetTextMaterial(Material.Object);
-	TextRender->SetHorizontalAlignment(EHorizTextAligment::EHTA_Right);
-	TextRender->SetRenderCustomDepth(true);
-	TextRender->SetCustomDepthStencilValue(1);
 
 	// FSM
 	FSMComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM"));
@@ -52,7 +41,7 @@ void ABInventoryItem::SetItemData(const FBItemData& _Data)
 	Mesh->SetRelativeLocation(_Data.Location);
 	Mesh->SetRelativeRotation(_Data.Rotation);
 	Mesh->SetRelativeScale3D(_Data.Scale);
-	TextRender->SetRelativeLocation({ -3.0 + 5.0 * Data.ItemSize.X, -2.0 + 5.0 * Data.ItemSize.Y, 3.0 });
+	SetItemNumText();
 }
 
 void ABInventoryItem::SetRaise()
@@ -87,7 +76,6 @@ void ABInventoryItem::Turn()
 		MeshStartRotate = Data.Rotation;
 		MeshTargetLocation = Data.TurnLocation;
 		MeshTargetRotate = Data.TurnRotation;
-		TextRender->SetRelativeLocation({ -3.0 + 5.0 * Data.ItemSize.Y, -2.0 + 5.0 * Data.ItemSize.X, 3.0 });
 	}
 	else
 	{
@@ -95,8 +83,9 @@ void ABInventoryItem::Turn()
 		MeshStartRotate = Data.TurnRotation;
 		MeshTargetLocation = Data.Location;
 		MeshTargetRotate = Data.Rotation;
-		TextRender->SetRelativeLocation({ -3.0 + 5.0 * Data.ItemSize.X, -2.0 + 5.0 * Data.ItemSize.Y, 3.0 });
 	}
+
+	SetItemNumText();
 }
 
 void ABInventoryItem::Tick(float DeltaTime)

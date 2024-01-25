@@ -30,27 +30,7 @@ void UBInventoryManager::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UBInventoryManager::AddItem(const FName& Name)
-{
-	if (nullptr == ItemDataTable)
-	{
-		LOG_WARNING(TEXT("ItemDataTable Not Setting."));
-		return;
-	}
-
-	// 데이터 테이블에서 아이템 찾기
-	FBItemData* Data = ItemDataTable->FindRow<FBItemData>(Name, FString("Fail Find ItemData"));
-
-	if (nullptr == Data)
-	{
-		LOG_WARNING(TEXT("Can't Found Name in ItemDataTable"));
-		return;
-	}
-
-	CreateItem(*Data);
-}
-
-void UBInventoryManager::AddItem(EItemCode ItemCode)
+void UBInventoryManager::AddItem(EItemCode ItemCode, int Num)
 {
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
 	FBItemData* FindItem = nullptr;
@@ -71,10 +51,10 @@ void UBInventoryManager::AddItem(EItemCode ItemCode)
 		return;
 	}
 
-	CreateItem(*FindItem);
+	CreateItem(*FindItem, Num);
 }
 
-void UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos)
+void UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos, int Num)
 {
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
 	FBItemData* FindItem = nullptr;
@@ -95,7 +75,7 @@ void UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos)
 		return;
 	}
 
-	CreateItem(*FindItem, Pos);
+	CreateItem(*FindItem, Pos, Num);
 }
 
 void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
@@ -164,8 +144,17 @@ void UBInventoryManager::CraftItem(const FBCraftRecipe& Recipe)
 }
 
 static int32 count = 0;
-void UBInventoryManager::CreateItem(const FBItemData& Data)
+void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 {
+	// 기존 아이템에 합칠 수 있는지 체크
+	if (1 < Data.MaxCount)
+	{
+		Num = ItemMerge(Data, Num);
+		if (Num <= 0)
+		{
+			return;
+		}
+	}
 	// 아이템이 들어갈 공간 찾기
 	FIntPoint Point = FindEmptySlot(Data.ItemSize);
 	if (Point == FIntPoint::NoneValue)
@@ -175,12 +164,19 @@ void UBInventoryManager::CreateItem(const FBItemData& Data)
 		return;
 	}
 
-	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
-	ABInventoryItem* NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
+	ABInventoryItem* NewItem;
+	if (1 == Data.MaxCount)
+	{
+		NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
+	}
+	else
+	{
+		NewItem = GetWorld()->SpawnActor<ABInventoryItem>(ABInventoryActor::Instance->ItemClass);
+	}
 	// 아이템 생성
 	if (NewItem)
 	{
-		NewItem->Count = 1;
+		NewItem->Count = Num;
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		NewItem->SetItemData(Data);
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
@@ -189,8 +185,18 @@ void UBInventoryManager::CreateItem(const FBItemData& Data)
 	}
 }
 
-void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos)
+void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos, int Num)
 {
+	// 기존 아이템에 합칠 수 있는지 체크
+	if (1 < Data.MaxCount)
+	{
+		Num = ItemMerge(Data, Num);
+		if (Num <= 0)
+		{
+			return;
+		}
+	}
+
 	// 아이템이 들어갈 공간 찾기
 	if (false == IsEmptySlot(Pos, Data.ItemSize))
 	{
@@ -199,7 +205,15 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 	}
 
 	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
-	ABInventoryItem* NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
+	ABInventoryItem* NewItem;
+	if (1 == Data.MaxCount)
+	{
+		NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
+	}
+	else
+	{
+		NewItem = GetWorld()->SpawnActor<ABInventoryItem>(ABInventoryActor::Instance->ItemClass);
+	}
 	// 아이템 생성
 	if (NewItem)
 	{
@@ -366,6 +380,33 @@ bool UBInventoryManager::CheckChange(ABInventoryItem* Item, const UBInventorySlo
 		}
 	}
 	return true;
+}
+
+int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
+{
+	TArray<ABInventoryItem*> Items;
+	ItemMap.MultiFind(Data.ItemCode, Items, true);
+	for (ABInventoryItem* Item : Items)
+	{
+		if (Item->Count < Data.MaxCount)
+		{
+			// 아이템을 더 넣을 수 있음
+			int EmptyNum = Data.MaxCount - Item->Count;		// 빈공간
+			if (Num <= EmptyNum)
+			{
+				// 남은 수를 모두 넣을 수 있다면
+				Item->AddCount(Num);
+				return 0;
+			}
+			else
+			{
+				// 공간이 부족한 경우
+				Num -= EmptyNum;
+				Item->SetCount(Data.MaxCount);
+			}
+		}
+	}
+	return Num;
 }
 
 ABInventoryItem* UBInventoryManager::ChangeItem(ABInventoryItem* Item, const UBInventorySlot* Slot)

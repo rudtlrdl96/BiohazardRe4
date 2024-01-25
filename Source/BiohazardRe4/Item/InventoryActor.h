@@ -33,9 +33,7 @@ public:
 	static ABInventoryActor* Instance;
 	
 	// 아이템을 추가한다
-	void AddItem(EItemCode ItemCode);
-	// 아이템을 추가한다
-	void AddItem(const FName& _Name);
+	void AddItem(EItemCode ItemCode, int Num = 1);
 
 	// * 인벤토리를 연다, UI를 킬때 이걸 실행해주세요
 	UFUNCTION(BlueprintCallable)
@@ -72,6 +70,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UBInventoryManager* Inventory;						// 인벤토리 관리 컴포넌트
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ABInventoryItem> ItemClass;
 
 	// ___________________________ Widget ___________________________________
 
@@ -152,9 +153,9 @@ public:
 	uint8 bIsDragMove : 1;
 
 	UFUNCTION(BlueprintCallable)
-	void DebugAdd(EItemCode Code)
+	void DebugAdd(EItemCode Code, int Num)
 	{
-		AddItem(Code);
+		AddItem(Code, Num);
 	}
 
 private:

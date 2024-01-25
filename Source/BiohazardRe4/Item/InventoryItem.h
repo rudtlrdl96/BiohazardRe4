@@ -26,6 +26,23 @@ public:
 	void SetMove(const FVector& _Location);
 	// 아이템 이동이 끝나 제자리에 놓는다
 	void SetPut(const FVector& _Location);
+	// 아이템의 개수를 지정한다
+
+	// 아이템의 수 표시를 세팅한다
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetItemNumText();
+
+	void SetCount(int _Count)
+	{
+		Count = _Count;
+		SetItemNumText();
+	}
+
+	void AddCount(int _Count)
+	{
+		Count += _Count;
+		SetItemNumText();
+	}
 
 	void Turn();
 	inline uint8 GetIsTurn()
@@ -36,7 +53,10 @@ public:
 	inline void SetItemPosition(const FIntPoint& _Pos) { ItemPosition = _Pos; }
 	inline void SetIsSubSlot(bool IsSubSlot) { bIsSubSlot = IsSubSlot; }
 	inline const FBItemData& GetData() const { return Data; }
-	inline const FIntPoint GetItemSize() const { return bIsTurn ? FIntPoint(Data.ItemSize.Y, Data.ItemSize.X) : Data.ItemSize; }
+	UFUNCTION(BlueprintCallable)
+	inline int GetMaxCount() const { return Data.MaxCount; }
+	UFUNCTION(BlueprintCallable)
+	inline FIntPoint GetItemSize() const { return bIsTurn ? FIntPoint(Data.ItemSize.Y, Data.ItemSize.X) : Data.ItemSize; }
 	inline const FIntPoint& GetItemPosition() const { return ItemPosition; }
 	inline bool IsSubSlot() const { return bIsSubSlot; }
 	inline const FName& GetItemName() const { return Data.ItemName; }
@@ -48,13 +68,11 @@ public:
 	const float RaiseSpeed = 5.0f;
 	const float TurnSpeed = 5.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 Count = 1;		// 아이템의 개수
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UTextRenderComponent* TextRender;
 
 private:
 
