@@ -83,7 +83,7 @@ public:
 	float CameraMinFOV = 25.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
-	float SizeTest = 1.f;
+	FVector4f CameraMovableRange = FVector4f(-170.f, -280.f, 360.f, 200.f);
 
 private:
 	UPROPERTY()
@@ -116,6 +116,9 @@ private:
 	class UInputAction* CameraZoom = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* MapUIClose = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
 
 	bool bCameraDrageState = false;
@@ -124,6 +127,8 @@ private:
 	{
 		return CheckFOV < CameraMinFOV || CheckFOV > CameraMaxFOV;
 	}
+
+	bool IsOverCameraMoveRange(FVector3d CameraPos);
 	
 	void CameraDragStartFunc();
 	void CameraMoveFunc(const struct FInputActionValue& Value);

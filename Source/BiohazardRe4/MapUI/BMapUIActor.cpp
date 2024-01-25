@@ -106,6 +106,7 @@ void ABMapUIActor::BeginPlay()
 	Input->BindAction(CameraZoom, ETriggerEvent::Triggered, this, &ABMapUIActor::CameraZoomFunc);
 	Input->BindAction(ViewUpperFloor, ETriggerEvent::Triggered, this, &ABMapUIActor::ViewUpperFloorFunc);
 	Input->BindAction(ViewLowerFloor, ETriggerEvent::Triggered, this, &ABMapUIActor::ViewLowerFloorFunc);
+	Input->BindAction(MapUIClose, ETriggerEvent::Triggered, this, &ABMapUIActor::MapUIOff);
 }
 
 // Called every frame
@@ -153,16 +154,40 @@ void ABMapUIActor::MapUIOff()
 
 void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
 {
+
 	if (!bCameraDrageState)
 	{
 		return;
 	}
-
-	FVector MovementVector = Value.Get<FVector>() * CameraMoveVelocity;
 	
-	FVector CurLoc = Camera->GetRelativeLocation();
-	CurLoc += MovementVector;
-	Camera->SetRelativeLocation(CurLoc);
+	FVector NextLoc = Camera->GetRelativeLocation() + (Value.Get<FVector>() * CameraMoveVelocity);
+
+	if (NextLoc.X < CameraMovableRange.X)
+	{
+		NextLoc.X = CameraMovableRange.X;
+	}
+
+	if (NextLoc.Y < CameraMovableRange.Y)
+	{
+		NextLoc.Y = CameraMovableRange.Y;
+	}
+		
+	if (NextLoc.X > CameraMovableRange.Z)
+	{
+		NextLoc.X = CameraMovableRange.Z;
+	}
+		
+	if (NextLoc.Y > CameraMovableRange.W)
+	{
+		NextLoc.Y = CameraMovableRange.W;
+	}
+	
+	Camera->SetRelativeLocation(NextLoc);
+}
+
+bool ABMapUIActor::IsOverCameraMoveRange(FVector3d CameraPos)
+{
+	return CameraPos.X < CameraMovableRange.X || CameraPos.Y < CameraMovableRange.Y || CameraPos.X > CameraMovableRange.Z || CameraPos.Y >CameraMovableRange.W;
 }
 
 void ABMapUIActor::CameraDragStartFunc()
