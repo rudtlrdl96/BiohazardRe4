@@ -30,6 +30,21 @@ void UBInventoryManager::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+const FBItemData& UBInventoryManager::FindItemData(EItemCode Code)
+{
+	TArray<FName> RowNames = ItemDataTable->GetRowNames();
+	for (FName Name : RowNames)
+	{
+		FBItemData* ItemData = ItemDataTable->FindRow<FBItemData>(Name, "");
+		if (ItemData->ItemCode == Code)
+		{
+			return *ItemData;
+		}
+	}
+	LOG_ERROR(TEXT("Can not find ItemData"));
+	return *ItemDataTable->FindRow<FBItemData>(TEXT("HandgunAmmo"), TEXT(""));
+}
+
 void UBInventoryManager::AddItem(EItemCode ItemCode, int Num)
 {
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
@@ -96,6 +111,8 @@ void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 		else
 		{
 			Item->Count -= RemoveNum;
+			RemoveNum = 0;
+			Item->SetItemNumText();
 			break;
 		}
 	}
@@ -111,6 +128,7 @@ void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
 	int RemoveNum = Num;
 	RemoveNum -= Item->Count;
 	Item->Count -= Num;
+	Item->SetItemNumText();
 
 	if (Item->Count <= 0)
 	{
@@ -140,7 +158,14 @@ void UBInventoryManager::CraftItem(const FBCraftRecipe& Recipe)
 		RemoveItem(Recipe.AItem, Recipe.ANum);
 	}
 
-	AddItem(Recipe.ResultItem, Pos);
+	if (IsEmptySlot(Pos, FindItemData(Recipe.ResultItem).ItemSize))
+	{
+		AddItem(Recipe.ResultItem, Pos, Recipe.ResultNum);
+	}
+	else
+	{
+		AddItem(Recipe.ResultItem, Recipe.ResultNum);
+	}
 }
 
 static int32 count = 0;

@@ -44,7 +44,7 @@ struct FBItemData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	FBItemData()
-		: ItemName(""), ItemSize(1, 1)
+		: ItemName(""), ItemSize(1, 1), Scale(1, 1, 1)
 	{
 
 	}

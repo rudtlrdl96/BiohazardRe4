@@ -43,7 +43,7 @@ public:
 	TArray<class UBInventorySlot*> SubSlot;	// 2차원 서브 인벤토리 공간 (버리는 공간)
 
 // Function
-
+	const FBItemData& FindItemData(EItemCode Code);
 	// 아이템을 추가한다
 	void AddItem(EItemCode ItemCode, int Num = 1);
 	// 아이템을 해당 위치에 추가한다
