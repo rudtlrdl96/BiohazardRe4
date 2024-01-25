@@ -34,31 +34,68 @@ void UBInventoryWidgetRecipe::SetRecipe(const FBCraftRecipe& Recipe)
 	ItemANum->SetText(FText::FromString(FString::FromInt(Recipe.ANum)));
 	ItemBNum->SetText(FText::FromString(FString::FromInt(Recipe.BNum)));
 
+	bool bFlag = false;
 	if (Recipe.AItem == Recipe.BItem)
 	{
+		int ItemCount = UBInventoryManager::Instance->GetItemNum(Recipe.AItem);
 		// 조합 아이템 2개가 같은 종류인 경우 (녹 + 녹) 허브에 한정된 케이스
-		if (UBInventoryManager::Instance->GetItemNum(Recipe.AItem) < Recipe.ANum + Recipe.BNum)
+		if (Recipe.ANum <= ItemCount)
 		{
-			// A요구량 B요구량을 합친것보다 소지수가 적다면
-			Button->SetIsEnabled(false);
-			return;
+			// A요구량을 넘겼다면
+			ItemANum->SetColorAndOpacity(ActiveTextColor);
+			if (Recipe.ANum + Recipe.BNum <= ItemCount)
+			{
+				// A 요구량과 B 요구량을 포함해 넘겼다면
+				ItemBNum->SetColorAndOpacity(ActiveTextColor);
+			}
+			else
+			{
+				// B 요구량을 넘기지 못함
+				ItemBNum->SetColorAndOpacity(InactiveTextColor);
+				bFlag = true;
+			}
+		}
+		else
+		{
+			ItemANum->SetColorAndOpacity(InactiveTextColor);
+			ItemBNum->SetColorAndOpacity(InactiveTextColor);
+			bFlag = true;
 		}
 	}
 	else
 	{
-		if (UBInventoryManager::Instance->GetItemNum(Recipe.AItem) < Recipe.ANum)
+		if (Recipe.ANum <= UBInventoryManager::Instance->GetItemNum(Recipe.AItem))
 		{
-			Button->SetIsEnabled(false);
-			return;
+			// A요구량을 넘김
+			ItemANum->SetColorAndOpacity(ActiveTextColor);
 		}
-		if (UBInventoryManager::Instance->GetItemNum(Recipe.BItem) < Recipe.BNum)
+		else
 		{
-			Button->SetIsEnabled(false);
-			return;
+			ItemANum->SetColorAndOpacity(InactiveTextColor);
+			bFlag = true;
+		}
+
+		if (Recipe.BNum <= UBInventoryManager::Instance->GetItemNum(Recipe.BItem))
+		{
+			// B 요구량을 넘김
+			ItemBNum->SetColorAndOpacity(ActiveTextColor);
+		}
+		else
+		{
+			ItemBNum->SetColorAndOpacity(InactiveTextColor);
+			bFlag = true;
 		}
 	}
-	CurRecipe = Recipe;
-	Button->SetIsEnabled(true);
+
+	if (bFlag)
+	{
+		Button->SetIsEnabled(false);
+	}
+	else
+	{
+		CurRecipe = Recipe;
+		Button->SetIsEnabled(true);
+	}
 }
 
 void UBInventoryWidgetRecipe::Craft()

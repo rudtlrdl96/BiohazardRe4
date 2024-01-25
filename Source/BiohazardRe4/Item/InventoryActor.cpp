@@ -131,13 +131,14 @@ ABInventoryActor::ABInventoryActor()
 	DragState.UpdateDel.BindUObject(this, &ABInventoryActor::DragUpdate);
 	DragState.ExitDel.BindUObject(this, &ABInventoryActor::DragExit);
 
-	UBFsm::FStateCallback SelectState;
-	UBFsm::FStateCallback CraftState;
+	UBFsm::FStateCallback EmptyCallback;
 
 	FSMComp->CreateState(TO_KEY(EInventoryState::Default), DefaultState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drag), DragState);
-	FSMComp->CreateState(TO_KEY(EInventoryState::Select), SelectState);
-	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), CraftState);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Select), EmptyCallback);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), EmptyCallback);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Drop), EmptyCallback);
+	FSMComp->CreateState(TO_KEY(EInventoryState::CloseCheck), EmptyCallback);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
@@ -161,6 +162,7 @@ void ABInventoryActor::BeginPlay()
 	Input->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Turn);
 	Input->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Cancel);
 
+	// 위젯 생성
 	Widget = CreateWidget<UBInventoryWidgetMain>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
 
@@ -200,6 +202,7 @@ void ABInventoryActor::AddItem(EItemCode ItemCode)
 
 void ABInventoryActor::OpenInventory()
 {
+	Timeline.SetNewTime(0);
 	CaseMesh->PlayAnimation(OpenAnim, false);
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);	// 매핑컨텍스트 추가해서 조작 할 수 있게 만듬
 	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);
@@ -248,13 +251,57 @@ void ABInventoryActor::CompleteCraft()
 	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void ABInventoryActor::ItemUse()
+{
+	Inventory->RemoveItem(SelectItem);
+	SelectItem = nullptr;
+	SelectSlot = nullptr;
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ABInventoryActor::DropItem()
+{
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+	Widget->OnDropItem();
+}
+
+void ABInventoryActor::CompleteDrop()
+{
+	Inventory->RemoveItem(SelectItem);
+	SelectItem = nullptr;
+	SelectSlot = nullptr;
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ABInventoryActor::DropCancel()
+{
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
+	BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void ABInventoryActor::CloseCancel()
+{
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+}
+
+void ABInventoryActor::CloseInventory()
+{
+	Inventory->RemoveAllItemInSubSlot();
+	Widget->OffCloseCheck();
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));
+	Subsystem->RemoveMappingContext(DefaultMappingContext);
+}
+
 void ABInventoryActor::Click()
 {
+	// 클릭 시 실행
 	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Drag) && !bIsDragMove)
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 	}
-
 	if (bIsDragMove)
 	{
 		if (Inventory->IsEmptySlot(SelectSlot, SelectItem))
@@ -284,24 +331,42 @@ void ABInventoryActor::Click()
 
 void ABInventoryActor::Cancel()
 {
-	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Select))
+	// 취소키를 누를떄 실행
+	int32 Key = FSMComp->GetCurrentFSMKey();
+
+	if (Key == TO_KEY(EInventoryState::Select))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 		BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
-	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Default))
+	if (Key == TO_KEY(EInventoryState::Default))
 	{
-		UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));
-		Subsystem->RemoveMappingContext(DefaultMappingContext);
+		if (Inventory->HasItemInSubSlot())
+		{
+			Widget->CloseCheck();
+			FSMComp->ChangeState(TO_KEY(EInventoryState::CloseCheck));
+			return;
+		}
 		// 인벤토리 종료
+		CloseInventory();
 		return;
 	}
-	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Craft))
+	if (Key == TO_KEY(EInventoryState::CloseCheck))
+	{
+		Widget->OffCloseCheck();
+		return;
+	}
+	if (Key == TO_KEY(EInventoryState::Craft))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 		CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 		BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
+		return;
+	}
+	if (Key == TO_KEY(EInventoryState::Drop))
+	{
+		Widget->OffDropItem();
 		return;
 	}
 }

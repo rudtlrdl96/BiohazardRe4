@@ -14,7 +14,6 @@ class UButton;
 class UImage;
 class UTextBlock;
 class UBInventoryWidgetCraft;
-
 UCLASS()
 class BIOHAZARDRE4_API UBInventoryWidgetRecipe : public UUserWidget
 {
@@ -51,4 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<EItemCode, UObject*> ItemIconMap;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FColor ActiveTextColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FColor InactiveTextColor;
 };

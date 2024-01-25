@@ -125,6 +125,12 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 	case UBInventoryWidgetBehavior::Drop:
 		Images[Index]->SetBrushResourceObject(Icons[4]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Drop", "버리기"));
+		{
+			FScriptDelegate Delegate;
+			Delegate.BindUFunction(InventoryActor, FName("DropItem"));
+			Buttons[Index]->OnClicked.Clear();
+			Buttons[Index]->OnClicked.Add(Delegate);
+		}
 		break;
 	case UBInventoryWidgetBehavior::Crafting:
 		Images[Index]->SetBrushResourceObject(Icons[5]);
@@ -139,6 +145,12 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 	case UBInventoryWidgetBehavior::Use:
 		Images[Index]->SetBrushResourceObject(Icons[6]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Use", "사용하기"));
+		{
+			FScriptDelegate Delegate;
+			Delegate.BindUFunction(InventoryActor, FName("ItemUse"));
+			Buttons[Index]->OnClicked.Clear();
+			Buttons[Index]->OnClicked.Add(Delegate);
+		}
 		break;
 	default:
 		break;

@@ -110,8 +110,8 @@ void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 		{
 			RemoveNum -= Item->Count;
 			ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
-			Item->Destroy();
 			ItemMap.Remove(ItemCode, Item);
+			Item->Destroy();
 		}
 		else
 		{
@@ -135,8 +135,8 @@ void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
 	if (Item->Count <= 0)
 	{
 		ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
-		Item->Destroy();
 		ItemMap.Remove(Item->GetData().ItemCode, Item);
+		Item->Destroy();
 	}
 	if (0 < RemoveNum)
 	{
@@ -635,6 +635,22 @@ int UBInventoryManager::GetItemNum(EItemCode Code)
 	}
 
 	return Num;
+}
+
+void UBInventoryManager::RemoveAllItemInSubSlot()
+{
+	for (int y = 0; y < SubCaseSize.Y; y++)
+	{
+		for (int x = 0; x < SubCaseSize.X; x++)
+		{
+			if (ABInventoryItem* Item = SubSlot[y * SubCaseSize.X + x]->GetItem())
+			{
+				ItemMap.Remove(Item->GetData().ItemCode, Item);
+				SubSlot[y * SubCaseSize.X + x]->SetItem(nullptr);
+				Item->Destroy();
+			}
+		}
+	}
 }
 
 void UBInventoryManager::ClearSlot(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot)

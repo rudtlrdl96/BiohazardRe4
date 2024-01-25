@@ -21,6 +21,8 @@ class BIOHAZARDRE4_API ABInventoryActor : public AActor
 		Drag,
 		Select,
 		Craft,
+		Drop,
+		CloseCheck,
 	};
 
 public:	
@@ -48,6 +50,24 @@ public:
 
 	UFUNCTION()
 	void CompleteCraft();
+
+	UFUNCTION()
+	void ItemUse();
+
+	UFUNCTION()
+	void DropItem();
+
+	UFUNCTION()
+	void CompleteDrop();
+
+	UFUNCTION()
+	void DropCancel();
+
+	UFUNCTION()
+	void CloseCancel();
+
+	UFUNCTION()
+	void CloseInventory();
 
 protected:
 	// Called when the game starts or when spawned

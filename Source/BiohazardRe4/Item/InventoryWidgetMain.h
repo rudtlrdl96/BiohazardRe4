@@ -9,15 +9,46 @@
 /**
  * 
  */
+class UCanvasPanel;
+class UTextBlock;
+class UButton;
+
 UCLASS()
 class BIOHAZARDRE4_API UBInventoryWidgetMain : public UUserWidget
 {
 	GENERATED_BODY()
 	
+	virtual void NativeOnInitialized() override;
+
+	UPROPERTY()
+	UCanvasPanel* WarningPanel;
+
+	UPROPERTY()
+	UTextBlock* WarningText;
+
+	UPROPERTY()
+	UButton* OkButton;
+
+	UPROPERTY()
+	UButton* NoButton;
+
+	UFUNCTION()
+	void Drop();
+
 public:
 
 	void SetItemData(const FBItemData& Data);
 	inline void ClearItemData();
+
+	UFUNCTION()
+	void OnDropItem();
+	UFUNCTION()
+	void OffDropItem();
+	UFUNCTION()
+	void OffCloseCheck();
+
+	UFUNCTION()
+	void CloseCheck();
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemName;
