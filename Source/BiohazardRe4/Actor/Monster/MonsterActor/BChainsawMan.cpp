@@ -9,7 +9,7 @@
 
 ABChainsawMan::ABChainsawMan()
 {
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ChainsawSkeletalMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/Chainsaw/SK_Chainsaw.SK_Chainsaw'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ChainsawSkeletalMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/ChainsawMan/Chaisaw/SK_Chainsaw.SK_Chainsaw'"));
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SK_Chainsaw"));
 	Weapon->SetupAttachment(GetMesh(), TEXT("ChainsawSocket"));
