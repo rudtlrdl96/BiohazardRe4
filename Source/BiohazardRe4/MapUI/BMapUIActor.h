@@ -25,6 +25,8 @@ public:
 	// Sets default values for this actor's properties
 	ABMapUIActor();
 
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeEvent) override;
+
 	UFUNCTION(BlueprintCallable)
 	void SetFloor(EFloor Floor);
 
@@ -60,7 +62,7 @@ public:
 	UPROPERTY()
 	UStaticMeshComponent* RootPivotComponent;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	UStaticMeshComponent* BackgroundMesh;	// 배경 매쉬
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
@@ -69,6 +71,19 @@ public:
 	uint8 CurrentFloor = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;
+
+	// __________________Option
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float CameraMoveVelocity = 2.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float CameraMaxFOV = 45.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float CameraMinFOV = 25.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
+	float SizeTest = 1.f;
 
 private:
 	UPROPERTY()
@@ -104,6 +119,11 @@ private:
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
 
 	bool bCameraDrageState = false;
+
+	bool IsOverFOVRange(float CheckFOV)
+	{
+		return CheckFOV < CameraMinFOV || CheckFOV > CameraMaxFOV;
+	}
 	
 	void CameraDragStartFunc();
 	void CameraMoveFunc(const struct FInputActionValue& Value);

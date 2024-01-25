@@ -48,7 +48,7 @@ ABMapUIActor::ABMapUIActor()
 	{
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/ui_village_B1_MeshMerge.ui_village_B1_MeshMerge'"));
 		StageMapMesh[0]->SetStaticMesh(Mesh.Object);
-	}
+	}	
 	StageMapMesh[0]->SetupAttachment(RootComponent);
 	StageMapMesh[0]->SetVisibility(false);
 
@@ -58,9 +58,23 @@ ABMapUIActor::ABMapUIActor()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->SetRelativeLocation({ 0, 65, 300 });
-	Camera->SetRelativeRotation({ -80, -90, 0 });
-	Camera->FieldOfView = 25.0f;
+	Camera->SetRelativeRotation({ -90, -90, 0 });
+	Camera->FieldOfView = 45.0f;
 
+	//배경 메쉬
+	BackgroundMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MapUIBackground"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/Backgrouond_Plane.Backgrouond_Plane'"));
+		BackgroundMesh->SetStaticMesh(Mesh.Object);
+	}
+	FVector InitLocation = FVector(100.f,-40.f,0);
+	FVector InitScale = FVector(8.f,6.25,1);
+	BackgroundMesh->SetRelativeLocation(InitLocation);
+	BackgroundMesh->SetRelativeScale3D(InitScale);
+}
+
+void ABMapUIActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeEvent)
+{
 }
 
 void ABMapUIActor::SetFloor(EFloor Floor)
@@ -78,6 +92,7 @@ void ABMapUIActor::BeginPlay()
 	bMapUIOnOffSwitch = false;
 
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
+	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 
@@ -97,7 +112,6 @@ void ABMapUIActor::BeginPlay()
 void ABMapUIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABMapUIActor::MapUIOn()
@@ -112,6 +126,7 @@ void ABMapUIActor::MapUIOn()
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);
 
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
+	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
@@ -129,9 +144,11 @@ void ABMapUIActor::MapUIOff()
 	Subsystem->RemoveMappingContext(DefaultMappingContext);
 
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
+	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
+	Camera->FieldOfView = 45.0f;
 }
 
 void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
@@ -141,7 +158,7 @@ void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
 		return;
 	}
 
-	FVector MovementVector = Value.Get<FVector>();
+	FVector MovementVector = Value.Get<FVector>() * CameraMoveVelocity;
 	
 	FVector CurLoc = Camera->GetRelativeLocation();
 	CurLoc += MovementVector;
@@ -182,9 +199,12 @@ void ABMapUIActor::ViewLowerFloorFunc()
 
 void ABMapUIActor::CameraZoomFunc(const struct FInputActionValue& Value)
 {
-	float MovementVector = Value.Get<float>();
-	Camera->FieldOfView += MovementVector * 5;
-	UE_LOG(LogTemp, Display, TEXT("Zoom"))
+	float MovementVector = Value.Get<float>() * 5 + Camera->FieldOfView;
+	if (IsOverFOVRange(MovementVector))
+	{
+		return;
+	}
+	Camera->FieldOfView = MovementVector;
 }
 
 
