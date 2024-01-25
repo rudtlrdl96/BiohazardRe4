@@ -125,7 +125,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	inline ELeonWeaponAnim GetWeaponAnimationState() const
 	{
-		return LeonWeaponState;
+		return GetUseWeaponAnimation(UseWeaponCode);
 	}
 
 	// 현재 플레이어의 체력 애니메이션 상태를 반환합니다
@@ -163,13 +163,22 @@ public:
 		return MoveInput;
 	}	
 
+	// 현재 플레이어의  입력 방향을 월드 기준으로 반환합니다
+	UFUNCTION(BlueprintCallable)
+	inline FVector GetWorldInputDirection() const
+	{
+		FVector Result = MoveInput;
+		VPlayerCameraToWorld(Result);
+		return Result;
+	}
+
 	// 현재 플레이어의 카메라 회전 입력을 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline FVector GetLookDirection() const
 	{
 		return LookInput;
-	}
-
+	}	
+	
 	// 플레이어의 무기 변경 상태를 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline ELeonWeaponSwap GetWeaponSwapState() const
