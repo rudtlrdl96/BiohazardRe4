@@ -85,6 +85,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
 	FVector4f CameraMovableRange = FVector4f::Zero();
 
+	// __________________Widget
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UBMapUIWidgetMain> MapUIWidgetClass;
+
+	UPROPERTY()
+	UBMapUIWidgetMain* Widget;
+
 private:
 	UPROPERTY()
 	bool bMapUIOnOffSwitch = false;

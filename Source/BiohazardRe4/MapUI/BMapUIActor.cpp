@@ -4,6 +4,7 @@
 #include "MapUI/BMapUIActor.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "BMapUIWidgetMain.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -113,6 +114,14 @@ void ABMapUIActor::BeginPlay()
 	Input->BindAction(ViewUpperFloor, ETriggerEvent::Triggered, this, &ABMapUIActor::ViewUpperFloorFunc);
 	Input->BindAction(ViewLowerFloor, ETriggerEvent::Triggered, this, &ABMapUIActor::ViewLowerFloorFunc);
 	Input->BindAction(MapUIClose, ETriggerEvent::Triggered, this, &ABMapUIActor::MapUIOff);
+
+	Widget = CreateWidget<UBMapUIWidgetMain>(GetWorld(), MapUIWidgetClass);
+	if (Widget == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("MapUIWidgetMain is nullptr"))
+	}
+	Widget->AddToViewport();
+	Widget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 // Called every frame
@@ -137,6 +146,8 @@ void ABMapUIActor::MapUIOn()
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
+
+	Widget->SetVisibility(ESlateVisibility::Visible);
 }
 
 void ABMapUIActor::MapUIOff()
@@ -156,6 +167,8 @@ void ABMapUIActor::MapUIOff()
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 	Camera->FieldOfView = 45.0f;
+
+	Widget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
