@@ -43,5 +43,5 @@ private:
 	void InitValue();
 
 	void SetSkeletalMeshByRandomInBeginPlay();
-	void SetSkeletalMeshByRandomInConstructor();
+	void SetSkeletalMeshInConstructor();
 };

@@ -10,7 +10,7 @@
 ABMonsterMale::ABMonsterMale()
 {
 	CreateComponent();
-	SetSkeletalMeshByRandomInConstructor();
+	SetSkeletalMeshInConstructor();
 
 	InitAI();
 	InitValue();
@@ -52,7 +52,7 @@ void ABMonsterMale::InitValue()
 	Stat->SetAttackRadius(80.0f);
 }
 
-void ABMonsterMale::SetSkeletalMeshByRandomInConstructor()
+void ABMonsterMale::SetSkeletalMeshInConstructor()
 {
 	//BaseBody
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyBaseRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'"));
@@ -70,19 +70,6 @@ void ABMonsterMale::SetSkeletalMeshByRandomInConstructor()
 
 void ABMonsterMale::SetSkeletalMeshByRandomInBeginPlay()
 {
-	//Body 
-	//FString BodyBasePath = TEXT("/ Script / Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'");
-	//USkeletalMesh* LoadedBodyBaseMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *BodyBasePath));
-	//
-	//if (LoadedBodyBaseMesh != nullptr)
-	//{
-	//	BodyBase->SetSkeletalMesh(LoadedBodyBaseMesh);
-	//}
-	//else
-	//{
-	//	LOG_MSG(TEXT("LoadedBodyBaseMesh Mesh is Nullptr"));
-	//}
-
 	//Head
 	FString HeadPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/1/SK_MonsterMaleHead_1.SK_MonsterMaleHead_1'");
 	FString HeadPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/2/SK_MonsterMaleHead_2.SK_MonsterMaleHead_2'");
@@ -107,7 +94,7 @@ void ABMonsterMale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Head Mesh is Nullptr"));
+		LOG_MSG(TEXT("Head Mesh is Nullptr : Index = %d"), HeadIndex);
 	}
 
 	//Jacket
@@ -133,7 +120,7 @@ void ABMonsterMale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Jacket Mesh is Nullptr"));
+		LOG_MSG(TEXT("Jacket Mesh is Nullptr : Index = %d"), JacketIndex);
 	}
 	 
 	//Pants
@@ -158,7 +145,7 @@ void ABMonsterMale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Pants Mesh is Nullptr"));
+		LOG_MSG(TEXT("Pants Mesh is Nullptr : Index = %d"), PantsIndex);
 	}
 
 	//Hat
@@ -188,7 +175,7 @@ void ABMonsterMale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Hat Mesh is Nullptr"));
+		LOG_MSG(TEXT("Hat Mesh is Nullptr : Index = %d"), HatIndex);
 	}
 }
 
