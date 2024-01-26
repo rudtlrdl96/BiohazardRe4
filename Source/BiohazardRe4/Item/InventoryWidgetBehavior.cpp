@@ -117,6 +117,12 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 	case UBInventoryWidgetBehavior::Investigate:
 		Images[Index]->SetBrushResourceObject(Icons[2]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Investigate", "조사하기"));
+		{
+			FScriptDelegate Delegate;
+			Delegate.BindUFunction(InventoryActor, FName("StartInvestigate"));
+			Buttons[Index]->OnClicked.Clear();
+			Buttons[Index]->OnClicked.Add(Delegate);
+		}
 		break;
 	case UBInventoryWidgetBehavior::Hotkey:
 		Images[Index]->SetBrushResourceObject(Icons[3]);

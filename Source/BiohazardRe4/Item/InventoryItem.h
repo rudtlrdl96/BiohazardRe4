@@ -31,6 +31,8 @@ public:
 	// 아이템의 수 표시를 세팅한다
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetItemNumText();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OffItemNumText();
 
 	void SetCount(int _Count)
 	{

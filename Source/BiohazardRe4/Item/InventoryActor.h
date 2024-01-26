@@ -10,6 +10,7 @@
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
+struct FInputActionInstance;
 UCLASS()
 class BIOHAZARDRE4_API ABInventoryActor : public AActor
 {
@@ -24,6 +25,7 @@ class BIOHAZARDRE4_API ABInventoryActor : public AActor
 		Craft,			// 아이템을 조합하는 상태
 		Drop,			// 아이템을 버리는 것을 확인하는 상태
 		CloseCheck,		// 아이템을 버리고 인벤토리를 닫는 것을 확인하는 상태
+		Investigate,	// 아이템을 조사하는 상태
 	};
 
 public:	
@@ -59,6 +61,10 @@ public:
 	void CloseCancel();
 	UFUNCTION()
 	void CloseInventory();
+	UFUNCTION()
+	void StartInvestigate();
+	UFUNCTION()
+	void EndInvestigate();
 
 protected:
 	// Called when the game starts or when spawned
@@ -111,6 +117,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UBInventoryCursor* Cursor;			// 커서
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	USceneComponent* InvestigatePivot;
+
 	// _________________Timeline
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Timeline", Meta = (AllowPrivateAccess = "true"))
@@ -138,6 +147,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* CancelAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* RotateAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
@@ -178,4 +190,10 @@ private:
 	void DragExit();
 
 	void SelectEnter();
+
+	void InvestigateEnter();
+	void InvestigateUpdate(float DeltaTime);
+	void InvestigateExit();
+
+	void InvestigateRotate(const FInputActionInstance& _MoveAction);
 };

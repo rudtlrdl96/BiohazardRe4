@@ -67,6 +67,9 @@ ABInventoryActor::ABInventoryActor()
 	BackgroundMesh->SetRelativeRotation({ 0, 90, 90 });
 	BackgroundMesh->SetRelativeScale3D({ 3.0, 3.0, 1.0 });
 
+	InvestigatePivot = CreateDefaultSubobject<USceneComponent>(TEXT("InvestigatePivot"));
+	InvestigatePivot->SetupAttachment(RootComponent);
+
 	// 인벤토리 관리자
 	Inventory = CreateDefaultSubobject<UBInventoryManager>(TEXT("Inventory Manager"));
 	Inventory->SetupAttachment(CaseMesh);
@@ -131,9 +134,12 @@ ABInventoryActor::ABInventoryActor()
 	DragState.EnterDel.BindUObject(this, &ABInventoryActor::DragEnter);
 	DragState.UpdateDel.BindUObject(this, &ABInventoryActor::DragUpdate);
 	DragState.ExitDel.BindUObject(this, &ABInventoryActor::DragExit);
-
 	UBFsm::FStateCallback SelectState;
 	SelectState.EnterDel.BindUObject(this, &ABInventoryActor::SelectEnter);
+	UBFsm::FStateCallback InvestigateState;
+	InvestigateState.EnterDel.BindUObject(this, &ABInventoryActor::InvestigateEnter);
+	InvestigateState.UpdateDel.BindUObject(this, &ABInventoryActor::InvestigateUpdate);
+	InvestigateState.ExitDel.BindUObject(this, &ABInventoryActor::InvestigateExit);
 	UBFsm::FStateCallback EmptyCallback;
 
 	FSMComp->CreateState(TO_KEY(EInventoryState::Wait), EmptyCallback);
@@ -143,6 +149,7 @@ ABInventoryActor::ABInventoryActor()
 	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drop), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::CloseCheck), EmptyCallback);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Investigate), InvestigateState);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
 
@@ -165,6 +172,7 @@ void ABInventoryActor::BeginPlay()
 	Input->BindAction(DragAction, ETriggerEvent::Canceled, this, &ABInventoryActor::DragCancel);
 	Input->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Turn);
 	Input->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Cancel);
+	Input->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ABInventoryActor::InvestigateRotate);
 
 	// 위젯 생성
 	Widget = CreateWidget<UBInventoryWidgetMain>(GetWorld(), InventoryWidgetClass);
@@ -312,6 +320,16 @@ void ABInventoryActor::CloseInventory()
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
 
+void ABInventoryActor::StartInvestigate()
+{
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Investigate));
+}
+
+void ABInventoryActor::EndInvestigate()
+{
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
+}
+
 void ABInventoryActor::Click()
 {
 	// 클릭 시 실행 (일정 시간 이내에 마우스를 누르고 땜)
@@ -381,7 +399,7 @@ void ABInventoryActor::Cancel()
 		Widget->OffCloseCheck();
 		return;
 	}
-	if (Key == TO_KEY(EInventoryState::Craft))
+	if (Key == TO_KEY(EInventoryState::Craft) || Key == TO_KEY(EInventoryState::Investigate))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 		return;
@@ -549,4 +567,53 @@ void ABInventoryActor::SelectEnter()
 {
 	BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
 	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+static FVector StartLocation;
+static FVector EndLocation;
+static FRotator  StartRot;
+static FRotator  EndRot;
+static float Timer;
+void ABInventoryActor::InvestigateEnter()
+{
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+	StartLocation = SelectItem->Mesh->GetComponentLocation();
+	EndLocation = InvestigatePivot->GetComponentLocation();
+	StartRot = SelectItem->Mesh->GetComponentRotation();
+	EndRot = SelectItem->GetData().Rotation;
+	Timer = 0;
+	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = Inventory->ItemMap.CreateIterator();
+	for (; it; ++it)
+	{
+		it.Value()->OffItemNumText();
+	}
+}	
+
+
+void ABInventoryActor::InvestigateUpdate(float DeltaTime)
+{
+	Timer = FMath::Min(1.0f, Timer + DeltaTime * 3.0f);
+	SelectItem->Mesh->SetWorldLocation(FMath::Lerp(StartLocation, EndLocation, Timer));
+	SelectItem->Mesh->SetWorldRotation(FQuat::Slerp(StartRot.Quaternion(), EndRot.Quaternion(), Timer));
+}
+
+void ABInventoryActor::InvestigateExit()
+{
+	SelectItem->Mesh->SetWorldLocation(StartLocation);
+	SelectItem->Mesh->SetWorldRotation(StartRot);
+	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = Inventory->ItemMap.CreateIterator();
+	for (; it; ++it)
+	{
+		it.Value()->SetItemNumText();
+	}
+}
+
+void ABInventoryActor::InvestigateRotate(const FInputActionInstance& _MoveAction)
+{
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Investigate))
+	{
+		FVector2D Vector2D = _MoveAction.GetValue().Get<FVector2D>();
+		FRotator Rot = FRotator(Vector2D.X, 0, Vector2D.Y) * 10;
+		EndRot += Rot;
+	}
 }
