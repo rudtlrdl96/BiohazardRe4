@@ -83,7 +83,7 @@ public:
 	float CameraMinFOV = 25.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
-	FVector4f CameraMovableRange = FVector4f(-170.f, -280.f, 360.f, 200.f);
+	FVector4f CameraMovableRange = FVector4f::Zero();
 
 private:
 	UPROPERTY()
@@ -128,8 +128,6 @@ private:
 		return CheckFOV < CameraMinFOV || CheckFOV > CameraMaxFOV;
 	}
 
-	bool IsOverCameraMoveRange(FVector3d CameraPos);
-	
 	void CameraDragStartFunc();
 	void CameraMoveFunc(const struct FInputActionValue& Value);
 	void CameraDragEndFunc();

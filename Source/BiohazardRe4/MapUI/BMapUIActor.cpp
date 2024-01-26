@@ -71,6 +71,12 @@ ABMapUIActor::ABMapUIActor()
 	FVector InitScale = FVector(8.f,6.25,1);
 	BackgroundMesh->SetRelativeLocation(InitLocation);
 	BackgroundMesh->SetRelativeScale3D(InitScale);
+	FVector BoundMin;
+	FVector BoundMax;
+	BackgroundMesh->GetLocalBounds(BoundMin, BoundMax);
+	BoundMin = BoundMin * InitScale + InitLocation;
+	BoundMax = BoundMax * InitScale + InitLocation;
+	CameraMovableRange = FVector4f(BoundMin.X, BoundMin.Y, BoundMax.X, BoundMax.Y);
 }
 
 void ABMapUIActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeEvent)
@@ -183,11 +189,6 @@ void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
 	}
 	
 	Camera->SetRelativeLocation(NextLoc);
-}
-
-bool ABMapUIActor::IsOverCameraMoveRange(FVector3d CameraPos)
-{
-	return CameraPos.X < CameraMovableRange.X || CameraPos.Y < CameraMovableRange.Y || CameraPos.X > CameraMovableRange.Z || CameraPos.Y >CameraMovableRange.W;
 }
 
 void ABMapUIActor::CameraDragStartFunc()
