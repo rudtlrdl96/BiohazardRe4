@@ -8,6 +8,8 @@
 #include "../../Interface/BMonsterStatInterface.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../../Define/MonsterDefine.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
 
 EBTNodeResult::Type UBBTTask_SetPatrolPos::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -15,6 +17,13 @@ EBTNodeResult::Type UBBTTask_SetPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 	if (MyPawn == nullptr)
 	{
 		LOG_FATAL(TEXT("MyPawn == nullptr : UBBTTask_SetPatrolPos::ExecuteTask"));
+		return EBTNodeResult::Failed;
+	}
+	
+	ACharacter* MyCharacter = OwnerComp.GetAIOwner()->GetCharacter();
+	if (MyCharacter == nullptr)
+	{
+		LOG_FATAL(TEXT("MyCharacter == nullptr : UBBTTask_SetPatrolPos::ExecuteTask"));
 		return EBTNodeResult::Failed;
 	}
 
@@ -40,6 +49,8 @@ EBTNodeResult::Type UBBTTask_SetPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROLPOS, NextPatrolPos.Location);
 		return EBTNodeResult::Succeeded;
 	}
+
+	MyCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	return EBTNodeResult::Failed;
 }
