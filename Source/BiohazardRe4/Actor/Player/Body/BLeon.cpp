@@ -485,15 +485,10 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 	break;
 	case 4:
 	{
-		ChangeUseWeapon(EItemCode::CombatKnife);
-	}
-	break;
-	case 5:
-	{
 		ChangeUseWeapon(EItemCode::Grenade);
 	}
 	break;
-	case 6:
+	case 5:
 	{
 		ChangeUseWeapon(EItemCode::Flashbang);
 	}
