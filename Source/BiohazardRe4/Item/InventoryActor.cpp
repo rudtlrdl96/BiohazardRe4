@@ -313,6 +313,7 @@ void ABInventoryActor::WeaponEquip()
 		break;
 	}
 	HUD->SetStoredAmmo(StoredAmmo);
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
 void ABInventoryActor::CompleteDrop()
