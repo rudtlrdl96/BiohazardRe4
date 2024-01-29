@@ -53,7 +53,6 @@ ABMapUIActor::ABMapUIActor()
 	StageMapMesh[0]->SetupAttachment(RootComponent);
 	StageMapMesh[0]->SetVisibility(false);
 
-	SetFloor(EFloor::E_1F); // 보여지는 층 초기화
 
 	// 카메라
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -86,9 +85,12 @@ void ABMapUIActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeE
 
 void ABMapUIActor::SetFloor(EFloor Floor)
 {
+	Widget->SetCurrentFloor(Floor);
+	Widget->SetPrevFloor(static_cast<EFloor>(CurrentFloor));
 	StageMapMesh[CurrentFloor]->SetVisibility(false);
 	CurrentFloor = static_cast<uint8>(Floor);
 	StageMapMesh[CurrentFloor]->SetVisibility(true);
+	Widget->ChangeMapLayerWidget();
 }
 
 
@@ -116,12 +118,15 @@ void ABMapUIActor::BeginPlay()
 	Input->BindAction(MapUIClose, ETriggerEvent::Triggered, this, &ABMapUIActor::MapUIOff);
 
 	Widget = CreateWidget<UBMapUIWidgetMain>(GetWorld(), MapUIWidgetClass);
+	Widget->SetParentUI(this);
 	if (Widget == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("MapUIWidgetMain is nullptr"))
 	}
 	Widget->AddToViewport();
 	Widget->SetVisibility(ESlateVisibility::Collapsed);
+
+	SetFloor(EFloor::E_1F); // 보여지는 층 초기화
 }
 
 // Called every frame

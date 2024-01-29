@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BMapUIActor.generated.h"
 
-UENUM()
+UENUM(BluePrintType)
 enum class EFloor : uint8
 {
 	E_B1 UMETA(DisplayName = "B1"),
@@ -68,7 +68,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	TArray<UStaticMeshComponent*> StageMapMesh;
 
-	uint8 CurrentFloor = 0;
+	uint8 CurrentFloor = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;
 
@@ -85,7 +85,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
 	FVector4f CameraMovableRange = FVector4f::Zero();
 
-	// __________________Widget
+	// __________________WidgetS
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<class UBMapUIWidgetMain> MapUIWidgetClass;
 
