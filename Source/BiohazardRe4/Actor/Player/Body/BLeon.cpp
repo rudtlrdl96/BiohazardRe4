@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Actor/Player/Body/BLeon.h"
@@ -11,6 +11,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BiohazardRe4.h"
+#include "../Weapon/Grenade/BLeonGrenade.h"
+#include "../Weapon/Gun/BLeonPistol.h"
+#include "../Weapon/Gun/BLeonRifle.h"
+#include "../Weapon/Gun/BLeonShotgun.h"
+#include "../Weapon/Knife/BLeonKnife.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0, 50.0, 80.0);
 const FVector ABLeon::CrouchSocketOffset = FVector(0.0, 50.0, 10.0);
@@ -38,6 +43,7 @@ void ABLeon::Tick(float _DeltaTime)
 	Super::Tick(_DeltaTime);
 	SpringArmUpdate(_DeltaTime);
 	UseWeaponUpdate(_DeltaTime);
+	WeaponSocketUpdate(_DeltaTime);
 
 	LeonFSMState = GetCurrentFSMState();
 }
@@ -170,6 +176,38 @@ ELeonDirection ABLeon::GetLeonDirection() const
 void ABLeon::WeaponPutOutStart()
 {
 	LOG_MSG(TEXT("Leon Weapon PutOutStart"));
+
+	if (nullptr != CurrentWeapon)
+	{
+		DeleteCurrentWeapon();
+	}
+
+	if (nullptr == CurrentWeapon)
+	{
+		CurrentWeapon = CreateWeapon(UseWeaponCode);
+
+		if (false == bIsLerpWeaponChange)
+		{
+			FVector EndLocation = GetMesh()->GetSocketLocation(LerpSocketEnd);
+			FRotator EndRotation = GetMesh()->GetSocketRotation(LerpSocketEnd);
+
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
+
+			CurrentWeapon->SetActorLocation(EndLocation);
+			CurrentWeapon->SetActorRotation(EndRotation);
+		}
+		else
+		{
+			FVector StartLocation = GetMesh()->GetSocketLocation(LerpSocketStart);
+			FRotator StartRotation = GetMesh()->GetSocketRotation(LerpSocketStart);
+
+			CurrentWeapon->SetActorLocation(StartLocation);
+			CurrentWeapon->SetActorRotation(StartRotation);
+
+			SocketLocationLerpTime = 0.0f;
+			SocketRotationLerpTime = 0.0f;
+		}
+	}
 }
 
 void ABLeon::WeaponPutOutEnd()
@@ -182,6 +220,77 @@ void ABLeon::WeaponPutOutEnd()
 void ABLeon::WeaponPutAwayStart()
 {
 	LOG_MSG(TEXT("Leon Weapon PutAwayStart"));
+
+	if (nullptr != CurrentWeapon)
+	{
+		ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
+		
+		SocketLocationLerpTime = 0.0f;
+		SocketRotationLerpTime = 0.0f;
+
+		switch (WeaponAnim)
+		{
+		case ELeonWeaponAnim::Shotgun:
+		{
+			LOG_MSG(TEXT("Leon Weapon DetachFromActor"));
+
+			CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+			LerpSocketStart = TEXT("ShotgunSocket");
+			LerpSocketEnd = TEXT("ShotgunSpineSocket");
+			bIsLerpWeaponChange = true;
+
+			SocketLocationLerpSpeed = 3.5f;
+			SocketRotationLerpSpeed = 2.0f;
+
+			SocketLocationBlend = PutAwayLocationAlphaBlend;
+			SocketRotationBlend = AbsolutAlphaBlend;
+			SocketLocationBlend.SetBlendTime(1.0f / SocketLocationLerpSpeed);
+			SocketRotationBlend.SetBlendTime(1.0f / SocketRotationLerpSpeed);
+			SocketLocationBlend.Reset();
+			SocketRotationBlend.Reset();
+
+			SocketLocationLerpTime = 0.0f;
+			SocketRotationLerpTime = 0.0f;
+		}
+			break;
+		case ELeonWeaponAnim::Rifle:
+		{
+			LOG_MSG(TEXT("Leon Weapon DetachFromActor"));
+
+			CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+			LerpSocketStart = TEXT("RifleSocket");
+			LerpSocketEnd = TEXT("RifleSpineSocket");
+			bIsLerpWeaponChange = true;
+
+			SocketLocationLerpSpeed = 3.5f;
+			SocketRotationLerpSpeed = 2.0f;
+
+			SocketLocationBlend = PutAwayLocationAlphaBlend;
+			SocketRotationBlend = AbsolutAlphaBlend;
+			SocketLocationBlend.SetBlendTime(1.0f / SocketLocationLerpSpeed);
+			SocketRotationBlend.SetBlendTime(1.0f / SocketRotationLerpSpeed);
+			SocketLocationBlend.Reset();
+			SocketRotationBlend.Reset();
+
+			SocketLocationLerpTime = 0.0f;
+			SocketRotationLerpTime = 0.0f;
+		}
+			break;
+		default:
+			break;
+		}
+
+		if (bIsLerpWeaponChange == true)
+		{
+			FVector StartLocation = GetMesh()->GetSocketLocation(LerpSocketStart);
+			FRotator StartRotation = GetMesh()->GetSocketRotation(LerpSocketStart);
+
+			CurrentWeapon->SetActorLocation(StartLocation);
+			CurrentWeapon->SetActorRotation(StartRotation);
+		}
+	}
 }
 
 void ABLeon::WeaponPutAwayEnd()
@@ -198,6 +307,11 @@ void ABLeon::WeaponPutAwayEnd()
 	else
 	{
 		LeonWeaponSwap = ELeonWeaponSwap::PutOut;
+	}
+
+	if (nullptr != CurrentWeapon)
+	{
+		DeleteCurrentWeapon();
 	}
 
 	LOG_MSG(TEXT("Leon Weapon PutAwayEnd"));
@@ -223,13 +337,11 @@ void ABLeon::ChangeUseWeapon(EItemCode _WeaponCode)
 
 		if (CurAnimation == ELeonWeaponAnim::Empty)
 		{
-			LOG_MSG(TEXT("Case 1"));
 			LeonWeaponSwap = ELeonWeaponSwap::PutOut;
 			UseWeaponCode = _WeaponCode;
 		}
 		else
 		{
-			LOG_MSG(TEXT("Case 2"));
 			LeonWeaponSwap = ELeonWeaponSwap::PutAway;
 			PutOutWeapon = _WeaponCode;
 		}
@@ -257,7 +369,7 @@ void ABLeon::PlayIdle(const FInputActionInstance& _MoveAction)
 
 void ABLeon::TryInteraction()
 {
-	// Todo :: ªÛ»£¿€øÎ √≥∏Æ
+	// Todo :: ÏÉÅÌò∏ÏûëÏö© Ï≤òÎ¶¨
 }
 
 bool ABLeon::AbleAim() const
@@ -319,6 +431,57 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 void ABLeon::UseWeaponUpdate(float _DeltaTime)
 {
 	LeonWeaponState = GetUseWeaponAnimation(UseWeaponCode);
+}
+
+void ABLeon::WeaponSocketUpdate(float _DeltaTime)
+{
+	if (false == bIsLerpWeaponChange)
+	{
+		return;
+	}
+
+	if (nullptr == CurrentWeapon)
+	{
+		bIsLerpWeaponChange = false;
+		SocketLocationLerpTime = 0.0f;
+		SocketRotationLerpTime = 0.0f;
+		return;
+	}
+
+	SocketLocationBlend.Update(_DeltaTime);
+	SocketRotationBlend.Update(_DeltaTime);
+
+	SocketLocationLerpTime += _DeltaTime * SocketLocationLerpSpeed * SocketLocationBlend.GetBlendedValue();
+	SocketRotationLerpTime += _DeltaTime * SocketRotationLerpSpeed * SocketRotationBlend.GetBlendedValue();
+		
+	LOG_MSG(TEXT("L : %f"), SocketLocationBlend.GetBlendedValue());
+	LOG_MSG(TEXT("R : %f"), SocketRotationBlend.GetBlendedValue());
+
+	FVector StartLocation = GetMesh()->GetSocketLocation(LerpSocketStart);
+	FRotator StartRotation = GetMesh()->GetSocketRotation(LerpSocketStart);
+
+	FVector EndLocation = GetMesh()->GetSocketLocation(LerpSocketEnd);
+	FRotator EndRotation = GetMesh()->GetSocketRotation(LerpSocketEnd);
+
+	SocketLocationLerpTime = FMath::Min(1.0f, SocketLocationLerpTime);
+	SocketRotationLerpTime = FMath::Min(1.0f, SocketRotationLerpTime);
+
+	if (1.0f <= SocketLocationLerpTime && 1.0f <= SocketRotationLerpTime)
+	{
+		SocketLocationLerpTime = 0.0f;
+		SocketRotationLerpTime = 0.0f;
+
+		bIsLerpWeaponChange = false;
+
+		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, LerpSocketEnd);
+		CurrentWeapon->SetActorLocation(EndLocation);
+		CurrentWeapon->SetActorRotation(EndRotation);
+
+		return;
+	}
+
+	CurrentWeapon->SetActorLocation(FMath::Lerp(StartLocation, EndLocation, SocketLocationLerpTime));
+	CurrentWeapon->SetActorRotation(FMath::Lerp(StartRotation, EndRotation, SocketRotationLerpTime));
 }
 
 void ABLeon::VPlayerCameraToWorld(FVector& _Vector) const
@@ -470,7 +633,7 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 
 	LOG_MSG(TEXT("Swap Slot : %d"), _Index);
 
-	// Todo : µπˆ±◊øÎ ƒ¸ΩΩ∑‘ ¡§∫∏∞° øœº∫µ«∏È ±≥√º
+	// Todo : ÎîîÎ≤ÑÍ∑∏Ïö© ÌÄµÏä¨Î°Ø Ï†ïÎ≥¥Í∞Ä ÏôÑÏÑ±ÎêòÎ©¥ ÍµêÏ≤¥
 	switch (_Index)
 	{
 	case 0:
@@ -510,6 +673,137 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 
 }
 
+ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
+{
+	ABLeonWeapon* NewWeapon = nullptr;
+
+	FName Path;
+	LerpSocketStart = TEXT("");
+
+	switch (_WeaponCode)
+	{
+	case EItemCode::Handgun_SR09R: // Pistol
+		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Pistol_SR09R.BP_Leon_Pistol_SR09R'");
+		LerpSocketEnd = TEXT("PistolSocket");
+		bIsLerpWeaponChange = false;
+		break;
+	case EItemCode::Shotgun_W870: // Shotgun
+		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Shotgun_W870.BP_Leon_Shotgun_W870'");
+		LerpSocketStart = TEXT("ShotgunSpineSocket");
+		LerpSocketEnd = TEXT("ShotgunSocket");
+		bIsLerpWeaponChange = true;
+
+		SocketLocationBlend = AbsolutAlphaBlend;
+		SocketRotationBlend = PutOutTurnAlphaBlend;
+		
+		SocketLocationLerpSpeed = 10.0f;
+		SocketRotationLerpSpeed = 2.0f;
+
+		SocketLocationBlend = PutAwayLocationAlphaBlend;
+		SocketRotationBlend = AbsolutAlphaBlend;
+		SocketLocationBlend.SetBlendTime(1.0f / SocketLocationLerpSpeed);
+		SocketRotationBlend.SetBlendTime(1.0f / SocketRotationLerpSpeed);
+		SocketLocationBlend.Reset();
+		SocketRotationBlend.Reset();
+
+		SocketLocationLerpTime = 0.0f;
+		SocketRotationLerpTime = 0.0f;
+		break;
+	case EItemCode::Rifle_SRM1903: // Rifle
+		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Rifle_SRM1903.BP_Leon_Rifle_SRM1903'");
+		LerpSocketStart = TEXT("RifleSpineSocket");
+		LerpSocketEnd = TEXT("RifleSocket");
+		bIsLerpWeaponChange = true;
+
+		SocketLocationBlend = AbsolutAlphaBlend;
+		SocketRotationBlend = PutOutTurnAlphaBlend;
+
+		SocketLocationLerpSpeed = 10.0f;
+		SocketRotationLerpSpeed = 2.0f;
+
+		SocketLocationBlend = PutAwayLocationAlphaBlend;
+		SocketRotationBlend = AbsolutAlphaBlend;
+		SocketLocationBlend.SetBlendTime(1.0f / SocketLocationLerpSpeed);
+		SocketRotationBlend.SetBlendTime(1.0f / SocketRotationLerpSpeed);
+		SocketLocationBlend.Reset();
+		SocketRotationBlend.Reset();
+
+		SocketLocationLerpTime = 0.0f;
+		SocketRotationLerpTime = 0.0f;
+		break;
+	case EItemCode::CombatKnife: // Knife
+		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Knife/BP_Leon_Knife_CombatKnife.BP_Leon_Knife_CombatKnife'");
+		LerpSocketEnd = TEXT("KnifeSocket");
+		bIsLerpWeaponChange = false;
+		break;
+	case EItemCode::Grenade: // Grenade
+		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Grenade/BP_Leon_Grenade_HandGrenade.BP_Leon_Grenade_HandGrenade'");
+		LerpSocketEnd = TEXT("GrenadeSocket");
+		bIsLerpWeaponChange = false;
+		break;
+	case EItemCode::Flashbang: // Flashbang
+		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Grenade/BP_Leon_Grenade_Flashbang.BP_Leon_Grenade_Flashbang'");
+		LerpSocketEnd = TEXT("FlashbangSocket");
+		bIsLerpWeaponChange = false;
+		break;
+	default:
+	{
+		const UEnum* EnupPtr = FindObject<UEnum>(nullptr, TEXT("/Script/BiohazardRe4.EItemCode"), true);
+
+		FName CodeName;
+		
+		if (nullptr != EnupPtr)
+		{
+			CodeName = EnupPtr->GetNameByValue((int64)_WeaponCode);
+		}
+
+		LOG_FATAL(TEXT("Wrong Item Code. Cannot be use as Weapons [%s]"), *CodeName.ToString());
+	}
+		break;
+	}
+
+	UBlueprint* ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), NULL, *Path.ToString()));
+
+	if (nullptr == ObjectToSpawn)
+	{
+		LOG_FATAL(TEXT("Failed Find Weapon Class"));
+	}
+
+	AActor* NewWeaponActor = GetWorld()->SpawnActor<AActor>(ObjectToSpawn->GeneratedClass);
+
+	if (nullptr == NewWeaponActor)
+	{
+		LOG_FATAL(TEXT("Failed Create Weapon Actor"));
+	}
+
+	NewWeapon = Cast<ABLeonWeapon>(NewWeaponActor);
+
+	if (nullptr == NewWeapon)
+	{
+		LOG_FATAL(TEXT("Failed Cast Weapon Class"));
+	}
+
+	
+	return NewWeapon;
+}
+
+void ABLeon::DeleteCurrentWeapon()
+{
+	if (nullptr != CurrentWeapon)
+	{
+		bool IsDestroy = CurrentWeapon->Destroy();
+
+		if (false == IsDestroy)
+		{
+			LOG_FATAL(TEXT("Fail Weapon Destroy"));
+		}
+		else
+		{
+			CurrentWeapon = nullptr;
+		}
+	}
+}
+
 ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode) const
 {
 	switch (_WeaponCode)
@@ -530,7 +824,16 @@ ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode) const
 		return ELeonWeaponAnim::Grenade;
 	default:
 	{
-		LOG_ERROR(TEXT("Wrong Use Weapon Code"));
+		const UEnum* EnupPtr = FindObject<UEnum>(nullptr, TEXT("/Script/BiohazardRe4.EItemCode"), true);
+
+		FName CodeName;
+
+		if (nullptr != EnupPtr)
+		{
+			CodeName = EnupPtr->GetNameByValue((int64)_WeaponCode);
+		}
+
+		LOG_FATAL(TEXT("Wrong Item Code. Cannot be use as Weapons [%s]"), *CodeName.ToString());
 	}
 		return ELeonWeaponAnim::Empty;
 	}

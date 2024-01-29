@@ -15,6 +15,7 @@ class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
+class ABLeonWeapon;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -291,6 +292,31 @@ private:
 
 	UBFsm* FsmComp = nullptr;
 
+	ABLeonWeapon* CurrentWeapon = nullptr;
+
+	FName LerpSocketStart = "";
+	FName LerpSocketEnd = "";
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	FAlphaBlend AbsolutAlphaBlend;	
+	
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	FAlphaBlend PutOutTurnAlphaBlend;	
+	
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	FAlphaBlend PutAwayLocationAlphaBlend;
+
+	FAlphaBlend SocketLocationBlend;
+	FAlphaBlend SocketRotationBlend;
+
+	float SocketLocationLerpTime = 0.0f;
+	float SocketRotationLerpTime = 0.0f;
+
+	float SocketLocationLerpSpeed = 1.0f;
+	float SocketRotationLerpSpeed = 1.0f;
+
+	uint32 bIsLerpWeaponChange : 1 = false;
+
 	void PlayMove(const FInputActionInstance& _MoveAction);
 	void PlayIdle(const FInputActionInstance& _MoveAction);
 
@@ -301,6 +327,7 @@ private:
 
 	void SpringArmUpdate(float _DeltaTime);
 	void UseWeaponUpdate(float _DeltaTime);
+	void WeaponSocketUpdate(float _DeltaTime);
 
 	void VPlayerCameraToWorld(FVector& _Result) const;
 
@@ -319,6 +346,9 @@ private:
 	void CreateFSM();
 
 	void UseQuickSlot(const uint32 _Index);
+
+	ABLeonWeapon* CreateWeapon(EItemCode _WeaponCode);
+	void DeleteCurrentWeapon();
 
 	ELeonWeaponAnim GetUseWeaponAnimation(EItemCode _WeaponCode) const;
 

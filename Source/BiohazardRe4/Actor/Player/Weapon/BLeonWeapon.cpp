@@ -10,6 +10,7 @@ ABLeonWeapon::ABLeonWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Mesh"));
+	RootComponent = WeaponMesh;
 }
 
 // Called when the game starts or when spawned
