@@ -194,8 +194,10 @@ public:
 	ELeonDirection GetLeonDirection() const;
 
 
-	virtual void WeaponPutOut() override;
-	virtual void WeaponPutAway() override;
+	virtual void WeaponPutOutStart() override;
+	virtual void WeaponPutOutEnd() override;
+	virtual void WeaponPutAwayStart() override;
+	virtual void WeaponPutAwayEnd() override;
 
 protected:
 	// Called when the game starts or when spawned

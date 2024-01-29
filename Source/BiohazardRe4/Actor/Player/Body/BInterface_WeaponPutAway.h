@@ -22,5 +22,6 @@ class BIOHAZARDRE4_API IBInterface_WeaponPutAway
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void WeaponPutAway() = 0;
+	virtual void WeaponPutAwayStart() = 0;
+	virtual void WeaponPutAwayEnd() = 0;
 };

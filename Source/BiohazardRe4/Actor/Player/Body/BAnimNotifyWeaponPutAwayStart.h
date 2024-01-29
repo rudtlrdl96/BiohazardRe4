@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "BAnimNotify_Weapon_PutOut.generated.h"
+#include "BAnimNotifyWeaponPutAwayStart.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API UBAnimNotify_Weapon_PutOut : public UAnimNotify
+class BIOHAZARDRE4_API UBAnimNotifyWeaponPutAwayStart : public UAnimNotify
 {
 	GENERATED_BODY()
 

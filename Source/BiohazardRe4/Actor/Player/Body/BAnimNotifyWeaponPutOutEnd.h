@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "BAnimNotify_Weapon_PutAway.generated.h"
+#include "BAnimNotifyWeaponPutOutEnd.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API UBAnimNotify_Weapon_PutAway : public UAnimNotify
+class BIOHAZARDRE4_API UBAnimNotifyWeaponPutOutEnd : public UAnimNotify
 {
 	GENERATED_BODY()
-
 public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 };

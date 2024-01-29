@@ -167,14 +167,24 @@ ELeonDirection ABLeon::GetLeonDirection() const
 	}
 }
 
-void ABLeon::WeaponPutOut()
+void ABLeon::WeaponPutOutStart()
+{
+	LOG_MSG(TEXT("Leon Weapon PutOutStart"));
+}
+
+void ABLeon::WeaponPutOutEnd()
 {
 	LeonWeaponSwap = ELeonWeaponSwap::None;
 
-	LOG_MSG(TEXT("Leon Weapon PutOut"));
+	LOG_MSG(TEXT("Leon Weapon PutOutEnd"));
 }
 
-void ABLeon::WeaponPutAway()
+void ABLeon::WeaponPutAwayStart()
+{
+	LOG_MSG(TEXT("Leon Weapon PutAwayStart"));
+}
+
+void ABLeon::WeaponPutAwayEnd()
 {
 	UseWeaponCode = PutOutWeapon;
 	PutOutWeapon = EItemCode::Empty;
@@ -190,7 +200,7 @@ void ABLeon::WeaponPutAway()
 		LeonWeaponSwap = ELeonWeaponSwap::PutOut;
 	}
 
-	LOG_MSG(TEXT("Leon Weapon PutAway"));
+	LOG_MSG(TEXT("Leon Weapon PutAwayEnd"));
 }
 
 void ABLeon::ChangeUseWeapon(EItemCode _WeaponCode)

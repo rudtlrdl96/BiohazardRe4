@@ -22,5 +22,6 @@ class BIOHAZARDRE4_API IBInterface_WeaponPutOut
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void WeaponPutOut() = 0;
+	virtual void WeaponPutOutStart() = 0;
+	virtual void WeaponPutOutEnd() = 0;
 };
