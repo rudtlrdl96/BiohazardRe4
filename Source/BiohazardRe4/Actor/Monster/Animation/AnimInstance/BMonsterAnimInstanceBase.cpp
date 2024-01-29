@@ -38,11 +38,5 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 	if (StateInterface != nullptr)
 	{
 		CurState = StaticCast<uint8>(StateInterface->GetCurrentState());
-
-		if (CurState == static_cast<uint8>(MonsterState::Idle))
-		{
-			StateInterface->SetCurrentState(MonsterState::Walk);
-			CurState = static_cast<uint8>(MonsterState::Walk);
-		}
 	}
 }

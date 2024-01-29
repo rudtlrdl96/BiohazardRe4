@@ -38,13 +38,15 @@ EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& 
 		{
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
+			
+			OwnerComp.GetAIOwner()->GetCharacter()->GetMesh()->GetAnimInstance()->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 		}
 	);
 
 	MyCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	StateInterface->SetMonsterAttackEndDelegate(OnAttackFinished);
-	StateInterface->SetCurrentState(MonsterState::Attack);
+	StateInterface->SetCurrentState(EMonsterState::Attack);
 
 	return EBTNodeResult::InProgress;
 }

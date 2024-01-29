@@ -22,7 +22,7 @@ void UBAnimNotify_ChainsawAttackEnd::Notify(USkeletalMeshComponent* MeshComp, UA
 
 		if (StateInterface != nullptr)
 		{
-			StateInterface->SetCurrentState(MonsterState::Walk);
+			StateInterface->SetCurrentState(EMonsterState::Walk);
 			
 			UWorld* CurWorld = MeshComp->GetWorld();
 			StateInterface->GetMonsterAttackEndDelegate().ExecuteIfBound();

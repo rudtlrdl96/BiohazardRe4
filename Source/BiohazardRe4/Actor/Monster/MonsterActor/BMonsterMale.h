@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actor/Monster/MonsterActor/BMonsterBase.h"
+#include "Actor/Monster/MonsterActor/BBasicMonsterBase.h"
 #include "BMonsterMale.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API ABMonsterMale : public ABMonsterBase
+class BIOHAZARDRE4_API ABMonsterMale : public ABBasicMonsterBase
 {
 	GENERATED_BODY()
 	
@@ -18,9 +18,6 @@ public:
 	ABMonsterMale();
 	
 protected:
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
-	USkeletalMeshComponent* BodyBase = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	USkeletalMeshComponent* Head = nullptr;
@@ -39,9 +36,11 @@ protected:
 
 private:
 	void CreateComponent();
-	void InitAI();
 	void InitValue();
 
-	void SetSkeletalMeshByRandomInBeginPlay();
+	void SetAnimInstanceAndAnimationMontageInBeginPlay();
+
+	void SetlMeshAndAnimationByRandomInBeginPlay();
 	void SetSkeletalMeshInConstructor();
+
 };

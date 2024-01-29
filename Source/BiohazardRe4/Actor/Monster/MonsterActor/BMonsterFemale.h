@@ -3,22 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actor/Monster/MonsterActor/BMonsterBase.h"
+#include "Actor/Monster/MonsterActor/BBasicMonsterBase.h"
 #include "BMonsterFemale.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API ABMonsterFemale : public ABMonsterBase
+class BIOHAZARDRE4_API ABMonsterFemale : public ABBasicMonsterBase
 {
 	GENERATED_BODY()
 public:
 	ABMonsterFemale();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
-	USkeletalMeshComponent* BodyBase = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	USkeletalMeshComponent* Head = nullptr;

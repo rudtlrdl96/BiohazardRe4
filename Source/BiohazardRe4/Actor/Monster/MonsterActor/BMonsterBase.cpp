@@ -25,6 +25,7 @@ void ABMonsterBase::AttackStart()
 {
 	if (AttackMontage == nullptr)
 	{
+		LOG_WARNING(TEXT("AttackMontage is Nullptr"));
 		return;
 	}
 
@@ -32,8 +33,17 @@ void ABMonsterBase::AttackStart()
 	FName SectionName = *FString::Printf(TEXT("Attack%d"), SectionNumber);
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance == nullptr)
+	{
+		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
+		return;
+	}
+
 	AnimInstance->Montage_Play(AttackMontage, 1.0f/*공속이 있다면, 바꿔줘야겠지?*/);
 	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+
+	AnimInstance->RootMotionMode = ERootMotionMode::RootMotionFromEverything;
 }
 
 void ABMonsterBase::Attack()
@@ -54,23 +64,26 @@ void ABMonsterBase::Attack()
 		                           ECC_EngineTraceChannel2, 
 		                           FCollisionShape::MakeSphere(SweepRadius), Params);
 	
+	
 	AActor* HitActor = OutHitResult.GetActor();
-
 	ACharacter* HitCharacter = Cast<ACharacter>(HitActor);
+
 	if (HitCharacter == nullptr)
 	{
-		LOG_WARNING(TEXT("HitCharacter 타입캐스팅에 실패하였습니다."));
-		return;
+		LOG_WARNING(TEXT("Type Casting failed : HitCharacter"));
 	}
 
-	AController* HitController = HitCharacter->GetController();
-	if (HitController == nullptr)
+	AController* HitController = nullptr;
+	if (HitCharacter != nullptr)
 	{
-		LOG_WARNING(TEXT("HitController가 nullptr입니다."));
-		return;
+		HitController = HitCharacter->GetController();
+		if (HitController == nullptr)
+		{
+			LOG_WARNING(TEXT("HitController가 nullptr입니다."));
+		}
 	}
 
-	if (HitController->IsPlayerController() == true)
+	if (HitController != nullptr && HitController->IsPlayerController() == true)
 	{
 		//때린다.
 	}
@@ -79,7 +92,7 @@ void ABMonsterBase::Attack()
 	
 	FColor DebugColor = FColor::Green;
 
-	if (HitController->IsPlayerController() == true)
+	if (HitController != nullptr && HitController->IsPlayerController() == true)
 	{
 		DebugColor = FColor::Red;
 	}
@@ -87,7 +100,7 @@ void ABMonsterBase::Attack()
 	FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
 	float CapsuleHalfHeight = AttackRange * 0.5f;
 
-	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, SweepRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DebugColor, false, 5.0f);
+	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, SweepRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DebugColor, false, 2.5f);
 #endif
 }
 
@@ -131,16 +144,16 @@ float ABMonsterBase::GetPatrolRadius()
 	return Stat->GetPatrolRadius();
 }
 
-MonsterState ABMonsterBase::GetCurrentState()
+EMonsterState ABMonsterBase::GetCurrentState()
 {
 	return CurState;
 }
 
-void ABMonsterBase::SetCurrentState(MonsterState _InState)
+void ABMonsterBase::SetCurrentState(EMonsterState _InState)
 {
 	CurState = _InState;
 
-	if (_InState == MonsterState::Attack)
+	if (_InState == EMonsterState::Attack)
 	{
 		AttackStart();
 	}

@@ -3,7 +3,6 @@
 
 #include "Actor/Monster/MonsterActor/BMonsterMale.h"
 #include "BiohazardRe4.h"
-#include "../AIController/BAIBasicMonsterController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Component/BMonsterStatComponent.h"
 
@@ -20,18 +19,19 @@ void ABMonsterMale::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetSkeletalMeshByRandomInBeginPlay();
+	SetlMeshAndAnimationByRandomInBeginPlay();
 }
 
 void ABMonsterMale::CreateComponent()
 {
+	BodyBase = GetMesh();
+	
 	//CreateComponent
-	BodyBase = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BodyBase"));
 	Head = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Head"));
 	Jacket = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Jacket"));
 	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
 	Hat = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hat"));
-	
+
 	//Attach
 	BodyBase->SetupAttachment(RootComponent);
 	Head->SetupAttachment(RootComponent);
@@ -40,36 +40,84 @@ void ABMonsterMale::CreateComponent()
 	Hat->SetupAttachment(RootComponent);
 }
 
-void ABMonsterMale::InitAI()
-{
-	AIControllerClass = ABAIBasicMonsterController::StaticClass();
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-}
-
 void ABMonsterMale::InitValue()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 50.0f;
 	Stat->SetAttackRadius(80.0f);
 }
 
+void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
+{
+	if (MyWeaponType == EWeaponType::None)
+	{
+		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_MonsterMale_BareHands.ABP_MonsterMale_BareHands'");
+		UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
+
+		if (AnimBlueprint)
+		{
+			UAnimInstance* AnimInstance = AnimBlueprint->GeneratedClass->GetDefaultObject<UAnimInstance>();
+			GetMesh()->SetAnimInstanceClass(AnimBlueprint->GeneratedClass);
+		}
+
+		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_BareHands.AM_MonsterMale_Attack_BareHands'");
+		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
+	}
+	else if (MyWeaponType == EWeaponType::OneHand)
+	{
+		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_MonsterMale_OneHand.ABP_MonsterMale_OneHand'");
+		UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
+
+		if (AnimBlueprint)
+		{
+			UAnimInstance* AnimInstance = AnimBlueprint->GeneratedClass->GetDefaultObject<UAnimInstance>();
+			GetMesh()->SetAnimInstanceClass(AnimBlueprint->GeneratedClass);
+		}
+
+		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_OneHand.AM_MonsterMale_Attack_OneHand'");
+		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
+	}
+	else if (MyWeaponType == EWeaponType::TwoHands)
+	{
+		//FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_MonsterMale_TwoHands.ABP_MonsterMale_TwoHands'");
+		//UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
+		//
+		//if (AnimBlueprint)
+		//{
+		//	UAnimInstance* AnimInstance = AnimBlueprint->GeneratedClass->GetDefaultObject<UAnimInstance>();
+		//	GetMesh()->SetAnimInstanceClass(AnimBlueprint->GeneratedClass);
+		//}
+		//
+		//FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_TwoHands.AM_MonsterMale_Attack_TwoHands'");
+		//AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
+	}
+
+
+}
+
 void ABMonsterMale::SetSkeletalMeshInConstructor()
 {
 	//BaseBody
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyBaseRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'"));
-	
-	if(BodyBaseRef.Object != nullptr)
-	{
-		BodyBase->SetSkeletalMesh(BodyBaseRef.Object);
-	}
-	else
-	{
-		LOG_MSG(TEXT("Body Mesh is Nullptr"));
-	}
-	
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyBaseRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'"));
+	//
+	//if(BodyBaseRef.Object != nullptr)
+	//{
+	//	BodyBase->SetSkeletalMesh(BodyBaseRef.Object);
+	//}
+	//else
+	//{
+	//	LOG_MSG(TEXT("Body Mesh is Nullptr"));
+	//}
 }
 
-void ABMonsterMale::SetSkeletalMeshByRandomInBeginPlay()
+void ABMonsterMale::SetlMeshAndAnimationByRandomInBeginPlay()
 {
+	//Body
+	FString BodyPath = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'");
+	USkeletalMesh* LoadedBodyMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *BodyPath));
+
+	GetMesh()->SetSkeletalMesh(LoadedBodyMesh);
+	BodyBase = GetMesh();
+
 	//Head
 	FString HeadPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/1/SK_MonsterMaleHead_1.SK_MonsterMaleHead_1'");
 	FString HeadPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/2/SK_MonsterMaleHead_2.SK_MonsterMaleHead_2'");
@@ -177,5 +225,10 @@ void ABMonsterMale::SetSkeletalMeshByRandomInBeginPlay()
 	{
 		LOG_MSG(TEXT("Hat Mesh is Nullptr : Index = %d"), HatIndex);
 	}
+
+	SetWeaponSkeletalMeshByRandomInBeginPlay();
+	
+	//애님인스턴스 경로, 공격몽타주 경로
+	SetAnimInstanceAndAnimationMontageInBeginPlay();
 }
 

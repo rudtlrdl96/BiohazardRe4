@@ -18,8 +18,8 @@ public:
 	ABMonsterBase();
 	
 	UFUNCTION(BlueprintCallable)
-	virtual MonsterState GetCurrentState() override;
-	virtual void SetCurrentState(MonsterState _InState) override;
+	virtual EMonsterState GetCurrentState() override;
+	virtual void SetCurrentState(EMonsterState _InState) override;
 	virtual void Attack() override;
 	virtual bool IsAttacking() override;
 	virtual void SetIsAttack(bool _IsAttacking) override;
@@ -36,18 +36,18 @@ protected:
 	virtual void AttackStart();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UBMonsterStatComponent> Stat;
+	TObjectPtr<class UBMonsterStatComponent> Stat = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class USkeletalMeshComponent> Weapon;
+	TObjectPtr<class USkeletalMeshComponent> Weapon = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimMontage> AttackMontage;
+	TObjectPtr<class UAnimMontage> AttackMontage = nullptr;
 
 	FMonsterAttackEnd OnAttackEnd;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
-	MonsterState CurState;
+	EMonsterState CurState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	uint8 bIsAttacking : 1;

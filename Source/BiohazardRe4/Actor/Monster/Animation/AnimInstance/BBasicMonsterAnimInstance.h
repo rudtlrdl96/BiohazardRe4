@@ -14,4 +14,10 @@ class BIOHAZARDRE4_API UBBasicMonsterAnimInstance : public UBMonsterAnimInstance
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void NativeUpdateAnimation(float _DeltaSeconds) override;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State)
+	uint8 CurWeaponType;
 };

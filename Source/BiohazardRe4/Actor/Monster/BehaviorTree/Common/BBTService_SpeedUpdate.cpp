@@ -46,23 +46,14 @@ void UBBTService_SpeedUpdate::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	float DistanceToTarget = MyCharacter->GetDistanceTo(TargetCharacter);
 	float DistanceThreshold = 600.0f;
-	float DeltaTime = CurWorld->GetDeltaSeconds();
 
 	//몬스터와 플레이어간의 거리 (뛸 거냐 걸을 거냐)
 	if (DistanceToTarget > DistanceThreshold)
 	{
-		float CurSpeed = MyCharacter->GetCharacterMovement()->MaxWalkSpeed;
-		float NextSpeed = FMath::Lerp(CurSpeed, 100, 0.5f);
-
-		NextSpeed = FMath::Min(100, NextSpeed);
-		MyCharacter->GetCharacterMovement()->MaxWalkSpeed = NextSpeed;
+		MyCharacter->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 	}
 	else if (DistanceToTarget <= DistanceThreshold)
 	{
-		float CurSpeed = MyCharacter->GetCharacterMovement()->MaxWalkSpeed;
-		float NextSpeed = FMath::Lerp(CurSpeed, 50, 0.5f);
-
-		NextSpeed = FMath::Max(50, NextSpeed);
-		MyCharacter->GetCharacterMovement()->MaxWalkSpeed = NextSpeed;
+		MyCharacter->GetCharacterMovement()->MaxWalkSpeed = 50.0f;
 	}
 }

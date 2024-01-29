@@ -33,7 +33,7 @@ EBTNodeResult::Type UBBTTask_SetTurn::ExecuteTask(UBehaviorTreeComponent& OwnerC
 		return EBTNodeResult::Failed;
 	}
 
-	StateInterface->SetCurrentState(MonsterState::Turn);
+	StateInterface->SetCurrentState(EMonsterState::Turn);
 	MyCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	return EBTNodeResult::Succeeded;

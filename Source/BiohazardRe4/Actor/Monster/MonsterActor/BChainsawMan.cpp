@@ -26,7 +26,6 @@ ABChainsawMan::ABChainsawMan()
 	{
 		AttackMontage = ChainsawAttackMontageRef.Object;
 	}
-	//AttackMontage =
 
 	AIControllerClass = ABAIChainsawManController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;

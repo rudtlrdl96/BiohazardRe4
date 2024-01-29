@@ -16,7 +16,7 @@ class UBMonsterStateInterface : public UInterface
 DECLARE_DELEGATE(FMonsterAttackEnd);
 
 UENUM(BlueprintType)
-enum class MonsterState : uint8
+enum class EMonsterState : uint8
 {
 	Idle UMETA(DisplayName = "Idle"),
 	Turn UMETA(DisplayName = "Turn"),
@@ -32,8 +32,8 @@ class BIOHAZARDRE4_API IBMonsterStateInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual MonsterState GetCurrentState() = 0;
-	virtual void SetCurrentState(MonsterState _InState) = 0;
+	virtual EMonsterState GetCurrentState() = 0;
+	virtual void SetCurrentState(EMonsterState _InState) = 0;
 	virtual void SetIsAttack(bool _IsAttacking) = 0;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) = 0;
 	virtual void Attack() = 0;
