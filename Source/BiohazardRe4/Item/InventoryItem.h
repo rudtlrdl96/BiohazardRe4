@@ -56,6 +56,8 @@ public:
 	inline void SetIsSubSlot(bool IsSubSlot) { bIsSubSlot = IsSubSlot; }
 	inline const FBItemData& GetData() const { return Data; }
 	UFUNCTION(BlueprintCallable)
+	inline EItemCode GetItemCode() const { return Data.ItemCode; }
+	UFUNCTION(BlueprintCallable)
 	inline int GetMaxCount() const { return Data.MaxCount; }
 	UFUNCTION(BlueprintCallable)
 	inline FIntPoint GetItemSize() const { return bIsTurn ? FIntPoint(Data.ItemSize.Y, Data.ItemSize.X) : Data.ItemSize; }

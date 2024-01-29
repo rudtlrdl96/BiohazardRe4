@@ -3,7 +3,7 @@
 
 #include "InventoryManager.h"
 #include "InventoryActor.h"
-#include "InventoryItem.h"
+#include "InventoryWeapon.h"
 #include "InventorySlot.h"
 #include "BiohazardRe4.h"
 UBInventoryManager* UBInventoryManager::Instance = nullptr;
@@ -190,14 +190,38 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 	}
 
 	ABInventoryItem* NewItem;
-	if (1 == Data.MaxCount)
+	switch (Data.ItemCode)
 	{
-		NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
-	}
-	else
+	case EItemCode::Handgun_SR09R:
+	case EItemCode::Shotgun_W870:
+	case EItemCode::Rifle_SRM1903:
 	{
-		NewItem = GetWorld()->SpawnActor<ABInventoryItem>(ABInventoryActor::Instance->ItemClass);
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>(ABInventoryActor::Instance->WeaponClass);
+		Weapon->SetLoadedAmmo(Data.MagazineCapacity);
+		Weapon->SetMaxAmmo(Data.MagazineCapacity);
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
 	}
+	case EItemCode::CombatKnife:
+	{
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>(ABInventoryActor::Instance->KnifeClass);
+		Weapon->SetDurability(Data.MagazineCapacity);
+		Weapon->SetMaxDurability(Data.MagazineCapacity);
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
+	}
+	default:
+		if (1 == Data.MaxCount)
+		{
+			NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
+		}
+		else
+		{
+			NewItem = GetWorld()->SpawnActor<ABInventoryItem>(ABInventoryActor::Instance->ItemClass);
+		}
+		break;
+	}
+
 	// 아이템 생성
 	if (NewItem)
 	{
@@ -231,14 +255,39 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 
 	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
 	ABInventoryItem* NewItem;
-	if (1 == Data.MaxCount)
+
+	switch (Data.ItemCode)
 	{
-		NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
-	}
-	else
+	case EItemCode::Handgun_SR09R:
+	case EItemCode::Shotgun_W870:
+	case EItemCode::Rifle_SRM1903:
 	{
-		NewItem = GetWorld()->SpawnActor<ABInventoryItem>(ABInventoryActor::Instance->ItemClass);
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>(ABInventoryActor::Instance->WeaponClass);
+		Weapon->SetLoadedAmmo(Data.MagazineCapacity);
+		Weapon->SetMaxAmmo(Data.MagazineCapacity);
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
 	}
+	case EItemCode::CombatKnife:
+	{
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>(ABInventoryActor::Instance->KnifeClass);
+		Weapon->SetDurability(Data.MagazineCapacity);
+		Weapon->SetMaxDurability(Data.MagazineCapacity);
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
+	}
+	default:
+		if (1 == Data.MaxCount)
+		{
+			NewItem = GetWorld()->SpawnActor<ABInventoryItem>();
+		}
+		else
+		{
+			NewItem = GetWorld()->SpawnActor<ABInventoryItem>(ABInventoryActor::Instance->ItemClass);
+		}
+		break;
+	}
+
 	// 아이템 생성
 	if (NewItem)
 	{

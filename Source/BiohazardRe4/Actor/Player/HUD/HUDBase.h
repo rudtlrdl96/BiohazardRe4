@@ -27,15 +27,11 @@ public :
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetHP(float Percent);
 
-	// HUD의 대미지를 지정합니다. 대미지 이전 체력과 현재 체력을 입력해주세요
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void SetHPDamage(float BeforePercent, float CurPercent);
-
 	// ________________Gun____________________________
-
+	
 	// HUD의 무기를 지정합니다. Empty는 무장해제 상태입니다. 총 및 Empty 외의 아이템코드는 Warning 로그를 표시합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void SetWeapon(EItemCode Weapon);
+	void SetWeapon(class ABInventoryWeapon* Weapon);
 
 	// 무기의 현재 장전된 탄 수를 지정합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)

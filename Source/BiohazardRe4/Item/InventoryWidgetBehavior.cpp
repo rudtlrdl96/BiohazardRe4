@@ -105,7 +105,7 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Equip", "장비하기"));
 		{
 			FScriptDelegate Delegate;
-			Delegate.BindUFunction(this, FName("ButtonTest"));
+			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
 		}
@@ -113,6 +113,12 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 	case UBInventoryWidgetBehavior::Unequip:
 		Images[Index]->SetBrushResourceObject(Icons[1]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Unequip", "해제하기"));
+		{
+			FScriptDelegate Delegate;
+			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
+			Buttons[Index]->OnClicked.Clear();
+			Buttons[Index]->OnClicked.Add(Delegate);
+		}
 		break;
 	case UBInventoryWidgetBehavior::Investigate:
 		Images[Index]->SetBrushResourceObject(Icons[2]);
@@ -127,6 +133,12 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 	case UBInventoryWidgetBehavior::Hotkey:
 		Images[Index]->SetBrushResourceObject(Icons[3]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Hotkey", "단축키 등록"));
+		{
+			FScriptDelegate Delegate;
+			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
+			Buttons[Index]->OnClicked.Clear();
+			Buttons[Index]->OnClicked.Add(Delegate);
+		}
 		break;
 	case UBInventoryWidgetBehavior::Drop:
 		Images[Index]->SetBrushResourceObject(Icons[4]);
@@ -163,14 +175,4 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 	}
 
 	Panels[Index]->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UBInventoryWidgetBehavior::ButtonTest()
-{
-	LOG_MSG(TEXT("Button Click"));
-}
-
-void UBInventoryWidgetBehavior::SetCraft()
-{
-	LOG_MSG(TEXT("Craft Click"));
 }

@@ -4,11 +4,13 @@
 #include "InventoryActor.h"
 #include "InventoryManager.h"
 #include "InventorySlot.h"
-#include "InventoryItem.h"
+#include "InventoryWeapon.h"
 #include "InventoryWidgetMain.h"
 #include "InventoryWidgetBehavior.h"
 #include "InventoryWidgetCraft.h"
 #include "InventoryCursor.h"
+#include "Actor/Player/HUD/HUDBase.h"
+#include "BiohazardRe4.h"
 #include "Generic/BFsm.h"
 
 #include "GameFramework/PlayerController.h"
@@ -161,7 +163,8 @@ void ABInventoryActor::BeginPlay()
 	// 0번 PlayerController를 받아온다
 	// UEnhancedInputLocalPlayerSubsystem을 받아온다
 	// Subsystem에 MappingContext를 추가한다 (우선순위를 1번으로 두어서 0번으로 Mapping한 조작을 무시한다)
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	Controller = UGameplayStatics::GetPlayerController(this, 0);
+	HUD = Cast<ABHUDBase>(Controller->GetHUD());
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
 	//Subsystem->AddMappingContext(DefaultMappingContext, 1);
 
@@ -214,7 +217,7 @@ void ABInventoryActor::OpenInventory()
 	Timeline.SetNewTime(0);		// SubCase의 위치를 조정
 	CaseMesh->PlayAnimation(OpenAnim, false);	// 애니메이션 재생
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);	// 매핑컨텍스트 추가해서 조작 할 수 있게 만듬
-	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(this);	// 뷰타겟을 이 엑터로 지정
+	Controller->SetViewTarget(this);	// 뷰타겟을 이 엑터로 지정
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
@@ -249,7 +252,7 @@ void ABInventoryActor::OpenCraft()
 	FVector Location = Inventory->GetItemWorldLocation(SelectItem);
 	Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0);
 	FVector2D Pos;
-	UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Location, Pos);
+	UGameplayStatics::ProjectWorldToScreen(Controller, Location, Pos);
 	CraftWidget->SetPositionInViewport(Pos);
 	CraftWidget->SetItemData(SelectItem->GetData());
 	CraftWidget->SetVisibility(ESlateVisibility::Visible);
@@ -287,6 +290,31 @@ void ABInventoryActor::DropItem()
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
 }
 
+void ABInventoryActor::WeaponEquip()
+{
+	ABInventoryWeapon* Weapon = Cast<ABInventoryWeapon>(SelectItem);
+	if (!Weapon)
+	{
+		LOG_ERROR(TEXT("Error, Select Item is Not Weapon class"))
+		return;
+	}
+	HUD->SetWeapon(Weapon);
+	int StoredAmmo = 0;
+	switch (Weapon->GetItemCode())
+	{
+	case EItemCode::Handgun_SR09R:
+		StoredAmmo = Inventory->GetItemNum(EItemCode::HandgunAmmo);
+		break;
+	case EItemCode::Shotgun_W870:
+		StoredAmmo = Inventory->GetItemNum(EItemCode::ShotgunShells);
+		break;
+	case EItemCode::Rifle_SRM1903:
+		StoredAmmo = Inventory->GetItemNum(EItemCode::RifleAmmo);
+		break;
+	}
+	HUD->SetStoredAmmo(StoredAmmo);
+}
+
 void ABInventoryActor::CompleteDrop()
 {
 	// 아이템 버리기 확인을 하여 SelectItem을 버림
@@ -315,7 +343,7 @@ void ABInventoryActor::CloseInventory()
 	// Subslot에 있는 아이템은 버림
 	Inventory->RemoveAllItemInSubSlot();
 	Widget->OffCloseCheck();
-	UGameplayStatics::GetPlayerController(this, 0)->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
+	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
@@ -364,7 +392,7 @@ void ABInventoryActor::Click()
 		FVector Location = Inventory->GetItemWorldLocation(SelectItem);
 		Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0) ;
 		FVector2D Pos;
-		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Location, Pos);
+		UGameplayStatics::ProjectWorldToScreen(Controller, Location, Pos);
 		BehaviorWidget->SetPositionInViewport(Pos);
 		BehaviorWidget->SetItemData(SelectItem->GetData());
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
@@ -465,7 +493,6 @@ void ABInventoryActor::DefaultEnter()
 void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 {
 	FHitResult Res;
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	FVector MousePos, MouseRot, End;
 	Controller->DeprojectMousePositionToWorld(MousePos, MouseRot);
 	End = MousePos + MouseRot * 1000;
@@ -522,7 +549,6 @@ void ABInventoryActor::DragEnter()
 void ABInventoryActor::DragUpdate(float _DeltaTime)
 {
 	FHitResult Res;
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	FVector MousePos, MouseRot, End;
 	Controller->DeprojectMousePositionToWorld(MousePos, MouseRot);
 	End = MousePos + MouseRot * 1000;

@@ -50,10 +50,4 @@ private:
 
 	void SetButton(int Index, State_BehaviorButton State);
 
-	UFUNCTION()
-	void ButtonTest();
-
-	UFUNCTION()
-	void SetCraft();
-
 };

@@ -54,6 +54,8 @@ public:
 	UFUNCTION()
 	void DropItem();
 	UFUNCTION()
+	void WeaponEquip();
+	UFUNCTION()
 	void CompleteDrop();
 	UFUNCTION()
 	void DropCancel();
@@ -79,6 +81,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ABInventoryItem> ItemClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ABInventoryWeapon> WeaponClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ABInventoryWeapon> KnifeClass;
 
 	// ___________________________ Widget ___________________________________
 
@@ -158,6 +166,10 @@ public:
 
 	UPROPERTY()
 	class UBFsm* FSMComp;
+	UPROPERTY()
+	APlayerController* Controller;
+	UPROPERTY()
+	class ABHUDBase* HUD;
 
 	UPROPERTY()
 	class UBInventorySlot* SelectSlot;		// 현재 선택한 슬롯

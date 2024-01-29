@@ -81,4 +81,7 @@ struct FBItemData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
 	FRotator TurnRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
+	int32 MagazineCapacity;
 };
