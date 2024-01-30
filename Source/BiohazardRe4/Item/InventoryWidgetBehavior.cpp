@@ -135,7 +135,7 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Hotkey", "단축키 등록"));
 		{
 			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
+			Delegate.BindUFunction(InventoryActor, FName("OpenQuickSlot"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
 		}

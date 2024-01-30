@@ -6,6 +6,7 @@
 #include "InventoryWeapon.h"
 #include "InventorySlot.h"
 #include "BiohazardRe4.h"
+
 UBInventoryManager* UBInventoryManager::Instance = nullptr;
 
 UBInventoryManager::UBInventoryManager()

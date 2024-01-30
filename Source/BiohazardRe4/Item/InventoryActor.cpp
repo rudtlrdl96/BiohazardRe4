@@ -8,6 +8,7 @@
 #include "InventoryWidgetMain.h"
 #include "InventoryWidgetBehavior.h"
 #include "InventoryWidgetCraft.h"
+#include "InventoryWidgetQuickSlot.h"
 #include "InventoryCursor.h"
 #include "Actor/Player/HUD/HUDBase.h"
 #include "BiohazardRe4.h"
@@ -108,6 +109,9 @@ ABInventoryActor::ABInventoryActor()
 		SubSlot[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
+	// 퀵슬롯
+	QuickSlot.SetNum(8);
+
 	// 커서
 	Cursor = CreateDefaultSubobject<UBInventoryCursor>(TEXT("Cursor"));
 	Cursor->SetupAttachment(RootComponent);
@@ -142,6 +146,9 @@ ABInventoryActor::ABInventoryActor()
 	InvestigateState.EnterDel.BindUObject(this, &ABInventoryActor::InvestigateEnter);
 	InvestigateState.UpdateDel.BindUObject(this, &ABInventoryActor::InvestigateUpdate);
 	InvestigateState.ExitDel.BindUObject(this, &ABInventoryActor::InvestigateExit);
+	UBFsm::FStateCallback QuickSlotCallBack;
+	QuickSlotCallBack.EnterDel.BindUObject(this, &ABInventoryActor::QuickSlotEnter);
+	QuickSlotCallBack.ExitDel.BindUObject(this, &ABInventoryActor::QuickSlotExit);
 	UBFsm::FStateCallback EmptyCallback;
 
 	FSMComp->CreateState(TO_KEY(EInventoryState::Wait), EmptyCallback);
@@ -152,6 +159,7 @@ ABInventoryActor::ABInventoryActor()
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drop), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::CloseCheck), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Investigate), InvestigateState);
+	FSMComp->CreateState(TO_KEY(EInventoryState::QuickSlot), QuickSlotCallBack);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
 
@@ -190,6 +198,10 @@ void ABInventoryActor::BeginPlay()
 	CraftWidget->AddToViewport();
 	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 	
+	QuickSlotWidget = CreateWidget<UBInventoryWidgetQuickSlot>(GetWorld(), QuickSlotWidgetClass);
+	QuickSlotWidget->AddToViewport();
+	QuickSlotWidget->SetVisibility(ESlateVisibility::Hidden);
+
 	// 타임라인 설정 (SubCase 애니메이션)
 	FOnTimelineFloatStatic F;
 	F.BindLambda([this](float Value) {
@@ -359,6 +371,16 @@ void ABInventoryActor::EndInvestigate()
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 }
 
+void ABInventoryActor::OpenQuickSlot()
+{
+	FSMComp->ChangeState(TO_KEY(EInventoryState::QuickSlot));
+}
+
+void ABInventoryActor::CloseQuickSlot()
+{
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+}
+
 void ABInventoryActor::Click()
 {
 	// 클릭 시 실행 (일정 시간 이내에 마우스를 누르고 땜)
@@ -428,7 +450,7 @@ void ABInventoryActor::Cancel()
 		Widget->OffCloseCheck();
 		return;
 	}
-	if (Key == TO_KEY(EInventoryState::Craft) || Key == TO_KEY(EInventoryState::Investigate))
+	if (Key == TO_KEY(EInventoryState::Craft) || Key == TO_KEY(EInventoryState::Investigate) || Key == TO_KEY(EInventoryState::QuickSlot))
 	{
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Select));
 		return;
@@ -643,4 +665,25 @@ void ABInventoryActor::InvestigateRotate(const FInputActionInstance& _MoveAction
 		FRotator Rot = FRotator(Vector2D.X, 0, Vector2D.Y) * 10;
 		EndRot += Rot;
 	}
+}
+
+void ABInventoryActor::QuickSlotEnter()
+{
+	ABInventoryWeapon* Weapon = Cast<ABInventoryWeapon>(SelectItem);
+
+	if (!Weapon)
+	{
+		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+		return;
+	}
+
+	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+	QuickSlotWidget->SetVisibility(ESlateVisibility::Visible);
+	QuickSlotWidget->AddWeaponPtr = Weapon;
+	QuickSlotWidget->SetFocus();
+}
+
+void ABInventoryActor::QuickSlotExit()
+{
+	QuickSlotWidget->SetVisibility(ESlateVisibility::Hidden);
 }

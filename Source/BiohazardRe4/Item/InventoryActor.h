@@ -26,6 +26,7 @@ class BIOHAZARDRE4_API ABInventoryActor : public AActor
 		Drop,			// 아이템을 버리는 것을 확인하는 상태
 		CloseCheck,		// 아이템을 버리고 인벤토리를 닫는 것을 확인하는 상태
 		Investigate,	// 아이템을 조사하는 상태
+		QuickSlot,		// 퀵슬롯을 지정하는 상태
 	};
 
 public:	
@@ -67,6 +68,10 @@ public:
 	void StartInvestigate();
 	UFUNCTION()
 	void EndInvestigate();
+	UFUNCTION()
+	void OpenQuickSlot();
+	UFUNCTION()
+	void CloseQuickSlot();
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,6 +83,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UBInventoryManager* Inventory;						// 인벤토리 관리 컴포넌트
+
+	TArray<class ABInventoryWeapon*> QuickSlot;	// 퀵슬롯
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ABInventoryItem> ItemClass;
@@ -107,6 +114,12 @@ public:
 
 	UPROPERTY()
 	UBInventoryWidgetCraft* CraftWidget;							// 아이템 행동 위젯
+
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UBInventoryWidgetQuickSlot> QuickSlotWidgetClass;	// 아이템 행동 위젯 클래스
+
+	UPROPERTY()
+	UBInventoryWidgetQuickSlot* QuickSlotWidget;							// 아이템 행동 위젯
 
 	// ___________________________ Component ___________________________________
 
@@ -208,4 +221,7 @@ private:
 	void InvestigateExit();
 
 	void InvestigateRotate(const FInputActionInstance& _MoveAction);
+
+	void QuickSlotEnter();
+	void QuickSlotExit();
 };
