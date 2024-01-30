@@ -183,6 +183,7 @@ void ABInventoryActor::BeginPlay()
 	// Subsystem에 MappingContext를 추가한다 (우선순위를 1번으로 두어서 0번으로 Mapping한 조작을 무시한다)
 	Controller = UGameplayStatics::GetPlayerController(this, 0);
 	HUD = Cast<ABHUDBase>(Controller->GetHUD());
+	HUD->QuickSlot = QuickSlot;
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
 	//Subsystem->AddMappingContext(DefaultMappingContext, 1);
 
@@ -350,6 +351,7 @@ void ABInventoryActor::CloseInventory()
 	Inventory->RemoveAllItemInSubSlot();
 	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
+	HUD->QuickSlotUpdate();
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
 
@@ -371,6 +373,31 @@ void ABInventoryActor::OpenQuickSlot()
 void ABInventoryActor::CloseQuickSlot()
 {
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+}
+
+void ABInventoryActor::SetHealPreview()
+{
+	if (nullptr == SelectItem) { return; }
+	switch (SelectItem->GetItemCode())
+	{
+	case EItemCode::GreenHerb:
+		HUD->SetHealPreview(0.5f);
+		break;
+	case EItemCode::MixedHerb_GG:
+		HUD->SetHealPreview(0.8f);
+		break;
+	case EItemCode::MixedHerb_GR:
+		HUD->SetHealPreview(1.0f);
+		break;
+	case EItemCode::FirstAidSpray:
+		HUD->SetHealPreview(1.0f);
+		break;
+	}
+}
+
+void ABInventoryActor::OffHealPreview()
+{
+	HUD->OffHealPreview();
 }
 
 void ABInventoryActor::Click()
@@ -610,6 +637,7 @@ void ABInventoryActor::SelectEnter()
 void ABInventoryActor::SelectExit()
 {
 	BehaviorWidget->WidgetOff();
+	OffHealPreview();
 }
 
 static FVector StartLocation;

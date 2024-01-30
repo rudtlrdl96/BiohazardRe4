@@ -72,6 +72,10 @@ public:
 	void OpenQuickSlot();
 	UFUNCTION()
 	void CloseQuickSlot();
+	UFUNCTION()
+	void SetHealPreview();
+	UFUNCTION()
+	void OffHealPreview();
 
 protected:
 	// Called when the game starts or when spawned

@@ -108,6 +108,8 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
+			Buttons[Index]->OnHovered.Clear();
+			Buttons[Index]->OnUnhovered.Clear();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Unequip:
@@ -118,6 +120,8 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
+			Buttons[Index]->OnHovered.Clear();
+			Buttons[Index]->OnUnhovered.Clear();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Investigate:
@@ -128,6 +132,8 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Delegate.BindUFunction(InventoryActor, FName("StartInvestigate"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
+			Buttons[Index]->OnHovered.Clear();
+			Buttons[Index]->OnUnhovered.Clear();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Hotkey:
@@ -138,6 +144,8 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Delegate.BindUFunction(InventoryActor, FName("OpenQuickSlot"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
+			Buttons[Index]->OnHovered.Clear();
+			Buttons[Index]->OnUnhovered.Clear();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Drop:
@@ -148,6 +156,8 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Delegate.BindUFunction(InventoryActor, FName("DropItem"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
+			Buttons[Index]->OnHovered.Clear();
+			Buttons[Index]->OnUnhovered.Clear();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Crafting:
@@ -158,6 +168,8 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Delegate.BindUFunction(InventoryActor, FName("OpenCraft"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
+			Buttons[Index]->OnHovered.Clear();
+			Buttons[Index]->OnUnhovered.Clear();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Use:
@@ -168,11 +180,18 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Delegate.BindUFunction(InventoryActor, FName("ItemUse"));
 			Buttons[Index]->OnClicked.Clear();
 			Buttons[Index]->OnClicked.Add(Delegate);
+			Buttons[Index]->OnHovered.Clear();
+			Buttons[Index]->OnUnhovered.Clear();
+
+			FScriptDelegate Delegate1;
+			Delegate1.BindUFunction(InventoryActor, FName("SetHealPreview"));
+			Buttons[Index]->OnHovered.Add(Delegate1);
+			FScriptDelegate Delegate2;
+			Delegate2.BindUFunction(InventoryActor, FName("OffHealPreview"));
+			Buttons[Index]->OnUnhovered.Add(Delegate2);
 		}
 		break;
 	default:
 		break;
 	}
-
-	Panels[Index]->SetVisibility(ESlateVisibility::Visible);
 }

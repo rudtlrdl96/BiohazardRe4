@@ -27,6 +27,14 @@ public :
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetHP(float Percent);
 
+	// 회복 아이템 사용할 시 회복될 체력을 미리 보여줍니다. 회복 아이템을 사용할 경우 사용 후 체력 퍼센트를 입력해주세요.
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void SetHealPreview(float Percent);
+
+	// 회복 아이템 프리뷰를 끕니다.
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OffHealPreview();
+
 	// ________________Gun____________________________
 	
 	// HUD의 무기를 지정합니다. Empty는 무장해제 상태입니다. 총 및 Empty 외의 아이템코드는 Warning 로그를 표시합니다.
@@ -53,11 +61,17 @@ public :
 
 	// ________________HotKey_______________________
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void QuickSlotUpdate();
+
 	// HUD의 단축키 표시 여부를 지정합니다. true 시 핫키를 표시합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetHotKeyVisible(bool IsVisible);
 
 	// 단축키를 눌렀을때 HUD에서 이를 표현합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void SetHotKeyNumber(int Num);
+	void SetQuickSlotNumber(int Num);
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<class ABInventoryWeapon*> QuickSlot;
 };
