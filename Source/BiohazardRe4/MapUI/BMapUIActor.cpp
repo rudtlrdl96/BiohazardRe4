@@ -125,7 +125,6 @@ void ABMapUIActor::BeginPlay()
 	Input->BindAction(MapUIClose, ETriggerEvent::Triggered, this, &ABMapUIActor::MapUIOff);
 
 	//À§Á¬
-
 	Widget = CreateWidget<UBMapUIWidgetMain>(GetWorld(), MapUIWidgetClass);
 	if (Widget == nullptr)
 	{

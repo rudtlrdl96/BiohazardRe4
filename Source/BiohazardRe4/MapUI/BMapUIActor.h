@@ -71,6 +71,7 @@ public:
 	TArray<UStaticMeshComponent*> StageMapMesh;
 
 	uint8 CurrentFloor = 1;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;
 
