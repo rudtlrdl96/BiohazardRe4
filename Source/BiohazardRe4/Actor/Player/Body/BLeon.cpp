@@ -454,9 +454,6 @@ void ABLeon::WeaponSocketUpdate(float _DeltaTime)
 	SocketLocationLerpTime += _DeltaTime * SocketLocationLerpSpeed * SocketLocationBlend.GetBlendedValue();
 	SocketRotationLerpTime += _DeltaTime * SocketRotationLerpSpeed * SocketRotationBlend.GetBlendedValue();
 		
-	LOG_MSG(TEXT("L : %f"), SocketLocationBlend.GetBlendedValue());
-	LOG_MSG(TEXT("R : %f"), SocketRotationBlend.GetBlendedValue());
-
 	FVector StartLocation = GetMesh()->GetSocketLocation(LerpSocketStart);
 	FRotator StartRotation = GetMesh()->GetSocketRotation(LerpSocketStart);
 

@@ -31,4 +31,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
 	UStaticMeshComponent* WeaponMesh = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
+	USceneComponent* LeftHandSlot = nullptr;
+
 };

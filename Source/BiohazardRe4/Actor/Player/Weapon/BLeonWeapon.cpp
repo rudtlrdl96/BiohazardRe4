@@ -11,6 +11,8 @@ ABLeonWeapon::ABLeonWeapon()
 
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Mesh"));
 	RootComponent = WeaponMesh;
+
+	LeftHandSlot = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Slot"));
 }
 
 // Called when the game starts or when spawned
