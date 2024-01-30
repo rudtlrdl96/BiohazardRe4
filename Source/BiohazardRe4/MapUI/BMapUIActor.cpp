@@ -77,6 +77,7 @@ ABMapUIActor::ABMapUIActor()
 	BoundMin = BoundMin * InitScale + InitLocation;
 	BoundMax = BoundMax * InitScale + InitLocation;
 	CameraMovableRange = FVector4f(BoundMin.X, BoundMin.Y, BoundMax.X, BoundMax.Y);
+
 }
 
 void ABMapUIActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeEvent)
@@ -90,9 +91,15 @@ void ABMapUIActor::SetFloor(EFloor Floor)
 	StageMapMesh[CurrentFloor]->SetVisibility(false);
 	CurrentFloor = static_cast<uint8>(Floor);
 	StageMapMesh[CurrentFloor]->SetVisibility(true);
-	Widget->ChangeMapLayerWidget();
+	Widget->UpdateMapLayerWidget();
 }
 
+
+void ABMapUIActor::SetCameraZoom(float FOV)
+{
+	Camera->FieldOfView = FOV;
+	Widget->SetCameraFOV(FOV);
+}
 
 // Called when the game starts or when spawned
 void ABMapUIActor::BeginPlay()
@@ -117,8 +124,9 @@ void ABMapUIActor::BeginPlay()
 	Input->BindAction(ViewLowerFloor, ETriggerEvent::Triggered, this, &ABMapUIActor::ViewLowerFloorFunc);
 	Input->BindAction(MapUIClose, ETriggerEvent::Triggered, this, &ABMapUIActor::MapUIOff);
 
+	//À§Á¬
+
 	Widget = CreateWidget<UBMapUIWidgetMain>(GetWorld(), MapUIWidgetClass);
-	Widget->SetParentUI(this);
 	if (Widget == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("MapUIWidgetMain is nullptr"))
@@ -127,6 +135,8 @@ void ABMapUIActor::BeginPlay()
 	Widget->SetVisibility(ESlateVisibility::Collapsed);
 
 	SetFloor(EFloor::E_1F); // º¸¿©Áö´Â Ãþ ÃÊ±âÈ­
+	SetCameraZoom(45.f);
+	Widget->SetRangeOfFOV(CameraMinFOV, CameraMaxFOV);
 }
 
 // Called every frame
@@ -171,7 +181,7 @@ void ABMapUIActor::MapUIOff()
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
-	Camera->FieldOfView = 45.0f;
+	SetCameraZoom(45.f);
 
 	Widget->SetVisibility(ESlateVisibility::Collapsed);
 }
@@ -248,7 +258,7 @@ void ABMapUIActor::CameraZoomFunc(const struct FInputActionValue& Value)
 	{
 		return;
 	}
-	Camera->FieldOfView = MovementVector;
+	SetCameraZoom(MovementVector);
 }
 
 

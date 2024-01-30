@@ -50,6 +50,8 @@ public:
 		}
 	}
 
+	void SetCameraZoom(float FOV);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -77,7 +79,7 @@ public:
 	float CameraMoveVelocity = 2.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
-	float CameraMaxFOV = 45.f;
+	float CameraMaxFOV = 75.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
 	float CameraMinFOV = 25.f;

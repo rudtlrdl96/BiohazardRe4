@@ -3,7 +3,4 @@
 
 #include "MapUI/BMapUIWidgetMain.h"
 
-void UBMapUIWidgetMain::SetParentUI(ABMapUIActor* Parent)
-{
-	ParentMapUI = Parent;
-}
+

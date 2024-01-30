@@ -16,8 +16,6 @@ class BIOHAZARDRE4_API UBMapUIWidgetMain : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SetParentUI(class ABMapUIActor* Parent);
-
 	void SetCurrentFloor(EFloor Floor)
 	{
 		CurrentFloor = Floor;
@@ -28,8 +26,19 @@ public:
 		PrevFloor = Floor;
 	}
 
+	void SetCameraFOV(float CurFOV)
+	{
+		CameraFOV = CurFOV;
+	}
+
+	void SetRangeOfFOV(float Min, float Max)
+	{
+		MinFOV = Min;
+		MaxFOV = Max;
+	}
+
 	UFUNCTION(BlueprintImplementableEvent)
-	void ChangeMapLayerWidget();
+	void UpdateMapLayerWidget();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EFloor PrevFloor = EFloor::E_1F;
@@ -37,9 +46,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EFloor CurrentFloor = EFloor::E_1F;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float CameraFOV = 45.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	float MaxFOV = 75.f;
+	UPROPERTY(BlueprintReadOnly)
+	float MinFOV = 25.f;
+	
 private:
-	UPROPERTY()
-	class ABMapUIActor* ParentMapUI = nullptr;
+
 
 
 };
