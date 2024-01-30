@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "InventoryWidgetQuickSlot.generated.h"
-
 /**
  * 
  */
@@ -19,9 +18,6 @@ class BIOHAZARDRE4_API UBInventoryWidgetQuickSlot : public UUserWidget
 	
 	virtual void NativeOnInitialized() override;
 
-	UPROPERTY()
-	TArray<UButton*> Buttons;
-
 public :
 
 	UPROPERTY(BlueprintReadOnly)
@@ -32,4 +28,9 @@ public :
 
 	UFUNCTION(BlueprintCallable)
 	void CloseQuickSlot();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOn();
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOff();
 };

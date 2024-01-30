@@ -50,7 +50,10 @@ public:
 	UFUNCTION()
 	void CloseCheck();
 
-	void SetDefault();
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOn();
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOff();
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemName;

@@ -29,6 +29,11 @@ class BIOHAZARDRE4_API UBInventoryWidgetCraft : public UUserWidget
 	UScrollBox* ScrollBox;
 public:
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOn();
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOff();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* RecipeTable;
 

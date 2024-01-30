@@ -142,10 +142,14 @@ ABInventoryActor::ABInventoryActor()
 	DragState.ExitDel.BindUObject(this, &ABInventoryActor::DragExit);
 	UBFsm::FStateCallback SelectState;
 	SelectState.EnterDel.BindUObject(this, &ABInventoryActor::SelectEnter);
+	SelectState.ExitDel.BindUObject(this, &ABInventoryActor::SelectExit);
 	UBFsm::FStateCallback InvestigateState;
 	InvestigateState.EnterDel.BindUObject(this, &ABInventoryActor::InvestigateEnter);
 	InvestigateState.UpdateDel.BindUObject(this, &ABInventoryActor::InvestigateUpdate);
 	InvestigateState.ExitDel.BindUObject(this, &ABInventoryActor::InvestigateExit);
+	UBFsm::FStateCallback CraftState;
+	CraftState.EnterDel.BindUObject(this, &ABInventoryActor::CraftEnter);
+	CraftState.ExitDel.BindUObject(this, &ABInventoryActor::CraftExit);
 	UBFsm::FStateCallback QuickSlotCallBack;
 	QuickSlotCallBack.EnterDel.BindUObject(this, &ABInventoryActor::QuickSlotEnter);
 	QuickSlotCallBack.ExitDel.BindUObject(this, &ABInventoryActor::QuickSlotExit);
@@ -155,7 +159,7 @@ ABInventoryActor::ABInventoryActor()
 	FSMComp->CreateState(TO_KEY(EInventoryState::Default), DefaultState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drag), DragState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Select), SelectState);
-	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), EmptyCallback);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), CraftState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drop), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::CloseCheck), EmptyCallback);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Investigate), InvestigateState);
@@ -192,15 +196,12 @@ void ABInventoryActor::BeginPlay()
 	BehaviorWidget = CreateWidget<UBInventoryWidgetBehavior>(GetWorld(), BehaviorWidgetClass);
 	BehaviorWidget->AddToViewport();
 	BehaviorWidget->InventoryActor = this;
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	CraftWidget = CreateWidget<UBInventoryWidgetCraft>(GetWorld(), CraftWidgetClass);
 	CraftWidget->AddToViewport();
-	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
 	
 	QuickSlotWidget = CreateWidget<UBInventoryWidgetQuickSlot>(GetWorld(), QuickSlotWidgetClass);
 	QuickSlotWidget->AddToViewport();
-	QuickSlotWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	// 타임라인 설정 (SubCase 애니메이션)
 	FOnTimelineFloatStatic F;
@@ -255,20 +256,6 @@ void ABInventoryActor::CloseSub()
 
 void ABInventoryActor::OpenCraft()
 {
-	// 버튼을 눌러서 제작UI로 넘어감
-
-	// 기존 행동 UI 숨김
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
-
-	// CraftWidget 위치 이동 및 표시
-	FVector Location = Inventory->GetItemWorldLocation(SelectItem);
-	Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0);
-	FVector2D Pos;
-	UGameplayStatics::ProjectWorldToScreen(Controller, Location, Pos);
-	CraftWidget->SetPositionInViewport(Pos);
-	CraftWidget->SetItemData(SelectItem->GetData());
-	CraftWidget->SetVisibility(ESlateVisibility::Visible);
-
 	// State 변경
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Craft));
 }
@@ -296,7 +283,7 @@ void ABInventoryActor::DropItem()
 {
 	// 아이템 버리기를 선택하여
 	// 버리기를 확인하는 문구를 표시.
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+	Widget->SetFocus();
 	Widget->OnDropItem();
 	// State를 변경
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
@@ -507,10 +494,7 @@ void ABInventoryActor::Turn()
 
 void ABInventoryActor::DefaultEnter()
 {
-	Widget->SetVisibility(ESlateVisibility::Visible);
-	Widget->SetDefault();
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
-	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
+	Widget->SetFocus();
 }
 
 void ABInventoryActor::DefaultUpdate(float _DeltaTime)
@@ -614,8 +598,13 @@ void ABInventoryActor::DragExit()
 
 void ABInventoryActor::SelectEnter()
 {
-	BehaviorWidget->SetVisibility(ESlateVisibility::Visible);
-	CraftWidget->SetVisibility(ESlateVisibility::Hidden);
+	BehaviorWidget->SetFocus();
+	BehaviorWidget->WidgetOn();
+}
+
+void ABInventoryActor::SelectExit()
+{
+	BehaviorWidget->WidgetOff();
 }
 
 static FVector StartLocation;
@@ -625,7 +614,8 @@ static FRotator  EndRot;
 static float Timer;
 void ABInventoryActor::InvestigateEnter()
 {
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
+	Widget->SetFocus();
+
 	StartLocation = SelectItem->Mesh->GetComponentLocation();
 	EndLocation = InvestigatePivot->GetComponentLocation();
 	StartRot = SelectItem->Mesh->GetComponentRotation();
@@ -667,6 +657,24 @@ void ABInventoryActor::InvestigateRotate(const FInputActionInstance& _MoveAction
 	}
 }
 
+void ABInventoryActor::CraftEnter()
+{
+// CraftWidget 위치 이동 및 표시
+	FVector Location = Inventory->GetItemWorldLocation(SelectItem);
+	Location += FVector(SelectItem->GetItemSize().X * 5.0f + -12.5f, -10.0f, 0);
+	FVector2D Pos;
+	UGameplayStatics::ProjectWorldToScreen(Controller, Location, Pos);
+	CraftWidget->SetPositionInViewport(Pos);
+	CraftWidget->SetItemData(SelectItem->GetData());
+	CraftWidget->SetFocus();
+	CraftWidget->WidgetOn();
+}
+
+void ABInventoryActor::CraftExit()
+{
+	CraftWidget->WidgetOff();
+}
+
 void ABInventoryActor::QuickSlotEnter()
 {
 	ABInventoryWeapon* Weapon = Cast<ABInventoryWeapon>(SelectItem);
@@ -677,13 +685,12 @@ void ABInventoryActor::QuickSlotEnter()
 		return;
 	}
 
-	BehaviorWidget->SetVisibility(ESlateVisibility::Hidden);
-	QuickSlotWidget->SetVisibility(ESlateVisibility::Visible);
 	QuickSlotWidget->AddWeaponPtr = Weapon;
 	QuickSlotWidget->SetFocus();
+	QuickSlotWidget->WidgetOn();
 }
 
 void ABInventoryActor::QuickSlotExit()
 {
-	QuickSlotWidget->SetVisibility(ESlateVisibility::Hidden);
+	QuickSlotWidget->WidgetOff();
 }

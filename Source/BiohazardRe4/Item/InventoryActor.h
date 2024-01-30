@@ -215,12 +215,16 @@ private:
 	void DragExit();
 
 	void SelectEnter();
+	void SelectExit();
 
 	void InvestigateEnter();
 	void InvestigateUpdate(float DeltaTime);
 	void InvestigateExit();
 
 	void InvestigateRotate(const FInputActionInstance& _MoveAction);
+
+	void CraftEnter();
+	void CraftExit();
 
 	void QuickSlotEnter();
 	void QuickSlotExit();

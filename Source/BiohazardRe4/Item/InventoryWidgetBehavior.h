@@ -35,6 +35,11 @@ public:
 
 	void SetItemData(const FBItemData& Data);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOn();
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOff();
+
 private:
 	enum State_BehaviorButton
 	{

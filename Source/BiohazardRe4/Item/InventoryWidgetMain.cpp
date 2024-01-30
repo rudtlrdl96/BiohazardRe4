@@ -8,7 +8,7 @@
 #include "InventoryActor.h"
 void UBInventoryWidgetMain::NativeOnInitialized()
 {
-	WarningPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("WarningPanel")));
+	WarningPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("Panel")));
 	WarningText = Cast<UTextBlock>(GetWidgetFromName(TEXT("WarningText")));
 	OkButton = Cast<UButton>(GetWidgetFromName(TEXT("OkButton")));
 	NoButton = Cast<UButton>(GetWidgetFromName(TEXT("NoButton")));
@@ -74,13 +74,9 @@ void UBInventoryWidgetMain::CloseCheck()
 	WarningPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
-void UBInventoryWidgetMain::SetDefault()
-{
-	WarningPanel->SetVisibility(ESlateVisibility::Hidden);
-}
-
 void UBInventoryWidgetMain::Drop()
 {
-	OffDropItem();
+	WarningPanel->SetVisibility(ESlateVisibility::Hidden);
+	//OffDropItem();
 	ABInventoryActor::Instance->CompleteDrop();
 }
