@@ -567,6 +567,12 @@ void ABLeon::TryCrouch()
 		return;
 	}
 
+	if (FSMState == ELeonState::Aim)
+	{
+		bIsCrouch = false;
+		return;
+	}
+
 	bIsCrouch = ~bIsCrouch;
 }
 
@@ -664,6 +670,11 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 	case 5:
 	{
 		ChangeUseWeapon(EItemCode::Flashbang);
+	}
+	break;
+	case 6:
+	{
+		ChangeUseWeapon(EItemCode::CombatKnife);
 	}
 	break;
 
