@@ -153,6 +153,12 @@ ABInventoryActor::ABInventoryActor()
 	UBFsm::FStateCallback QuickSlotCallBack;
 	QuickSlotCallBack.EnterDel.BindUObject(this, &ABInventoryActor::QuickSlotEnter);
 	QuickSlotCallBack.ExitDel.BindUObject(this, &ABInventoryActor::QuickSlotExit);
+	UBFsm::FStateCallback DropCallBack;
+	DropCallBack.EnterDel.BindUObject(this, &ABInventoryActor::DropEnter);
+	DropCallBack.ExitDel.BindUObject(this, &ABInventoryActor::DropExit);
+	UBFsm::FStateCallback CloseCheckCallBack;
+	CloseCheckCallBack.EnterDel.BindUObject(this, &ABInventoryActor::CloseCheckEnter);
+	CloseCheckCallBack.ExitDel.BindUObject(this, &ABInventoryActor::CloseCheckExit);
 	UBFsm::FStateCallback EmptyCallback;
 
 	FSMComp->CreateState(TO_KEY(EInventoryState::Wait), EmptyCallback);
@@ -160,8 +166,8 @@ ABInventoryActor::ABInventoryActor()
 	FSMComp->CreateState(TO_KEY(EInventoryState::Drag), DragState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Select), SelectState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Craft), CraftState);
-	FSMComp->CreateState(TO_KEY(EInventoryState::Drop), EmptyCallback);
-	FSMComp->CreateState(TO_KEY(EInventoryState::CloseCheck), EmptyCallback);
+	FSMComp->CreateState(TO_KEY(EInventoryState::Drop), DropCallBack);
+	FSMComp->CreateState(TO_KEY(EInventoryState::CloseCheck), CloseCheckCallBack);
 	FSMComp->CreateState(TO_KEY(EInventoryState::Investigate), InvestigateState);
 	FSMComp->CreateState(TO_KEY(EInventoryState::QuickSlot), QuickSlotCallBack);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
@@ -284,7 +290,7 @@ void ABInventoryActor::DropItem()
 	// 아이템 버리기를 선택하여
 	// 버리기를 확인하는 문구를 표시.
 	Widget->SetFocus();
-	Widget->OnDropItem();
+	Widget->DropItem();
 	// State를 변경
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
 }
@@ -342,7 +348,6 @@ void ABInventoryActor::CloseInventory()
 	// 인벤토리를 닫는다
 	// Subslot에 있는 아이템은 버림
 	Inventory->RemoveAllItemInSubSlot();
-	Widget->OffCloseCheck();
 	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
@@ -434,7 +439,7 @@ void ABInventoryActor::Cancel()
 	}
 	if (Key == TO_KEY(EInventoryState::CloseCheck))
 	{
-		Widget->OffCloseCheck();
+		CloseCancel();
 		return;
 	}
 	if (Key == TO_KEY(EInventoryState::Craft) || Key == TO_KEY(EInventoryState::Investigate) || Key == TO_KEY(EInventoryState::QuickSlot))
@@ -444,7 +449,7 @@ void ABInventoryActor::Cancel()
 	}
 	if (Key == TO_KEY(EInventoryState::Drop))
 	{
-		Widget->OffDropItem();
+		DropCancel();
 		return;
 	}
 }
@@ -693,4 +698,26 @@ void ABInventoryActor::QuickSlotEnter()
 void ABInventoryActor::QuickSlotExit()
 {
 	QuickSlotWidget->WidgetOff();
+}
+
+void ABInventoryActor::DropEnter()
+{
+	Widget->DropItem();
+	Widget->DropWidgetOn();
+}
+
+void ABInventoryActor::DropExit()
+{
+	Widget->DropWidgetOff();
+}
+
+void ABInventoryActor::CloseCheckEnter()
+{
+	Widget->CloseCheck();
+	Widget->DropWidgetOn();
+}
+
+void ABInventoryActor::CloseCheckExit()
+{
+	Widget->DropWidgetOff();
 }

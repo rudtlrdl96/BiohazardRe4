@@ -32,28 +32,20 @@ class BIOHAZARDRE4_API UBInventoryWidgetMain : public UUserWidget
 	UPROPERTY()
 	UButton* NoButton;
 
-	UFUNCTION()
-	void Drop();
-
 public:
 
 	void SetItemData(const FBItemData& Data);
 	inline void ClearItemData();
 
 	UFUNCTION()
-	void OnDropItem();
-	UFUNCTION()
-	void OffDropItem();
-	UFUNCTION()
-	void OffCloseCheck();
-
+	void DropItem();
 	UFUNCTION()
 	void CloseCheck();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void WidgetOn();
+	void DropWidgetOn();
 	UFUNCTION(BlueprintImplementableEvent)
-	void WidgetOff();
+	void DropWidgetOff();
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemName;

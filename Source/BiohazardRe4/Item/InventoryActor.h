@@ -228,4 +228,11 @@ private:
 
 	void QuickSlotEnter();
 	void QuickSlotExit();
+
+	void DropEnter();
+	void DropExit();
+
+	void CloseCheckEnter();
+	void CloseCheckExit();
+
 };

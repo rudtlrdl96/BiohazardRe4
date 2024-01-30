@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "InventoryActor.h"
+
 void UBInventoryWidgetMain::NativeOnInitialized()
 {
 	WarningPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("Panel")));
@@ -26,34 +27,21 @@ inline void UBInventoryWidgetMain::ClearItemData()
 	ItemInformation = "";
 }
 
-void UBInventoryWidgetMain::OnDropItem()
+void UBInventoryWidgetMain::DropItem()
 {
 	WarningText->SetText(NSLOCTEXT("UI", "DropCheck", "한번 버린 아이템은 다시 주울 수 없습니다.\n\n이 아이템을 버리시겠습니까?"));
 	{
 		FScriptDelegate Delegate;
-		Delegate.BindUFunction(this, TEXT("Drop"));
+		Delegate.BindUFunction(ABInventoryActor::Instance, TEXT("CompleteDrop"));
 		OkButton->OnClicked.Clear();
 		OkButton->OnClicked.Add(Delegate);
 	}
 	{
 		FScriptDelegate Delegate;
-		Delegate.BindUFunction(this, TEXT("OffDropItem"));
+		Delegate.BindUFunction(ABInventoryActor::Instance, TEXT("DropCancel"));
 		NoButton->OnClicked.Clear();
 		NoButton->OnClicked.Add(Delegate);
 	}
-	WarningPanel->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UBInventoryWidgetMain::OffDropItem()
-{
-	WarningPanel->SetVisibility(ESlateVisibility::Hidden);
-	ABInventoryActor::Instance->DropCancel();
-}
-
-void UBInventoryWidgetMain::OffCloseCheck()
-{
-	WarningPanel->SetVisibility(ESlateVisibility::Hidden);
-	ABInventoryActor::Instance->CloseCancel();
 }
 
 void UBInventoryWidgetMain::CloseCheck()
@@ -67,16 +55,8 @@ void UBInventoryWidgetMain::CloseCheck()
 	}
 	{
 		FScriptDelegate Delegate;
-		Delegate.BindUFunction(this, TEXT("OffCloseCheck"));
+		Delegate.BindUFunction(ABInventoryActor::Instance, TEXT("CloseCancel"));
 		NoButton->OnClicked.Clear();
 		NoButton->OnClicked.Add(Delegate);
 	}
-	WarningPanel->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UBInventoryWidgetMain::Drop()
-{
-	WarningPanel->SetVisibility(ESlateVisibility::Hidden);
-	//OffDropItem();
-	ABInventoryActor::Instance->CompleteDrop();
 }
