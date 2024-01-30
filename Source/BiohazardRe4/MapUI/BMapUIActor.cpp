@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BMapUIWidgetMain.h"
+#include "BMapUIPlayerSprite.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -18,6 +19,7 @@ ABMapUIActor::ABMapUIActor()
 	//루트 컴포넌트
 	RootPivotComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMapRootComponent"));
 	RootComponent = RootPivotComponent;
+	RootComponent->SetWorldLocation(StartLocation);
 
 	// 맵 메쉬
 	StageMapMesh.SetNum(4);
@@ -67,6 +69,7 @@ ABMapUIActor::ABMapUIActor()
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/Backgrouond_Plane.Backgrouond_Plane'"));
 		BackgroundMesh->SetStaticMesh(Mesh.Object);
 	}
+	BackgroundMesh->SetupAttachment(RootComponent);
 	FVector InitLocation = FVector(95.f,-41.f,0);
 	FVector InitScale = FVector(8.5f,6.6f,1);
 	BackgroundMesh->SetRelativeLocation(InitLocation);
@@ -78,6 +81,16 @@ ABMapUIActor::ABMapUIActor()
 	BoundMax = BoundMax * InitScale + InitLocation;
 	CameraMovableRange = FVector4f(BoundMin.X, BoundMin.Y, BoundMax.X, BoundMax.Y);
 
+	//플레이어 스프라이트
+	PlayerSprite = CreateDefaultSubobject<UBMapUIPlayerSprite>(TEXT("MapUIPlayer"));
+	{
+		//static ConstructorHelpers::FObjectFinder<UPaperSprite> Sprite(TEXT("/Script/Paper2D.PaperSprite'/Game/Assets/UI/MapUI/Sprite/S_cs_ui3100_IAM_texout_Sprite_25.S_cs_ui3100_IAM_texout_Sprite_25'"));
+		//Player->SetSprite(Sprite.Object);
+	}
+	PlayerSprite->SetupAttachment(RootComponent);
+	PlayerSprite->SetRelativeLocation({ 0.f,0.f,2.f });
+	PlayerSprite->SetRelativeScale3D({ 0.2f,0.2f,0.2f });
+	PlayerSprite->SetVisibility(false);
 }
 
 void ABMapUIActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeEvent)
@@ -136,12 +149,20 @@ void ABMapUIActor::BeginPlay()
 	SetFloor(EFloor::E_1F); // 보여지는 층 초기화
 	SetCameraZoom(45.f);
 	Widget->SetRangeOfFOV(CameraMinFOV, CameraMaxFOV);
+
+	//플레이어 컴포넌트
+	MainPlayer = UGameplayStatics::GetPlayerPawn(this, 0);
 }
 
 // Called every frame
 void ABMapUIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	FVector PlayerLocation = MainPlayer->GetActorLocation() * MapScale;
+	PlayerSprite->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 2.f });
+	
+	FRotator PlayerRotation = MainPlayer->GetActorRotation();
+	PlayerSprite->SetRelativeRotation({ 0.f, PlayerRotation.Yaw, 90.f});
 }
 
 void ABMapUIActor::MapUIOn()
@@ -157,6 +178,7 @@ void ABMapUIActor::MapUIOn()
 
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
+	PlayerSprite->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
@@ -177,6 +199,7 @@ void ABMapUIActor::MapUIOff()
 
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
+	PlayerSprite->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);

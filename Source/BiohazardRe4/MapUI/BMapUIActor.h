@@ -60,6 +60,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// __________________Base
+	UPROPERTY()
+	const APawn* MainPlayer;
+
+	UPROPERTY()
+	FVector StartLocation = {-10000, -10000, -10000};
+
+
 	// __________________Component
 	UPROPERTY()
 	UStaticMeshComponent* RootPivotComponent;
@@ -74,6 +82,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	class UBMapUIPlayerSprite* PlayerSprite;
+
+	UPROPERTY()
+	float MapScale = 0.01;
 
 	// __________________Option
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
@@ -94,6 +108,8 @@ public:
 
 	UPROPERTY()
 	UBMapUIWidgetMain* Widget;
+
+	
 
 private:
 	UPROPERTY()
