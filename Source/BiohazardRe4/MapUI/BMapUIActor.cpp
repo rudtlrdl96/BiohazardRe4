@@ -67,8 +67,8 @@ ABMapUIActor::ABMapUIActor()
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/Backgrouond_Plane.Backgrouond_Plane'"));
 		BackgroundMesh->SetStaticMesh(Mesh.Object);
 	}
-	FVector InitLocation = FVector(100.f,-40.f,0);
-	FVector InitScale = FVector(8.f,6.25,1);
+	FVector InitLocation = FVector(95.f,-41.f,0);
+	FVector InitScale = FVector(8.5f,6.6f,1);
 	BackgroundMesh->SetRelativeLocation(InitLocation);
 	BackgroundMesh->SetRelativeScale3D(InitScale);
 	FVector BoundMin;
