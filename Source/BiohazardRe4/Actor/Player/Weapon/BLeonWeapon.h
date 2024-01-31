@@ -19,7 +19,6 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 protected:
 	// Called when the game starts or when spawned	
 	virtual void BeginPlay() override;
@@ -28,7 +27,10 @@ public:
 	virtual void Trigger();
 	virtual void Reload();
 
-	FVector GetLeftHandLocation() const;
+	virtual void Attack();
+	bool AbleAttack();
+
+	FTransform GetLeftHandSocketTransform() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")

@@ -103,6 +103,10 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	{
 		LOG_FATAL(TEXT("is Not Set WeaponPutAwayAction"));
 	}
+	if (nullptr == ShootAction)
+	{
+		LOG_FATAL(TEXT("is Not Set ShootAction"));
+	}
 
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
 	Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
@@ -126,7 +130,12 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 		Input->BindAction(QuickSlotActions[i], ETriggerEvent::Started, this, &ABLeon::UseQuickSlot, i);
 	}
+
+	Input->BindAction(WeaponPutAwayAction, ETriggerEvent::Started, this, &ABLeon::ChangeUseWeapon, EItemCode::Empty);
+	Input->BindAction(ShootAction, ETriggerEvent::Started, this, &ABLeon::Shoot);
 }
+
+
 
 FVector ABLeon::GetCameraDirection() const
 {
@@ -173,14 +182,14 @@ ELeonDirection ABLeon::GetLeonDirection() const
 	}
 }
 
-FVector ABLeon::GetWeaponLeftSocketLocation() const
+FTransform ABLeon::GetWeaponLeftSocketTransform() const
 {
 	if (nullptr == CurrentWeapon)
 	{
-		return FVector::ZeroVector;
+		return FTransform::Identity;
 	}
 
-	return CurrentWeapon->GetLeftHandLocation();
+	return CurrentWeapon->GetLeftHandSocketTransform();
 }
 
 void ABLeon::WeaponPutOutStart()
@@ -246,7 +255,7 @@ void ABLeon::WeaponPutAwayStart()
 
 			CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
-			LerpSocketStart = TEXT("ShotgunSocket");
+			LerpSocketStart = TEXT("R_ShotgunSocket");
 			LerpSocketEnd = TEXT("ShotgunSpineSocket");
 			bIsLerpWeaponChange = true;
 
@@ -270,7 +279,7 @@ void ABLeon::WeaponPutAwayStart()
 
 			CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
-			LerpSocketStart = TEXT("RifleSocket");
+			LerpSocketStart = TEXT("R_RifleSocket");
 			LerpSocketEnd = TEXT("RifleSpineSocket");
 			bIsLerpWeaponChange = true;
 
@@ -325,6 +334,86 @@ void ABLeon::WeaponPutAwayEnd()
 	}
 
 	LOG_MSG(TEXT("Leon Weapon PutAwayEnd"));
+}
+
+void ABLeon::WeaponShootStart()
+{
+
+}
+
+void ABLeon::WeaponShootEnd()
+{
+	bIsGunRecoil = false;
+}
+
+void ABLeon::AttachLeftHandSocket()
+{
+	if (nullptr == CurrentWeapon)
+	{
+		return;
+	}
+
+	FName Socket = NAME_None;
+	CurrentWeapon->AttachToComponent(nullptr, FAttachmentTransformRules::KeepRelativeTransform, Socket);
+
+	//switch (UseWeaponCode)
+	//{
+	//case EItemCode::Handgun_SR09R:
+	//	Socket = "L_PistolSocket";
+	//	break;
+	//case EItemCode::Shotgun_W870:
+	//	Socket = "L_ShotgunSocket";
+	//	break;
+	//case EItemCode::Rifle_SRM1903:
+	//	Socket = "L_RifleSocket";
+	//	break;
+	//case EItemCode::CombatKnife:
+	//	Socket = "L_KnifeSocket";
+	//	break;
+	//case EItemCode::Grenade:
+	//	Socket = "L_GrenadeSocket";
+	//	break;
+	//case EItemCode::Flashbang:
+	//	Socket = "L_FlashbangSocket";
+	//	break;
+	//}
+	//
+	//CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
+}
+
+void ABLeon::AttachRightHandSocket()
+{
+	if (nullptr == CurrentWeapon)
+	{
+		return;
+	}
+
+	CurrentWeapon->AttachToComponent(nullptr, FAttachmentTransformRules::KeepRelativeTransform);
+	FName Socket = NAME_None;
+
+	switch (UseWeaponCode)
+	{
+	case EItemCode::Handgun_SR09R:
+		Socket = "R_PistolSocket";
+		break;
+	case EItemCode::Shotgun_W870:
+		Socket = "R_ShotgunSocket";
+		break;
+	case EItemCode::Rifle_SRM1903:
+		Socket = "R_RifleSocket";
+		break;
+	case EItemCode::CombatKnife:
+		Socket = "R_KnifeSocket";
+		break;
+	case EItemCode::Grenade:
+		Socket = "R_GrenadeSocket";
+		break;
+	case EItemCode::Flashbang:
+		Socket = "R_FlashbangSocket";
+		break;
+	}
+
+	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
 }
 
 void ABLeon::ChangeUseWeapon(EItemCode _WeaponCode)
@@ -535,6 +624,39 @@ void ABLeon::JogLookAt(float _DeltaTime)
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), InputRotator, _DeltaTime, 360.0f));
 }
 
+bool ABLeon::AbleShoot() const
+{
+	int32 FSMKey = FsmComp->GetCurrentFSMKey();
+	ELeonState FSMState = static_cast<ELeonState>(FSMKey);
+
+	if (FSMState != ELeonState::Aim)
+	{
+		return false;
+	}
+
+	if (LeonAim != ELeonAim::Loop)
+	{
+		return false;
+	}
+
+	if (true == bIsGunRecoil)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void ABLeon::Shoot()
+{
+	LOG_MSG(TEXT("Try Player Weapon Shoot"));
+	
+	if (true == AbleShoot())
+	{
+		bIsWeaponShootTrigger = true;
+	}
+}
+
 void ABLeon::Aim(float _DeltaTime)
 {
 	FVector CameraForward = PlayerCamera->GetForwardVector();
@@ -708,13 +830,13 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 	{
 	case EItemCode::Handgun_SR09R: // Pistol
 		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Pistol_SR09R.BP_Leon_Pistol_SR09R'");
-		LerpSocketEnd = TEXT("PistolSocket");
+		LerpSocketEnd = TEXT("R_PistolSocket");
 		bIsLerpWeaponChange = false;
 		break;
 	case EItemCode::Shotgun_W870: // Shotgun
 		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Shotgun_W870.BP_Leon_Shotgun_W870'");
 		LerpSocketStart = TEXT("ShotgunSpineSocket");
-		LerpSocketEnd = TEXT("ShotgunSocket");
+		LerpSocketEnd = TEXT("R_ShotgunSocket");
 		bIsLerpWeaponChange = true;
 
 		SocketLocationBlend = AbsolutAlphaBlend;
@@ -736,7 +858,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 	case EItemCode::Rifle_SRM1903: // Rifle
 		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Rifle_SRM1903.BP_Leon_Rifle_SRM1903'");
 		LerpSocketStart = TEXT("RifleSpineSocket");
-		LerpSocketEnd = TEXT("RifleSocket");
+		LerpSocketEnd = TEXT("R_RifleSocket");
 		bIsLerpWeaponChange = true;
 
 		SocketLocationBlend = AbsolutAlphaBlend;
@@ -757,17 +879,17 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 		break;
 	case EItemCode::CombatKnife: // Knife
 		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Knife/BP_Leon_Knife_CombatKnife.BP_Leon_Knife_CombatKnife'");
-		LerpSocketEnd = TEXT("KnifeSocket");
+		LerpSocketEnd = TEXT("R_KnifeSocket");
 		bIsLerpWeaponChange = false;
 		break;
 	case EItemCode::Grenade: // Grenade
 		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Grenade/BP_Leon_Grenade_HandGrenade.BP_Leon_Grenade_HandGrenade'");
-		LerpSocketEnd = TEXT("GrenadeSocket");
+		LerpSocketEnd = TEXT("R_GrenadeSocket");
 		bIsLerpWeaponChange = false;
 		break;
 	case EItemCode::Flashbang: // Flashbang
 		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Grenade/BP_Leon_Grenade_Flashbang.BP_Leon_Grenade_Flashbang'");
-		LerpSocketEnd = TEXT("FlashbangSocket");
+		LerpSocketEnd = TEXT("R_FlashbangSocket");
 		bIsLerpWeaponChange = false;
 		break;
 	default:

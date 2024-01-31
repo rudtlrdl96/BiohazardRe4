@@ -7,6 +7,8 @@
 #include "Item/ItemData.h"
 #include "BInterface_WeaponPutOut.h"
 #include "BInterface_WeaponPutAway.h"
+#include "BInterface_WeaponShoot.h"
+#include "BInterface_WeaponHandSocketSwap.h"
 #include "BLeon.generated.h"
 
 struct FInputActionInstance;
@@ -76,7 +78,7 @@ enum class ELeonDirection : uint8
 };
 
 UCLASS()
-class BIOHAZARDRE4_API ABLeon : public ACharacter, public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut
+class BIOHAZARDRE4_API ABLeon : public ACharacter, public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut, public IBInterface_WeaponShoot, public IBInterface_WeaponHandSocketSwap
 {
 	GENERATED_BODY()
 
@@ -195,20 +197,34 @@ public:
 	ELeonDirection GetLeonDirection() const;
 
 
+	// 플레이어가 무기들 들고 있는지 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline bool HasWeapon() const
 	{
 		return nullptr != CurrentWeapon;
 	}
 
+	// 플레이어가 총 발사 반동상태인지 반환합니다
 	UFUNCTION(BlueprintCallable)
-	FVector GetWeaponLeftSocketLocation() const;
+	inline bool IsGunRecoil() const
+	{
+		return bIsGunRecoil;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FTransform GetWeaponLeftSocketTransform() const;
 
 
 	virtual void WeaponPutOutStart() override;
 	virtual void WeaponPutOutEnd() override;
 	virtual void WeaponPutAwayStart() override;
 	virtual void WeaponPutAwayEnd() override;
+
+	virtual void WeaponShootStart() override;
+	virtual void WeaponShootEnd() override;
+
+	virtual void AttachLeftHandSocket() override;
+	virtual void AttachRightHandSocket() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -273,6 +289,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* LookAction = nullptr;	
+
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UInputAction* ShootAction = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* AimAction = nullptr;
@@ -327,6 +346,9 @@ private:
 
 	uint32 bIsLerpWeaponChange : 1 = false;
 
+	uint32 bIsWeaponShootTrigger: 1 = false;
+	uint32 bIsGunRecoil: 1 = false;
+
 	void PlayMove(const FInputActionInstance& _MoveAction);
 	void PlayIdle(const FInputActionInstance& _MoveAction);
 
@@ -342,6 +364,10 @@ private:
 	void VPlayerCameraToWorld(FVector& _Result) const;
 
 	void JogLookAt(float _DeltaTime);
+	
+	bool AbleShoot() const;
+
+	void Shoot();
 	void Aim(float _DeltaTime);
 
 	void ActiveJog();

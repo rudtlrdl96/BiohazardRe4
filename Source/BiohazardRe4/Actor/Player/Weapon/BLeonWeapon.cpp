@@ -3,6 +3,7 @@
 
 #include "Actor/Player/Weapon/BLeonWeapon.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "BiohazardRe4.h"
 
 // Sets default values
 ABLeonWeapon::ABLeonWeapon()
@@ -34,14 +35,24 @@ void ABLeonWeapon::Reload()
 {
 }
 
-FVector ABLeonWeapon::GetLeftHandLocation() const
+void ABLeonWeapon::Attack()
+{
+	LOG_MSG(TEXT("Weapon Attack"));
+}
+
+bool ABLeonWeapon::AbleAttack()
+{
+	return true;
+}
+
+FTransform ABLeonWeapon::GetLeftHandSocketTransform() const
 {
 	const USkeletalMeshSocket* SocketPtr = WeaponMesh->GetSocketByName(TEXT("LeftHandSocket"));
 
 	if (nullptr == SocketPtr)
 	{
-		return 	RootComponent->GetComponentLocation();
+		return RootComponent->GetComponentTransform();
 	}
 	
-	return SocketPtr->GetSocketLocation(WeaponMesh);
+	return SocketPtr->GetSocketTransform(WeaponMesh);
 }

@@ -5,6 +5,7 @@
 #include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "..\Weapon\BLeonWeapon.h"
 #include "BiohazardRe4.h"
 
 void ABLeon::AimEnter()
@@ -24,6 +25,49 @@ void ABLeon::AimUpdate(float _DeltaTime)
 
 	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
 	Aim(_DeltaTime);
+
+	if (true == bIsGunRecoil)
+	{
+		AimUpdateTime = FMath::FInterpConstantTo(AimUpdateTime, 1.0f, _DeltaTime, 3.0f);
+		return;
+	}
+
+	if (true == bIsWeaponShootTrigger)
+	{
+		bIsWeaponShootTrigger = false;
+
+		if (true == CurrentWeapon->AbleAttack())
+		{
+			ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
+
+			switch (WeaponAnim)
+			{
+			// Gun 
+			case ELeonWeaponAnim::Pistol:
+			case ELeonWeaponAnim::Shotgun:
+			case ELeonWeaponAnim::Rifle:
+			{
+				CurrentWeapon->Attack();
+				bIsGunRecoil = true;
+			}
+			break;
+			// Knife
+			case ELeonWeaponAnim::Knife:
+			{
+
+			}
+			break;
+			// Grenade
+			case ELeonWeaponAnim::Grenade:
+			{
+
+			}
+			break;
+			default:
+				break;
+			}
+		}
+	}
 
 	if (LeonWeaponSwap != ELeonWeaponSwap::None)
 	{
