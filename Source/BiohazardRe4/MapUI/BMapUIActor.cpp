@@ -59,7 +59,7 @@ ABMapUIActor::ABMapUIActor()
 	// Ä«¸Þ¶ó
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
-	Camera->SetRelativeLocation({ 0, 65, 300 });
+	Camera->SetRelativeLocation({ 0, 0, 300 });
 	Camera->SetRelativeRotation({ -90, -90, 0 });
 	Camera->FieldOfView = 45.0f;
 
@@ -101,9 +101,11 @@ void ABMapUIActor::SetFloor(EFloor Floor)
 {
 	Widget->SetCurrentFloor(Floor);
 	Widget->SetPrevFloor(static_cast<EFloor>(CurrentFloor));
+	
 	StageMapMesh[CurrentFloor]->SetVisibility(false);
 	CurrentFloor = static_cast<uint8>(Floor);
 	StageMapMesh[CurrentFloor]->SetVisibility(true);
+
 	Widget->UpdateMapLayerWidget();
 }
 
@@ -162,7 +164,7 @@ void ABMapUIActor::Tick(float DeltaTime)
 	PlayerSprite->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 2.f });
 	
 	FRotator PlayerRotation = MainPlayer->GetActorRotation();
-	PlayerSprite->SetRelativeRotation({ 0.f, PlayerRotation.Yaw, 90.f});
+	PlayerSprite->SetRelativeRotation({ 0.f, PlayerRotation.Yaw + 270.f, 90.f});
 }
 
 void ABMapUIActor::MapUIOn()
@@ -184,6 +186,9 @@ void ABMapUIActor::MapUIOn()
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 
 	Widget->SetVisibility(ESlateVisibility::Visible);
+
+	FVector PlayerLocation = MainPlayer->GetActorLocation() * MapScale;
+	Camera->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 300.f });
 }
 
 void ABMapUIActor::MapUIOff()
