@@ -2,6 +2,7 @@
 
 
 #include "Actor/Player/Weapon/BLeonWeapon.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 // Sets default values
 ABLeonWeapon::ABLeonWeapon()
@@ -9,10 +10,8 @@ ABLeonWeapon::ABLeonWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Mesh"));
-	RootComponent = WeaponMesh;
-
-	LeftHandSlot = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Slot"));
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
+	RootComponent = WeaponMesh;	
 }
 
 // Called when the game starts or when spawned
@@ -33,4 +32,16 @@ void ABLeonWeapon::Trigger()
 
 void ABLeonWeapon::Reload()
 {
+}
+
+FVector ABLeonWeapon::GetLeftHandLocation() const
+{
+	const USkeletalMeshSocket* SocketPtr = WeaponMesh->GetSocketByName(TEXT("LeftHandSocket"));
+
+	if (nullptr == SocketPtr)
+	{
+		return 	RootComponent->GetComponentLocation();
+	}
+	
+	return SocketPtr->GetSocketLocation(WeaponMesh);
 }

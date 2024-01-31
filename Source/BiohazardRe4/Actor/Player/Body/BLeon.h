@@ -195,6 +195,16 @@ public:
 	ELeonDirection GetLeonDirection() const;
 
 
+	UFUNCTION(BlueprintCallable)
+	inline bool HasWeapon() const
+	{
+		return nullptr != CurrentWeapon;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetWeaponLeftSocketLocation() const;
+
+
 	virtual void WeaponPutOutStart() override;
 	virtual void WeaponPutOutEnd() override;
 	virtual void WeaponPutAwayStart() override;
@@ -253,7 +263,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Input)
 	float TurnSpeed = 10.0f;	
 	UPROPERTY(EditAnywhere, Category = Input)
-	float MaxTurnSpeed = 5.0f;
+	float MaxTurnSpeed = 10.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputMappingContext* DefaultMappingContext = nullptr;

@@ -46,7 +46,7 @@ void ABLeon::AimUpdate(float _DeltaTime)
 	}
 	else
 	{		
-		AimUpdateTime = FMath::FInterpConstantTo(AimUpdateTime, 0.0f, _DeltaTime, 3.0f);
+		AimUpdateTime = FMath::FInterpConstantTo(AimUpdateTime, 0.0f, _DeltaTime, 5.0f);
 
 		LeonAim = ELeonAim::End;
 
@@ -72,5 +72,7 @@ void ABLeon::AimUpdate(float _DeltaTime)
 
 void ABLeon::AimExit()
 {
+	LeonAim = ELeonAim::Start;
+
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 }

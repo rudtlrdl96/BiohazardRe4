@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/StaticMesh.h"
+#include "BiohazardRe4.h"
 #include "BLeonWeapon.generated.h"
 
 UCLASS()
@@ -27,11 +28,10 @@ public:
 	virtual void Trigger();
 	virtual void Reload();
 
+	FVector GetLeftHandLocation() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
-	UStaticMeshComponent* WeaponMesh = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
-	USceneComponent* LeftHandSlot = nullptr;
+	USkeletalMeshComponent* WeaponMesh = nullptr;
 
 };

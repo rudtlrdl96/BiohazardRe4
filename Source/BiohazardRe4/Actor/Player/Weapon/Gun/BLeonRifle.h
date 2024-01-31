@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actor/Player/Weapon/BLeonWeapon.h"
+#include "Actor/Player/Weapon/Gun/BLeonGun.h"
 #include "BLeonRifle.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API ABLeonRifle : public ABLeonWeapon
+class BIOHAZARDRE4_API ABLeonRifle : public ABLeonGun
 {
 	GENERATED_BODY()
 	

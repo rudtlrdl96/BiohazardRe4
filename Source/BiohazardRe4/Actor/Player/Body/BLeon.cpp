@@ -173,6 +173,16 @@ ELeonDirection ABLeon::GetLeonDirection() const
 	}
 }
 
+FVector ABLeon::GetWeaponLeftSocketLocation() const
+{
+	if (nullptr == CurrentWeapon)
+	{
+		return FVector::ZeroVector;
+	}
+
+	return CurrentWeapon->GetLeftHandLocation();
+}
+
 void ABLeon::WeaponPutOutStart()
 {
 	LOG_MSG(TEXT("Leon Weapon PutOutStart"));
@@ -558,6 +568,11 @@ void ABLeon::TryCrouch()
 	int32 FSMKey = FsmComp->GetCurrentFSMKey();
 	ELeonState FSMState = static_cast<ELeonState>(FSMKey);
 
+	if (LeonWeaponSwap != ELeonWeaponSwap::None)
+	{
+		return;
+	}
+
 	if (FSMState == ELeonState::Jog)
 	{
 		bIsCrouch = false;
@@ -688,6 +703,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 	FName Path;
 	LerpSocketStart = TEXT("");
 
+	// Todo : 런타임 로딩이 아닌 생성자에서 로딩하도록 변경
 	switch (_WeaponCode)
 	{
 	case EItemCode::Handgun_SR09R: // Pistol
