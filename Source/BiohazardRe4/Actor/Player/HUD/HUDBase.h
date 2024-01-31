@@ -59,19 +59,17 @@ public :
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetKnifeDurability(float Durability);
 
-	// ________________HotKey_______________________
+	// ________________QuickSlot_______________________
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void QuickSlotUpdate();
+	void QuickSlotUpdate(const TArray<ABInventoryWeapon*>& QuickSlot);
 
 	// HUD의 단축키 표시 여부를 지정합니다. true 시 핫키를 표시합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void SetHotKeyVisible(bool IsVisible);
+	void SetQuickSlotVisible(bool IsVisible);
 
 	// 단축키를 눌렀을때 HUD에서 이를 표현합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetQuickSlotNumber(int Num);
 
-	UPROPERTY(BlueprintReadOnly)
-	TArray<class ABInventoryWeapon*> QuickSlot;
 };

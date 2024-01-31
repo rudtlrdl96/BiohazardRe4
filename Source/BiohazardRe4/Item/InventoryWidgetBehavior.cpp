@@ -49,7 +49,7 @@ void UBInventoryWidgetBehavior::SetItemData(const FBItemData& Data)
 	case EItemCode::Rifle_SRM1903:
 		SetButton(0, State_BehaviorButton::Equip);
 		SetButton(1, State_BehaviorButton::Investigate);
-		SetButton(2, State_BehaviorButton::Hotkey);
+		SetButton(2, State_BehaviorButton::QuickSlot);
 		SetButton(3, State_BehaviorButton::Drop);
 		break;
 	case EItemCode::CombatKnife:
@@ -136,9 +136,9 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 			Buttons[Index]->OnUnhovered.Clear();
 		}
 		break;
-	case UBInventoryWidgetBehavior::Hotkey:
+	case UBInventoryWidgetBehavior::QuickSlot:
 		Images[Index]->SetBrushResourceObject(Icons[3]);
-		Texts[Index]->SetText(NSLOCTEXT("UI", "Hotkey", "단축키 등록"));
+		Texts[Index]->SetText(NSLOCTEXT("UI", "QuickSlot", "단축키 등록"));
 		{
 			FScriptDelegate Delegate;
 			Delegate.BindUFunction(InventoryActor, FName("OpenQuickSlot"));

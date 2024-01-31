@@ -47,7 +47,7 @@ private:
 		Equip,			// 장비
 		Unequip,		// 장비해제
 		Investigate,	// 조사
-		Hotkey,			// 단축키 등록
+		QuickSlot,			// 단축키 등록
 		Drop,			// 버리기
 		Crafting,		// 제조하기
 		Use,			// 사용하기
