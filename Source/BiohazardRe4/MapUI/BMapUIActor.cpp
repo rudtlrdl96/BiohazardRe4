@@ -93,10 +93,6 @@ ABMapUIActor::ABMapUIActor()
 	PlayerSprite->SetVisibility(false);
 }
 
-void ABMapUIActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeEvent)
-{
-}
-
 void ABMapUIActor::SetFloor(EFloor Floor)
 {
 	Widget->SetCurrentFloor(Floor);

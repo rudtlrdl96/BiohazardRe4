@@ -25,8 +25,6 @@ public:
 	// Sets default values for this actor's properties
 	ABMapUIActor();
 
-	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangeEvent) override;
-
 	UFUNCTION(BlueprintCallable)
 	void SetFloor(EFloor Floor);
 
