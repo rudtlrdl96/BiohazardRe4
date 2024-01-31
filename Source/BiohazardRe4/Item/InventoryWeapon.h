@@ -22,6 +22,10 @@ class BIOHAZARDRE4_API ABInventoryWeapon : public ABInventoryItem
 
 public:
 
+	// 가방에 남은 탄
+	UFUNCTION(BlueprintCallable)
+	int32 GetStoredAmmo() const;
+
 	// 장전된 탄
 	UFUNCTION(BlueprintCallable)
 	int32 GetLoadedAmmo() const

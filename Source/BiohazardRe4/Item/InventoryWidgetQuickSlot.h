@@ -16,15 +16,16 @@ class BIOHAZARDRE4_API UBInventoryWidgetQuickSlot : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	virtual void NativeOnInitialized() override;
-
 public :
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<class ABInventoryWeapon*> QuickSlot;
+	class ABInventoryWeapon* AddWeaponPtr;
 
-	UPROPERTY(BlueprintReadOnly)
-	ABInventoryWeapon* AddWeaponPtr;
+	UFUNCTION(BlueprintCallable)
+	TArray<ABInventoryWeapon*>& GetQuickSlot() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetQuickSlotItem(ABInventoryWeapon* Weapon, int Index);
 
 	UFUNCTION(BlueprintCallable)
 	void CloseQuickSlot();

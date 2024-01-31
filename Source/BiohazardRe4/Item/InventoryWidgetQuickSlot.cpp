@@ -5,9 +5,24 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "InventoryActor.h"
-void UBInventoryWidgetQuickSlot::NativeOnInitialized()
+
+TArray<ABInventoryWeapon*>& UBInventoryWidgetQuickSlot::GetQuickSlot() const
 {
-	QuickSlot = ABInventoryActor::Instance->QuickSlot;
+	return ABInventoryActor::Instance->QuickSlot;
+}
+
+void UBInventoryWidgetQuickSlot::SetQuickSlotItem(ABInventoryWeapon* Weapon, int Index)
+{
+	TArray<ABInventoryWeapon*>& QuickSlot = ABInventoryActor::Instance->QuickSlot;
+	for (int i = 0; i < QuickSlot.Num(); i++)
+	{
+		if (QuickSlot[i] == Weapon)
+		{
+			QuickSlot[i] = nullptr;
+			break;
+		}
+	}
+	QuickSlot[Index] = Weapon;
 }
 
 void UBInventoryWidgetQuickSlot::CloseQuickSlot()

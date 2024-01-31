@@ -183,7 +183,6 @@ void ABInventoryActor::BeginPlay()
 	// Subsystem에 MappingContext를 추가한다 (우선순위를 1번으로 두어서 0번으로 Mapping한 조작을 무시한다)
 	Controller = UGameplayStatics::GetPlayerController(this, 0);
 	HUD = Cast<ABHUDBase>(Controller->GetHUD());
-	HUD->QuickSlot = QuickSlot;
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
 	//Subsystem->AddMappingContext(DefaultMappingContext, 1);
 
@@ -351,7 +350,7 @@ void ABInventoryActor::CloseInventory()
 	Inventory->RemoveAllItemInSubSlot();
 	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
-	HUD->QuickSlotUpdate();
+	HUD->QuickSlotUpdate(QuickSlot);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
 }
 
