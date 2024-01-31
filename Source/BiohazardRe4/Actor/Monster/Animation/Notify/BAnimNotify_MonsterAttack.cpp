@@ -6,6 +6,8 @@
 #include "BiohazardRe4.h"
 #include "GameFramework/Character.h"
 
+#include "../../Interface/BMonsterStatInterface.h"
+
 void UBAnimNotify_MonsterAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
@@ -25,7 +27,7 @@ void UBAnimNotify_MonsterAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 			LOG_WARNING(TEXT("Interface == nullptr : UBAnimNotify_MonsterAttack::Notify"));
 			return;
 		}
-
+		
 		Interface->Attack();
 	}
 }

@@ -2,15 +2,29 @@
 
 
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
-
+#include "../Interface/BMonsterStateInterface.h"
+#include "BiohazardRe4.h"
 // Sets default values for this component's properties
 UBMonsterStatComponent::UBMonsterStatComponent()
 {
-	AttackRadius = 100.0f;
-	MaxHp = 100;
-	AttackSweepRadius = 30.0f;
-	DetectRadius = 200.0f;
-	PatrolRadius = 500.0f;
+}
+
+void UBMonsterStatComponent::StatInit(const FStatStruct& _StatData)
+{
+	MaxHp = _StatData.MaxHp;
+	CurrentHp = _StatData.CurrentHp;
+	
+	AttackRadius = _StatData.AttackRadius;
+	AttackSweepRadius = _StatData.AttackSweepRadius;
+	
+	DetectRadius = _StatData.DetectRadius;
+	PatrolRadius = _StatData.PatrolRadius;
+}
+
+void UBMonsterStatComponent::DecreaseHp(float _Hp)
+{
+	CurrentHp -= _Hp;
+
 }
 
 // Called when the game starts

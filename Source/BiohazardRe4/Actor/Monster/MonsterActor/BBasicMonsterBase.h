@@ -23,9 +23,15 @@ public:
 	ABBasicMonsterBase();
 
 protected:
-	void SetWeaponSkeletalMeshByRandomInBeginPlay();
-	void InitAI();
+	virtual void BeginPlay() override;
 
+	virtual void SetlMeshAndAnimationByRandomInBeginPlay();
+
+	virtual void SetClothesSkeletalMeshByRandomInBeginPlay();
+	virtual void SetWeaponSkeletalMeshByRandomInBeginPlay();
+	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay();
+
+	void InitAI();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	TObjectPtr<class USkeletalMeshComponent> BodyBase = nullptr;

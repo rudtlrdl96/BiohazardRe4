@@ -49,7 +49,6 @@ void ABMonsterFemale::InitAI()
 void ABMonsterFemale::InitValue()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 50.0f;
-	Stat->SetAttackRadius(80.0f);
 }
 
 void ABMonsterFemale::SetSkeletalMeshInConstructor()

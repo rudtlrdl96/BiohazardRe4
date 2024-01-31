@@ -24,6 +24,8 @@ enum class EMonsterState : uint8
 	Walk UMETA(DisplayName = "Walk"),
 	Run UMETA(DisplayName = "Run"),
 	Attack UMETA(DisplayName = "Attack"),
+	Flashed UMETA(DisplayName = "Flashed"),
+	Hit UMETA(DisplayName = "Hit"),
 };
 
 class BIOHAZARDRE4_API IBMonsterStateInterface
@@ -32,15 +34,22 @@ class BIOHAZARDRE4_API IBMonsterStateInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void Attack() = 0;
+	virtual void AttackStart() = 0;
+
+	virtual void DamagedEnd() = 0;
+
+	virtual bool IsAttacking() = 0;
+	virtual void SetIsAttack(bool _IsAttacking) = 0;
 	virtual EMonsterState GetCurrentState() = 0;
 	virtual void SetCurrentState(EMonsterState _InState) = 0;
-	virtual void SetIsAttack(bool _IsAttacking) = 0;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) = 0;
-	virtual void Attack() = 0;
-	virtual bool IsAttacking() = 0;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() = 0;
+	virtual void MonsterDeath() = 0;
 
 protected:
+	virtual void Flashed() = 0;
+	virtual void Hit() = 0;
 
 private:
 };

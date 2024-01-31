@@ -18,8 +18,6 @@ ABMonsterMale::ABMonsterMale()
 void ABMonsterMale::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetlMeshAndAnimationByRandomInBeginPlay();
 }
 
 void ABMonsterMale::CreateComponent()
@@ -43,7 +41,6 @@ void ABMonsterMale::CreateComponent()
 void ABMonsterMale::InitValue()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 50.0f;
-	Stat->SetAttackRadius(80.0f);
 }
 
 void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
@@ -61,6 +58,9 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 
 		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_BareHands.AM_MonsterMale_Attack_BareHands'");
 		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
+		
+		FString DamagedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_BareHands.AM_MonsterMale_Damaged_BareHands'");
+		DamagedMontage = LoadObject<UAnimMontage>(nullptr, *DamagedMontagePath);
 	}
 	else if (MyWeaponType == EWeaponType::OneHand)
 	{
@@ -75,6 +75,9 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 
 		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_OneHand.AM_MonsterMale_Attack_OneHand'");
 		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
+
+		FString DamagedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_OneHand.AM_MonsterMale_Damaged_OneHand'");
+		DamagedMontage = LoadObject<UAnimMontage>(nullptr, *DamagedMontagePath);
 	}
 	else if (MyWeaponType == EWeaponType::TwoHands)
 	{
@@ -91,7 +94,7 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 		//AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
 	}
 
-
+	
 }
 
 void ABMonsterMale::SetSkeletalMeshInConstructor()
@@ -109,7 +112,7 @@ void ABMonsterMale::SetSkeletalMeshInConstructor()
 	//}
 }
 
-void ABMonsterMale::SetlMeshAndAnimationByRandomInBeginPlay()
+void ABMonsterMale::SetClothesSkeletalMeshByRandomInBeginPlay()
 {
 	//Body
 	FString BodyPath = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'");
@@ -225,10 +228,5 @@ void ABMonsterMale::SetlMeshAndAnimationByRandomInBeginPlay()
 	{
 		LOG_MSG(TEXT("Hat Mesh is Nullptr : Index = %d"), HatIndex);
 	}
-
-	SetWeaponSkeletalMeshByRandomInBeginPlay();
-	
-	//애님인스턴스 경로, 공격몽타주 경로
-	SetAnimInstanceAndAnimationMontageInBeginPlay();
 }
 

@@ -5,6 +5,7 @@
 #include "../AIController/BAIChainsawManController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Component/BMonsterStatComponent.h"
+#include "../DataAsset/BMonsterStatData.h"
 #include "BiohazardRe4.h"
 
 ABChainsawMan::ABChainsawMan()
@@ -27,13 +28,18 @@ ABChainsawMan::ABChainsawMan()
 		AttackMontage = ChainsawAttackMontageRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UBMonsterStatData> ChainsawManStatDataRef(TEXT("/Script/BiohazardRe4.BMonsterStatData'/Game/Blueprints/Actor/Monster/DataAsset/DA_ChainsawManStat.DA_ChainsawManStat'"));
+
+	if (ChainsawManStatDataRef.Object != nullptr)
+	{
+		StatInit(ChainsawManStatDataRef.Object);
+	}
+
 	AIControllerClass = ABAIChainsawManController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
 
 	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-
-	Stat->SetAttackRadius(120);
 }
 
 void ABChainsawMan::Attack()
@@ -51,4 +57,5 @@ void ABChainsawMan::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
 

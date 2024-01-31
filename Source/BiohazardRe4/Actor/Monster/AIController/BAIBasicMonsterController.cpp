@@ -11,6 +11,9 @@
 #include "GameFramework/Character.h"
 #include "BiohazardRe4.h"
 #include "../Interface/BMonsterStatInterface.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "../DataAsset/BMonsterStatData.h"
 
 ABAIBasicMonsterController::ABAIBasicMonsterController()
 {
@@ -31,23 +34,14 @@ ABAIBasicMonsterController::ABAIBasicMonsterController()
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 
-	//아래 코드 생성자 밖에서 하는 방법이 있나 (인스턴스마다 다르게 하는 방법)
+	static ConstructorHelpers::FObjectFinder<UBMonsterStatData> BasicMonsterStatDataRef(TEXT("/Script/BiohazardRe4.BMonsterStatData'/Game/Blueprints/Actor/Monster/DataAsset/DA_BasicMonsterStat.DA_BasicMonsterStat'"));
+
+	if (BasicMonsterStatDataRef.Object != nullptr)
 	{
-		SightConfig->SightRadius = 600.0f;
-		SightConfig->PeripheralVisionAngleDegrees = 30.0f;
-		
-		//멀어지면 따라가지 않도록. 일단은 계속 따라가게 함.
-		SightConfig->LoseSightRadius = 600.0f;
-		SightConfig->SetMaxAge(0.0f);
-		
-		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		
-		SetPerceptionSystem();
+		InitPerceptionSystem(BasicMonsterStatDataRef.Object);
 	}
 
-	//SetPerceptionSystem();
+	SetPerceptionSystem();
 }
 
 void ABAIBasicMonsterController::RunAI()
@@ -57,6 +51,7 @@ void ABAIBasicMonsterController::RunAI()
 	if (UseBlackboard(BBAsset, BlackboardPtr) != false)
 	{
 		Blackboard->SetValueAsVector(BBKEY_PATROLPOS, GetPawn()->GetActorLocation());
+		Blackboard->SetValueAsBool(BBKEY_ISDAMAGED, false);
 		bool RunResult = RunBehaviorTree(BTAsset);
 		ensure(RunResult);
 	}
@@ -84,6 +79,15 @@ void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAISt
 
 			GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, _Stimulus.WasSuccessfullySensed());
 			GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, UpdatedPawn);
+
+			ACharacter* OwnerCharacter = GetCharacter();
+			if (OwnerCharacter == nullptr)
+			{
+				LOG_WARNING(TEXT("OwnerCharacter is nullptr"));
+				return;
+			}
+
+			OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 		}
 	}
 }
@@ -104,26 +108,24 @@ void ABAIBasicMonsterController::OnTargetPerceptionForgotten(AActor* _Actor)
 void ABAIBasicMonsterController::OnPossess(APawn* _InPawn)
 {
 	Super::OnPossess(_InPawn);
-	//InitPerceptionSystem(_InPawn);
 	RunAI();
 }
 
-void ABAIBasicMonsterController::InitPerceptionSystem(APawn* _InPawn)
+void ABAIBasicMonsterController::InitPerceptionSystem(UBMonsterStatData* _InData)
 {
-	IBMonsterStatInterface* InPawnInterface = Cast<IBMonsterStatInterface>(_InPawn);
-	if (InPawnInterface == nullptr)
+	if (_InData == nullptr)
 	{
-		LOG_MSG(TEXT("InPawn == nullptr"));
+		LOG_FATAL(TEXT("_InData is nullptr"));
 		return;
 	}
 
 	LOG_MSG(TEXT("PerceptionSystem is initted"));
 
-	SightConfig->SightRadius = InPawnInterface->GetDetectRadius();
+	SightConfig->SightRadius = _InData->DetectRadius;
 	SightConfig->PeripheralVisionAngleDegrees = 30.0f;
 
 	//멀어지면 따라가지 않도록. 일단은 계속 따라가게 함.
-	SightConfig->LoseSightRadius = InPawnInterface->GetDetectRadius();
+	SightConfig->LoseSightRadius = _InData->DetectRadius;
 	SightConfig->SetMaxAge(-1.0f);
 
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;

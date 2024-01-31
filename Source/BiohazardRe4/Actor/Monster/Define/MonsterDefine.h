@@ -10,3 +10,4 @@
 #define BBKEY_ISDETECTED TEXT("IsDetected")
 #define BBKEY_ISATTACKING TEXT("IsAttacking")
 #define BBKEY_PATROLPOS TEXT("PatrolPos")
+#define BBKEY_ISDAMAGED TEXT("IsDamaged")

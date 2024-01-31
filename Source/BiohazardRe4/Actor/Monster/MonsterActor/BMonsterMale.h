@@ -34,13 +34,14 @@ protected:
 	UFUNCTION()
 	virtual void BeginPlay() override;
 
+protected:
+	virtual void SetClothesSkeletalMeshByRandomInBeginPlay() override;
+	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay() override;
+
 private:
 	void CreateComponent();
 	void InitValue();
 
-	void SetAnimInstanceAndAnimationMontageInBeginPlay();
-
-	void SetlMeshAndAnimationByRandomInBeginPlay();
 	void SetSkeletalMeshInConstructor();
 
 };

@@ -3,11 +3,33 @@
 
 #include "Actor/Monster/MonsterActor/BBasicMonsterBase.h"
 #include "../AIController/BAIBasicMonsterController.h"
+#include "../DataAsset/BMonsterStatData.h"
 #include "BiohazardRe4.h"
 
 ABBasicMonsterBase::ABBasicMonsterBase()
 {
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	
+	static ConstructorHelpers::FObjectFinder<UBMonsterStatData> BasicMonsterStatDataRef(TEXT("/Script/BiohazardRe4.BMonsterStatData'/Game/Blueprints/Actor/Monster/DataAsset/DA_BasicMonsterStat.DA_BasicMonsterStat'"));
+
+	if (BasicMonsterStatDataRef.Object != nullptr)
+	{
+		StatInit(BasicMonsterStatDataRef.Object);
+	}
+}
+
+void ABBasicMonsterBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetlMeshAndAnimationByRandomInBeginPlay();
+}
+
+void ABBasicMonsterBase::SetlMeshAndAnimationByRandomInBeginPlay()
+{
+	SetClothesSkeletalMeshByRandomInBeginPlay();
+	SetWeaponSkeletalMeshByRandomInBeginPlay();
+	SetAnimInstanceAndAnimationMontageInBeginPlay();
 }
 
 void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
@@ -78,4 +100,13 @@ void ABBasicMonsterBase::InitAI()
 {
 	AIControllerClass = ABAIBasicMonsterController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+}
+
+
+void ABBasicMonsterBase::SetClothesSkeletalMeshByRandomInBeginPlay()
+{
+}
+
+void ABBasicMonsterBase::SetAnimInstanceAndAnimationMontageInBeginPlay()
+{
 }

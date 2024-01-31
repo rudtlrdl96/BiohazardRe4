@@ -32,6 +32,8 @@ void ABAIChainsawManController::RunAI()
 	
 	if (UseBlackboard(BBAsset, BlackboardPtr) != false)
 	{
+		Blackboard->SetValueAsBool(BBKEY_ISDAMAGED, false);
+
 		bool RunResult = RunBehaviorTree(BTAsset);
 		ensure(RunResult);
 	}

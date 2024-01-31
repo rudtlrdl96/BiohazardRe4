@@ -6,6 +6,18 @@
 #include "Components/ActorComponent.h"
 #include "BMonsterStatComponent.generated.h"
 
+USTRUCT()
+struct FStatStruct
+{
+	GENERATED_BODY()
+
+	float MaxHp = 0.0f;
+	float CurrentHp = 0.0f;
+	float DetectRadius = 0.0f;
+	float AttackRadius = 0.0f;
+	float AttackSweepRadius = 0.0f;
+	float PatrolRadius = 0.0f;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BIOHAZARDRE4_API UBMonsterStatComponent : public UActorComponent
@@ -20,6 +32,13 @@ public:
 	float GetAttackSweepRadius() { return AttackSweepRadius; };
 	float GetDetectRadius() { return DetectRadius; };
 	float GetPatrolRadius() { return PatrolRadius; };
+
+	void StatInit(const FStatStruct& _StatData);
+
+	void SetHp(float _Hp) { CurrentHp = _Hp; };
+	void DecreaseHp(float _Hp);
+	bool isDeath() { return CurrentHp <= 0; };
+
 protected:
 	virtual void BeginPlay() override;
 

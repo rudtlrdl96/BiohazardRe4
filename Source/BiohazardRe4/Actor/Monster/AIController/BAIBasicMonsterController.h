@@ -16,7 +16,6 @@ class BIOHAZARDRE4_API ABAIBasicMonsterController : public AAIController
 public:
 	ABAIBasicMonsterController();
 
-
 	void RunAI();
 	void StopAI();
 
@@ -42,6 +41,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UBehaviorTree> BTAsset;
 
-	void InitPerceptionSystem(APawn* _InPawn);
+	void InitPerceptionSystem(class UBMonsterStatData* _InData);
 	void SetPerceptionSystem();
 };
