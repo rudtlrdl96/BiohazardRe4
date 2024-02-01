@@ -75,6 +75,8 @@ public:
 	// 특정 크기의 아이템이 들어갈 공간이 있다면 그 위치를 반환한다. 아이템이 들어갈 공간이 없다면 FIntPoint::NoneValue를 리턴
 	FIntPoint FindEmptySlot(const FIntPoint& Scale);
 	// 해당 위치에 아이템의 포인터를 받는다
+	ABInventoryWeapon* FindWeapon(EItemCode ItemCode);
+	// 해당 위치에 아이템의 포인터를 받는다
 	ABInventoryItem* FindItem(const UBInventorySlot* Slot);
 	// 해당 위치에 아이템의 포인터를 받는다
 	ABInventoryItem* FindItem(const FIntPoint& Pos, bool IsSubSlot = false);

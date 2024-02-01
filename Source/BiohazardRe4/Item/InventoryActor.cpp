@@ -245,6 +245,11 @@ ABInventoryWeapon* ABInventoryActor::GetQuickSlot(int SlotNum)
 	return QuickSlot[SlotNum];
 }
 
+ABInventoryWeapon* ABInventoryActor::FindWeapon(EItemCode ItemCode)
+{
+	return Inventory->FindWeapon(ItemCode);
+}
+
 // 인벤토리UI 켜기
 void ABInventoryActor::OpenInventory()
 {
