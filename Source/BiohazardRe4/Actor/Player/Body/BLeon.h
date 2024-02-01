@@ -362,6 +362,10 @@ private:
 	float SocketLocationLerpSpeed = 1.0f;
 	float SocketRotationLerpSpeed = 1.0f;
 
+	float SocketSwapLocationSpeed = 50.0f;
+	float SocketSwapRotationSpeed = 50.0f;
+
+	uint32 bIsLerpSocket : 1 = false;
 	uint32 bIsLerpWeaponChange : 1 = false;
 
 	uint32 bIsWeaponShootTrigger: 1 = false;

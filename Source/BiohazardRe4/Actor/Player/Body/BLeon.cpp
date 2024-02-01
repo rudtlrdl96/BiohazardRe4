@@ -36,7 +36,7 @@ ABLeon::~ABLeon()
 	{
 		CurrentWeapon->Destroy();
 		CurrentWeapon = nullptr;
-}
+	}
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +55,19 @@ void ABLeon::Tick(float _DeltaTime)
 	WeaponSocketUpdate(_DeltaTime);
 
 	LeonFSMState = GetCurrentFSMState();
+
+	if (nullptr == CurrentWeapon)
+	{
+		bIsLerpSocket = false;
+	}
+
+	if (true == bIsLerpSocket)
+	{	
+		FVector WeaponLocation = CurrentWeapon->GetRootComponent()->GetRelativeLocation();
+		FRotator WeaponRotation = CurrentWeapon->GetRootComponent()->GetRelativeRotation();
+		CurrentWeapon->SetActorRelativeLocation(FMath::VInterpConstantTo(WeaponLocation, FVector::ZeroVector, _DeltaTime, SocketSwapLocationSpeed));
+		CurrentWeapon->SetActorRelativeRotation(FMath::RInterpConstantTo(WeaponRotation, FRotator::ZeroRotator, _DeltaTime, SocketSwapRotationSpeed));
+	}
 }
 
 // Called to bind functionality to input
@@ -368,31 +381,43 @@ void ABLeon::AttachLeftHandSocket()
 	}
 
 	FName Socket = NAME_None;
-	CurrentWeapon->AttachToComponent(nullptr, FAttachmentTransformRules::KeepRelativeTransform, Socket);
 
 	switch (UseWeaponCode)
 	{
 	case EItemCode::Handgun_SR09R:
 		Socket = "L_PistolSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Shotgun_W870:
 		Socket = "L_ShotgunSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Rifle_SRM1903:
 		Socket = "L_RifleSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::CombatKnife:
 		Socket = "L_KnifeSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Grenade:
 		Socket = "L_GrenadeSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Flashbang:
 		Socket = "L_FlashbangSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	}
 	
-	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
+	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, Socket);
+	bIsLerpSocket = true;
 }
 
 void ABLeon::AttachRightHandSocket()
@@ -402,32 +427,53 @@ void ABLeon::AttachRightHandSocket()
 		return;
 	}
 
-	CurrentWeapon->AttachToComponent(nullptr, FAttachmentTransformRules::KeepRelativeTransform);
 	FName Socket = NAME_None;
 
 	switch (UseWeaponCode)
 	{
 	case EItemCode::Handgun_SR09R:
 		Socket = "R_PistolSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Shotgun_W870:
 		Socket = "R_ShotgunSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Rifle_SRM1903:
 		Socket = "R_RifleSocket";
+
+		if (true == bIsCrouch)
+		{
+			SocketSwapLocationSpeed = 100.0f;
+			SocketSwapRotationSpeed = 360.0f;
+		}
+		else
+		{
+			SocketSwapRotationSpeed = 180.0f;
+			SocketSwapLocationSpeed = 50.0f;
+		}
 		break;
 	case EItemCode::CombatKnife:
 		Socket = "R_KnifeSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Grenade:
 		Socket = "R_GrenadeSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	case EItemCode::Flashbang:
 		Socket = "R_FlashbangSocket";
+		SocketSwapLocationSpeed = 50.0f;
+		SocketSwapRotationSpeed = 50.0f;
 		break;
 	}
 
-	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
+	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, Socket);
+	bIsLerpSocket = true;
 }
 
 void ABLeon::ReloadStart()
