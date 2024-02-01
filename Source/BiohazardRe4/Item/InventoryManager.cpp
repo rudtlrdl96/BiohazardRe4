@@ -540,7 +540,8 @@ FIntPoint UBInventoryManager::FindEmptySlot(const FIntPoint& Scale)
 
 ABInventoryWeapon* UBInventoryManager::FindWeapon(EItemCode ItemCode)
 {
-	return Cast<ABInventoryWeapon>(ItemMap.Find(ItemCode));
+	ABInventoryWeapon* Weapon = Cast<ABInventoryWeapon>(ItemMap.Find(ItemCode)[0]);
+	return Weapon;
 }
 
 ABInventoryItem* UBInventoryManager::FindItem(const UBInventorySlot* Slot)
