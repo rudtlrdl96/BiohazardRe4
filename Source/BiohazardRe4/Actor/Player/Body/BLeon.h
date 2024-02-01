@@ -89,6 +89,7 @@ private:
 public:
 	// Sets default values for this character's properties
 	ABLeon();
+	~ABLeon();
 
 	// Called every frame
 	virtual void Tick(float _DeltaTime) override;
