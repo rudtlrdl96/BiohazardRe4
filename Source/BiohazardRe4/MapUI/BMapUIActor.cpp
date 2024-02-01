@@ -121,7 +121,7 @@ void ABMapUIActor::BeginPlay()
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
-	SetActorTickEnabled(bMapUIOnOffSwitch);
+	SetActorTickEnabled(true);
 
 	Controller = UGameplayStatics::GetPlayerController(this, 0);
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
@@ -178,7 +178,7 @@ void ABMapUIActor::MapUIOn()
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	PlayerSprite->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
-	SetActorTickEnabled(bMapUIOnOffSwitch);
+	//SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 
 	Widget->SetVisibility(ESlateVisibility::Visible);
@@ -202,7 +202,7 @@ void ABMapUIActor::MapUIOff()
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	PlayerSprite->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
-	SetActorTickEnabled(bMapUIOnOffSwitch);
+	//SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 	SetCameraZoom(45.f);
 
