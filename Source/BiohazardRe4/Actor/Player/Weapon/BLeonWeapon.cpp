@@ -27,12 +27,20 @@ void ABLeonWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ABLeonWeapon::Trigger()
+bool ABLeonWeapon::AbleReload() const
 {
+	return true;
 }
+
 
 void ABLeonWeapon::Reload()
 {
+
+}
+
+bool ABLeonWeapon::AbleAttack() const
+{
+	return true;
 }
 
 void ABLeonWeapon::Attack()
@@ -40,9 +48,10 @@ void ABLeonWeapon::Attack()
 	LOG_MSG(TEXT("Weapon Attack"));
 }
 
-bool ABLeonWeapon::AbleAttack()
+
+uint32 ABLeonWeapon::GetAmmo() const
 {
-	return true;
+	return 1;
 }
 
 FTransform ABLeonWeapon::GetLeftHandSocketTransform() const

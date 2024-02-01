@@ -15,7 +15,10 @@ class BIOHAZARDRE4_API ABLeonGun : public ABLeonWeapon
 	GENERATED_BODY()
 
 public:
-	virtual void Trigger() override;
+	virtual bool AbleAttack() const override;
+	virtual void Attack() override;
+
+	virtual bool AbleReload() const override;
 	virtual void Reload() override;
 
 protected:

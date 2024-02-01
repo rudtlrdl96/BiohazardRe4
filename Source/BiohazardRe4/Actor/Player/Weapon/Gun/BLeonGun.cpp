@@ -3,9 +3,19 @@
 
 #include "Actor/Player/Weapon/Gun/BLeonGun.h"
 
-void ABLeonGun::Trigger()
+bool ABLeonGun::AbleAttack() const
+{
+	return true;
+}
+
+void ABLeonGun::Attack()
 {
 
+}
+
+bool ABLeonGun::AbleReload() const
+{
+	return true;
 }
 
 void ABLeonGun::Reload()
