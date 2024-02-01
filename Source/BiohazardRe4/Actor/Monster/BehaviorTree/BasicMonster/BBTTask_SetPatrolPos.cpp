@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BiohazardRe4.h"
 #include "../../Interface/BMonsterStatInterface.h"
+#include "../../Interface/BMonsterStateInterface.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../../Define/MonsterDefine.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -34,23 +35,30 @@ EBTNodeResult::Type UBBTTask_SetPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 		return EBTNodeResult::Failed;
 	}
 
-	IBMonsterStatInterface* MyInterface = Cast<IBMonsterStatInterface>(MyPawn);
-	if (MyInterface == nullptr)
+	IBMonsterStatInterface* StatInterface = Cast<IBMonsterStatInterface>(MyPawn);
+	if (StatInterface == nullptr)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(BBKEY_PATROLPOS);
-	float PatrolRadius = MyInterface->GetPatrolRadius();
-
-	FNavLocation NextPatrolPos;
-	if (NavSystem->GetRandomPointInNavigableRadius(Origin, PatrolRadius, NextPatrolPos) != false)
+	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(MyPawn);
+	if (StateInterface == nullptr)
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROLPOS, NextPatrolPos.Location);
-		return EBTNodeResult::Succeeded;
+		return EBTNodeResult::Failed;
 	}
 
-	MyCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(BBKEY_HOMEPOS);
+	float PatrolRadius = StatInterface->GetPatrolRadius();
+
+	FNavLocation NextPatrolPos;
+	if (NavSystem->GetRandomReachablePointInRadius(Origin, PatrolRadius, NextPatrolPos) != false)
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROLPOS, NextPatrolPos.Location);
+
+		StateInterface->SetCurrentState(EMonsterState::Walk);
+		return EBTNodeResult::Succeeded;
+	}
 
 	return EBTNodeResult::Failed;
 }

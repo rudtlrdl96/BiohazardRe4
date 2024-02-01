@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../../Define/MonsterDefine.h"
+#include "BiohazardRe4.h"
 
 UBMonsterAnimInstanceBase::UBMonsterAnimInstanceBase()
 {
@@ -45,5 +46,24 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 	if (StateInterface != nullptr)
 	{
 		CurState = StaticCast<uint8>(StateInterface->GetCurrentState());
+	}
+
+	AAIController* AIController = Cast<AAIController>(Owner->GetController());
+	if (AIController != nullptr)
+	{
+		UObject* Target = AIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET);
+		if (Target == nullptr)
+		{
+			return;
+		}
+
+		ACharacter* Character = Cast<ACharacter>(Target);
+		if (Character == nullptr)
+		{
+			LOG_WARNING(TEXT("Character is nullptr"));
+			return;
+		}
+
+		DistanceToPlayer = Owner->GetDistanceTo(Character);
 	}
 }

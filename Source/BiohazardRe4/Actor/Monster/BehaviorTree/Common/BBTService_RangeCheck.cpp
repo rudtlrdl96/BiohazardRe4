@@ -49,7 +49,7 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, MyPawn);
-	
+
 	bool bResult = CurWorld->OverlapMultiByChannel(
 				   OverlapResults,
 				   MyLocation,

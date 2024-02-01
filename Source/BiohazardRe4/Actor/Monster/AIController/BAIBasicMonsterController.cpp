@@ -50,7 +50,7 @@ void ABAIBasicMonsterController::RunAI()
 
 	if (UseBlackboard(BBAsset, BlackboardPtr) != false)
 	{
-		Blackboard->SetValueAsVector(BBKEY_PATROLPOS, GetPawn()->GetActorLocation());
+		Blackboard->SetValueAsVector(BBKEY_HOMEPOS, GetPawn()->GetActorLocation());
 		Blackboard->SetValueAsBool(BBKEY_ISDAMAGED, false);
 		bool RunResult = RunBehaviorTree(BTAsset);
 		ensure(RunResult);

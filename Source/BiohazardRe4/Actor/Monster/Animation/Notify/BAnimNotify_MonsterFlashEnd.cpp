@@ -47,11 +47,9 @@ void UBAnimNotify_MonsterFlashEnd::Notify(USkeletalMeshComponent* MeshComp, UAni
 	FName NextSection(NextSectionStr);
 	UAnimMontage* CurMontage = MyAnimInstance->GetCurrentActiveMontage();
 
-	LOG_WARNING(TEXT("SectionName is Invalid : %s"), *NextSectionStr);
-
 	if (CurMontage->IsValidSectionName(NextSection) == false)
 	{
-		//LOG_WARNING(TEXT("SectionName is Invalid : %s"), *NextSectionStr);
+		LOG_WARNING(TEXT("SectionName is Invalid : %s"), *NextSectionStr);
 		return;
 	}
 
