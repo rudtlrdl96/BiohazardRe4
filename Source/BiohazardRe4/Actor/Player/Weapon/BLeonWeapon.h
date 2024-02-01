@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Engine/StaticMesh.h"
 #include "BiohazardRe4.h"
+#include "..\Body\BLeon.h"
 #include "BLeonWeapon.generated.h"
 
 UCLASS()
@@ -19,6 +20,9 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetPlayer(ABLeon* _PlayerPtr);
+
 protected:
 	// Called when the game starts or when spawned	
 	virtual void BeginPlay() override;
@@ -45,5 +49,7 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
 	USkeletalMeshComponent* WeaponMesh = nullptr;
+
+	ABLeon* Player = nullptr;
 
 };

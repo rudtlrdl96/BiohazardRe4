@@ -30,6 +30,15 @@ ABLeon::ABLeon()
 	CreateFSM();
 }
 
+ABLeon::~ABLeon()
+{
+	if (nullptr != CurrentWeapon)
+	{
+		CurrentWeapon->Destroy();
+		CurrentWeapon = nullptr;
+	}
+}
+
 // Called when the game starts or when spawned
 void ABLeon::BeginPlay()
 {
@@ -929,6 +938,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 		LOG_FATAL(TEXT("Failed Cast Weapon Class"));
 	}
 
+	NewWeapon->SetPlayer(this);
 	
 	return NewWeapon;
 }

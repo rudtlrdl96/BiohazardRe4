@@ -27,6 +27,16 @@ void ABLeonWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ABLeonWeapon::SetPlayer(ABLeon* _PlayerPtr)
+{
+	if (nullptr == _PlayerPtr)
+	{
+		LOG_FATAL(TEXT("nullptr PlayerPtr"));
+	}
+
+	Player = _PlayerPtr;
+}
+
 bool ABLeonWeapon::AbleReload() const
 {
 	return true;
