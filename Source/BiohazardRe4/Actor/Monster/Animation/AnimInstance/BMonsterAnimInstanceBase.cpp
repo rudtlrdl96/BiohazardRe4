@@ -4,7 +4,9 @@
 #include "Actor/Monster/Animation/AnimInstance/BMonsterAnimInstanceBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "../../Define/MonsterDefine.h"
 
 UBMonsterAnimInstanceBase::UBMonsterAnimInstanceBase()
 {
@@ -26,6 +28,11 @@ void UBMonsterAnimInstanceBase::NativeInitializeAnimation()
 void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(_DeltaSeconds);
+
+	if (Owner == nullptr)
+	{
+		return;
+	}
 
 	if (Movement != nullptr)
 	{

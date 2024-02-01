@@ -11,6 +11,7 @@
 #include "BiohazardRe4.h"
 #include "Engine/DamageEvents.h"
 
+
 EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -54,7 +55,6 @@ EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& 
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
 			
-			OwnerComp.GetAIOwner()->GetCharacter()->GetMesh()->GetAnimInstance()->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 			Anim->StopAllMontages(1.0f);
 		}
 	);

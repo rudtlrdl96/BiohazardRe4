@@ -13,10 +13,16 @@ struct FStatStruct
 
 	float MaxHp = 0.0f;
 	float CurrentHp = 0.0f;
+
 	float DetectRadius = 0.0f;
 	float AttackRadius = 0.0f;
+
 	float AttackSweepRadius = 0.0f;
 	float PatrolRadius = 0.0f;
+
+	float RunSpeed = 0.0f;
+	float WalkSpeed = 0.0f;
+	float WalkDistanceThreshold = 0.0f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -32,6 +38,9 @@ public:
 	float GetAttackSweepRadius() { return AttackSweepRadius; };
 	float GetDetectRadius() { return DetectRadius; };
 	float GetPatrolRadius() { return PatrolRadius; };
+	float GetWalkSpeed() { return WalkSPeed; };
+	float GetRunSpeed() { return RunSpeed; };
+	float GetWalkDistanceThreshold() { return WalkDistanceThreshold; };
 
 	void StatInit(const FStatStruct& _StatData);
 
@@ -49,16 +58,24 @@ protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHp = 0.0f;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float DetectRadius = 0.0f;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float AttackRadius = 0.0f;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float AttackSweepRadius = 0.0f;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float PatrolRadius = 0.0f;
 
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float RunSpeed = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float WalkSPeed = 0.0f;
+	
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float WalkDistanceThreshold = 0.0f;
 };

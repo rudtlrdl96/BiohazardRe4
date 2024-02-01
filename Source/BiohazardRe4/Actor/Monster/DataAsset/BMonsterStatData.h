@@ -32,4 +32,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Stat)
 	float PatrolRadius = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Stat)
+	float RunSpeed = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Stat)
+	float WalkSpeed = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Stat)
+	float WalkDistanceThreshold = 0.0f;
 };

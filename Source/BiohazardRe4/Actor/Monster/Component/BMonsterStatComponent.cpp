@@ -19,6 +19,10 @@ void UBMonsterStatComponent::StatInit(const FStatStruct& _StatData)
 	
 	DetectRadius = _StatData.DetectRadius;
 	PatrolRadius = _StatData.PatrolRadius;
+
+	WalkSPeed = _StatData.WalkSpeed;
+	RunSpeed = _StatData.RunSpeed;
+	WalkDistanceThreshold = _StatData.WalkDistanceThreshold;
 }
 
 void UBMonsterStatComponent::DecreaseHp(float _Hp)

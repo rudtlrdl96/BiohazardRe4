@@ -40,6 +40,9 @@ public:
 	virtual float GetAttackSweepRadius() override;
 	virtual float GetDetectRadius() override;
 	virtual float GetPatrolRadius() override;
+	virtual float GetRunSpeed() override;
+	virtual float GetWalkSpeed() override;
+	virtual float GetWalkDistanceThreshold() override;
 
 	virtual void StatInit(const class UBMonsterStatData* _DataAsset);
 public:

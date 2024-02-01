@@ -21,6 +21,9 @@ public:
 	virtual float GetAttackSweepRadius() = 0;
 	virtual float GetDetectRadius() = 0;
 	virtual float GetPatrolRadius() = 0;
+	virtual float GetRunSpeed() = 0;
+	virtual float GetWalkSpeed() = 0;
+	virtual float GetWalkDistanceThreshold() = 0;
 };
 
 

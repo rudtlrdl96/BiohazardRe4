@@ -35,16 +35,14 @@ float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 
 	//행동트리
 	AAIController* AIController = Cast<AAIController>(GetController());
-
-	if (AIController != nullptr)
+	if(AIController == nullptr)
 	{
-		AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
-	}
-	else
-	{
-		LOG_MSG(TEXT("AIController is nullptr"));
+		LOG_WARNING(TEXT("AIController is nullptr"));
 		return 0.0f;
 	}
+
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
 
 	//기존 애니메이션 모두 중지
 	AnimInstance->StopAllMontages(0.1f);
@@ -92,8 +90,6 @@ void ABMonsterBase::AttackStart()
 
 	AnimInstance->Montage_Play(AttackMontage, 1.0f/*공속이 있다면, 바꿔줘야겠지?*/);
 	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
-
-	AnimInstance->RootMotionMode = ERootMotionMode::RootMotionFromEverything;
 }
 
 void ABMonsterBase::Attack()
@@ -229,6 +225,21 @@ float ABMonsterBase::GetPatrolRadius()
 	return Stat->GetPatrolRadius();
 }
 
+float ABMonsterBase::GetRunSpeed()
+{
+	return Stat->GetRunSpeed();
+}
+
+float ABMonsterBase::GetWalkSpeed()
+{
+	return Stat->GetWalkSpeed();
+}
+
+float ABMonsterBase::GetWalkDistanceThreshold()
+{
+	return Stat->GetWalkDistanceThreshold();
+}
+
 void ABMonsterBase::StatInit(const UBMonsterStatData* _DataAsset)
 {
 	FStatStruct StatStruct;
@@ -241,6 +252,10 @@ void ABMonsterBase::StatInit(const UBMonsterStatData* _DataAsset)
 
 	StatStruct.DetectRadius = _DataAsset->DetectRadius;
 	StatStruct.PatrolRadius = _DataAsset->PatrolRadius;
+
+	StatStruct.WalkSpeed = _DataAsset->WalkSpeed;
+	StatStruct.RunSpeed = _DataAsset->RunSpeed;
+	StatStruct.WalkDistanceThreshold = _DataAsset->WalkDistanceThreshold;
 
 	Stat->StatInit(StatStruct);
 }
@@ -265,12 +280,10 @@ void ABMonsterBase::DamagedEnd()
 		return;
 	}
 
-	AnimInstance->StopAllMontages(0.5f);
+	AnimInstance->StopAllMontages(2.0f);
 }
 
 void ABMonsterBase::SetCurrentState(EMonsterState _InState)
 {
 	CurState = _InState;
-
-	LOG_MSG(TEXT("CurState %d"), CurState);
 }

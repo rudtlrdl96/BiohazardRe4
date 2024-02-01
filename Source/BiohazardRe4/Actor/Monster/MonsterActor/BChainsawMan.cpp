@@ -28,6 +28,14 @@ ABChainsawMan::ABChainsawMan()
 		AttackMontage = ChainsawAttackMontageRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ChainsawDamagedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_ChainsawManDamaged.AM_ChainsawManDamaged'"));
+
+	if (ChainsawDamagedMontageRef.Object != nullptr)
+	{
+		DamagedMontage = ChainsawDamagedMontageRef.Object;
+	}
+
+
 	static ConstructorHelpers::FObjectFinder<UBMonsterStatData> ChainsawManStatDataRef(TEXT("/Script/BiohazardRe4.BMonsterStatData'/Game/Blueprints/Actor/Monster/DataAsset/DA_ChainsawManStat.DA_ChainsawManStat'"));
 
 	if (ChainsawManStatDataRef.Object != nullptr)

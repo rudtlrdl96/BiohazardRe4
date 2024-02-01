@@ -75,8 +75,6 @@ void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAISt
 	{
 		if (_Stimulus.WasSuccessfullySensed() == true)
 		{
-			LOG_MSG(TEXT("Player is detected"));
-
 			GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, _Stimulus.WasSuccessfullySensed());
 			GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, UpdatedPawn);
 

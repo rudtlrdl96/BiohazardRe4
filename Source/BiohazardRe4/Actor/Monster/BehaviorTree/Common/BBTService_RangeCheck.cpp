@@ -9,6 +9,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../../Define/MonsterDefine.h"
 
+#include "Engine/DamageEvents.h"
+
 void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -55,7 +57,6 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 				   ECC_EngineTraceChannel2,
 				   FCollisionShape::MakeSphere(AttackRange),
 				   CollisionQueryParam);
-
 
 	FColor DebugColor = FColor::Green;
 	bool bIsFind = false;

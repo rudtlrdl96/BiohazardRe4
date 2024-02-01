@@ -36,7 +36,6 @@ void UBBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		LOG_FATAL(TEXT("MyStatInterface == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
 	}
 
-
 	FVector MyLocation = MyPawn->GetActorLocation();
 	float DetectRange = MyStatInterface->GetDetectRadius();
 

@@ -38,7 +38,7 @@ void UBAnimNotify_MonsterFlashEnd::Notify(USkeletalMeshComponent* MeshComp, UAni
 	FName CurSection = MyAnimInstance->Montage_GetCurrentSection();
 	FString CurSectionStr = CurSection.ToString();
 
-	LOG_MSG(TEXT("%s"), *CurSectionStr);
+	LOG_MSG(TEXT("CurSection : %s"), *CurSectionStr);
 
 	FString CurSectionNumberStr = CurSectionStr.Mid(CurSectionStr.Len() - 1, 1);
 	int CurSectionNumberInt = FCString::Atoi(*CurSectionNumberStr);
@@ -46,10 +46,12 @@ void UBAnimNotify_MonsterFlashEnd::Notify(USkeletalMeshComponent* MeshComp, UAni
 	FString NextSectionStr = FString::Printf(TEXT("FlashEnd%d"), CurSectionNumberInt);
 	FName NextSection(NextSectionStr);
 	UAnimMontage* CurMontage = MyAnimInstance->GetCurrentActiveMontage();
-	
+
+	LOG_WARNING(TEXT("SectionName is Invalid : %s"), *NextSectionStr);
+
 	if (CurMontage->IsValidSectionName(NextSection) == false)
 	{
-		LOG_WARNING(TEXT("SectionName is Invalid"));
+		//LOG_WARNING(TEXT("SectionName is Invalid : %s"), *NextSectionStr);
 		return;
 	}
 

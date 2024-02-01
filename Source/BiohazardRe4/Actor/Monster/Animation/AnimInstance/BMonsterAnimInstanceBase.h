@@ -34,6 +34,9 @@ protected:
 	float GroundSpeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
+	float DistanceToPlayer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	FRotator GroundRotation;
 private:
 	float GroundSpeedThreshold = 0.0f;
