@@ -69,6 +69,12 @@ void ABLeon::AimUpdate(float _DeltaTime)
 		}
 	}
 
+	if (true == bIsGunReload)
+	{
+		bIsAim = false;
+		AimUpdateTime = 0.0f;
+	}
+
 	if (LeonWeaponSwap != ELeonWeaponSwap::None)
 	{
 		bIsAim = false;

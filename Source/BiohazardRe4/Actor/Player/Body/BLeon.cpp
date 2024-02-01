@@ -36,7 +36,7 @@ ABLeon::~ABLeon()
 	{
 		CurrentWeapon->Destroy();
 		CurrentWeapon = nullptr;
-	}
+}
 }
 
 // Called when the game starts or when spawned
@@ -115,6 +115,10 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	if (nullptr == ShootAction)
 	{
 		LOG_FATAL(TEXT("is Not Set ShootAction"));
+	}	
+	if (nullptr == WeaponReloadAction)
+	{
+		LOG_FATAL(TEXT("is Not Set WeaponReloadAction"));
 	}
 
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
@@ -142,6 +146,7 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 	Input->BindAction(WeaponPutAwayAction, ETriggerEvent::Started, this, &ABLeon::ChangeUseWeapon, EItemCode::Empty);
 	Input->BindAction(ShootAction, ETriggerEvent::Started, this, &ABLeon::Shoot);
+	Input->BindAction(WeaponReloadAction, ETriggerEvent::Started, this, &ABLeon::ReloadActive);
 }
 
 
@@ -365,29 +370,29 @@ void ABLeon::AttachLeftHandSocket()
 	FName Socket = NAME_None;
 	CurrentWeapon->AttachToComponent(nullptr, FAttachmentTransformRules::KeepRelativeTransform, Socket);
 
-	//switch (UseWeaponCode)
-	//{
-	//case EItemCode::Handgun_SR09R:
-	//	Socket = "L_PistolSocket";
-	//	break;
-	//case EItemCode::Shotgun_W870:
-	//	Socket = "L_ShotgunSocket";
-	//	break;
-	//case EItemCode::Rifle_SRM1903:
-	//	Socket = "L_RifleSocket";
-	//	break;
-	//case EItemCode::CombatKnife:
-	//	Socket = "L_KnifeSocket";
-	//	break;
-	//case EItemCode::Grenade:
-	//	Socket = "L_GrenadeSocket";
-	//	break;
-	//case EItemCode::Flashbang:
-	//	Socket = "L_FlashbangSocket";
-	//	break;
-	//}
-	//
-	//CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
+	switch (UseWeaponCode)
+	{
+	case EItemCode::Handgun_SR09R:
+		Socket = "L_PistolSocket";
+		break;
+	case EItemCode::Shotgun_W870:
+		Socket = "L_ShotgunSocket";
+		break;
+	case EItemCode::Rifle_SRM1903:
+		Socket = "L_RifleSocket";
+		break;
+	case EItemCode::CombatKnife:
+		Socket = "L_KnifeSocket";
+		break;
+	case EItemCode::Grenade:
+		Socket = "L_GrenadeSocket";
+		break;
+	case EItemCode::Flashbang:
+		Socket = "L_FlashbangSocket";
+		break;
+	}
+	
+	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
 }
 
 void ABLeon::AttachRightHandSocket()
@@ -425,8 +430,30 @@ void ABLeon::AttachRightHandSocket()
 	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
 }
 
+void ABLeon::ReloadStart()
+{
+
+}
+
+void ABLeon::Reload()
+{
+	if (nullptr == CurrentWeapon)
+	{
+		return;
+	}
+
+	CurrentWeapon->Reload();
+}
+
+void ABLeon::ReloadEnd()
+{
+	bIsGunReload = false;
+}
+
 void ABLeon::ChangeUseWeapon(EItemCode _WeaponCode)
 {
+	bIsGunReload = false;
+
 	switch (LeonWeaponSwap)
 	{
 	case ELeonWeaponSwap::PutAway:
@@ -482,6 +509,11 @@ void ABLeon::TryInteraction()
 
 bool ABLeon::AbleAim() const
 {
+	if (true == bIsGunReload)
+	{
+		return false;
+	}
+
 	if (LeonWeaponSwap != ELeonWeaponSwap::None)
 	{
 		return false;
@@ -653,7 +685,12 @@ bool ABLeon::AbleShoot() const
 		return false;
 	}
 
-	return true;
+	if (nullptr == CurrentWeapon)
+	{
+		return false;
+	}
+
+	return CurrentWeapon->AbleAttack();
 }
 
 void ABLeon::Shoot()
@@ -674,6 +711,55 @@ void ABLeon::Aim(float _DeltaTime)
 
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), CameraRotator, _DeltaTime, 360.0f));
 }
+
+bool ABLeon::AbleReload() const
+{
+	if (nullptr == CurrentWeapon)
+	{
+		return false;
+	}
+
+	if (false == CurrentWeapon->AbleReload())
+	{
+		return false;
+	}
+
+	if (LeonWeaponSwap != ELeonWeaponSwap::None)
+	{
+		return false;
+	}
+
+	if (true == bIsGunRecoil)
+	{
+		return false;
+	}
+
+	ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
+
+	switch (WeaponAnim)
+	{
+	// Gun 
+	case ELeonWeaponAnim::Pistol:
+	case ELeonWeaponAnim::Shotgun:
+	case ELeonWeaponAnim::Rifle:
+		return true;
+	default:
+		return false;
+	}
+
+	return true;
+}
+
+void ABLeon::ReloadActive()
+{
+	if (false == AbleReload())
+	{
+		return;
+	}
+
+	bIsGunReload = true;
+}
+
 void ABLeon::ActiveJog()
 {
 	bIsJogTrigger = true;
@@ -704,6 +790,11 @@ void ABLeon::TryCrouch()
 		return;
 	}
 
+	if (true == bIsGunReload)
+	{
+		return;
+	}
+
 	if (FSMState == ELeonState::Jog)
 	{
 		bIsCrouch = false;
@@ -724,7 +815,7 @@ void ABLeon::CreateSprintArm()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->PrimaryComponentTick.bCanEverTick = true;
 	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->TargetArmLength = 300.0f;
+	SpringArm->TargetArmLength = 150.0f;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = true;
 	SpringArm->bInheritYaw = true;
@@ -772,8 +863,18 @@ void ABLeon::CreateFSM()
 	FsmComp->CreateState(TO_KEY(ELeonState::Aim), AimState);
 }
 
+bool ABLeon::AbleWeaponSwap() const
+{
+	return true;
+}
+
 void ABLeon::UseQuickSlot(const uint32 _Index)
 {
+	if (false == AbleWeaponSwap())
+	{
+		return;
+	}
+
 	if (_Index > 7)
 	{
 		LOG_ERROR(TEXT("Wrong QuickSlot Index"));

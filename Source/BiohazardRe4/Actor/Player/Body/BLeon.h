@@ -9,6 +9,7 @@
 #include "BInterface_WeaponPutAway.h"
 #include "BInterface_WeaponShoot.h"
 #include "BInterface_WeaponHandSocketSwap.h"
+#include "BInterface_WeaponReload.h"
 #include "BLeon.generated.h"
 
 struct FInputActionInstance;
@@ -78,7 +79,8 @@ enum class ELeonDirection : uint8
 };
 
 UCLASS()
-class BIOHAZARDRE4_API ABLeon : public ACharacter, public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut, public IBInterface_WeaponShoot, public IBInterface_WeaponHandSocketSwap
+class BIOHAZARDRE4_API ABLeon : public ACharacter, 
+	public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut, public IBInterface_WeaponShoot, public IBInterface_WeaponHandSocketSwap, public IBInterface_WeaponReload
 {
 	GENERATED_BODY()
 
@@ -212,6 +214,13 @@ public:
 		return bIsGunRecoil;
 	}
 
+	// 
+	UFUNCTION(BlueprintCallable)
+	inline bool IsGunReload() const
+	{
+		return bIsGunReload;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	FTransform GetWeaponLeftSocketTransform() const;
 
@@ -226,6 +235,11 @@ public:
 
 	virtual void AttachLeftHandSocket() override;
 	virtual void AttachRightHandSocket() override;
+
+	virtual void ReloadStart() override;
+	virtual void Reload() override;
+	virtual void ReloadEnd() override;
+	virtual bool AbleReload() const override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -284,7 +298,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputMappingContext* DefaultMappingContext = nullptr;
-		
+
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* MoveAction = nullptr;
 
@@ -311,6 +325,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* WeaponPutAwayAction = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UInputAction* WeaponReloadAction = nullptr;
 
 	USpringArmComponent* SpringArm = nullptr;
 	UCameraComponent* PlayerCamera = nullptr;
@@ -349,6 +366,7 @@ private:
 
 	uint32 bIsWeaponShootTrigger: 1 = false;
 	uint32 bIsGunRecoil: 1 = false;
+	uint32 bIsGunReload : 1 = false;
 
 	void PlayMove(const FInputActionInstance& _MoveAction);
 	void PlayIdle(const FInputActionInstance& _MoveAction);
@@ -367,9 +385,13 @@ private:
 	void JogLookAt(float _DeltaTime);
 	
 	bool AbleShoot() const;
-
 	void Shoot();
+
 	void Aim(float _DeltaTime);
+	void ReloadActive();
+
+	bool AbleWeaponSwap() const;
+	void UseQuickSlot(const uint32 _Index);
 
 	void ActiveJog();
 	void DisableJog();
@@ -381,8 +403,6 @@ private:
 
 	void CreateSprintArm();
 	void CreateFSM();
-
-	void UseQuickSlot(const uint32 _Index);
 
 	ABLeonWeapon* CreateWeapon(EItemCode _WeaponCode);
 	void DeleteCurrentWeapon();
