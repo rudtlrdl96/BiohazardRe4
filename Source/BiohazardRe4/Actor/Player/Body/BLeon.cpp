@@ -17,8 +17,11 @@
 #include "../Weapon/Gun/BLeonShotgun.h"
 #include "../Weapon/Knife/BLeonKnife.h"
 
-const FVector ABLeon::StandSocketOffset = FVector(0.0, 50.0, 80.0);
-const FVector ABLeon::CrouchSocketOffset = FVector(0.0, 50.0, 10.0);
+const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
+const FVector ABLeon::AimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
+
+const float ABLeon::StandSpringArmLength = 100.0f;
+const float ABLeon::AimSpringArmLength = 50.0f;
 
 // Sets default values
 ABLeon::ABLeon()
@@ -604,13 +607,15 @@ void ABLeon::StopLook()
 
 void ABLeon::SpringArmUpdate(float _DeltaTime)
 {
-	if (true == bIsCrouch)
+	if (true == bIsAim || true == bIsGunRecoil)
 	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, CrouchSocketOffset, _DeltaTime, 200.0f);
+		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, AimSocketOffset, _DeltaTime, 400.0f);
+		SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, AimSpringArmLength, _DeltaTime, 400.0f);
 	}
 	else
 	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 200.0f);
+		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 400.0f);
+		SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, StandSpringArmLength, _DeltaTime, 400.0f);
 	}
 }
 
@@ -859,9 +864,9 @@ void ABLeon::TryCrouch()
 void ABLeon::CreateSprintArm()
 {
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+	SpringArm->SetupAttachment(GetMesh(), TEXT("SpringArmSocket"));
 	SpringArm->PrimaryComponentTick.bCanEverTick = true;
-	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->TargetArmLength = 150.0f;
+	SpringArm->TargetArmLength = StandSpringArmLength;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = true;
 	SpringArm->bInheritYaw = true;

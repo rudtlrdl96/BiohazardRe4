@@ -86,7 +86,10 @@ class BIOHAZARDRE4_API ABLeon : public ACharacter,
 
 private:
 	static const FVector StandSocketOffset;
-	static const FVector CrouchSocketOffset;
+	static const FVector AimSocketOffset;
+
+	static const float StandSpringArmLength;
+	static const float AimSpringArmLength;
 
 public:
 	// Sets default values for this character's properties
@@ -329,7 +332,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* WeaponReloadAction = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	USpringArmComponent* SpringArm = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* PlayerCamera = nullptr;
 
 	FVector MoveDir = FVector::ZeroVector;
