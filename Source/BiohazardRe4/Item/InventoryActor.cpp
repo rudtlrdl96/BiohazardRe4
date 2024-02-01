@@ -255,8 +255,10 @@ void ABInventoryActor::OpenInventory()
 {
 	Timeline.SetNewTime(0);		// SubCase의 위치를 조정
 	CaseMesh->PlayAnimation(OpenAnim, false);	// 애니메이션 재생
+	Widget->WidgetOn();
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);	// 매핑컨텍스트 추가해서 조작 할 수 있게 만듬
 	Controller->SetViewTarget(this);	// 뷰타겟을 이 엑터로 지정
+	Controller->SetShowMouseCursor(true);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
@@ -368,7 +370,9 @@ void ABInventoryActor::CloseInventory()
 	// 인벤토리를 닫는다
 	// Subslot에 있는 아이템은 버림
 	Inventory->RemoveAllItemInSubSlot();
+	Widget->WidgetOff();
 	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
+	Controller->SetShowMouseCursor(false);
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
 	HUD->QuickSlotUpdate(QuickSlot);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));

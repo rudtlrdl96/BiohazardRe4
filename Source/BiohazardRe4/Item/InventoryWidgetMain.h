@@ -43,6 +43,11 @@ public:
 	void CloseCheck();
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOn();
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOff();
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void DropWidgetOn();
 	UFUNCTION(BlueprintImplementableEvent)
 	void DropWidgetOff();
