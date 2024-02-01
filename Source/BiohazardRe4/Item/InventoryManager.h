@@ -97,7 +97,7 @@ public:
 	// 해당 아이템에 월드 위치값을 받아옵니다
 	FVector GetItemWorldLocation(ABInventoryItem* Item);
 	// 해당 코드의 아이템이 인벤토리에 몇개 있는지 받아옵니다
-	int GetItemNum(EItemCode Code);
+	int GetItemCount(EItemCode Code);
 	// 서브 슬롯에 있는 모든 아이템을 버립니다
 	void RemoveAllItemInSubSlot();
 

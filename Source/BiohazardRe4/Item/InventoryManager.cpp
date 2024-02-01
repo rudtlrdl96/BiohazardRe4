@@ -739,7 +739,7 @@ FVector UBInventoryManager::GetItemWorldLocation(ABInventoryItem* Item)
 	return MainSlot[Pos.Y * CaseSize.X + Pos.X]->GetComponentLocation();
 }
 
-int UBInventoryManager::GetItemNum(EItemCode Code)
+int UBInventoryManager::GetItemCount(EItemCode Code)
 {
 	int Num = 0;
 	TArray<ABInventoryItem*> Items;

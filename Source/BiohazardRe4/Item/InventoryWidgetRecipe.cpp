@@ -30,14 +30,14 @@ void UBInventoryWidgetRecipe::SetRecipe(const FBCraftRecipe& Recipe)
 	// 이름
 	ItemName->SetText(FText::FromName(Recipe.ResultName));
 	// 개수
-	ItemNum->SetText(FText::FromString(FString::FromInt(UBInventoryManager::Instance->GetItemNum(Recipe.ResultItem))));
+	ItemNum->SetText(FText::FromString(FString::FromInt(UBInventoryManager::Instance->GetItemCount(Recipe.ResultItem))));
 	ItemANum->SetText(FText::FromString(FString::FromInt(Recipe.ANum)));
 	ItemBNum->SetText(FText::FromString(FString::FromInt(Recipe.BNum)));
 
 	bool bFlag = false;
 	if (Recipe.AItem == Recipe.BItem)
 	{
-		int ItemCount = UBInventoryManager::Instance->GetItemNum(Recipe.AItem);
+		int ItemCount = UBInventoryManager::Instance->GetItemCount(Recipe.AItem);
 		// 조합 아이템 2개가 같은 종류인 경우 (녹 + 녹) 허브에 한정된 케이스
 		if (Recipe.ANum <= ItemCount)
 		{
@@ -64,7 +64,7 @@ void UBInventoryWidgetRecipe::SetRecipe(const FBCraftRecipe& Recipe)
 	}
 	else
 	{
-		if (Recipe.ANum <= UBInventoryManager::Instance->GetItemNum(Recipe.AItem))
+		if (Recipe.ANum <= UBInventoryManager::Instance->GetItemCount(Recipe.AItem))
 		{
 			// A요구량을 넘김
 			ItemANum->SetColorAndOpacity(ActiveTextColor);
@@ -75,7 +75,7 @@ void UBInventoryWidgetRecipe::SetRecipe(const FBCraftRecipe& Recipe)
 			bFlag = true;
 		}
 
-		if (Recipe.BNum <= UBInventoryManager::Instance->GetItemNum(Recipe.BItem))
+		if (Recipe.BNum <= UBInventoryManager::Instance->GetItemCount(Recipe.BItem))
 		{
 			// B 요구량을 넘김
 			ItemBNum->SetColorAndOpacity(ActiveTextColor);

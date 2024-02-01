@@ -36,7 +36,19 @@ public:
 	static ABInventoryActor* Instance;
 	
 	// 아이템을 추가한다
+	UFUNCTION(BlueprintCallable)
 	void AddItem(EItemCode ItemCode, int Num = 1);
+
+	// 해당 코드의 아이템의 개수를 찾는다
+	UFUNCTION(BlueprintCallable)
+	int GetItemCount(EItemCode ItemCode);
+
+	// 해당 코드의 아이템을 Num개 만큼 제거한다
+	void RemoveItem(EItemCode ItemCode, int Num = 1);
+
+	// 해당 퀵슬롯의 무기를 찾는다
+	UFUNCTION(BlueprintCallable)
+	ABInventoryWeapon* GetQuickSlot(int SlotNum);
 
 	// * 인벤토리를 연다, UI를 킬때 이걸 실행해주세요
 	UFUNCTION(BlueprintCallable)

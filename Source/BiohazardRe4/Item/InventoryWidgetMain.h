@@ -35,7 +35,7 @@ class BIOHAZARDRE4_API UBInventoryWidgetMain : public UUserWidget
 public:
 
 	void SetItemData(const FBItemData& Data);
-	inline void ClearItemData();
+	void ClearItemData();
 
 	UFUNCTION()
 	void DropItem();

@@ -21,7 +21,7 @@ void UBInventoryWidgetMain::SetItemData(const FBItemData& Data)
 	ItemInformation = Data.ItemInformation;
 }
 
-inline void UBInventoryWidgetMain::ClearItemData()
+void UBInventoryWidgetMain::ClearItemData()
 {
 	ItemName = "";
 	ItemInformation = "";

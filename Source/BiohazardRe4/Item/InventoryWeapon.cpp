@@ -9,11 +9,11 @@ int32 ABInventoryWeapon::GetStoredAmmo() const
 	switch (GetItemCode())
 	{
 	case EItemCode::Handgun_SR09R:
-		return ABInventoryActor::Instance->Inventory->GetItemNum(EItemCode::HandgunAmmo);
+		return ABInventoryActor::Instance->Inventory->GetItemCount(EItemCode::HandgunAmmo);
 	case EItemCode::Shotgun_W870:
-		return ABInventoryActor::Instance->Inventory->GetItemNum(EItemCode::ShotgunShells);
+		return ABInventoryActor::Instance->Inventory->GetItemCount(EItemCode::ShotgunShells);
 	case EItemCode::Rifle_SRM1903:
-		return ABInventoryActor::Instance->Inventory->GetItemNum(EItemCode::RifleAmmo);
+		return ABInventoryActor::Instance->Inventory->GetItemCount(EItemCode::RifleAmmo);
 	default:
 		return -1;
 	}

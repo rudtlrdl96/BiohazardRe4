@@ -230,6 +230,21 @@ void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 	Inventory->AddItem(ItemCode, Num);
 }
 
+int ABInventoryActor::GetItemCount(EItemCode ItemCode)
+{
+	return Inventory->GetItemCount(ItemCode);
+}
+
+void ABInventoryActor::RemoveItem(EItemCode ItemCode, int Num)
+{
+	Inventory->RemoveItem(ItemCode, Num);
+}
+
+ABInventoryWeapon* ABInventoryActor::GetQuickSlot(int SlotNum)
+{
+	return QuickSlot[SlotNum];
+}
+
 // 인벤토리UI 켜기
 void ABInventoryActor::OpenInventory()
 {
@@ -308,13 +323,13 @@ void ABInventoryActor::WeaponEquip()
 	switch (Weapon->GetItemCode())
 	{
 	case EItemCode::Handgun_SR09R:
-		StoredAmmo = Inventory->GetItemNum(EItemCode::HandgunAmmo);
+		StoredAmmo = Inventory->GetItemCount(EItemCode::HandgunAmmo);
 		break;
 	case EItemCode::Shotgun_W870:
-		StoredAmmo = Inventory->GetItemNum(EItemCode::ShotgunShells);
+		StoredAmmo = Inventory->GetItemCount(EItemCode::ShotgunShells);
 		break;
 	case EItemCode::Rifle_SRM1903:
-		StoredAmmo = Inventory->GetItemNum(EItemCode::RifleAmmo);
+		StoredAmmo = Inventory->GetItemCount(EItemCode::RifleAmmo);
 		break;
 	}
 	HUD->SetStoredAmmo(StoredAmmo);
@@ -670,6 +685,7 @@ void ABInventoryActor::InvestigateUpdate(float DeltaTime)
 
 void ABInventoryActor::InvestigateExit()
 {
+	// 버그생김 조합한 허브에서 오류생겼음
 	SelectItem->Mesh->SetWorldLocation(StartLocation);
 	SelectItem->Mesh->SetWorldRotation(StartRot);
 	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = Inventory->ItemMap.CreateIterator();
