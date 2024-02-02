@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Item/ItemData.h"
 #include "Merchant.generated.h"
 
 UENUM(BlueprintType)
@@ -12,6 +13,32 @@ enum class EMerchant : uint8
 	Idle			UMETA(DisplayName = "Idle"),
 	Open			UMETA(DisplayName = "Open"),
 	GiveHand		UMETA(DisplayName = "GiveHand"),
+};
+
+UENUM(BlueprintType)
+enum class EStoreState : uint8
+{
+	Title		UMETA(DisplayName = "Title"),
+	Buy			UMETA(DisplayName = "Buy"),
+	Sell		UMETA(DisplayName = "Sell"),
+};
+
+USTRUCT(BlueprintType)
+struct FSaleItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EItemCode ItemCode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Price;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Count;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int CurCount;
 };
 
 UCLASS()
@@ -30,4 +57,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (TitleProperty = "ItemCode"), Category = "Item")
+	TArray<FSaleItem> SaleItems;
+
 };

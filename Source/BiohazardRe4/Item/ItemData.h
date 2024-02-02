@@ -44,7 +44,7 @@ struct FBItemData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	FBItemData()
-		: ItemName(""), ItemSize(1, 1), Scale(1, 1, 1)
+		: ItemName(""), ItemSize(1, 1), Scale(1, 1, 1), StoreScale(1, 1, 1)
 	{
 
 	}
@@ -84,4 +84,16 @@ struct FBItemData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
 	int32 MagazineCapacity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
+	class UPaperSprite* Icon;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
+	FVector StoreLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
+	FRotator StoreRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
+	FVector StoreScale;
 };

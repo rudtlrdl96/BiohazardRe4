@@ -14,6 +14,11 @@ ABMerchant::ABMerchant()
 void ABMerchant::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (FSaleItem& Item : SaleItems)
+	{
+		Item.CurCount = Item.Count;
+	}
 }
 
 // Called every frame
