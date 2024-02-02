@@ -118,6 +118,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* _PlayerInputComponent) override;
 
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	// 플레이어가 사용하는 무기를 교체합니다
 	void ChangeUseWeapon(EItemCode _WeaponCode);
 
@@ -418,6 +420,9 @@ private:
 	uint32 bAbleComboInput : 1 = false;
 	uint32 bAbleNextCombo : 1 = false;
 	uint32 bIsComboEnd : 1 = false;
+
+	double CurrentHP = 1000.0;
+	double MaxHP = 1000.0;
 
 	void PlayMove(const FInputActionInstance& _MoveAction);
 	void PlayIdle(const FInputActionInstance& _MoveAction);

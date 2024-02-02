@@ -157,7 +157,10 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	Input->BindAction(WeaponReloadAction, ETriggerEvent::Started, this, &ABLeon::ReloadActive);
 }
 
-
+float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	return 0.0f;
+}
 
 FVector ABLeon::GetCameraDirection() const
 {
