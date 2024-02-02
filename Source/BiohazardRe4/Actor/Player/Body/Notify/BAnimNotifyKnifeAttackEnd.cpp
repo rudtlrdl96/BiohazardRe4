@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/Body/BAnimNotifyWeaponReloadStart.h"
+#include "Actor/Player/Body/Notify/BAnimNotifyKnifeAttackEnd.h"
 #include "BiohazardRe4.h"
-#include "BInterface_WeaponReload.h"
+#include "..\Interface\BInterface_KnifeAttack.h"
 #include "GameFramework/Character.h"
 
-void UBAnimNotifyWeaponReloadStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UBAnimNotifyKnifeAttackEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
@@ -18,13 +18,13 @@ void UBAnimNotifyWeaponReloadStart::Notify(USkeletalMeshComponent* MeshComp, UAn
 			return;
 		}
 
-		IBInterface_WeaponReload* Interface = Cast<IBInterface_WeaponReload>(Owner);
+		IBInterface_KnifeAttack* Interface = Cast<IBInterface_KnifeAttack>(Owner);
 
 		if (Interface == nullptr)
 		{
 			LOG_FATAL(TEXT("Interface Casting Fail"));
 		}
 
-		Interface->ReloadStart();
+		Interface->KnifeAttackEnd();
 	}
 }

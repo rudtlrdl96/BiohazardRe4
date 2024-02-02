@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/Body/BAnimNotifyWeaponPutOutStart.h"
+#include "Actor/Player/Body/Notify/BAnimNotifyKnifeComboEnd.h"
 #include "BiohazardRe4.h"
-#include "BInterface_WeaponPutOut.h"
+#include "..\Interface\BInterface_KnifeAttack.h"
 #include "GameFramework/Character.h"
 
-void UBAnimNotifyWeaponPutOutStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UBAnimNotifyKnifeComboEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
@@ -18,13 +18,13 @@ void UBAnimNotifyWeaponPutOutStart::Notify(USkeletalMeshComponent* MeshComp, UAn
 			return;
 		}
 
-		IBInterface_WeaponPutOut* Interface = Cast<IBInterface_WeaponPutOut>(Owner);
+		IBInterface_KnifeAttack* Interface = Cast<IBInterface_KnifeAttack>(Owner);
 
 		if (Interface == nullptr)
 		{
 			LOG_FATAL(TEXT("Interface Casting Fail"));
 		}
 
-		Interface->WeaponPutOutStart();
+		Interface->KnifeComboEnd();
 	}
 }

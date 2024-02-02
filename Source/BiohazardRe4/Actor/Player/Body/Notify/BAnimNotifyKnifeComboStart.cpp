@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/Body/BAnimNotifyShootStart.h"
+#include "Actor/Player/Body/Notify/BAnimNotifyKnifeComboStart.h"
 #include "BiohazardRe4.h"
-#include "BInterface_WeaponShoot.h"
+#include "..\Interface\BInterface_KnifeAttack.h"
 #include "GameFramework/Character.h"
 
-void UBAnimNotifyShootStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UBAnimNotifyKnifeComboStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
@@ -18,13 +18,13 @@ void UBAnimNotifyShootStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 			return;
 		}
 
-		IBInterface_WeaponShoot* Interface = Cast<IBInterface_WeaponShoot>(Owner);
+		IBInterface_KnifeAttack* Interface = Cast<IBInterface_KnifeAttack>(Owner);
 
 		if (Interface == nullptr)
 		{
 			LOG_FATAL(TEXT("Interface Casting Fail"));
 		}
 
-		Interface->WeaponShootStart();
+		Interface->KnifeComboStart();
 	}
 }

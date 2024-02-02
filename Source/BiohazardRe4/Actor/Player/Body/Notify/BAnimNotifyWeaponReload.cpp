@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/Body/BAnimNotifyWeaponReload.h"
+#include "Actor/Player/Body/Notify/BAnimNotifyWeaponReload.h"
 #include "BiohazardRe4.h"
-#include "BInterface_WeaponReload.h"
+#include "..\Interface\BInterface_WeaponReload.h"
 #include "GameFramework/Character.h"
 
 void UBAnimNotifyWeaponReload::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)

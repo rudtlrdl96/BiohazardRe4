@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Player/Body/BAnimNotifyRightHandSocketAttach.h"
+#include "Actor/Player/Body/Notify/BAnimNotifyWeaponPutOutEnd.h"
 #include "BiohazardRe4.h"
-#include "BInterface_WeaponHandSocketSwap.h"
+#include "..\Interface\BInterface_WeaponPutOut.h"
 #include "GameFramework/Character.h"
 
-void UBAnimNotifyRightHandSocketAttach::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UBAnimNotifyWeaponPutOutEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
@@ -18,13 +18,13 @@ void UBAnimNotifyRightHandSocketAttach::Notify(USkeletalMeshComponent* MeshComp,
 			return;
 		}
 
-		IBInterface_WeaponHandSocketSwap* Interface = Cast<IBInterface_WeaponHandSocketSwap>(Owner);
+		IBInterface_WeaponPutOut* Interface = Cast<IBInterface_WeaponPutOut>(Owner);
 
 		if (Interface == nullptr)
 		{
 			LOG_FATAL(TEXT("Interface Casting Fail"));
 		}
 
-		Interface->AttachRightHandSocket();
+		Interface->WeaponPutOutEnd();
 	}
 }

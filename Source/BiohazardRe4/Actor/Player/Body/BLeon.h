@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Item/ItemData.h"
-#include "BInterface_WeaponPutOut.h"
-#include "BInterface_WeaponPutAway.h"
-#include "BInterface_WeaponShoot.h"
-#include "BInterface_WeaponHandSocketSwap.h"
-#include "BInterface_WeaponReload.h"
-#include "BInterface_KnifeAttack.h"
+#include "Interface\BInterface_WeaponPutOut.h"
+#include "Interface\BInterface_WeaponPutAway.h"
+#include "Interface\BInterface_WeaponShoot.h"
+#include "Interface\BInterface_WeaponHandSocketSwap.h"
+#include "Interface\BInterface_WeaponReload.h"
+#include "Interface\BInterface_KnifeAttack.h"
 #include "BLeon.generated.h"
 
 struct FInputActionInstance;
@@ -32,7 +32,8 @@ enum class ELeonState : uint8
 	Jog				UMETA(DisplayName = "Jog"),
 	Aim				UMETA(DisplayName = "Aim"),
 	KnifeAttack		UMETA(DisplayName = "KnifeAttack"),
-	KickAttack		UMETA(DisplayName = "KickAttack")
+	KickAttack		UMETA(DisplayName = "KickAttack"),
+	Damage			UMETA(DisplayName = "Damage")
 };
 
 UENUM(BlueprintType)
@@ -89,6 +90,18 @@ enum class ELeonDirection : uint8
 	BL  UMETA(DisplayName = "BL"),
 	L   UMETA(DisplayName = "L"),
 	FL  UMETA(DisplayName = "FL"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonDamageDirection : uint8
+{
+	LT	UMETA(DisplayName = "LT"),
+	LU  UMETA(DisplayName = "LU"),
+	RT  UMETA(DisplayName = "RT"),
+	RU  UMETA(DisplayName = "RU"),
+	FT  UMETA(DisplayName = "FU"),
+	FU  UMETA(DisplayName = "FU"),
+	B   UMETA(DisplayName = "B"),
 };
 
 UCLASS()
@@ -489,4 +502,8 @@ private:
 	void KnifeAttackEnter();
 	void KnifeAttackUpdate(float _DeltaTime);
 	void KnifeAttackExit();
+
+	void DamageEnter();
+	void DamageUpdate(float _DeltaTime);
+	void DamageExit();
 };
