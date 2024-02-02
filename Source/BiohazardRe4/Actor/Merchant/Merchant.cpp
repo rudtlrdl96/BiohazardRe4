@@ -2,7 +2,7 @@
 
 
 #include "Actor/Merchant/Merchant.h"
-
+#include "Item/InventoryActor.h"
 // Sets default values
 ABMerchant::ABMerchant()
 {
@@ -26,5 +26,10 @@ void ABMerchant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+ABInventoryActor* ABMerchant::GetInventory() const
+{
+	return ABInventoryActor::Instance;
 }
 

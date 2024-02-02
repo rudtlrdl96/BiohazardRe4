@@ -209,6 +209,9 @@ public:
 	class ABInventoryItem* SelectItem;		// 현재 선택한 슬롯
 	uint8 bIsDragMove : 1;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Money;
+
 	UFUNCTION(BlueprintCallable)
 	void DebugAdd(EItemCode Code, int Num)
 	{

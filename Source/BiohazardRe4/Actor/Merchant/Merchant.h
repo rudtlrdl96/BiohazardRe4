@@ -58,7 +58,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	class ABInventoryActor* GetInventory() const;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (TitleProperty = "ItemCode"), Category = "Item")
 	TArray<FSaleItem> SaleItems;
-
 };
