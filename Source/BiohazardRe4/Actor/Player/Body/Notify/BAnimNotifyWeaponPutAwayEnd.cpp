@@ -4,7 +4,7 @@
 #include "Actor/Player/Body/Notify/BAnimNotifyWeaponPutAwayEnd.h"
 
 #include "BiohazardRe4.h"
-#include "..\Interface\BInterface_WeaponPutAway.h"
+#include "..\Interface\BIWeaponPutAway.h"
 #include "GameFramework/Character.h"
 
 void UBAnimNotifyWeaponPutAwayEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -19,7 +19,7 @@ void UBAnimNotifyWeaponPutAwayEnd::Notify(USkeletalMeshComponent* MeshComp, UAni
 			return;
 		}
 
-		IBInterface_WeaponPutAway* Interface = Cast<IBInterface_WeaponPutAway>(Owner);
+		IBIWeaponPutAway* Interface = Cast<IBIWeaponPutAway>(Owner);
 
 		if (Interface == nullptr)
 		{

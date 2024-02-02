@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "BInterface_WeaponShoot.generated.h"
+#include "BIWeaponShoot.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UBInterface_WeaponShoot : public UInterface
+class UBIWeaponShoot : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class UBInterface_WeaponShoot : public UInterface
 /**
  * 
  */
-class BIOHAZARDRE4_API IBInterface_WeaponShoot
+class BIOHAZARDRE4_API IBIWeaponShoot
 {
 	GENERATED_BODY()
 

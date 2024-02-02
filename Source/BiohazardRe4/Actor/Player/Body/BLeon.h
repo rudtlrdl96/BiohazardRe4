@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Item/ItemData.h"
-#include "Interface\BInterface_WeaponPutOut.h"
-#include "Interface\BInterface_WeaponPutAway.h"
-#include "Interface\BInterface_WeaponShoot.h"
-#include "Interface\BInterface_WeaponHandSocketSwap.h"
-#include "Interface\BInterface_WeaponReload.h"
-#include "Interface\BInterface_KnifeAttack.h"
+#include "Interface\BIWeaponPutOut.h"
+#include "Interface\BIWeaponPutAway.h"
+#include "Interface\BIWeaponShoot.h"
+#include "Interface\BIWeaponHandSocketSwap.h"
+#include "Interface\BIWeaponReload.h"
+#include "Interface\BIKnifeAttack.h"
+#include "Interface\BIDamage.h"
 #include "BLeon.generated.h"
 
 struct FInputActionInstance;
@@ -106,8 +107,7 @@ enum class ELeonDamageDirection : uint8
 
 UCLASS()
 class BIOHAZARDRE4_API ABLeon : public ACharacter, 
-	public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut, public IBInterface_WeaponShoot, 
-	public IBInterface_WeaponHandSocketSwap, public IBInterface_WeaponReload, public IBInterface_KnifeAttack
+	public IBIWeaponPutAway, public IBIWeaponPutOut, public IBIWeaponShoot, public IBIWeaponHandSocketSwap, public IBIWeaponReload, public IBIKnifeAttack, public IBIDamage
 {
 	GENERATED_BODY()
 

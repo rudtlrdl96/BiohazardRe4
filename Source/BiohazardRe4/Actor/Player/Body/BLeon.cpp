@@ -159,7 +159,7 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return 0.0f;
+	return Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 }
 
 FVector ABLeon::GetCameraDirection() const

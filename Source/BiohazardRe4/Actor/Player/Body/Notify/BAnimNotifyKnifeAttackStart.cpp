@@ -3,7 +3,7 @@
 
 #include "Actor/Player/Body/Notify/BAnimNotifyKnifeAttackStart.h"
 #include "BiohazardRe4.h"
-#include "..\Interface\BInterface_KnifeAttack.h"
+#include "..\Interface\BIKnifeAttack.h"
 #include "GameFramework/Character.h"
 
 void UBAnimNotifyKnifeAttackStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -18,7 +18,7 @@ void UBAnimNotifyKnifeAttackStart::Notify(USkeletalMeshComponent* MeshComp, UAni
 			return;
 		}
 
-		IBInterface_KnifeAttack* Interface = Cast<IBInterface_KnifeAttack>(Owner);
+		IBIKnifeAttack* Interface = Cast<IBIKnifeAttack>(Owner);
 
 		if (Interface == nullptr)
 		{

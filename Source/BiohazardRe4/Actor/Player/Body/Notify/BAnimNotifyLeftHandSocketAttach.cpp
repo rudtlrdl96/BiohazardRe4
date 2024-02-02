@@ -3,7 +3,7 @@
 
 #include "Actor/Player/Body/Notify/BAnimNotifyLeftHandSocketAttach.h"
 #include "BiohazardRe4.h"
-#include "..\Interface\BInterface_WeaponHandSocketSwap.h"
+#include "..\Interface\BIWeaponHandSocketSwap.h"
 #include "GameFramework/Character.h"
 
 void UBAnimNotifyLeftHandSocketAttach::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -18,7 +18,7 @@ void UBAnimNotifyLeftHandSocketAttach::Notify(USkeletalMeshComponent* MeshComp, 
 			return;
 		}
 
-		IBInterface_WeaponHandSocketSwap* Interface = Cast<IBInterface_WeaponHandSocketSwap>(Owner);
+		IBIWeaponHandSocketSwap* Interface = Cast<IBIWeaponHandSocketSwap>(Owner);
 
 		if (Interface == nullptr)
 		{

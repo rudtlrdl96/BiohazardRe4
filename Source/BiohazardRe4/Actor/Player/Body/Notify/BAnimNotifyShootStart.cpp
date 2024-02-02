@@ -3,7 +3,7 @@
 
 #include "Actor/Player/Body/Notify/BAnimNotifyShootStart.h"
 #include "BiohazardRe4.h"
-#include "..\Interface\BInterface_WeaponShoot.h"
+#include "..\Interface\BIWeaponShoot.h"
 #include "GameFramework/Character.h"
 
 void UBAnimNotifyShootStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -18,7 +18,7 @@ void UBAnimNotifyShootStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 			return;
 		}
 
-		IBInterface_WeaponShoot* Interface = Cast<IBInterface_WeaponShoot>(Owner);
+		IBIWeaponShoot* Interface = Cast<IBIWeaponShoot>(Owner);
 
 		if (Interface == nullptr)
 		{

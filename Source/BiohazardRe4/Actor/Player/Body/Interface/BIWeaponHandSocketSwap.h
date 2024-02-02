@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "BInterface_KnifeAttack.generated.h"
+#include "BIWeaponHandSocketSwap.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UBInterface_KnifeAttack : public UInterface
+class UBIWeaponHandSocketSwap : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,19 +16,12 @@ class UBInterface_KnifeAttack : public UInterface
 /**
  * 
  */
-class BIOHAZARDRE4_API IBInterface_KnifeAttack
+class BIOHAZARDRE4_API IBIWeaponHandSocketSwap
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void KnifeComboStart() = 0;
-	virtual void KnifeComboEnd() = 0;
-
-	virtual void KnifeAttackStart() = 0;
-	virtual void KnifeAttackEnd() = 0;
-
-	virtual void KnifeCollisionActive() = 0;
-	virtual void KnifeCollisionDisable() = 0;
-
+	virtual void AttachLeftHandSocket() = 0;
+	virtual void AttachRightHandSocket() = 0;
 };

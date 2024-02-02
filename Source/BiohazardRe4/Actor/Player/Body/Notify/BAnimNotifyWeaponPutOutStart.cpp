@@ -3,7 +3,7 @@
 
 #include "Actor/Player/Body/Notify/BAnimNotifyWeaponPutOutStart.h"
 #include "BiohazardRe4.h"
-#include "..\Interface\BInterface_WeaponPutOut.h"
+#include "..\Interface\BIWeaponPutOut.h"
 #include "GameFramework/Character.h"
 
 void UBAnimNotifyWeaponPutOutStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -18,7 +18,7 @@ void UBAnimNotifyWeaponPutOutStart::Notify(USkeletalMeshComponent* MeshComp, UAn
 			return;
 		}
 
-		IBInterface_WeaponPutOut* Interface = Cast<IBInterface_WeaponPutOut>(Owner);
+		IBIWeaponPutOut* Interface = Cast<IBIWeaponPutOut>(Owner);
 
 		if (Interface == nullptr)
 		{

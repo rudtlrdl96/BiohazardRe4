@@ -3,7 +3,7 @@
 
 #include "Actor/Player/Body/Notify/BAnimNotifyWeaponReloadEnd.h"
 #include "BiohazardRe4.h"
-#include "..\Interface\BInterface_WeaponReload.h"
+#include "..\Interface\BIWeaponReload.h"
 #include "GameFramework/Character.h"
 
 void UBAnimNotifyWeaponReloadEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -18,7 +18,7 @@ void UBAnimNotifyWeaponReloadEnd::Notify(USkeletalMeshComponent* MeshComp, UAnim
 			return;
 		}
 
-		IBInterface_WeaponReload* Interface = Cast<IBInterface_WeaponReload>(Owner);
+		IBIWeaponReload* Interface = Cast<IBIWeaponReload>(Owner);
 
 		if (Interface == nullptr)
 		{
