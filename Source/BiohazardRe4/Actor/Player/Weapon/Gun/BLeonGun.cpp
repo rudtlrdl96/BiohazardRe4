@@ -3,6 +3,7 @@
 
 #include "Actor/Player/Weapon/Gun/BLeonGun.h"
 #include "Kismet/GameplayStatics.h"
+#include "BiohazardRe4.h"
 
 void ABLeonGun::BeginPlay()
 {
@@ -12,63 +13,78 @@ void ABLeonGun::BeginPlay()
 
 bool ABLeonGun::AbleAttack() const
 {
-	UE_LOG(LogTemp, Log, TEXT("AbleAttack"))
+	LOG_MSG(TEXT("AbleAttack"))
 	return true;
 }
 
 void ABLeonGun::Attack()
 {
-	UE_LOG(LogTemp, Log, TEXT("Attack"))
-	LineTraceStart = PlayerCamManager->GetCameraLocation();
-	LineTraceEnd = LineTraceStart + PlayerCamManager->GetActorForwardVector() * Range;
+	Super::Attack();
+	Shoot();
+}
+
+bool ABLeonGun::AbleReload() const
+{
+	LOG_MSG(TEXT("AbleReload"))
+		return true;
+}
+
+void ABLeonGun::Reload()
+{
+	LOG_MSG(TEXT("Reload"))
+}
+
+
+void ABLeonGun::Shoot()
+{
+	LOG_MSG(TEXT("Shoot"))
+	CamLineTraceStart = PlayerCamManager->GetCameraLocation();
+	CamLineTraceEnd = CamLineTraceStart + PlayerCamManager->GetActorForwardVector() * Range;
 
 	FCollisionQueryParams LineTraceParams;
 	LineTraceParams.AddIgnoredActor(this);
 	LineTraceParams.AddIgnoredActor(Player);
 
-	bool bIsHit = GetWorld()->LineTraceSingleByChannel(HitInfo, LineTraceStart, LineTraceEnd, ECollisionChannel::ECC_GameTraceChannel4, LineTraceParams);
-	if (bIsHit)
+	bool bIsTarget = GetWorld()->LineTraceSingleByChannel(CamHitInfo, CamLineTraceStart, CamLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel6, LineTraceParams);
+	GunLineTraceStart = GetActorLocation();
+	if (bIsTarget)
 	{
-		UE_LOG(LogTemp, Log, TEXT("AttackSuccess"))
-		DrawDebugLine(GetWorld(), LineTraceStart, LineTraceEnd, FColor::Green, true, -1.f);
-		AActor* ShootedActor = HitInfo.GetActor();
-		int a = 0;
+		LOG_MSG(TEXT("There Is Target"))
+		DrawDebugLine(GetWorld(), CamLineTraceStart, CamLineTraceEnd, FColor::Blue, true, 0.1, (uint8)0U, 1.f);
+		
+		GunLineTraceEnd = (CamHitInfo.ImpactPoint - GunLineTraceStart);
+		GunLineTraceEnd.Normalize();
+		GunLineTraceEnd *= Range;
+		GunLineTraceEnd += GunLineTraceStart;
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("AttackFail"))
-		DrawDebugLine(GetWorld(), LineTraceStart, LineTraceEnd, FColor::Red, true, -1.f);
+		LOG_MSG(TEXT("There Is No Target"))
+		GunLineTraceEnd = CamLineTraceEnd;
+	}	
+
+	bool bIsHit = GetWorld()->LineTraceSingleByChannel(GunHitInfo, GunLineTraceStart, GunLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel4, LineTraceParams);
+	if (bIsHit)
+	{
+		LOG_MSG(TEXT("AttackSuccess"))
+		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
+		AActor* ShootedActor = GunHitInfo.GetActor();
 	}
-
-}
-
-bool ABLeonGun::AbleReload() const
-{
-	UE_LOG(LogTemp, Log, TEXT("AbleReload"))
-	return true;
-}
-
-void ABLeonGun::Reload()
-{
-	UE_LOG(LogTemp, Log, TEXT("Reload"))
-}
-
-
-
-void ABLeonGun::Shoot()
-{
-	UE_LOG(LogTemp, Log, TEXT("Shoot"))
-
+	else
+	{
+		LOG_MSG(TEXT("AttackFail"))
+		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
+	}
 }
 
 void ABLeonGun::DropShell()
 {
-	UE_LOG(LogTemp, Log, TEXT("DropShell"))
+	LOG_MSG(TEXT("DropShell"))
 
 }
 
 void ABLeonGun::DropMagazine()
 {
-	UE_LOG(LogTemp, Log, TEXT("DropMagazine"))
+	LOG_MSG(TEXT("DropMagazine"))
 
 }

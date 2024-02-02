@@ -29,21 +29,31 @@ protected:
 	virtual void DropMagazine();
 
 
-	//  ______________________LineTraceOption
-	UPROPERTY()
-	float Range = 5000.f;
-
+	//  ______________________LineTraceOption_Camera
 	UPROPERTY()
 	APlayerCameraManager* PlayerCamManager = nullptr;
 
 	UPROPERTY()
-	FHitResult HitInfo;
-
-private:
-	UPROPERTY()
-	FVector LineTraceStart = FVector::Zero();
+	FHitResult CamHitInfo;
 
 	UPROPERTY()
-	FVector LineTraceEnd = FVector::Zero();
+	FVector CamLineTraceStart = FVector::Zero();
 
+	UPROPERTY()
+	FVector CamLineTraceEnd = FVector::Zero();
+
+
+	//  ______________________LineTraceOption_Gun
+
+	UPROPERTY()
+	float Range = 5000.f;
+
+	UPROPERTY()
+	FHitResult GunHitInfo;
+
+	UPROPERTY()
+	FVector GunLineTraceStart = FVector::Zero();
+
+	UPROPERTY()
+	FVector GunLineTraceEnd = FVector::Zero();
 };
