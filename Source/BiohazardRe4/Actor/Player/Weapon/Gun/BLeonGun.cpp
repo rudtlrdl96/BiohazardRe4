@@ -19,7 +19,7 @@ bool ABLeonGun::AbleAttack() const
 void ABLeonGun::Attack()
 {
 	UE_LOG(LogTemp, Log, TEXT("Attack"))
-	LineTraceStart = GetActorLocation();
+	LineTraceStart = PlayerCamManager->GetCameraLocation();
 	LineTraceEnd = LineTraceStart + PlayerCamManager->GetActorForwardVector() * Range;
 
 	FCollisionQueryParams LineTraceParams;
