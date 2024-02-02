@@ -280,7 +280,7 @@ void ABMonsterBase::DamagedEnd()
 		return;
 	}
 
-	AnimInstance->StopAllMontages(2.0f);
+	AnimInstance->StopAllMontages(1.0f);
 }
 
 void ABMonsterBase::SetCurrentState(EMonsterState _InState)
