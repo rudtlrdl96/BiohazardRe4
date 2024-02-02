@@ -9,6 +9,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BiohazardRe4.h"
 #include "../Weapon/Grenade/BLeonGrenade.h"
@@ -33,6 +34,7 @@ ABLeon::ABLeon()
 
 	CreateSprintArm();
 	CreateFSM();
+	CreateCollision();
 }
 
 ABLeon::~ABLeon()
@@ -610,8 +612,8 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 		{
 		case ELeonWeaponAnim::Empty:
 		{
-			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 400.0f);
-			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, StandSpringArmLength, _DeltaTime, 400.0f);
+			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 200.0f);
+			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, StandSpringArmLength, _DeltaTime, 200.0f);
 		}
 			break;
 		case ELeonWeaponAnim::Pistol:
@@ -625,8 +627,8 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 		case ELeonWeaponAnim::Knife:
 		case ELeonWeaponAnim::Grenade:
 		{		
-			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, GreanadeAimSocketOffset, _DeltaTime, 400.0f);
-			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, GreanadeAimSpringArmLength, _DeltaTime, 400.0f);
+			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, GreanadeAimSocketOffset, _DeltaTime, 200.0f);
+			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, GreanadeAimSpringArmLength, _DeltaTime, 200.0f);
 		}
 			break;
 		default:
@@ -638,8 +640,8 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 	}
 	else
 	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 400.0f);
-		SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, StandSpringArmLength, _DeltaTime, 400.0f);
+		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 200.0f);
+		SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, StandSpringArmLength, _DeltaTime, 200.0f);
 	}
 }
 
@@ -1099,6 +1101,11 @@ void ABLeon::CreateFSM()
 	KnifeAttackFSMState.UpdateDel.BindUObject(this, &ABLeon::KnifeAttackUpdate);
 	KnifeAttackFSMState.ExitDel.BindUObject(this, &ABLeon::KnifeAttackExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::KnifeAttack), KnifeAttackFSMState);
+}
+
+void ABLeon::CreateCollision()
+{
+	KnifeAttackCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Knife Attack Collision"));
 }
 
 bool ABLeon::AbleWeaponSwap() const

@@ -20,6 +20,7 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class ABLeonWeapon;
+class UCapsuleComponent;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -367,7 +368,10 @@ private:
 	USpringArmComponent* SpringArm = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	UCameraComponent* PlayerCamera = nullptr;
+	UCameraComponent* PlayerCamera = nullptr;	
+	
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	UCapsuleComponent* KnifeAttackCollision = nullptr;
 
 	FVector MoveDir = FVector::ZeroVector;
 	FVector MoveInput = FVector::ZeroVector;
@@ -453,6 +457,7 @@ private:
 
 	void CreateSprintArm();
 	void CreateFSM();
+	void CreateCollision();
 
 	ABLeonWeapon* CreateWeapon(EItemCode _WeaponCode);
 	void DeleteCurrentWeapon();
