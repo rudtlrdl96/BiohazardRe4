@@ -22,7 +22,28 @@ public:
 	virtual void Reload() override;
 
 protected:
+	virtual void BeginPlay() override;
+
 	virtual void Shoot();
 	virtual void DropShell();
 	virtual void DropMagazine();
+
+
+	//  ______________________LineTraceOption
+	UPROPERTY()
+	float Range = 5000.f;
+
+	UPROPERTY()
+	APlayerCameraManager* PlayerCamManager = nullptr;
+
+	UPROPERTY()
+	FHitResult HitInfo;
+
+private:
+	UPROPERTY()
+	FVector LineTraceStart = FVector::Zero();
+
+	UPROPERTY()
+	FVector LineTraceEnd = FVector::Zero();
+
 };
