@@ -18,10 +18,12 @@
 #include "../Weapon/Knife/BLeonKnife.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
-const FVector ABLeon::AimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
+const FVector ABLeon::GunAimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
+const FVector ABLeon::GreanadeAimSocketOffset = FVector(0.0f, 50.0f, -12.0f);
 
 const float ABLeon::StandSpringArmLength = 100.0f;
-const float ABLeon::AimSpringArmLength = 50.0f;
+const float ABLeon::GunAimSpringArmLength = 50.0f;
+const float ABLeon::GreanadeAimSpringArmLength = 120.0f;
 
 // Sets default values
 ABLeon::ABLeon()
@@ -56,21 +58,9 @@ void ABLeon::Tick(float _DeltaTime)
 	SpringArmUpdate(_DeltaTime);
 	UseWeaponUpdate(_DeltaTime);
 	WeaponSocketUpdate(_DeltaTime);
-
+	SocketSwapUpdate(_DeltaTime);
+	
 	LeonFSMState = GetCurrentFSMState();
-
-	if (nullptr == CurrentWeapon)
-	{
-		bIsLerpSocket = false;
-	}
-
-	if (true == bIsLerpSocket)
-	{	
-		FVector WeaponLocation = CurrentWeapon->GetRootComponent()->GetRelativeLocation();
-		FRotator WeaponRotation = CurrentWeapon->GetRootComponent()->GetRelativeRotation();
-		CurrentWeapon->SetActorRelativeLocation(FMath::VInterpConstantTo(WeaponLocation, FVector::ZeroVector, _DeltaTime, SocketSwapLocationSpeed));
-		CurrentWeapon->SetActorRelativeRotation(FMath::RInterpConstantTo(WeaponRotation, FRotator::ZeroRotator, _DeltaTime, SocketSwapRotationSpeed));
-	}
 }
 
 // Called to bind functionality to input
@@ -609,8 +599,37 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 {
 	if (true == bIsAim || true == bIsGunRecoil)
 	{
-		SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, AimSocketOffset, _DeltaTime, 400.0f);
-		SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, AimSpringArmLength, _DeltaTime, 400.0f);
+		ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
+
+		switch (WeaponAnim)
+		{
+		case ELeonWeaponAnim::Empty:
+		{
+			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 400.0f);
+			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, StandSpringArmLength, _DeltaTime, 400.0f);
+		}
+			break;
+		case ELeonWeaponAnim::Pistol:
+		case ELeonWeaponAnim::Shotgun:
+		case ELeonWeaponAnim::Rifle:
+		{
+			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, GunAimSocketOffset, _DeltaTime, 400.0f);
+			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, GunAimSpringArmLength, _DeltaTime, 400.0f);
+		}
+			break;
+		case ELeonWeaponAnim::Knife:
+		case ELeonWeaponAnim::Grenade:
+		{		
+			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, GreanadeAimSocketOffset, _DeltaTime, 400.0f);
+			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, GreanadeAimSpringArmLength, _DeltaTime, 400.0f);
+		}
+			break;
+		default:
+		{
+			LOG_ERROR(TEXT("Player Wrong Type UseWeapon Code"));
+		}
+			break;
+		}
 	}
 	else
 	{
@@ -670,6 +689,30 @@ void ABLeon::WeaponSocketUpdate(float _DeltaTime)
 
 	CurrentWeapon->SetActorLocation(FMath::Lerp(StartLocation, EndLocation, SocketLocationLerpTime));
 	CurrentWeapon->SetActorRotation(FMath::Lerp(StartRotation, EndRotation, SocketRotationLerpTime));
+}
+
+void ABLeon::SocketSwapUpdate(float _DeltaTime)
+{
+	if (nullptr == CurrentWeapon)
+	{
+		bIsLerpSocket = false;
+	}
+
+	if (true == bIsLerpSocket)
+	{
+		FVector WeaponLocation = CurrentWeapon->GetRootComponent()->GetRelativeLocation();
+		FRotator WeaponRotation = CurrentWeapon->GetRootComponent()->GetRelativeRotation();
+		CurrentWeapon->SetActorRelativeLocation(FMath::VInterpConstantTo(WeaponLocation, FVector::ZeroVector, _DeltaTime, SocketSwapLocationSpeed));
+		CurrentWeapon->SetActorRelativeRotation(FMath::RInterpConstantTo(WeaponRotation, FRotator::ZeroRotator, _DeltaTime, SocketSwapRotationSpeed));
+
+		WeaponLocation = CurrentWeapon->GetRootComponent()->GetRelativeLocation();
+		WeaponRotation = CurrentWeapon->GetRootComponent()->GetRelativeRotation();
+
+		if (WeaponLocation == FVector::ZeroVector && WeaponRotation == FRotator::ZeroRotator)
+		{
+			bIsLerpSocket = false;
+		}
+	}
 }
 
 void ABLeon::VPlayerCameraToWorld(FVector& _Vector) const

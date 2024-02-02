@@ -86,10 +86,12 @@ class BIOHAZARDRE4_API ABLeon : public ACharacter,
 
 private:
 	static const FVector StandSocketOffset;
-	static const FVector AimSocketOffset;
+	static const FVector GunAimSocketOffset;
+	static const FVector GreanadeAimSocketOffset;
 
 	static const float StandSpringArmLength;
-	static const float AimSpringArmLength;
+	static const float GunAimSpringArmLength;
+	static const float GreanadeAimSpringArmLength;
 
 public:
 	// Sets default values for this character's properties
@@ -389,6 +391,7 @@ private:
 	void SpringArmUpdate(float _DeltaTime);
 	void UseWeaponUpdate(float _DeltaTime);
 	void WeaponSocketUpdate(float _DeltaTime);
+	void SocketSwapUpdate(float _DeltaTime);
 
 	void VPlayerCameraToWorld(FVector& _Result) const;
 
