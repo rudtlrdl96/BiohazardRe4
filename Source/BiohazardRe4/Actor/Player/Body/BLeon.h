@@ -10,6 +10,7 @@
 #include "BInterface_WeaponShoot.h"
 #include "BInterface_WeaponHandSocketSwap.h"
 #include "BInterface_WeaponReload.h"
+#include "BInterface_KnifeAttack.h"
 #include "BLeon.generated.h"
 
 struct FInputActionInstance;
@@ -29,6 +30,8 @@ enum class ELeonState : uint8
 	Walk			UMETA(DisplayName = "Walk"),
 	Jog				UMETA(DisplayName = "Jog"),
 	Aim				UMETA(DisplayName = "Aim"),
+	KnifeAttack		UMETA(DisplayName = "KnifeAttack"),
+	KickAttack		UMETA(DisplayName = "KickAttack")
 };
 
 UENUM(BlueprintType)
@@ -52,6 +55,15 @@ enum class ELeonWeaponSwap : uint8
 	None	UMETA(DisplayName = "None"),
 	PutOut	UMETA(DisplayName = "PutOut"),
 	PutAway	UMETA(DisplayName = "PutAway"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonKnifeAttackState: uint8
+{
+	EnterAttack	UMETA(DisplayName = "EnterAttack"),
+	LeftAttack	UMETA(DisplayName = "LeftAttack"),
+	RightAttack UMETA(DisplayName = "RightAttack"),
+	ResetAttack UMETA(DisplayName = "ResetAttack"),
 };
 
 UENUM(BlueprintType)
@@ -80,7 +92,8 @@ enum class ELeonDirection : uint8
 
 UCLASS()
 class BIOHAZARDRE4_API ABLeon : public ACharacter, 
-	public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut, public IBInterface_WeaponShoot, public IBInterface_WeaponHandSocketSwap, public IBInterface_WeaponReload
+	public IBInterface_WeaponPutAway, public IBInterface_WeaponPutOut, public IBInterface_WeaponShoot, 
+	public IBInterface_WeaponHandSocketSwap, public IBInterface_WeaponReload, public IBInterface_KnifeAttack
 {
 	GENERATED_BODY()
 
@@ -151,6 +164,13 @@ public:
 	inline ELeonAim GetAimState() const
 	{
 		return LeonAim;
+	}
+
+	// 현재 플레이어의 나이프 공격 상태를 반환합니다
+	UFUNCTION(BlueprintCallable)
+	inline ELeonKnifeAttackState GetKnifeAttackState() const
+	{
+		return KnifeAttackState;
 	}
 
 	// 현재 플레이어가 달리는 상태인지 반환합니다
@@ -245,6 +265,15 @@ public:
 	virtual void Reload() override;
 	virtual void ReloadEnd() override;
 	virtual bool AbleReload() const override;
+	
+	virtual void KnifeComboStart() override;
+	virtual void KnifeComboEnd() override;
+
+	virtual void KnifeAttackStart() override;
+	virtual void KnifeAttackEnd() override;
+
+	virtual void KnifeCollisionActive() override;
+	virtual void KnifeCollisionDisable() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -380,6 +409,12 @@ private:
 	uint32 bIsGunRecoil: 1 = false;
 	uint32 bIsGunReload : 1 = false;
 
+	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
+
+	uint32 bAbleComboInput : 1 = false;
+	uint32 bAbleNextCombo : 1 = false;
+	uint32 bIsComboEnd : 1 = false;
+
 	void PlayMove(const FInputActionInstance& _MoveAction);
 	void PlayIdle(const FInputActionInstance& _MoveAction);
 
@@ -397,8 +432,10 @@ private:
 
 	void JogLookAt(float _DeltaTime);
 	
+	bool AbleKnifeAttack() const;
 	bool AbleShoot() const;
-	void Shoot();
+	void KnifeComboCheck();
+	void Attack();
 
 	void Aim(float _DeltaTime);
 	void ReloadActive();
@@ -438,4 +475,8 @@ private:
 	void AimEnter();
 	void AimUpdate(float _DeltaTime);
 	void AimExit();
+
+	void KnifeAttackEnter();
+	void KnifeAttackUpdate(float _DeltaTime);
+	void KnifeAttackExit();
 };

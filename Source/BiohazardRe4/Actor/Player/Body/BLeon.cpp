@@ -151,7 +151,7 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	}
 
 	Input->BindAction(WeaponPutAwayAction, ETriggerEvent::Started, this, &ABLeon::ChangeUseWeapon, EItemCode::Empty);
-	Input->BindAction(ShootAction, ETriggerEvent::Started, this, &ABLeon::Shoot);
+	Input->BindAction(ShootAction, ETriggerEvent::Started, this, &ABLeon::Attack);
 	Input->BindAction(WeaponReloadAction, ETriggerEvent::Started, this, &ABLeon::ReloadActive);
 }
 
@@ -563,6 +563,11 @@ bool ABLeon::AbleAim() const
 		return false;
 	}
 
+	if (LeonWeaponState == ELeonWeaponAnim::Knife)
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -597,7 +602,7 @@ void ABLeon::StopLook()
 
 void ABLeon::SpringArmUpdate(float _DeltaTime)
 {
-	if (true == bIsAim || true == bIsGunRecoil)
+	if (ELeonState::Aim == LeonFSMState || true == bIsGunRecoil)
 	{
 		ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
 
@@ -759,6 +764,34 @@ void ABLeon::JogLookAt(float _DeltaTime)
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), InputRotator, _DeltaTime, 360.0f));
 }
 
+bool ABLeon::AbleKnifeAttack() const
+{
+	if (LeonWeaponSwap != ELeonWeaponSwap::None)
+	{
+		return false;
+	}
+
+	if (true == bIsGunRecoil)
+	{
+		return false;
+	}
+
+	if (true == bIsGunReload)
+	{
+		return false;
+	}
+	
+	switch (LeonFSMState)
+	{
+	case ELeonState::Idle:
+	case ELeonState::Walk:
+	case ELeonState::Jog:
+		return true;
+	}
+
+	return false;
+}
+
 bool ABLeon::AbleShoot() const
 {
 	int32 FSMKey = FsmComp->GetCurrentFSMKey();
@@ -787,13 +820,75 @@ bool ABLeon::AbleShoot() const
 	return CurrentWeapon->AbleAttack();
 }
 
-void ABLeon::Shoot()
+void ABLeon::KnifeComboCheck()
+{
+	if (false == bAbleComboInput)
+	{
+		return;
+	}
+
+	if (true == bAbleNextCombo)
+	{
+		switch (KnifeAttackState)
+		{
+		case ELeonKnifeAttackState::EnterAttack:
+		{
+			KnifeAttackState = ELeonKnifeAttackState::LeftAttack;
+		}
+		break;
+		case ELeonKnifeAttackState::LeftAttack:
+		{
+			KnifeAttackState = ELeonKnifeAttackState::RightAttack;
+		}
+		break;
+		case ELeonKnifeAttackState::RightAttack:
+		{
+			KnifeAttackState = ELeonKnifeAttackState::LeftAttack;
+		}
+			break;
+		case ELeonKnifeAttackState::ResetAttack:
+		{
+			KnifeAttackState = ELeonKnifeAttackState::LeftAttack;
+		}
+			break;
+		}
+	}
+	else
+	{
+		switch (KnifeAttackState)
+		{
+		case ELeonKnifeAttackState::ResetAttack:
+			KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
+			break;
+		default:
+			KnifeAttackState = ELeonKnifeAttackState::ResetAttack;
+			break;
+		}
+	}
+}
+
+void ABLeon::Attack()
 {
 	LOG_MSG(TEXT("Try Player Weapon Shoot"));
 	
 	if (true == AbleShoot())
 	{
 		bIsWeaponShootTrigger = true;
+		return;
+	}
+	else if (true == AbleKnifeAttack())
+	{
+		DeleteCurrentWeapon();
+		UseWeaponCode = EItemCode::CombatKnife;
+		CurrentWeapon = CreateWeapon(UseWeaponCode);
+		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
+		FsmComp->ChangeState(TO_KEY(ELeonState::KnifeAttack));
+		return;
+	}
+	
+	if(ELeonState::KnifeAttack == LeonFSMState)
+	{
+		KnifeComboCheck();
 	}
 }
 
@@ -842,6 +937,37 @@ bool ABLeon::AbleReload() const
 	}
 
 	return true;
+}
+
+void ABLeon::KnifeComboStart()
+{
+	bAbleComboInput = true;
+	bAbleNextCombo = true;
+}
+
+void ABLeon::KnifeComboEnd()
+{
+	bAbleNextCombo = false;
+}
+
+void ABLeon::KnifeAttackStart()
+{
+	bAbleComboInput = false;
+	bAbleNextCombo = false;
+}
+
+void ABLeon::KnifeAttackEnd()
+{
+	bIsComboEnd = true;
+	bAbleComboInput = false;
+}
+
+void ABLeon::KnifeCollisionActive()
+{
+}
+
+void ABLeon::KnifeCollisionDisable()
+{
 }
 
 void ABLeon::ReloadActive()
@@ -901,6 +1027,18 @@ void ABLeon::TryCrouch()
 		return;
 	}
 
+	if (FSMState == ELeonState::KnifeAttack)
+	{
+		bIsCrouch = false;
+		return;
+	}
+
+	if (FSMState == ELeonState::KickAttack)
+	{
+		bIsCrouch = false;
+		return;
+	}
+
 	bIsCrouch = ~bIsCrouch;
 }
 
@@ -932,29 +1070,35 @@ void ABLeon::CreateFSM()
 {
 	FsmComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM Component"));
 
-	UBFsm::FStateCallback StandUpState;
-	StandUpState.EnterDel.BindUObject(this, &ABLeon::IdleEnter);
-	StandUpState.UpdateDel.BindUObject(this, &ABLeon::IdleUpdate);
-	StandUpState.ExitDel.BindUObject(this, &ABLeon::IdleExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Idle), StandUpState);
+	UBFsm::FStateCallback StandUpFSMState;
+	StandUpFSMState.EnterDel.BindUObject(this, &ABLeon::IdleEnter);
+	StandUpFSMState.UpdateDel.BindUObject(this, &ABLeon::IdleUpdate);
+	StandUpFSMState.ExitDel.BindUObject(this, &ABLeon::IdleExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Idle), StandUpFSMState);
 
-	UBFsm::FStateCallback WalkState;
-	WalkState.EnterDel.BindUObject(this, &ABLeon::WalkEnter);
-	WalkState.UpdateDel.BindUObject(this, &ABLeon::WalkUpdate);
-	WalkState.ExitDel.BindUObject(this, &ABLeon::WalkExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Walk), WalkState);
+	UBFsm::FStateCallback WalkFSMState;
+	WalkFSMState.EnterDel.BindUObject(this, &ABLeon::WalkEnter);
+	WalkFSMState.UpdateDel.BindUObject(this, &ABLeon::WalkUpdate);
+	WalkFSMState.ExitDel.BindUObject(this, &ABLeon::WalkExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Walk), WalkFSMState);
 
-	UBFsm::FStateCallback JogMoveState;
-	JogMoveState.EnterDel.BindUObject(this, &ABLeon::JogEnter);
-	JogMoveState.UpdateDel.BindUObject(this, &ABLeon::JogUpdate);
-	JogMoveState.ExitDel.BindUObject(this, &ABLeon::JogExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogMoveState);
+	UBFsm::FStateCallback JogMoveFSMState;
+	JogMoveFSMState.EnterDel.BindUObject(this, &ABLeon::JogEnter);
+	JogMoveFSMState.UpdateDel.BindUObject(this, &ABLeon::JogUpdate);
+	JogMoveFSMState.ExitDel.BindUObject(this, &ABLeon::JogExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Jog), JogMoveFSMState);
 
-	UBFsm::FStateCallback AimState;
-	AimState.EnterDel.BindUObject(this, &ABLeon::AimEnter);
-	AimState.UpdateDel.BindUObject(this, &ABLeon::AimUpdate);
-	AimState.ExitDel.BindUObject(this, &ABLeon::AimExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Aim), AimState);
+	UBFsm::FStateCallback AimFSMState;
+	AimFSMState.EnterDel.BindUObject(this, &ABLeon::AimEnter);
+	AimFSMState.UpdateDel.BindUObject(this, &ABLeon::AimUpdate);
+	AimFSMState.ExitDel.BindUObject(this, &ABLeon::AimExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Aim), AimFSMState);
+
+	UBFsm::FStateCallback KnifeAttackFSMState;
+	KnifeAttackFSMState.EnterDel.BindUObject(this, &ABLeon::KnifeAttackEnter);
+	KnifeAttackFSMState.UpdateDel.BindUObject(this, &ABLeon::KnifeAttackUpdate);
+	KnifeAttackFSMState.ExitDel.BindUObject(this, &ABLeon::KnifeAttackExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::KnifeAttack), KnifeAttackFSMState);
 }
 
 bool ABLeon::AbleWeaponSwap() const

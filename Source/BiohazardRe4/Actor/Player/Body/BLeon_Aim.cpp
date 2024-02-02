@@ -106,7 +106,7 @@ void ABLeon::AimUpdate(float _DeltaTime)
 		}
 
 		if (MoveInput == FVector::ZeroVector)
-		{
+		{	
 			FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 		}
 		else if (true == bIsJogTrigger)
