@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Item/ItemData.h"
+#include "Data/BLeonStat.h"
 #include "Interface\BIWeaponPutOut.h"
 #include "Interface\BIWeaponPutAway.h"
 #include "Interface\BIWeaponShoot.h"
@@ -34,7 +35,8 @@ enum class ELeonState : uint8
 	Aim				UMETA(DisplayName = "Aim"),
 	KnifeAttack		UMETA(DisplayName = "KnifeAttack"),
 	KickAttack		UMETA(DisplayName = "KickAttack"),
-	Damage			UMETA(DisplayName = "Damage")
+	Damage			UMETA(DisplayName = "Damage"),
+	Death			UMETA(DisplayName = "Death"),
 };
 
 UENUM(BlueprintType)
@@ -100,9 +102,30 @@ enum class ELeonDamageDirection : uint8
 	LU  UMETA(DisplayName = "LU"),
 	RT  UMETA(DisplayName = "RT"),
 	RU  UMETA(DisplayName = "RU"),
-	FT  UMETA(DisplayName = "FU"),
+	FT  UMETA(DisplayName = "FT"),
 	FU  UMETA(DisplayName = "FU"),
 	B   UMETA(DisplayName = "B"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonDamageType : uint8
+{
+	Small		UMETA(DisplayName = "Small"),
+	Medium		UMETA(DisplayName = "Medium"),
+	Large		UMETA(DisplayName = "Large"),
+	ExLarge		UMETA(DisplayName = "ExLarge"),	
+	Guard		UMETA(DisplayName = "Guard"),	
+	Explosion	UMETA(DisplayName = "Explosion"),	
+};
+
+USTRUCT()
+struct FPlayerStat
+{
+	GENERATED_BODY()
+
+	float Attack = 100.0f;
+	float MaxHp = 1000.0f;
+	float CurrentHp = 1000.0f;
 };
 
 UCLASS()
@@ -248,18 +271,30 @@ public:
 		return nullptr != CurrentWeapon;
 	}
 
-	// 플레이어가 총 발사 반동상태인지 반환합니다
+	// 플레이어가 총 발사 반동 상태인지 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline bool IsGunRecoil() const
 	{
 		return bIsGunRecoil;
 	}
 
-	// 
+	// 플레어이가 총 재장전 상태인지 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline bool IsGunReload() const
 	{
 		return bIsGunReload;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	inline ELeonDamageType GetDamageType() const
+	{
+		return DamageType;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	inline ELeonDamageDirection GetDamageDirection() const
+	{
+		return DamageDirection;
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -291,30 +326,22 @@ public:
 	virtual void KnifeCollisionActive() override;
 	virtual void KnifeCollisionDisable() override;
 
+	virtual void DamageEnd() override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Animation)
+	//************** Animation 변수 **************//
+
 	uint32 bIsMove : 1 = false;
-
-	UPROPERTY(VisibleAnywhere, Category = Animation)
-	uint32 bIsJog : 1 = false;	
-	
-	UPROPERTY(VisibleAnywhere, Category = Animation)
-	uint32 bIsAim : 1 = false;	
-	
-	UPROPERTY(EditAnywhere, Category = Animation)
+	uint32 bIsJog : 1 = false;		
+	uint32 bIsAim : 1 = false;		
 	uint32 bIsCombat : 1 = false;
-
-	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsJogTrigger : 1 = false;	
-	
-	UPROPERTY(VisibleAnywhere, Category = Animation)
 	uint32 bIsCrouch : 1 = false;		
 
-	UPROPERTY(VisibleAnywhere, Category = Animation)
 	ELeonState LeonFSMState = ELeonState::Idle;
 	
 	UPROPERTY(EditAnywhere, Category = Animation)
@@ -326,25 +353,59 @@ private:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	ELeonHealth LeonHealth = ELeonHealth::Normal;	
 	
-	UPROPERTY(VisibleAnywhere, Category = Animation)
-	ELeonAim LeonAim = ELeonAim::Start;	
-	
-	UPROPERTY(VisibleAnywhere, Category = Animation)
+	ELeonAim LeonAim = ELeonAim::Start;		
 	ELeonWeaponSwap  LeonWeaponSwap = ELeonWeaponSwap::None;
 
-	UPROPERTY(VisibleAnywhere, Category = Animation)
-	EItemCode  UseWeaponCode = EItemCode::Empty;
-
-	UPROPERTY(VisibleAnywhere, Category = Animation)
 	float AimUpdateTime = 0.0f;	
 
-	UPROPERTY(VisibleAnywhere, Category = Animation)
-	float CombatTime = 0.0f;
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	FAlphaBlend AbsolutAlphaBlend;
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	FAlphaBlend PutOutTurnAlphaBlend;
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	FAlphaBlend PutAwayLocationAlphaBlend;
+
+	FVector MoveDir = FVector::ZeroVector;
+	double JogTurnAngle = 0.0;
+
+	FAlphaBlend SocketLocationBlend;
+	FAlphaBlend SocketRotationBlend;
+
+	float SocketLocationLerpTime = 0.0f;
+	float SocketRotationLerpTime = 0.0f;
+
+	float SocketLocationLerpSpeed = 1.0f;
+	float SocketRotationLerpSpeed = 1.0f;
+
+	float SocketSwapLocationSpeed = 50.0f;
+	float SocketSwapRotationSpeed = 50.0f;
+
+	uint32 bIsLerpSocket : 1 = false;
+	uint32 bIsLerpWeaponChange : 1 = false;
+
+	uint32 bIsWeaponShootTrigger : 1 = false;
+	uint32 bIsGunRecoil : 1 = false;
+	uint32 bIsGunReload : 1 = false;
+
+	FName LerpSocketStart = "";
+	FName LerpSocketEnd = "";
+
+	uint32 bIsHitEnd : 1 = false;
+	uint32 bIsDeathEnd : 1 = false;
+
+	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
+
+	//*****************************************************//
+
+
+	//************** Input 변수 **************//
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	float TurnSpeed = 10.0f;	
 	UPROPERTY(EditAnywhere, Category = Input)
 	float MaxTurnSpeed = 10.0f;
+
+	// Todo : 생성자에서 찾기
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputMappingContext* DefaultMappingContext = nullptr;
@@ -379,63 +440,36 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* WeaponReloadAction = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	USpringArmComponent* SpringArm = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	UCameraComponent* PlayerCamera = nullptr;	
-	
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	UCapsuleComponent* KnifeAttackCollision = nullptr;
-
-	FVector MoveDir = FVector::ZeroVector;
 	FVector MoveInput = FVector::ZeroVector;
 	FVector LookInput = FVector::ZeroVector;
-	double JogTurnAngle = 0.0;
-
-	UBFsm* FsmComp = nullptr;
-
-	ABLeonWeapon* CurrentWeapon = nullptr;
-
-	FName LerpSocketStart = "";
-	FName LerpSocketEnd = "";
-
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	FAlphaBlend AbsolutAlphaBlend;	
-	
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	FAlphaBlend PutOutTurnAlphaBlend;	
-	
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	FAlphaBlend PutAwayLocationAlphaBlend;
-
-	FAlphaBlend SocketLocationBlend;
-	FAlphaBlend SocketRotationBlend;
-
-	float SocketLocationLerpTime = 0.0f;
-	float SocketRotationLerpTime = 0.0f;
-
-	float SocketLocationLerpSpeed = 1.0f;
-	float SocketRotationLerpSpeed = 1.0f;
-
-	float SocketSwapLocationSpeed = 50.0f;
-	float SocketSwapRotationSpeed = 50.0f;
-
-	uint32 bIsLerpSocket : 1 = false;
-	uint32 bIsLerpWeaponChange : 1 = false;
-
-	uint32 bIsWeaponShootTrigger: 1 = false;
-	uint32 bIsGunRecoil: 1 = false;
-	uint32 bIsGunReload : 1 = false;
-
-	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
 
 	uint32 bAbleComboInput : 1 = false;
 	uint32 bAbleNextCombo : 1 = false;
 	uint32 bIsComboEnd : 1 = false;
 
-	double CurrentHP = 1000.0;
-	double MaxHP = 1000.0;
+	ELeonDamageType DamageType;
+	ELeonDamageDirection DamageDirection;
+
+	//*****************************************************//
+
+	//************** Camera 변수 **************//
+
+	USpringArmComponent* SpringArm = nullptr;
+	UCameraComponent* PlayerCamera = nullptr;	
+
+	//*****************************************************//
+
+
+	//************** Actor, Component 변수 **************//
+
+	UBFsm* FsmComp = nullptr;
+	ABLeonWeapon* CurrentWeapon = nullptr;
+
+	EItemCode  UseWeaponCode = EItemCode::Empty;
+
+	FPlayerStat Stat;
+
+	//*****************************************************//
 
 	void PlayMove(const FInputActionInstance& _MoveAction);
 	void PlayIdle(const FInputActionInstance& _MoveAction);
@@ -481,6 +515,7 @@ private:
 	void DeleteCurrentWeapon();
 
 	ELeonWeaponAnim GetUseWeaponAnimation(EItemCode _WeaponCode) const;
+	double GetAxisZAngle(const FVector& _Location) const;
 
 	/* FSM */
 	void IdleEnter();
@@ -506,4 +541,8 @@ private:
 	void DamageEnter();
 	void DamageUpdate(float _DeltaTime);
 	void DamageExit();
+
+	void DeathEnter();
+	void DeathUpdate(float _DeltaTime);
+	void DeathExit();
 };

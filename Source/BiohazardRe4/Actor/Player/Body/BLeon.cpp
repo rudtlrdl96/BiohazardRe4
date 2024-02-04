@@ -11,12 +11,14 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/DamageEvents.h"
 #include "BiohazardRe4.h"
 #include "../Weapon/Grenade/BLeonGrenade.h"
 #include "../Weapon/Gun/BLeonPistol.h"
 #include "../Weapon/Gun/BLeonRifle.h"
 #include "../Weapon/Gun/BLeonShotgun.h"
 #include "../Weapon/Knife/BLeonKnife.h"
+#include "DamageType/BDMGMonsterDamage.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
 const FVector ABLeon::GunAimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
@@ -159,7 +161,117 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	float DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (LeonFSMState == ELeonState::Damage)
+	{
+		return 0.0f;
+	}
+
+	if (LeonFSMState == ELeonState::Death)
+	{
+		return 0.0f;
+	}
+
+	bool bIsSafeDamage = false;
+
+	FVector AttackerLocation = DamageCauser->GetActorLocation();	
+
+	Stat.CurrentHp -= DamageValue;
+
+	//if (0 >= Stat.CurrentHp)
+	//{
+	//	Stat.CurrentHp = 0;
+	//	FsmComp->ChangeState(TO_KEY(ELeonState::Death));
+	//	return DamageValue;
+	//}
+
+	FsmComp->ChangeState(TO_KEY(ELeonState::Damage));
+	UBDMGMonsterDamage* MonsterDamageClass = Cast<UBDMGMonsterDamage>(DamageEvent.DamageTypeClass.GetDefaultObject());
+
+	if (nullptr != MonsterDamageClass)
+	{
+		double Angle = GetAxisZAngle(AttackerLocation);
+
+		if (Angle > -45.0 && Angle <= 45.0)
+		{
+			// Forward
+			if (EMonsterDamageDirection::Top == MonsterDamageClass->DamageDirection)
+			{
+				DamageDirection = ELeonDamageDirection::FT;
+				LOG_MSG(TEXT("FT"));
+			}
+			else
+			{
+				DamageDirection = ELeonDamageDirection::FU;
+				LOG_MSG(TEXT("FU"));
+			}
+		}
+		else if (Angle > 45.0 && Angle <= 135.0)
+		{
+			// Right
+			if (EMonsterDamageDirection::Top == MonsterDamageClass->DamageDirection)
+			{
+				DamageDirection = ELeonDamageDirection::RT;
+				LOG_MSG(TEXT("RT"));
+			}
+			else
+			{
+				DamageDirection = ELeonDamageDirection::RU;
+				LOG_MSG(TEXT("RU"));
+			}
+		}
+		else if (Angle > -135.0 && Angle <= -45.0)
+		{
+			// Left
+			if (EMonsterDamageDirection::Top == MonsterDamageClass->DamageDirection)
+			{
+				DamageDirection = ELeonDamageDirection::LT;
+				LOG_MSG(TEXT("LT"));
+			}
+			else
+			{
+				DamageDirection = ELeonDamageDirection::LU;
+				LOG_MSG(TEXT("LU"));
+			}
+		}
+		else
+		{
+			// Back
+			DamageDirection = ELeonDamageDirection::B;
+			LOG_MSG(TEXT("B"));
+		}
+		
+		switch (MonsterDamageClass->DamagePower)
+		{
+		case EMonsterDamagePower::Small:
+		{
+			DamageType = ELeonDamageType::Small;
+		}
+		break;
+		case EMonsterDamagePower::Medium:
+		{
+			DamageType = ELeonDamageType::Medium;
+		}
+		break;
+		case EMonsterDamagePower::Large:
+		{
+			DamageType = ELeonDamageType::Large;
+		}
+		break;
+		case EMonsterDamagePower::ExLarge:
+		{
+			DamageType = ELeonDamageType::ExLarge;
+		}
+		break;
+		}
+
+		return DamageValue;
+	}
+
+	LOG_ERROR(TEXT("Undefined DamageType"));
+
+	return DamageValue;
 }
 
 FVector ABLeon::GetCameraDirection() const
@@ -771,6 +883,16 @@ void ABLeon::JogLookAt(float _DeltaTime)
 
 bool ABLeon::AbleKnifeAttack() const
 {
+	if (LeonFSMState == ELeonState::Damage)
+	{
+		return false;
+	}
+
+	if (LeonFSMState == ELeonState::Death)
+	{
+		return false;
+	}
+
 	if (LeonWeaponSwap != ELeonWeaponSwap::None)
 	{
 		return false;
@@ -799,10 +921,17 @@ bool ABLeon::AbleKnifeAttack() const
 
 bool ABLeon::AbleShoot() const
 {
-	int32 FSMKey = FsmComp->GetCurrentFSMKey();
-	ELeonState FSMState = static_cast<ELeonState>(FSMKey);
+	if (LeonFSMState == ELeonState::Damage)
+	{
+		return false;
+	}
 
-	if (FSMState != ELeonState::Aim)
+	if (LeonFSMState == ELeonState::Death)
+	{
+		return false;
+	}
+
+	if (LeonFSMState != ELeonState::Aim)
 	{
 		return false;
 	}
@@ -975,6 +1104,11 @@ void ABLeon::KnifeCollisionDisable()
 {
 }
 
+void ABLeon::DamageEnd()
+{
+	bIsHitEnd = true;
+}
+
 void ABLeon::ReloadActive()
 {
 	if (false == AbleReload())
@@ -1104,11 +1238,23 @@ void ABLeon::CreateFSM()
 	KnifeAttackFSMState.UpdateDel.BindUObject(this, &ABLeon::KnifeAttackUpdate);
 	KnifeAttackFSMState.ExitDel.BindUObject(this, &ABLeon::KnifeAttackExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::KnifeAttack), KnifeAttackFSMState);
+
+	UBFsm::FStateCallback DamageFSMState;
+	DamageFSMState.EnterDel.BindUObject(this, &ABLeon::DamageEnter);
+	DamageFSMState.UpdateDel.BindUObject(this, &ABLeon::DamageUpdate);
+	DamageFSMState.ExitDel.BindUObject(this, &ABLeon::DamageExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Damage), DamageFSMState);	
+	
+	UBFsm::FStateCallback DeathFSMState;
+	DeathFSMState.EnterDel.BindUObject(this, &ABLeon::DeathEnter);
+	DeathFSMState.UpdateDel.BindUObject(this, &ABLeon::DeathUpdate);
+	DeathFSMState.ExitDel.BindUObject(this, &ABLeon::DeathExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Death), DeathFSMState);
 }
 
 void ABLeon::CreateCollision()
 {
-	KnifeAttackCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Knife Attack Collision"));
+
 }
 
 bool ABLeon::AbleWeaponSwap() const
@@ -1342,4 +1488,35 @@ ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode) const
 	}
 		return ELeonWeaponAnim::Empty;
 	}
+}
+
+double ABLeon::GetAxisZAngle(const FVector& _Location) const
+{
+	FVector ActorForward = GetActorForwardVector();
+	ActorForward.Z = 0.0f;
+	ActorForward.Normalize();
+
+	LOG_MSG(TEXT("Forward X : %f, Y : %f, Z : %f"), ActorForward.X, ActorForward.Y, ActorForward.Z);
+
+	FVector ToDirection = _Location - GetActorLocation();
+	ToDirection.Z = 0.0f;
+	ToDirection.Normalize();
+
+	LOG_MSG(TEXT("ToDirection X : %f, Y : %f, Z : %f"), ToDirection.X, ToDirection.Y, ToDirection.Z);
+
+	double Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, ToDirection)));
+
+	
+	FVector Cross = FVector::CrossProduct(ActorForward, ToDirection);
+
+	LOG_MSG(TEXT("Cross : %f, Y : %f, Z : %f"), Cross.X, Cross.Y, Cross.Z);
+
+	if (0 >= Cross.Z)
+	{
+		Angle *= -1.0f;
+	}
+
+	LOG_MSG(TEXT("Angle : %f"), Angle);
+
+	return Angle;
 }
