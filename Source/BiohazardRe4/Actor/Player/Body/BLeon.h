@@ -123,8 +123,11 @@ struct FPlayerStat
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere)
 	float Attack = 100.0f;
+	UPROPERTY(VisibleAnywhere)
 	float MaxHp = 1000.0f;
+	UPROPERTY(VisibleAnywhere)
 	float CurrentHp = 1000.0f;
 };
 
@@ -467,6 +470,7 @@ private:
 
 	EItemCode  UseWeaponCode = EItemCode::Empty;
 
+	UPROPERTY(VisibleAnywhere, Category = Stat)
 	FPlayerStat Stat;
 
 	//*****************************************************//
@@ -483,6 +487,7 @@ private:
 	void UseWeaponUpdate(float _DeltaTime);
 	void WeaponSocketUpdate(float _DeltaTime);
 	void SocketSwapUpdate(float _DeltaTime);
+	void HeatlStateUpdate(float _DeltaTime);
 
 	void VPlayerCameraToWorld(FVector& _Result) const;
 

@@ -63,7 +63,8 @@ void ABLeon::Tick(float _DeltaTime)
 	UseWeaponUpdate(_DeltaTime);
 	WeaponSocketUpdate(_DeltaTime);
 	SocketSwapUpdate(_DeltaTime);
-	
+	HeatlStateUpdate(_DeltaTime);
+
 	LeonFSMState = GetCurrentFSMState();
 }
 
@@ -179,12 +180,12 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 
 	Stat.CurrentHp -= DamageValue;
 
-	//if (0 >= Stat.CurrentHp)
-	//{
-	//	Stat.CurrentHp = 0;
-	//	FsmComp->ChangeState(TO_KEY(ELeonState::Death));
-	//	return DamageValue;
-	//}
+	if (0 >= Stat.CurrentHp)
+	{
+		Stat.CurrentHp = 0; 
+		FsmComp->ChangeState(TO_KEY(ELeonState::Death));
+		return DamageValue;
+	}
 
 	FsmComp->ChangeState(TO_KEY(ELeonState::Damage));
 	UBDMGMonsterDamage* MonsterDamageClass = Cast<UBDMGMonsterDamage>(DamageEvent.DamageTypeClass.GetDefaultObject());
@@ -834,6 +835,18 @@ void ABLeon::SocketSwapUpdate(float _DeltaTime)
 		{
 			bIsLerpSocket = false;
 		}
+	}
+}
+
+void ABLeon::HeatlStateUpdate(float _DeltaTime)
+{
+	if (0.15f <= Stat.CurrentHp / Stat.MaxHp)
+	{
+		LeonHealth = ELeonHealth::Normal;
+	}
+	else
+	{
+		LeonHealth = ELeonHealth::Danger;
 	}
 }
 
