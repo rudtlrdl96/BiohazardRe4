@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "..\Weapon\BLeonWeapon.h"
 #include "BiohazardRe4.h"
+#include "..\Weapon\BDrawGrenadeAim.h"
 
 void ABLeon::AimEnter()
 {
@@ -17,6 +18,7 @@ void ABLeon::AimEnter()
 
 	AimUpdateTime = 0.0f;
 	LeonAim = ELeonAim::Start;
+	bDrawGrenadeAim = false;
 }
 
 void ABLeon::AimUpdate(float _DeltaTime)
@@ -25,6 +27,14 @@ void ABLeon::AimUpdate(float _DeltaTime)
 
 	MoveDir = FMath::VInterpConstantTo(MoveDir, MoveInput, _DeltaTime, 6.0f);
 	Aim(_DeltaTime);
+
+	ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
+
+	if (ELeonWeaponAnim::Grenade == WeaponAnim)
+	{
+		bDrawGrenadeAim = true;
+		DrawGrenadeAim(_DeltaTime);
+	}
 
 	if (true == bIsGunRecoil)
 	{
@@ -38,7 +48,6 @@ void ABLeon::AimUpdate(float _DeltaTime)
 
 		if (true == CurrentWeapon->AbleAttack())
 		{
-			ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
 
 			switch (WeaponAnim)
 			{
@@ -60,7 +69,8 @@ void ABLeon::AimUpdate(float _DeltaTime)
 			// Grenade
 			case ELeonWeaponAnim::Grenade:
 			{
-
+				CurrentWeapon->Attack();
+				FsmComp->ChangeState(TO_KEY(ELeonState::Throwing));
 			}
 			break;
 			default:
@@ -123,6 +133,7 @@ void ABLeon::AimUpdate(float _DeltaTime)
 void ABLeon::AimExit()
 {
 	LeonAim = ELeonAim::Start;
-
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+	bDrawGrenadeAim = false;
+	GrenadeAimActor->DisableDraw();
 }

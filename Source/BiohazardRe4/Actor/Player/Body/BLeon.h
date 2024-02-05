@@ -23,6 +23,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class ABLeonWeapon;
 class UCapsuleComponent;
+class USceneComponent;
+class ABDrawGrenadeAim;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -35,6 +37,7 @@ enum class ELeonState : uint8
 	Aim				UMETA(DisplayName = "Aim"),
 	KnifeAttack		UMETA(DisplayName = "KnifeAttack"),
 	KickAttack		UMETA(DisplayName = "KickAttack"),
+	Throwing		UMETA(DisplayName = "Throwing"),
 	Damage			UMETA(DisplayName = "Damage"),
 	Death			UMETA(DisplayName = "Death"),
 };
@@ -311,6 +314,7 @@ public:
 
 	virtual void WeaponShootStart() override;
 	virtual void WeaponShootEnd() override;
+	virtual void ThrowingEnd() override;
 
 	virtual void AttachLeftHandSocket() override;
 	virtual void AttachRightHandSocket() override;
@@ -395,6 +399,7 @@ private:
 
 	uint32 bIsHitEnd : 1 = false;
 	uint32 bIsDeathEnd : 1 = false;
+	uint32 bIsThrowingEnd : 1 = false;
 
 	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
 
@@ -473,7 +478,19 @@ private:
 	EItemCode  UseWeaponCode = EItemCode::Empty;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat)
-	FPlayerStat Stat;
+	FPlayerStat Stat;	
+
+	uint32 bDrawGrenadeAim: 1 = false;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	ABDrawGrenadeAim* GrenadeAimActor = nullptr;
+	
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	USceneComponent* GrenadeThrowingLocation = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float GrenadeThrowingPower = 850.0f;
+
 
 	//*****************************************************//
 
@@ -489,7 +506,7 @@ private:
 	void UseWeaponUpdate(float _DeltaTime);
 	void WeaponSocketUpdate(float _DeltaTime);
 	void SocketSwapUpdate(float _DeltaTime);
-	void HeatlStateUpdate(float _DeltaTime);
+	void HealthStateUpdate(float _DeltaTime);
 
 	void VPlayerCameraToWorld(FVector& _Result) const;
 
@@ -514,10 +531,14 @@ private:
 	void TryInteraction();
 	bool AbleAim() const;
 
+	void DrawGrenadeAim(float _DeltaTime);
+
+	FVector GetGrenadeStartLocation() const;
+
 	void CreateSprintArm();
 	void CreateFSM();
 	void CreateCollision();
-
+		
 	ABLeonWeapon* CreateWeapon(EItemCode _WeaponCode);
 	void DeleteCurrentWeapon();
 
@@ -544,6 +565,10 @@ private:
 	void KnifeAttackEnter();
 	void KnifeAttackUpdate(float _DeltaTime);
 	void KnifeAttackExit();
+
+	void ThrowingEnter();
+	void ThrowingUpdate(float _DeltaTime);
+	void ThrowingExit();
 
 	void DamageEnter();
 	void DamageUpdate(float _DeltaTime);

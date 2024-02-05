@@ -7,17 +7,21 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/InputComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
+#include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Engine/DamageEvents.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include "BiohazardRe4.h"
 #include "../Weapon/Grenade/BLeonGrenade.h"
 #include "../Weapon/Gun/BLeonPistol.h"
 #include "../Weapon/Gun/BLeonRifle.h"
 #include "../Weapon/Gun/BLeonShotgun.h"
 #include "../Weapon/Knife/BLeonKnife.h"
+#include "../Weapon/BDrawGrenadeAim.h"
 #include "DamageType/BDMGMonsterDamage.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
@@ -37,6 +41,9 @@ ABLeon::ABLeon()
 	CreateSprintArm();
 	CreateFSM();
 	CreateCollision();
+
+	GrenadeThrowingLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Grenade Start"));
+	GrenadeThrowingLocation->SetupAttachment(GetMesh(), TEXT("R_GrenadeSocket"));
 }
 
 ABLeon::~ABLeon()
@@ -52,6 +59,11 @@ ABLeon::~ABLeon()
 void ABLeon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	GrenadeAimActor = GetWorld()->SpawnActor<ABDrawGrenadeAim>(SpawnParams);
+
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
 
@@ -63,7 +75,7 @@ void ABLeon::Tick(float _DeltaTime)
 	UseWeaponUpdate(_DeltaTime);
 	WeaponSocketUpdate(_DeltaTime);
 	SocketSwapUpdate(_DeltaTime);
-	HeatlStateUpdate(_DeltaTime);
+	HealthStateUpdate(_DeltaTime);
 
 	LeonFSMState = GetCurrentFSMState();
 }
@@ -484,6 +496,11 @@ void ABLeon::WeaponShootEnd()
 	bIsGunRecoil = false;
 }
 
+void ABLeon::ThrowingEnd()
+{
+	bIsThrowingEnd = true;
+}
+
 void ABLeon::AttachLeftHandSocket()
 {
 	if (nullptr == CurrentWeapon)
@@ -689,6 +706,34 @@ bool ABLeon::AbleAim() const
 	return true;
 }
 
+void ABLeon::DrawGrenadeAim(float _DeltaTime)
+{
+	FVector StartLocation = GetGrenadeStartLocation();
+	FVector AimVelocity = PlayerCamera->GetForwardVector() + FVector(0, 0, 0.5);
+	AimVelocity.Normalize();
+
+	AimVelocity *= GrenadeThrowingPower;
+
+	FPredictProjectilePathParams PredictParams(5.0f, StartLocation, AimVelocity, 2.0f, ECollisionChannel::ECC_GameTraceChannel11);
+	PredictParams.DrawDebugType = EDrawDebugTrace::Type::None; 
+	PredictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
+	FPredictProjectilePathResult Result;
+	UGameplayStatics::PredictProjectilePath(this, PredictParams, Result);
+
+	DrawDebugSphere(GetWorld(), Result.HitResult.Location, 10, 30, FColor::Red);
+
+	GrenadeAimActor->Draw(Result);
+}
+
+FVector ABLeon::GetGrenadeStartLocation() const
+{
+	FVector StartLocation = GrenadeThrowingLocation->GetComponentLocation();
+	StartLocation += -GetActorForwardVector() * 8;
+	StartLocation += GetActorRightVector() * 5;
+	StartLocation += FVector::UpVector * 5;
+	return StartLocation;
+}
+
 void ABLeon::PlayLook(const FInputActionInstance& _LookAction)
 {
 	PlayLook(_LookAction.GetValue().Get<FVector2D>());
@@ -838,7 +883,7 @@ void ABLeon::SocketSwapUpdate(float _DeltaTime)
 	}
 }
 
-void ABLeon::HeatlStateUpdate(float _DeltaTime)
+void ABLeon::HealthStateUpdate(float _DeltaTime)
 {
 	if (0.15f <= Stat.CurrentHp / Stat.MaxHp)
 	{
@@ -1251,6 +1296,12 @@ void ABLeon::CreateFSM()
 	KnifeAttackFSMState.UpdateDel.BindUObject(this, &ABLeon::KnifeAttackUpdate);
 	KnifeAttackFSMState.ExitDel.BindUObject(this, &ABLeon::KnifeAttackExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::KnifeAttack), KnifeAttackFSMState);
+
+	UBFsm::FStateCallback ThrowingFSMState;
+	ThrowingFSMState.EnterDel.BindUObject(this, &ABLeon::ThrowingEnter);
+	ThrowingFSMState.UpdateDel.BindUObject(this, &ABLeon::ThrowingUpdate);
+	ThrowingFSMState.ExitDel.BindUObject(this, &ABLeon::ThrowingExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Throwing), ThrowingFSMState);
 
 	UBFsm::FStateCallback DamageFSMState;
 	DamageFSMState.EnterDel.BindUObject(this, &ABLeon::DamageEnter);
