@@ -9,4 +9,5 @@ void ABLeonShotgun::BeginPlay()
 	DefaultDamage = 5.6f;
 	RateOfFire = 0.45f;
 	Range = 2500.f;
+	MaxAmmo = 5;
 }

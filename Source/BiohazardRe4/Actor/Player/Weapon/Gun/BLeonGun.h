@@ -81,10 +81,10 @@ protected:
 	int32 MaxAmmo = 5;
 
 	UPROPERTY()
-	int32 CurAmmo = 5;
+	int32 CurAmmo = 0;
 
 	UPROPERTY()
-	int32 ExtraAmmo = 10;
+	int32 ExtraAmmo = 100;
 
 	UPROPERTY()
 	FPointDamageEvent GunDamageEvent;

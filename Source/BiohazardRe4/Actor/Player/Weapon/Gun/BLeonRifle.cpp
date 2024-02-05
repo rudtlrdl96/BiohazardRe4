@@ -10,4 +10,5 @@ void ABLeonRifle::BeginPlay()
 	DefaultDamage = 2.5f;
 	RateOfFire = 0.42f;
 	Range = 10000.f;
+	MaxAmmo = 5;
 }
