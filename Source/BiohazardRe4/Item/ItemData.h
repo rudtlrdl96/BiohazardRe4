@@ -32,6 +32,7 @@ enum class EItemCode : uint8
 	// ¼ö·ùÅº
 	Grenade			UMETA(DisplayName = "Grenade"),     // ¼ö·ùÅº
 	Flashbang		UMETA(DisplayName = "Flashbang"),   // ¼¶±¤Åº
+	End,
 };
 
 /*
@@ -96,4 +97,7 @@ struct FBItemData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
 	FVector StoreScale;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
+	int Price;
 };

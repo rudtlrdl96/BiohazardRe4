@@ -70,6 +70,12 @@ void UBInventoryManager::AddItem(EItemCode ItemCode, int Num)
 	CreateItem(*FindItem, Num);
 }
 
+void UBInventoryManager::AddItem(FName ItemRowName, int Num)
+{
+	FBItemData* ItemData = ItemDataTable->FindRow<FBItemData>(ItemRowName, TEXT("Can't Find"));
+	CreateItem(*ItemData, Num);
+}
+
 void UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos, int Num)
 {
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
@@ -749,7 +755,7 @@ FVector UBInventoryManager::GetItemWorldLocation(ABInventoryItem* Item)
 	return MainSlot[Pos.Y * CaseSize.X + Pos.X]->GetComponentLocation();
 }
 
-int UBInventoryManager::GetItemCount(EItemCode Code)
+int UBInventoryManager::GetItemCount(EItemCode Code) const 
 {
 	int Num = 0;
 	TArray<ABInventoryItem*> Items;

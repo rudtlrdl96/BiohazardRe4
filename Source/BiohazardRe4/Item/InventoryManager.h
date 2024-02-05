@@ -46,6 +46,8 @@ public:
 	const FBItemData& FindItemData(EItemCode Code);
 	// 아이템을 추가한다
 	void AddItem(EItemCode ItemCode, int Num = 1);
+	// 아이템을 추가한다
+	void AddItem(FName ItemRowName, int Num = 1);
 	// 아이템을 해당 위치에 추가한다
 	void AddItem(EItemCode ItemCode, const FIntPoint& Pos, int Num = 1);
 	// 아이템을 제거한다. Num개 만큼 제거합니다
@@ -99,7 +101,7 @@ public:
 	// 해당 아이템에 월드 위치값을 받아옵니다
 	FVector GetItemWorldLocation(ABInventoryItem* Item);
 	// 해당 코드의 아이템이 인벤토리에 몇개 있는지 받아옵니다
-	int GetItemCount(EItemCode Code);
+	int GetItemCount(EItemCode Code) const;
 	// 서브 슬롯에 있는 모든 아이템을 버립니다
 	void RemoveAllItemInSubSlot();
 

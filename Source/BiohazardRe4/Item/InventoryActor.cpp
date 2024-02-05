@@ -230,7 +230,12 @@ void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 	Inventory->AddItem(ItemCode, Num);
 }
 
-int ABInventoryActor::GetItemCount(EItemCode ItemCode)
+void ABInventoryActor::AddItemRowName(FName ItemRowName, int Num)
+{
+	Inventory->AddItem(ItemRowName, Num);
+}
+
+int ABInventoryActor::GetItemCount(EItemCode ItemCode) const
 {
 	return Inventory->GetItemCount(ItemCode);
 }
@@ -258,6 +263,9 @@ void ABInventoryActor::OpenInventory()
 	Widget->WidgetOn();
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);	// 매핑컨텍스트 추가해서 조작 할 수 있게 만듬
 	Controller->SetViewTarget(this);	// 뷰타겟을 이 엑터로 지정
+	FInputModeGameAndUI InputMode;
+	InputMode.SetHideCursorDuringCapture(false);
+	Controller->SetInputMode(InputMode);
 	Controller->SetShowMouseCursor(true);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
@@ -372,6 +380,7 @@ void ABInventoryActor::CloseInventory()
 	Inventory->RemoveAllItemInSubSlot();
 	Widget->WidgetOff();
 	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
+	Controller->SetInputMode(FInputModeGameOnly());
 	Controller->SetShowMouseCursor(false);
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
 	HUD->QuickSlotUpdate(QuickSlot);

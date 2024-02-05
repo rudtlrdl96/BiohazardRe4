@@ -39,9 +39,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddItem(EItemCode ItemCode, int Num = 1);
 
+	// 아이템을 추가한다
+	UFUNCTION(BlueprintCallable)
+	void AddItemRowName(FName ItemRowName, int Num = 1);
+
 	// 해당 코드의 아이템의 개수를 찾는다
 	UFUNCTION(BlueprintCallable)
-	int GetItemCount(EItemCode ItemCode);
+	int GetItemCount(EItemCode ItemCode) const;
 
 	// 해당 코드의 아이템을 Num개 만큼 제거한다
 	UFUNCTION(BlueprintCallable)
