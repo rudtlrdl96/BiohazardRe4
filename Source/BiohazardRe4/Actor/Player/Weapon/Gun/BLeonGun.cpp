@@ -71,6 +71,7 @@ void ABLeonGun::Shoot()
 		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
 		AActor* ShootedActor = GunHitInfo.GetActor();
 		GunDamageEvent.HitInfo = GunHitInfo;
+		GunDamageEvent.ShotDirection = Player->GetActorForwardVector();
 		ShootedActor->TakeDamage(DefaultDamage * DamageUnit, GunDamageEvent, Player->GetController(), this);
 	}
 	else
