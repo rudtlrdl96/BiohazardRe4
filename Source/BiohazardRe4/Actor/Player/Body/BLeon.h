@@ -457,7 +457,9 @@ private:
 
 	//************** Camera º¯¼ö **************//
 
+	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArm = nullptr;
+	UPROPERTY(EditAnywhere)
 	UCameraComponent* PlayerCamera = nullptr;	
 
 	//*****************************************************//
