@@ -3,3 +3,9 @@
 
 #include "Actor/Player/Weapon/Gun/BLeonPistol.h"
 
+void ABLeonPistol::BeginPlay()
+{
+	Super::BeginPlay();
+	DefaultDamage = 1.f;
+	RateOfFire = 1.f;
+}

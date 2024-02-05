@@ -15,7 +15,7 @@ void ABLeonGun::BeginPlay()
 bool ABLeonGun::AbleAttack() const
 {
 	LOG_MSG(TEXT("AbleAttack"))
-	return true;
+	return CurAmmo > 0;
 }
 
 void ABLeonGun::Attack()
@@ -27,14 +27,20 @@ void ABLeonGun::Attack()
 bool ABLeonGun::AbleReload() const
 {
 	LOG_MSG(TEXT("AbleReload"))
-		return true;
+	return CurAmmo < MaxAmmo && ExtraAmmo > 0;
 }
 
 void ABLeonGun::Reload()
 {
+	int32 ReloadAmmoCount = MaxAmmo - CurAmmo;
+	if (ReloadAmmoCount > ExtraAmmo)
+	{
+		ReloadAmmoCount = ExtraAmmo;
+	}
+	CurAmmo += ReloadAmmoCount;
+	ExtraAmmo -= ReloadAmmoCount;
 	LOG_MSG(TEXT("Reload"))
 }
-
 
 void ABLeonGun::Shoot()
 {
@@ -69,26 +75,32 @@ void ABLeonGun::Shoot()
 	{
 		LOG_MSG(TEXT("AttackSuccess"))
 		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
-		AActor* ShootedActor = GunHitInfo.GetActor();
+		
+		AActor* DamagedActor = GunHitInfo.GetActor();
 		GunDamageEvent.HitInfo = GunHitInfo;
 		GunDamageEvent.ShotDirection = Player->GetActorForwardVector();
-		ShootedActor->TakeDamage(DefaultDamage * DamageUnit, GunDamageEvent, Player->GetController(), this);
+		
+		float CalDamage = DefaultDamage * DamageUnit;
+		LOG_MSG(TEXT("Damage : %f"), CalDamage)
+		
+		DamagedActor->TakeDamage(CalDamage, GunDamageEvent, Player->GetController(), this);
 	}
 	else
 	{
 		LOG_MSG(TEXT("AttackFail"))
 		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
 	}
+
+	--CurAmmo;
+	LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
 }
 
 void ABLeonGun::DropShell()
 {
 	LOG_MSG(TEXT("DropShell"))
-
 }
 
 void ABLeonGun::DropMagazine()
 {
 	LOG_MSG(TEXT("DropMagazine"))
-		
 }

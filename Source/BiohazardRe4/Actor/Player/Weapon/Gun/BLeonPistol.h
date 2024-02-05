@@ -14,4 +14,7 @@ class BIOHAZARDRE4_API ABLeonPistol : public ABLeonGun
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
+
 };
