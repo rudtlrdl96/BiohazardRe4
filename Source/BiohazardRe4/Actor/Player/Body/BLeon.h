@@ -121,6 +121,14 @@ enum class ELeonDamageType : uint8
 	Explosion	UMETA(DisplayName = "Explosion"),	
 };
 
+UENUM(BlueprintType)
+enum class ELeonThrowingAnim : uint8
+{
+	Top			UMETA(DisplayName = "Top"),
+	Bottom		UMETA(DisplayName = "Bottom"),
+};
+
+
 USTRUCT()
 struct FPlayerStat
 {
@@ -291,16 +299,25 @@ public:
 		return bIsGunReload;
 	}
 
+	// 마지막으로 들어온 데미지 타입을 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline ELeonDamageType GetDamageType() const
 	{
 		return DamageType;
 	}
 
+	// 마지막으로 들어온 데미지 방향을 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline ELeonDamageDirection GetDamageDirection() const
 	{
 		return DamageDirection;
+	}	
+	
+	// 실행할 투척 애니메이션을 반환합니다
+	UFUNCTION(BlueprintCallable)
+	inline ELeonThrowingAnim GetThrowingAnim() const
+	{
+		return ThrowingAnim;
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -402,6 +419,7 @@ private:
 	uint32 bIsThrowingEnd : 1 = false;
 
 	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
+	ELeonThrowingAnim ThrowingAnim = ELeonThrowingAnim::Top;
 
 	//*****************************************************//
 

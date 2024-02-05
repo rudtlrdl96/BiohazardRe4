@@ -22,7 +22,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Draw(const FPredictProjectilePathResult& _Path);
+	void Draw(const FPredictProjectilePathResult& _Path, bool _bIsSplineDraw);
 	void DisableDraw();
 
 protected:
@@ -36,4 +36,6 @@ private:
 	USplineComponent* SplineComp = nullptr;
 
 	TArray<USplineMeshComponent*> SplineMeshs;
+
+	UStaticMeshComponent* DecalMesh = nullptr;
 };

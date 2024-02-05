@@ -25,7 +25,7 @@ ABDrawGrenadeAim::ABDrawGrenadeAim()
 
 	for (int32 i = 0; i < MaxMeshCount; ++i)
 	{
-		FString NameString = FString(TEXT("Mesh"));
+		FString NameString = FString(TEXT("Spline Mesh"));
 		NameString.AppendChar('-');
 		NameString.AppendInt(i);
 
@@ -37,8 +37,8 @@ ABDrawGrenadeAim::ABDrawGrenadeAim()
 		SplineMeshs[i]->Mobility = EComponentMobility::Type::Movable;
 		SplineMeshs[i]->ForwardAxis = ESplineMeshAxis::Type::X;
 
-		SplineMeshs[i]->SetStartScale(FVector2D(0.15, 0.15));
-		SplineMeshs[i]->SetEndScale(FVector2D(0.15, 0.15));
+		SplineMeshs[i]->SetStartScale(FVector2D(0.07, 0.07));
+		SplineMeshs[i]->SetEndScale(FVector2D(0.07, 0.07));
 
 		if (nullptr == SplineMeshs[i])
 		{
@@ -47,6 +47,13 @@ ABDrawGrenadeAim::ABDrawGrenadeAim()
 
 		SplineMeshs[i]->SetVisibility(false);
 	}
+
+	DecalMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Decal Mesh"));
+	DecalMesh->SetStaticMesh(CubeMeshRef.Object);
+	DecalMesh->SetMaterial(0, AimMatRef.Object);
+	DecalMesh->SetCollisionProfileName("NoCollision");
+	DecalMesh->Mobility = EComponentMobility::Type::Movable;
+	DecalMesh->SetVisibility(false);
 }
 
 // Called when the game starts or when spawned
@@ -63,7 +70,7 @@ void ABDrawGrenadeAim::Tick(float DeltaTime)
 
 }
 
-void ABDrawGrenadeAim::Draw(const FPredictProjectilePathResult& _Path)
+void ABDrawGrenadeAim::Draw(const FPredictProjectilePathResult& _Path, bool _bIsSplineDraw)
 {
 	DisableDraw();
 
@@ -76,17 +83,29 @@ void ABDrawGrenadeAim::Draw(const FPredictProjectilePathResult& _Path)
 		SplineComp->AddSplinePoint(_Path.PathData[i].Location, ESplineCoordinateSpace::Type::World);
 	}
 
-	for (int i = 0; i < EndIndex - 1; ++i)
+	if (true == _bIsSplineDraw)
 	{
-		FVector StartLocation = SplineComp->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Type::World);
-		FVector StartTangent = SplineComp->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Type::World);
+		for (int i = 0; i < EndIndex - 1; ++i)
+		{
+			FVector StartLocation = SplineComp->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Type::World);
+			FVector StartTangent = SplineComp->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Type::World);
 
-		FVector EndLocation = SplineComp->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::Type::World);
-		FVector EndTangent = SplineComp->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Type::World);
-					
-		SplineMeshs[i]->SetStartAndEnd(StartLocation, StartTangent, EndLocation, EndTangent);
-		SplineMeshs[i]->SetVisibility(true);
+			FVector EndLocation = SplineComp->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::Type::World);
+			FVector EndTangent = SplineComp->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Type::World);
+
+			SplineMeshs[i]->SetStartAndEnd(StartLocation, StartTangent, EndLocation, EndTangent);
+			SplineMeshs[i]->SetVisibility(true);
+		}
 	}
+
+	if (false == _Path.HitResult.bBlockingHit)
+	{
+		return;
+	}
+
+	DecalMesh->SetWorldLocation(_Path.HitResult.Location);
+	DecalMesh->SetWorldRotation(_Path.HitResult.ImpactNormal.Rotation() + FRotator(-90, 0, 0));
+	DecalMesh->SetVisibility(true);
 }
 
 void ABDrawGrenadeAim::DisableDraw()
@@ -95,4 +114,6 @@ void ABDrawGrenadeAim::DisableDraw()
 	{
 		SplineMeshs[i]->SetVisibility(false);
 	}
+
+	DecalMesh->SetVisibility(false);
 }

@@ -712,6 +712,18 @@ void ABLeon::DrawGrenadeAim(float _DeltaTime)
 	FVector AimVelocity = PlayerCamera->GetForwardVector() + FVector(0, 0, 0.5);
 	AimVelocity.Normalize();
 
+	FVector ActorForward = GetActorForwardVector();
+	ActorForward.Normalize();
+
+	FVector Cross = FVector::CrossProduct(ActorForward, AimVelocity);
+
+	double Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, AimVelocity)));
+
+	if (0 >= Cross.X)
+	{
+		Angle *= -1.0f;
+	}
+
 	AimVelocity *= GrenadeThrowingPower;
 
 	FPredictProjectilePathParams PredictParams(5.0f, StartLocation, AimVelocity, 2.0f, ECollisionChannel::ECC_GameTraceChannel11);
@@ -722,7 +734,17 @@ void ABLeon::DrawGrenadeAim(float _DeltaTime)
 
 	DrawDebugSphere(GetWorld(), Result.HitResult.Location, 10, 30, FColor::Red);
 
-	GrenadeAimActor->Draw(Result);
+	if (-10 < Angle)
+	{
+		ThrowingAnim = ELeonThrowingAnim::Top;
+		GrenadeAimActor->Draw(Result, true);
+	}
+	else
+	{
+		ThrowingAnim = ELeonThrowingAnim::Bottom;
+		GrenadeAimActor->Draw(Result, false);
+	}
+
 }
 
 FVector ABLeon::GetGrenadeStartLocation() const

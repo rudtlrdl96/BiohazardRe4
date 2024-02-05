@@ -5,6 +5,9 @@
 #include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStaticsTypes.h"
+#include "Kismet/GameplayStatics.h"
+#include "BiohazardRe4.h"
 
 void ABLeon::ThrowingEnter()
 {
