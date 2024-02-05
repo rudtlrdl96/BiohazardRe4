@@ -3,7 +3,8 @@
 
 #include "Actor/Player/Weapon/Gun/BLeonGun.h"
 #include "Kismet/GameplayStatics.h"
-#include "BiohazardRe4.h"
+#include "Engine/DamageEvents.h"
+#include "DamageType/BDMGPlayerDamage.h"
 
 void ABLeonGun::BeginPlay()
 {
@@ -69,6 +70,8 @@ void ABLeonGun::Shoot()
 		LOG_MSG(TEXT("AttackSuccess"))
 		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
 		AActor* ShootedActor = GunHitInfo.GetActor();
+		GunDamageEvent.HitInfo = GunHitInfo;
+		ShootedActor->TakeDamage(DefaultDamage * DamageUnit, GunDamageEvent, Player->GetController(), this);
 	}
 	else
 	{
@@ -86,5 +89,5 @@ void ABLeonGun::DropShell()
 void ABLeonGun::DropMagazine()
 {
 	LOG_MSG(TEXT("DropMagazine"))
-
+		
 }

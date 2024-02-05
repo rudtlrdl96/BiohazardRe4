@@ -5,9 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/DamageEvents.h"
+#include "DamageType/BDMGPlayerDamage.h"
 #include "BiohazardRe4.h"
 #include "..\Body\BLeon.h"
 #include "BLeonWeapon.generated.h"
+
 
 UCLASS()
 class BIOHAZARDRE4_API ABLeonWeapon : public AActor
@@ -51,5 +54,15 @@ protected:
 	USkeletalMeshComponent* WeaponMesh = nullptr;
 
 	ABLeon* Player = nullptr;
+
+	UPROPERTY()
+	FDamageEvent WeaponDamageEvent;
+
+	//WeaponInformation
+	UPROPERTY()
+	UBDMGPlayerDamage* WeaponType;
+
+	UPROPERTY()
+	int32 WeaponDamage;
 
 };

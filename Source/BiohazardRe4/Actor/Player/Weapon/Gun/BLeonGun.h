@@ -56,4 +56,19 @@ protected:
 
 	UPROPERTY()
 	FVector GunLineTraceEnd = FVector::Zero();
+
+	//  ______________________Damage
+
+	UPROPERTY()
+	float DamageUnit = 120.f;
+
+	UPROPERTY()
+	float DefaultDamage = 1.f;
+
+	UPROPERTY()
+	FPointDamageEvent GunDamageEvent;
+
+
+
+
 };
