@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Actor/Player/Weapon/Gun/BLeonGun.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DamageEvents.h"
@@ -81,9 +80,10 @@ void ABLeonGun::Shoot()
 		GunDamageEvent.ShotDirection = Player->GetActorForwardVector();
 		
 		float CalDamage = DefaultDamage * DamageUnit;
-		LOG_MSG(TEXT("Damage : %f"), CalDamage)
-		
-		DamagedActor->TakeDamage(CalDamage, GunDamageEvent, Player->GetController(), this);
+		LOG_MSG(TEXT("Damage : %f"), CalDamage);
+
+		UGameplayStatics::ApplyPointDamage(DamagedActor, CalDamage, Player->GetActorForwardVector(), GunDamageEvent.HitInfo, Player->GetController(), this, UBDMGPlayerDamage::StaticClass());
+		//DamagedActor->TakeDamage(CalDamage, GunDamageEvent, Player->GetController(), this);
 	}
 	else
 	{

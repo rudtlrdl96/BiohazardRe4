@@ -18,7 +18,7 @@ enum class EMonsterDamageDirection : uint8
 };
 
 UENUM(BlueprintType)
-enum class EMonsterDamagePower: uint8
+enum class EMonsterDamagePower : uint8
 {
 	Small		UMETA(DisplayName = "Small"),
 	Medium		UMETA(DisplayName = "Medium"),
@@ -31,6 +31,8 @@ class BIOHAZARDRE4_API UBDMGMonsterDamage : public UDamageType
 {
 	GENERATED_BODY()
 public:
+	UBDMGMonsterDamage() {}
+
 	UPROPERTY(EditAnywhere, Category = Damage)
 	EMonsterDamageDirection DamageDirection = EMonsterDamageDirection::Top;
 

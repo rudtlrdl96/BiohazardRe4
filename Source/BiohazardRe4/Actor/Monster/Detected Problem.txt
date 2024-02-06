@@ -9,9 +9,9 @@ TakeDamage에 분기 만들기(공격 타입에 따라)
 부위별로도 다르게
 
 ------------------------------------
+
 1. 남자잡몹 애니메이션 매칭
 2. 여성 -> 애니메이션 리타겟팅
-
 
 ///
 위력 1당 120
@@ -39,3 +39,38 @@ TakeDamage에 분기 만들기(공격 타입에 따라)
 
 나이프 이스케이프는 x2.5
 나이프 확킬모션은 40배.
+
+_________________________________
+
+
+void AYourCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    // FDamageEvent에서 피직스 에셋 얻기
+    UPrimitiveComponent* DamagedComponent = DamageEvent.HitComponent;
+
+    if (DamagedComponent && DamagedComponent->IsA(UPhysicsAssetComponent::StaticClass()))
+    {
+        UPhysicsAssetComponent* PhysicsAssetComponent = Cast<UPhysicsAssetComponent>(DamagedComponent);
+
+        if (PhysicsAssetComponent)
+        {
+            // 피직스 에셋으로부터 스켈레톤 얻기
+            USkeletalMeshComponent* SkeletalMeshComponent = PhysicsAssetComponent->SkeletalMeshComponent;
+
+            if (SkeletalMeshComponent)
+            {
+                // 본 인덱스나 이름을 사용하여 본 정보 얻기
+                FName BoneName = NAME_None; // 본 이름 설정
+                int32 BoneIndex = SkeletalMeshComponent->GetBoneIndex(BoneName);
+
+                if (BoneIndex != INDEX_NONE)
+                {
+                    FTransform BoneTransform = SkeletalMeshComponent->GetBoneTransform(BoneIndex);
+                    // 이제 BoneTransform을 사용하여 필요한 작업 수행
+                }
+            }
+        }
+    }
+
+    // 나머지 데미지 처리 로직 추가
+}

@@ -4,6 +4,7 @@
 #include "Actor/Monster/Animation/AnimInstance/BMonsterAnimInstanceBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "../../Interface/BMonsterStateInterface.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../../Define/MonsterDefine.h"
@@ -11,7 +12,27 @@
 
 UBMonsterAnimInstanceBase::UBMonsterAnimInstanceBase()
 {
+	//AnimType = EMonsterAnimType::BareHands;
 	GroundSpeedThreshold = 0.0f;
+}
+
+void UBMonsterAnimInstanceBase::SetTarget(UObject* _Target)
+{
+	TraceTarget = _Target;
+}
+
+void UBMonsterAnimInstanceBase::SetAnimationType(EMonsterAnimType _AnimType)
+{
+	AnimType = _AnimType;
+
+	if (AnimType == EMonsterAnimType::BareHands)
+	{
+		//LOG_MSG(TEXT("Monster Bare Hands Update"));
+	}
+	else if (AnimType == EMonsterAnimType::OneHand)
+	{
+		//LOG_MSG(TEXT("Monster One Hand Update"));
+	}
 }
 
 void UBMonsterAnimInstanceBase::NativeInitializeAnimation()
@@ -48,16 +69,9 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 		CurState = StaticCast<uint8>(StateInterface->GetCurrentState());
 	}
 
-	AAIController* AIController = Cast<AAIController>(Owner->GetController());
-	if (AIController != nullptr)
+	if (TraceTarget != nullptr)
 	{
-		UObject* Target = AIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET);
-		if (Target == nullptr)
-		{
-			return;
-		}
-
-		ACharacter* Character = Cast<ACharacter>(Target);
+		ACharacter* Character = Cast<ACharacter>(TraceTarget);
 		if (Character == nullptr)
 		{
 			LOG_WARNING(TEXT("Character is nullptr"));

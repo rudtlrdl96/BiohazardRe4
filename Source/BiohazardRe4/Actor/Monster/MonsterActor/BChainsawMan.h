@@ -19,4 +19,7 @@ public:
 protected:
 	virtual void Attack() override;
 	virtual void BeginPlay() override;
+
+private:
+	virtual void InitDamageTypes() override;
 };

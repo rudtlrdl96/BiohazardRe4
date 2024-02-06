@@ -25,7 +25,8 @@ enum class EMonsterState : uint8
 	Run UMETA(DisplayName = "Run"),
 	Attack UMETA(DisplayName = "Attack"),
 	Flashed UMETA(DisplayName = "Flashed"),
-	Hit UMETA(DisplayName = "Hit"),
+	Damaged UMETA(DisplayName = "Damaged"),
+	Groggy UMETA(DisplayName = "Groggy"),
 };
 
 class BIOHAZARDRE4_API IBMonsterStateInterface

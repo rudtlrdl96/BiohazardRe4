@@ -44,4 +44,7 @@ private:
 
 	void SetSkeletalMeshInConstructor();
 
+private:
+
+	virtual void Tick(float _DeltaTIme) override;
 };

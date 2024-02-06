@@ -14,6 +14,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../DataAsset/BMonsterStatData.h"
+#include "../Interface/BMonsterAnimInterface.h"
 
 ABAIBasicMonsterController::ABAIBasicMonsterController()
 {
@@ -77,7 +78,7 @@ void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAISt
 		{
 			GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, _Stimulus.WasSuccessfullySensed());
 			GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, UpdatedPawn);
-
+			
 			ACharacter* OwnerCharacter = GetCharacter();
 			if (OwnerCharacter == nullptr)
 			{
@@ -85,6 +86,21 @@ void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAISt
 				return;
 			}
 
+			UAnimInstance* OwnerAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+			if (OwnerAnimInstance == nullptr)
+			{
+				LOG_WARNING(TEXT("OwnerAnimInstance is nullptr"));
+				return;
+			}
+
+			IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(OwnerAnimInstance);
+			if (AnimInterface == nullptr)
+			{
+				LOG_WARNING(TEXT("AnimInterface is nullptr"));
+				return;
+			}
+
+			AnimInterface->SetTarget(UpdatedPawn);
 			OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 		}
 	}

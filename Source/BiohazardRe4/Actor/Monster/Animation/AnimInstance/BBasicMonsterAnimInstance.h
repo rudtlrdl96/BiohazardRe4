@@ -21,6 +21,4 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State)
 	uint8 CurWeaponType;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
-	UObject* TraceTarget;
 };

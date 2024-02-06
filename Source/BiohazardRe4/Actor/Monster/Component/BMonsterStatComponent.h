@@ -23,6 +23,8 @@ struct FStatStruct
 	float RunSpeed = 0.0f;
 	float WalkSpeed = 0.0f;
 	float WalkDistanceThreshold = 0.0f;
+
+	float BaseAttackPower = 0.0f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -41,6 +43,7 @@ public:
 	float GetWalkSpeed() { return WalkSPeed; };
 	float GetRunSpeed() { return RunSpeed; };
 	float GetWalkDistanceThreshold() { return WalkDistanceThreshold; };
+	float GetBaseAttackPower() { return BaseAttackPower; };
 
 	void StatInit(const FStatStruct& _StatData);
 
@@ -78,4 +81,8 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float WalkDistanceThreshold = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float BaseAttackPower = 0.0f;
+
 };

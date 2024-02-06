@@ -4,19 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "../../Interface/BMonsterStateInterface.h"
+#include "../../Interface/BMonsterAnimInterface.h"
 #include "BMonsterAnimInstanceBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API UBMonsterAnimInstanceBase : public UAnimInstance
+class BIOHAZARDRE4_API UBMonsterAnimInstanceBase : public UAnimInstance, public IBMonsterAnimInterface
 {
 	GENERATED_BODY()
 public:
 	UBMonsterAnimInstanceBase();
 
+	virtual void SetTarget(UObject* _Target) override;
+	virtual void SetAnimationType(EMonsterAnimType _AnimType) override;
 protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float _DeltaSeconds) override;
@@ -30,6 +32,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State)
 	uint8 CurState;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
+	EMonsterAnimType AnimType;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	float GroundSpeed;
 
@@ -38,6 +43,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	FRotator GroundRotation;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
+	UObject* TraceTarget;
 private:
 	float GroundSpeedThreshold = 0.0f;
+
+	EMonsterAnimType SavedAnimType;
 };

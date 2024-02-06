@@ -38,4 +38,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	EWeaponType MyWeaponType;
+
+private:
+	virtual void InitDamageTypes() override;
+
 };

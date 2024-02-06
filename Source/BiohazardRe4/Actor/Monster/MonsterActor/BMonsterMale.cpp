@@ -5,6 +5,7 @@
 #include "BiohazardRe4.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Component/BMonsterStatComponent.h"
+#include "../Interface/BMonsterAnimInterface.h"
 
 ABMonsterMale::ABMonsterMale()
 {
@@ -13,6 +14,15 @@ ABMonsterMale::ABMonsterMale()
 
 	InitAI();
 	InitValue();
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale'"));
+	if (AnimRef.Class != nullptr)
+	{
+		GetMesh()->SetAnimInstanceClass(AnimRef.Class);
+	}
+
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.5f;
 }
 
 void ABMonsterMale::BeginPlay()
@@ -47,14 +57,23 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 {
 	if (MyWeaponType == EWeaponType::None)
 	{
-		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_MonsterMale_BareHands.ABP_MonsterMale_BareHands'");
+		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale'");
 		UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
 
-		if (AnimBlueprint)
+		if (AnimBlueprint == nullptr)
 		{
-			UAnimInstance* AnimInstance = AnimBlueprint->GeneratedClass->GetDefaultObject<UAnimInstance>();
-			GetMesh()->SetAnimInstanceClass(AnimBlueprint->GeneratedClass);
+			LOG_MSG(TEXT("AnimBlueprint is nullptr"));
+			return;
 		}
+
+		IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
+		if (AnimInterface == nullptr)
+		{
+			LOG_MSG(TEXT("AnimInterface casting failed"));
+			return;
+		}
+		
+		AnimInterface->SetAnimationType(EMonsterAnimType::BareHands);
 
 		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_BareHands.AM_MonsterMale_Attack_BareHands'");
 		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
@@ -64,52 +83,55 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 	}
 	else if (MyWeaponType == EWeaponType::OneHand)
 	{
-		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_MonsterMale_OneHand.ABP_MonsterMale_OneHand'");
+		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale'");
 		UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
 
-		if (AnimBlueprint)
+		if (AnimBlueprint == nullptr)
 		{
-			UAnimInstance* AnimInstance = AnimBlueprint->GeneratedClass->GetDefaultObject<UAnimInstance>();
-			GetMesh()->SetAnimInstanceClass(AnimBlueprint->GeneratedClass);
+			LOG_MSG(TEXT("AnimBlueprint is nullptr"));
+			return;
 		}
 
+		IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
+		if (AnimInterface == nullptr)
+		{
+			LOG_MSG(TEXT("AnimInterface casting failed"));
+			return;
+		}
+		
+		AnimInterface->SetAnimationType(EMonsterAnimType::OneHand);
+		
 		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_OneHand.AM_MonsterMale_Attack_OneHand'");
 		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
 
 		FString DamagedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_OneHand.AM_MonsterMale_Damaged_OneHand'");
 		DamagedMontage = LoadObject<UAnimMontage>(nullptr, *DamagedMontagePath);
 	}
-	else if (MyWeaponType == EWeaponType::TwoHands)
-	{
-		//FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_MonsterMale_TwoHands.ABP_MonsterMale_TwoHands'");
-		//UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
-		//
-		//if (AnimBlueprint)
-		//{
-		//	UAnimInstance* AnimInstance = AnimBlueprint->GeneratedClass->GetDefaultObject<UAnimInstance>();
-		//	GetMesh()->SetAnimInstanceClass(AnimBlueprint->GeneratedClass);
-		//}
-		//
-		//FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_TwoHands.AM_MonsterMale_Attack_TwoHands'");
-		//AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
-	}
-
-	
 }
 
 void ABMonsterMale::SetSkeletalMeshInConstructor()
 {
-	//BaseBody
-	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyBaseRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'"));
-	//
-	//if(BodyBaseRef.Object != nullptr)
-	//{
-	//	BodyBase->SetSkeletalMesh(BodyBaseRef.Object);
-	//}
-	//else
-	//{
-	//	LOG_MSG(TEXT("Body Mesh is Nullptr"));
-	//}
+
+}
+
+void ABMonsterMale::Tick(float _DeltaTIme)
+{
+	IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
+	if (AnimInterface == nullptr)
+	{
+		LOG_MSG(TEXT("AnimInterface casting failed"));
+		return;
+	}
+
+	if (MyWeaponType == EWeaponType::None)
+	{
+		AnimInterface->SetAnimationType(EMonsterAnimType::BareHands);
+
+	}
+	else if (MyWeaponType == EWeaponType::OneHand)
+	{
+		AnimInterface->SetAnimationType(EMonsterAnimType::OneHand);
+	}
 }
 
 void ABMonsterMale::SetClothesSkeletalMeshByRandomInBeginPlay()

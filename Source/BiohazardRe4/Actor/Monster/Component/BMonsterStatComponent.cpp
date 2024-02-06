@@ -23,6 +23,8 @@ void UBMonsterStatComponent::StatInit(const FStatStruct& _StatData)
 	WalkSPeed = _StatData.WalkSpeed;
 	RunSpeed = _StatData.RunSpeed;
 	WalkDistanceThreshold = _StatData.WalkDistanceThreshold;
+
+	BaseAttackPower = _StatData.BaseAttackPower;
 }
 
 void UBMonsterStatComponent::DecreaseHp(float _Hp)

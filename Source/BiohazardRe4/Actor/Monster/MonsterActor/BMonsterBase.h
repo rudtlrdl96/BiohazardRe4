@@ -6,7 +6,20 @@
 #include "GameFramework/Character.h"
 #include "../Interface/BMonsterStateInterface.h"
 #include "../Interface/BMonsterStatInterface.h"
+#include "DamageType/BDMGMonsterDamage.h"
 #include "BMonsterBase.generated.h"
+
+UENUM()
+enum class EDamagedPart
+{
+	None,
+	Head,
+	LArm,
+	RArm,
+	LLEg,
+	RLEg,
+	Body,
+};
 
 UCLASS()
 class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface
@@ -51,6 +64,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void AttackStart() override;
 
+	virtual void InitDamageTypes();
 	//Component
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
@@ -69,6 +83,7 @@ protected:
 
 protected:
 	FMonsterAttackEnd OnAttackEnd;
+	TArray<class UClass*> DamageTypes;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
@@ -77,5 +92,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	uint8 bIsAttacking : 1;
 
+private:
+	void TakePointDamage(const FPointDamageEvent* const& _DamageEvent);
+	void TakeRadialDamage();
 
+	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
+
+	TMap<FString, TMap<FString, int>> DamagedSecionSizes;
 };

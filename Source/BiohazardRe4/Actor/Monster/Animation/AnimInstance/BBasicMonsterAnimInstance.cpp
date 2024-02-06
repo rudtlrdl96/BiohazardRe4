@@ -11,19 +11,4 @@
 void UBBasicMonsterAnimInstance::NativeUpdateAnimation(float _DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(_DeltaSeconds);
-
-	if (Owner == nullptr)
-	{
-		return;
-	}
-
-	AAIController* AIController = Cast<AAIController>(Owner->GetController());
-	UObject* Target = AIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET);
-	
-	if (Target == nullptr)
-	{
-		return;
-	}
-
-	TraceTarget = Target;
 }

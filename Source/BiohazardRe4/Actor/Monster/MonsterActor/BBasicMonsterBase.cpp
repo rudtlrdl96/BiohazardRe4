@@ -6,6 +6,11 @@
 #include "../DataAsset/BMonsterStatData.h"
 #include "BiohazardRe4.h"
 
+#include "DamageType/MonsterDamageType/BDMGMonsterLargeBottom.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterLargeTop.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterSmallBottom.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterSmallTop.h"
+
 ABBasicMonsterBase::ABBasicMonsterBase()
 {
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
@@ -23,6 +28,7 @@ void ABBasicMonsterBase::BeginPlay()
 	Super::BeginPlay();
 
 	SetlMeshAndAnimationByRandomInBeginPlay();
+	InitDamageTypes();
 }
 
 void ABBasicMonsterBase::SetlMeshAndAnimationByRandomInBeginPlay()
@@ -38,16 +44,15 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 	int WeaponIndex = FMath::RandRange(0, 4);
 	if (WeaponIndex == 4)
 	{
+		LOG_MSG(TEXT("Monster Bare Hand"));
 		Weapon->SetVisibility(false);
 		MyWeaponType = EWeaponType::None;
+
 		return;
-	}
-	else if (WeaponIndex == 5)
-	{
-		MyWeaponType = EWeaponType::TwoHands;
 	}
 	else
 	{
+		LOG_MSG(TEXT("Monster One Hand"));
 		MyWeaponType = EWeaponType::OneHand;
 	}
 
@@ -94,6 +99,7 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 
 	Weapon->SetSkeletalMesh(LoadedWeaponMesh);
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), SocketName);
+	
 }
 
 void ABBasicMonsterBase::InitAI()
@@ -102,11 +108,34 @@ void ABBasicMonsterBase::InitAI()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-
 void ABBasicMonsterBase::SetClothesSkeletalMeshByRandomInBeginPlay()
 {
+
 }
 
 void ABBasicMonsterBase::SetAnimInstanceAndAnimationMontageInBeginPlay()
 {
+
+}
+
+void ABBasicMonsterBase::InitDamageTypes()
+{
+	DamageTypes.Reserve(10);
+
+	if (MyWeaponType == EWeaponType::None)
+	{
+		//Attack1
+		DamageTypes.Add(UBDMGMonsterSmallTop::StaticClass());
+
+		//Attack2
+		DamageTypes.Add(UBDMGMonsterLargeTop::StaticClass());
+	}
+	else if (MyWeaponType == EWeaponType::OneHand)
+	{
+		//Attack1
+		DamageTypes.Add(UBDMGMonsterSmallTop::StaticClass());
+
+		//Attack2
+		DamageTypes.Add(UBDMGMonsterSmallTop::StaticClass());
+	}
 }

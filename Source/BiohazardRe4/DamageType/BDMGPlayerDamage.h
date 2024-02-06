@@ -15,6 +15,7 @@ enum class EPlayerDamageType : uint8
 	Knife		UMETA(DisplayName = "Medium"),
 	Kick		UMETA(DisplayName = "Large"),
 	Grenade		UMETA(DisplayName = "ExLarge"),
+	FlashBang	UMETA(DisplayName = "FlashBang"),
 };
 
 /**

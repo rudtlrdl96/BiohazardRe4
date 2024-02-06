@@ -41,4 +41,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Stat)
 	float WalkDistanceThreshold = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Stat)
+	float BaseAttackPower = 0.0f;
 };

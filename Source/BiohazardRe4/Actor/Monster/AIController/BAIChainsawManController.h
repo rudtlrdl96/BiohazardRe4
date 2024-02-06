@@ -29,4 +29,5 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UBehaviorTree> BTAsset;
 
+private:
 };

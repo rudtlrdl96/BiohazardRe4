@@ -8,6 +8,11 @@
 #include "../DataAsset/BMonsterStatData.h"
 #include "BiohazardRe4.h"
 
+#include "DamageType/MonsterDamageType/BDMGMonsterLargeBottom.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterLargeTop.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterSmallBottom.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterSmallTop.h"
+
 ABChainsawMan::ABChainsawMan()
 {
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ChainsawSkeletalMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/ChainsawMan/Chainsaw/SK_Chainsaw.SK_Chainsaw'"));
@@ -48,6 +53,8 @@ ABChainsawMan::ABChainsawMan()
 
 	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+	InitDamageTypes();
 }
 
 void ABChainsawMan::Attack()
@@ -64,6 +71,17 @@ void ABChainsawMan::Attack()
 void ABChainsawMan::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ABChainsawMan::InitDamageTypes()
+{
+	DamageTypes.Reserve(10);
+
+	//Attack1
+	DamageTypes.Emplace(UBDMGMonsterLargeTop::StaticClass());
+	
+	//Attack2
+	DamageTypes.Emplace(UBDMGMonsterLargeBottom::StaticClass());
 }
 
 

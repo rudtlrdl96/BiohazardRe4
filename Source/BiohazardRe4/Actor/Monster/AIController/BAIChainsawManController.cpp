@@ -6,6 +6,9 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "../Define/MonsterDefine.h"
+#include "BiohazardRe4.h"
+#include "GameFramework/Character.h"
+#include "../Interface/BMonsterAnimInterface.h"
 
 ABAIChainsawManController::ABAIChainsawManController()
 {
