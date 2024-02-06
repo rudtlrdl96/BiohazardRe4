@@ -25,7 +25,7 @@ class ABLeonWeapon;
 class UCapsuleComponent;
 class USceneComponent;
 class ABDrawGrenadeAim;
-class UBCollisionObserver;
+class ABCollisionObserver;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -518,8 +518,8 @@ private:
 	FVector ThrowLocation = FVector::ZeroVector;
 	FVector ThrowVelocity = FVector::ZeroVector;
 
-	UPROPERTY(EditAnywhere, Category = Input)
-	UBCollisionObserver* InteractionObserver = nullptr;
+	//UPROPERTY(EditAnywhere, Category = Input)
+	ABCollisionObserver* InteractionObserver = nullptr;
 	
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	ABDrawGrenadeAim* GrenadeAimActor = nullptr;

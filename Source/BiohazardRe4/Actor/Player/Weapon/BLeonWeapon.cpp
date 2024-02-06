@@ -16,6 +16,7 @@ ABLeonWeapon::ABLeonWeapon()
 	ProjectileComp->bSimulationEnabled = false;
 	ProjectileComp->bShouldBounce = true;	
 	ProjectileComp->Bounciness = 0.2;
+	ProjectileComp->Activate(false);
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
 	WeaponMesh->SetCollisionProfileName("Weapon");

@@ -2,14 +2,13 @@
 
 
 #include "Actor/Player/Body/BLeon.h"
-#include "Generic/BFsm.h"
-#include "Generic/BCollisionObserver.h"
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/InputComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
@@ -24,6 +23,8 @@
 #include "../Weapon/Knife/BLeonKnife.h"
 #include "../Weapon/BDrawGrenadeAim.h"
 #include "DamageType/BDMGMonsterDamage.h"
+#include "Generic/BFsm.h"
+#include "Generic/BCollisionObserver.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
 const FVector ABLeon::GunAimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
@@ -64,6 +65,11 @@ void ABLeon::BeginPlay()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	GrenadeAimActor = GetWorld()->SpawnActor<ABDrawGrenadeAim>(SpawnParams);
+
+	InteractionObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
+	InteractionObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	InteractionObserver->SetCollisionProfileName("Interaction");
+	InteractionObserver->SetScale(120.0f);
 
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
@@ -1356,7 +1362,7 @@ void ABLeon::CreateFSM()
 
 void ABLeon::CreateCollision()
 {
-	InteractionObserver = CreateDefaultSubobject<UBCollisionObserver>(TEXT("Interaction Observer"));
+
 }
 
 bool ABLeon::AbleWeaponSwap() const
