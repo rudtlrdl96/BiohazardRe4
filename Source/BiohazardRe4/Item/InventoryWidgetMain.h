@@ -52,6 +52,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void DropWidgetOff();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void AddItem(EItemCode ItemCode, int Num);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AddItemRowName(FName ItemCode, int Num);
+
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemName;
 

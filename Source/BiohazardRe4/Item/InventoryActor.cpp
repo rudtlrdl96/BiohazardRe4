@@ -198,6 +198,7 @@ void ABInventoryActor::BeginPlay()
 	// 困连 积己
 	Widget = CreateWidget<UBInventoryWidgetMain>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
+	Widget->WidgetOff();
 
 	BehaviorWidget = CreateWidget<UBInventoryWidgetBehavior>(GetWorld(), BehaviorWidgetClass);
 	BehaviorWidget->AddToViewport();
@@ -228,11 +229,13 @@ void ABInventoryActor::Tick(float DeltaTime)
 void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 {
 	Inventory->AddItem(ItemCode, Num);
+	Widget->AddItem(ItemCode, Num);
 }
 
 void ABInventoryActor::AddItemRowName(FName ItemRowName, int Num)
 {
 	Inventory->AddItem(ItemRowName, Num);
+	Widget->AddItemRowName(ItemRowName, Num);
 }
 
 int ABInventoryActor::GetItemCount(EItemCode ItemCode) const
@@ -253,6 +256,11 @@ ABInventoryWeapon* ABInventoryActor::GetQuickSlot(int SlotNum)
 ABInventoryWeapon* ABInventoryActor::FindWeapon(EItemCode ItemCode)
 {
 	return Inventory->FindWeapon(ItemCode);
+}
+
+bool ABInventoryActor::IsEmptySlot(const FIntPoint& Scale)
+{
+	return Inventory->IsEmptySlot(Scale);
 }
 
 // 牢亥配府UI 难扁
