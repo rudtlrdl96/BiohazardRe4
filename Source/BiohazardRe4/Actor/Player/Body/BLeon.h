@@ -25,6 +25,7 @@ class ABLeonWeapon;
 class UCapsuleComponent;
 class USceneComponent;
 class ABDrawGrenadeAim;
+class UBCollisionObserver;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -128,6 +129,17 @@ enum class ELeonThrowingAnim : uint8
 	Bottom		UMETA(DisplayName = "Bottom"),
 };
 
+UENUM(BlueprintType)
+enum class ELeonInteractionState : uint8
+{
+	Empty			UMETA(DisplayName = "Empty"),
+	GroggyMonster	UMETA(DisplayName = "GroggyMonster"),
+	Window			UMETA(DisplayName = "Window"),
+	Cliff			UMETA(DisplayName = "Cliff"),				
+	Fence			UMETA(DisplayName = "Fence"),		
+	Door			UMETA(DisplayName = "Door"),			
+	DropItem		UMETA(DisplayName = "DropItem"),
+};
 
 USTRUCT()
 struct FPlayerStat
@@ -474,8 +486,9 @@ private:
 	uint32 bAbleNextCombo : 1 = false;
 	uint32 bIsComboEnd : 1 = false;
 
-	ELeonDamageType DamageType;
-	ELeonDamageDirection DamageDirection;
+	ELeonDamageType DamageType = ELeonDamageType::Small;
+	ELeonDamageDirection DamageDirection = ELeonDamageDirection::B;
+	ELeonInteractionState InteractionState = ELeonInteractionState::Empty;
 
 	//*****************************************************//
 
@@ -505,6 +518,9 @@ private:
 	FVector ThrowLocation = FVector::ZeroVector;
 	FVector ThrowVelocity = FVector::ZeroVector;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UBCollisionObserver* InteractionObserver = nullptr;
+	
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	ABDrawGrenadeAim* GrenadeAimActor = nullptr;
 	

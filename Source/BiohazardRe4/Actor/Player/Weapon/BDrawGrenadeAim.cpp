@@ -21,7 +21,8 @@ ABDrawGrenadeAim::ABDrawGrenadeAim()
 	SplineMeshs.SetNum(MaxMeshCount);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMeshRef(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> AimMatRef(TEXT("/Script/Engine.Material'/Game/Blueprints/Actor/Player/Weapon/Grenade/M_GrenadeAim.M_GrenadeAim'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> LineMatRef(TEXT("/Script/Engine.Material'/Game/Blueprints/Actor/Player/Weapon/Grenade/M_GrenadeAim.M_GrenadeAim'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> TargetMatRef(TEXT("/Script/Engine.Material'/Game/Blueprints/Actor/Player/Weapon/Grenade/M_GrenadeTarget.M_GrenadeTarget'"));
 
 	for (int32 i = 0; i < MaxMeshCount; ++i)
 	{
@@ -33,7 +34,7 @@ ABDrawGrenadeAim::ABDrawGrenadeAim()
 
 		SplineMeshs[i] = CreateDefaultSubobject<USplineMeshComponent>(ToName);
 		SplineMeshs[i]->SetStaticMesh(CubeMeshRef.Object);
-		SplineMeshs[i]->SetMaterial(0, AimMatRef.Object);
+		SplineMeshs[i]->SetMaterial(0, LineMatRef.Object);
 		SplineMeshs[i]->Mobility = EComponentMobility::Type::Movable;
 		SplineMeshs[i]->ForwardAxis = ESplineMeshAxis::Type::X;
 
@@ -50,7 +51,7 @@ ABDrawGrenadeAim::ABDrawGrenadeAim()
 
 	DecalMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Decal Mesh"));
 	DecalMesh->SetStaticMesh(CubeMeshRef.Object);
-	DecalMesh->SetMaterial(0, AimMatRef.Object);
+	DecalMesh->SetMaterial(0, TargetMatRef.Object);
 	DecalMesh->SetCollisionProfileName("NoCollision");
 	DecalMesh->Mobility = EComponentMobility::Type::Movable;
 	DecalMesh->SetVisibility(false);

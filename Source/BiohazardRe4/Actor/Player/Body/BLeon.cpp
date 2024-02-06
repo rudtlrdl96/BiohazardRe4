@@ -3,6 +3,7 @@
 
 #include "Actor/Player/Body/BLeon.h"
 #include "Generic/BFsm.h"
+#include "Generic/BCollisionObserver.h"
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -1355,7 +1356,7 @@ void ABLeon::CreateFSM()
 
 void ABLeon::CreateCollision()
 {
-
+	InteractionObserver = CreateDefaultSubobject<UBCollisionObserver>(TEXT("Interaction Observer"));
 }
 
 bool ABLeon::AbleWeaponSwap() const
