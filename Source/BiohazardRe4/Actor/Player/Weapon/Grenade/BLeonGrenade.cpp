@@ -3,3 +3,8 @@
 
 #include "Actor/Player/Weapon/Grenade/BLeonGrenade.h"
 
+
+ABLeonGrenade::ABLeonGrenade()
+{
+
+}

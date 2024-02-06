@@ -7,15 +7,38 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStaticsTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "Item/InventoryManager.h"
 #include "BiohazardRe4.h"
+#include "..\Weapon\BLeonWeapon.h"
 
 void ABLeon::ThrowingEnter()
 {
 	bIsThrowingEnd = false;
+	bIsThrowingWeapon = false;
 }
 
 void ABLeon::ThrowingUpdate(float _DeltaTime)
 {
+	if (true == bIsThrowingWeapon)
+	{
+		if (nullptr == CurrentWeapon)
+		{
+			LOG_FATAL(TEXT("Player Weapon is nullptr"));
+		}
+
+		CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CurrentWeapon->Attack();
+		CurrentWeapon->SetActorLocation(ThrowLocation);
+		CurrentWeapon->ThrowWeapon(ThrowVelocity);
+		CurrentWeapon = nullptr;
+		bIsThrowingWeapon = false;
+
+		if (nullptr == UBInventoryManager::Instance || 0 >= UBInventoryManager::Instance->GetItemCount(UseWeaponCode))
+		{
+			UseWeaponCode = EItemCode::Empty;
+		}
+	}
+
 	if (true == bIsThrowingEnd)
 	{
 		if (true == AbleAim() && true == bIsAim)
@@ -40,4 +63,19 @@ void ABLeon::ThrowingUpdate(float _DeltaTime)
 void ABLeon::ThrowingExit()
 {
 	bIsThrowingEnd = false;
+	bIsThrowingWeapon = false;
+
+	if (UseWeaponCode == EItemCode::Empty)
+	{
+		return;
+	}
+
+	if (nullptr == UBInventoryManager::Instance || 0 >= UBInventoryManager::Instance->GetItemCount(UseWeaponCode))
+	{
+		UseWeaponCode = EItemCode::Empty;
+		CurrentWeapon = nullptr;
+		return;
+	}
+
+	CurrentWeapon = CreateWeapon(UseWeaponCode);
 }

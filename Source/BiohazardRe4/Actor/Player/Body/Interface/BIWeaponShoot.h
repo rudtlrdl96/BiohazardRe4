@@ -24,5 +24,6 @@ class BIOHAZARDRE4_API IBIWeaponShoot
 public:
 	virtual void WeaponShootStart() = 0;
 	virtual void WeaponShootEnd() = 0;
+	virtual void ThrowingWeapon() = 0;
 	virtual void ThrowingEnd() = 0;
 };

@@ -331,6 +331,7 @@ public:
 
 	virtual void WeaponShootStart() override;
 	virtual void WeaponShootEnd() override;
+	virtual void ThrowingWeapon() override;
 	virtual void ThrowingEnd() override;
 
 	virtual void AttachLeftHandSocket() override;
@@ -499,6 +500,10 @@ private:
 	FPlayerStat Stat;	
 
 	uint32 bDrawGrenadeAim: 1 = false;
+	uint32 bIsThrowingWeapon : 1 = false; 
+
+	FVector ThrowLocation = FVector::ZeroVector;
+	FVector ThrowVelocity = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	ABDrawGrenadeAim* GrenadeAimActor = nullptr;
@@ -551,7 +556,7 @@ private:
 
 	void DrawGrenadeAim(float _DeltaTime);
 
-	FVector GetGrenadeStartLocation() const;
+	FVector GetGrenadeStartLocation(float _Angle) const;
 
 	void CreateSprintArm();
 	void CreateFSM();

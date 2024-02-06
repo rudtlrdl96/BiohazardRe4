@@ -11,6 +11,7 @@
 #include "..\Body\BLeon.h"
 #include "BLeonWeapon.generated.h"
 
+class UProjectileMovementComponent;
 
 UCLASS()
 class BIOHAZARDRE4_API ABLeonWeapon : public AActor
@@ -49,6 +50,10 @@ public:
 
 	FTransform GetLeftHandSocketTransform() const;
 
+	void ThrowWeapon(const FVector& _Velocity);
+
+	void ActiveSimulatePhysics(bool _bIsActive);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
 	USkeletalMeshComponent* WeaponMesh = nullptr;
@@ -65,4 +70,6 @@ protected:
 	UPROPERTY()
 	int32 WeaponDamage;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UProjectileMovementComponent* ProjectileComp = nullptr;
 };

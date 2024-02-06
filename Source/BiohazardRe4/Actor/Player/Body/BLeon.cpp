@@ -496,6 +496,11 @@ void ABLeon::WeaponShootEnd()
 	bIsGunRecoil = false;
 }
 
+void ABLeon::ThrowingWeapon()
+{
+	bIsThrowingWeapon = true;
+}
+
 void ABLeon::ThrowingEnd()
 {
 	bIsThrowingEnd = true;
@@ -708,33 +713,32 @@ bool ABLeon::AbleAim() const
 
 void ABLeon::DrawGrenadeAim(float _DeltaTime)
 {
-	FVector StartLocation = GetGrenadeStartLocation();
-	FVector AimVelocity = PlayerCamera->GetForwardVector() + FVector(0, 0, 0.5);
-	AimVelocity.Normalize();
+	ThrowVelocity = PlayerCamera->GetForwardVector() + FVector(0, 0, 0.5);
+	ThrowVelocity.Normalize();
 
 	FVector ActorForward = GetActorForwardVector();
 	ActorForward.Normalize();
 
-	FVector Cross = FVector::CrossProduct(ActorForward, AimVelocity);
+	double Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, ThrowVelocity)));
 
-	double Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, AimVelocity)));
-
-	if (0 >= Cross.X)
+	if (0 > ThrowVelocity.Z)
 	{
 		Angle *= -1.0f;
 	}
 
-	AimVelocity *= GrenadeThrowingPower;
+	ThrowVelocity *= GrenadeThrowingPower;
 
-	FPredictProjectilePathParams PredictParams(5.0f, StartLocation, AimVelocity, 2.0f, ECollisionChannel::ECC_GameTraceChannel11);
+	ThrowLocation = GetGrenadeStartLocation(Angle);
+
+	FPredictProjectilePathParams PredictParams(5.0f, ThrowLocation, ThrowVelocity, 2.0f, ECollisionChannel::ECC_GameTraceChannel11);
 	PredictParams.DrawDebugType = EDrawDebugTrace::Type::None; 
 	PredictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
 	FPredictProjectilePathResult Result;
 	UGameplayStatics::PredictProjectilePath(this, PredictParams, Result);
 
 	DrawDebugSphere(GetWorld(), Result.HitResult.Location, 10, 30, FColor::Red);
-
-	if (-10 < Angle)
+		
+	if (0 < Angle)
 	{
 		ThrowingAnim = ELeonThrowingAnim::Top;
 		GrenadeAimActor->Draw(Result, true);
@@ -742,17 +746,28 @@ void ABLeon::DrawGrenadeAim(float _DeltaTime)
 	else
 	{
 		ThrowingAnim = ELeonThrowingAnim::Bottom;
-		GrenadeAimActor->Draw(Result, false);
+		GrenadeAimActor->Draw(Result, true);
 	}
 
 }
 
-FVector ABLeon::GetGrenadeStartLocation() const
+FVector ABLeon::GetGrenadeStartLocation(float _Angle) const
 {
 	FVector StartLocation = GrenadeThrowingLocation->GetComponentLocation();
-	StartLocation += -GetActorForwardVector() * 8;
-	StartLocation += GetActorRightVector() * 5;
-	StartLocation += FVector::UpVector * 5;
+
+	if (0 < _Angle)
+	{
+		StartLocation += -GetActorForwardVector() * 8;
+		StartLocation -= GetActorRightVector() * 5;
+		StartLocation += FVector::UpVector * 5;
+	}
+	else
+	{
+		//StartLocation += -GetActorForwardVector();
+		StartLocation -= GetActorRightVector() * 5;
+		StartLocation += FVector::DownVector * 50;
+	}
+
 	return StartLocation;
 }
 

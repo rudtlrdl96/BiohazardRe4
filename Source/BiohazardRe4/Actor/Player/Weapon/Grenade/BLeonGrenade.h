@@ -14,4 +14,8 @@ class BIOHAZARDRE4_API ABLeonGrenade : public ABLeonWeapon
 {
 	GENERATED_BODY()
 	
+public:
+	ABLeonGrenade();
+
+private:
 };

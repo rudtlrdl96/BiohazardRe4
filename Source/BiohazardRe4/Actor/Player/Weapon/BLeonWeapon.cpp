@@ -3,6 +3,7 @@
 
 #include "Actor/Player/Weapon/BLeonWeapon.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "BiohazardRe4.h"
 
 // Sets default values
@@ -11,7 +12,13 @@ ABLeonWeapon::ABLeonWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	ProjectileComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
+	ProjectileComp->bSimulationEnabled = false;
+	ProjectileComp->bShouldBounce = true;	
+	ProjectileComp->Bounciness = 0.2;
+
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
+	WeaponMesh->SetCollisionProfileName("Weapon");
 	RootComponent = WeaponMesh;	
 }
 
@@ -74,4 +81,21 @@ FTransform ABLeonWeapon::GetLeftHandSocketTransform() const
 	}
 	
 	return SocketPtr->GetSocketTransform(WeaponMesh);
+}
+
+void ABLeonWeapon::ThrowWeapon(const FVector& _Velocity)
+{
+	if (nullptr == ProjectileComp)
+	{
+		LOG_FATAL(TEXT("nullptr ProjectileComp"));
+	}
+
+	ProjectileComp->bSimulationEnabled = true;
+	ProjectileComp->Velocity = _Velocity;
+}
+
+
+void ABLeonWeapon::ActiveSimulatePhysics(bool _bIsActive)
+{
+	WeaponMesh->SetSimulatePhysics(_bIsActive);
 }
