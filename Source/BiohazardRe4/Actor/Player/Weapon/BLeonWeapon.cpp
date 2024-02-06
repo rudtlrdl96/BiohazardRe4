@@ -55,6 +55,11 @@ void ABLeonWeapon::Reload()
 
 }
 
+void ABLeonWeapon::ReloadStart()
+{
+
+}
+
 bool ABLeonWeapon::AbleAttack() const
 {
 	return true;

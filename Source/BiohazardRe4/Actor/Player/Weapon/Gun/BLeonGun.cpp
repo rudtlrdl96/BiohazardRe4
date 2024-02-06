@@ -5,6 +5,8 @@
 #include "Engine/DamageEvents.h"
 #include "DamageType/BDMGPlayerDamage.h"
 
+
+
 void ABLeonGun::BeginPlay()
 {
 	Super::BeginPlay();
@@ -39,6 +41,7 @@ void ABLeonGun::Reload()
 	CurAmmo += ReloadAmmoCount;
 	ExtraAmmo -= ReloadAmmoCount;
 	LOG_MSG(TEXT("Reload"))
+
 }
 
 void ABLeonGun::Shoot()
@@ -91,8 +94,10 @@ void ABLeonGun::Shoot()
 		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
 	}
 
-	--CurAmmo;
+	int32 PrevAmmo = CurAmmo--;
 	LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
+
+	FireStart();
 }
 
 void ABLeonGun::DropShell()
@@ -103,4 +108,58 @@ void ABLeonGun::DropShell()
 void ABLeonGun::DropMagazine()
 {
 	LOG_MSG(TEXT("DropMagazine"))
+}
+
+void ABLeonGun::FireStart()
+{
+	if (CurAmmo != 0)
+	{
+		CurState = EGunState::EAmmo_Fire_Ammo;
+		LOG_MSG(TEXT("CurState : EAmmo_Fire_Ammo"))
+	}
+	else
+	{
+		CurState = EGunState::EAmmo_Fire_NoAmmo;
+		LOG_MSG(TEXT("CurState : EAmmo_Fire_NoAmmo"))
+	}
+}
+
+void ABLeonGun::FireEnd()
+{
+	if (CurAmmo == 0)
+	{
+		CurState = EGunState::ENoAmmo_Loop;
+		LOG_MSG(TEXT("CurState : ENoAmmo_Loop"))
+	}
+	else
+	{
+		CurState = EGunState::EIdle_Loop;
+		LOG_MSG(TEXT("CurState : EIdle_Loop"))
+	}
+}
+
+void ABLeonGun::ReloadStart()
+{
+	if (CurAmmo == 0)
+	{
+		CurState = EGunState::ENoAmmo_Reload;
+		LOG_MSG(TEXT("CurState : ENoAmmo_Reload"))
+	}
+	else
+	{
+		CurState = EGunState::EAmmo_Reload;
+		LOG_MSG(TEXT("CurState : EAmmo_Reload"))
+	}
+}
+
+void ABLeonGun::ReloadEnd()
+{
+	CurState = EGunState::EPutout;
+	LOG_MSG(TEXT("CurState : EPutout"))
+}
+
+void ABLeonGun::PutoutEnd()
+{
+	CurState = EGunState::EIdle_Loop;
+	LOG_MSG(TEXT("CurState : EIdle_Loop"))
 }

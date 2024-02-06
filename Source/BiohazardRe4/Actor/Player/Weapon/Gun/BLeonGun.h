@@ -6,9 +6,19 @@
 #include "Actor/Player/Weapon/BLeonWeapon.h"
 #include "BLeonGun.generated.h"
 
-/**
- * 
- */
+UENUM(BluePrintType)
+enum class EGunState : uint8
+{
+	EIdle_Loop UMETA(DisplayName = "Idle_Loop"),
+	ENoAmmo_Loop UMETA(DisplayName = "NoAmmo_Loop"),
+	EAmmo_Fire_Ammo UMETA(DisplayName = "Ammo_Fire_Ammo"),
+	EAmmo_Fire_NoAmmo UMETA(DisplayName = "Ammo_Fire_NoAmmo"),
+	ENoAmmo_Fire_NoAmmo UMETA(DisplayName = "NoAmmo_Fire_NoAmmo"),
+	EAmmo_Reload UMETA(DisplayName = "Ammo_Reload"),
+	ENoAmmo_Reload UMETA(DisplayName = "NoAmmo_Reload"),
+	EPutout UMETA(DisplayName = "Putout"),
+};
+
 UCLASS()
 class BIOHAZARDRE4_API ABLeonGun : public ABLeonWeapon
 {
@@ -30,6 +40,19 @@ public:
 	{
 		return static_cast<uint32>(CurAmmo);
 	}
+
+	UFUNCTION(BlueprintCallable)
+	EGunState GetCurState() const
+	{
+		return CurState;
+	}
+
+	// State
+	void FireStart();
+	void FireEnd();
+	void ReloadStart() override;
+	void ReloadEnd();
+	void PutoutEnd();
 
 protected:
 	virtual void BeginPlay() override;
@@ -88,5 +111,10 @@ protected:
 
 	UPROPERTY()
 	FPointDamageEvent GunDamageEvent;
+
+	UPROPERTY(BlueprintReadWrite)
+	EGunState CurState = EGunState::ENoAmmo_Loop;
+
+
 
 };

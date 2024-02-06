@@ -45,6 +45,9 @@ public:
 	// 재장전 함수, 칼 또는 수류탄의 경우 불필요
 	virtual void Reload();
 
+	// 재장전 함수, 칼 또는 수류탄의 경우 불필요
+	virtual void ReloadStart();
+
 	// 남은 탄약 수 반환, 칼의 경우 내구도를 반환
 	virtual uint32 GetAmmo() const;
 
