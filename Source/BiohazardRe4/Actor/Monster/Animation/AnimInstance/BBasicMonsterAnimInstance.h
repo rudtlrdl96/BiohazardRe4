@@ -13,7 +13,7 @@ UCLASS()
 class BIOHAZARDRE4_API UBBasicMonsterAnimInstance : public UBMonsterAnimInstanceBase
 {
 	GENERATED_BODY()
-	
+
 protected:
 	virtual void NativeUpdateAnimation(float _DeltaSeconds) override;
 

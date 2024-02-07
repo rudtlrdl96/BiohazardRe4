@@ -40,7 +40,6 @@ ABChainsawMan::ABChainsawMan()
 		DamagedMontage = ChainsawDamagedMontageRef.Object;
 	}
 
-
 	static ConstructorHelpers::FObjectFinder<UBMonsterStatData> ChainsawManStatDataRef(TEXT("/Script/BiohazardRe4.BMonsterStatData'/Game/Blueprints/Actor/Monster/DataAsset/DA_ChainsawManStat.DA_ChainsawManStat'"));
 
 	if (ChainsawManStatDataRef.Object != nullptr)

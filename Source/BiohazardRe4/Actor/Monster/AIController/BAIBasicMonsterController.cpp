@@ -66,6 +66,11 @@ void ABAIBasicMonsterController::StopAI()
 	{
 		BTComponent->StopTree();
 	}
+
+	if (PerceptionComponent != nullptr)
+	{
+		GetPerceptionComponent()->SetSenseEnabled(UAISense_Sight::StaticClass(), false);
+	}
 }
 
 void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAIStimulus const _Stimulus)
@@ -125,6 +130,13 @@ void ABAIBasicMonsterController::OnPossess(APawn* _InPawn)
 	RunAI();
 }
 
+void ABAIBasicMonsterController::OnUnPossess()
+{
+	Super::OnUnPossess();
+	StopAI();
+}
+
+
 void ABAIBasicMonsterController::InitPerceptionSystem(UBMonsterStatData* _InData)
 {
 	if (_InData == nullptr)
@@ -132,7 +144,7 @@ void ABAIBasicMonsterController::InitPerceptionSystem(UBMonsterStatData* _InData
 		LOG_FATAL(TEXT("_InData is nullptr"));
 		return;
 	}
-
+	
 	LOG_MSG(TEXT("PerceptionSystem is initted"));
 
 	SightConfig->SightRadius = _InData->DetectRadius;

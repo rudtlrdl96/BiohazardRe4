@@ -22,6 +22,7 @@
 #include "../Weapon/Gun/BLeonShotgun.h"
 #include "../Weapon/Knife/BLeonKnife.h"
 #include "../Weapon/BDrawGrenadeAim.h"
+#include "Item/InventoryActor.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
 #include "Generic/BCollisionObserver.h"
@@ -43,7 +44,6 @@ ABLeon::ABLeon()
 
 	CreateSprintArm();
 	CreateFSM();
-	CreateCollision();
 
 	GrenadeThrowingLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Grenade Start"));
 	GrenadeThrowingLocation->SetupAttachment(GetMesh(), TEXT("R_GrenadeSocket"));
@@ -67,11 +67,7 @@ void ABLeon::BeginPlay()
 	SpawnParams.Owner = this;
 	GrenadeAimActor = GetWorld()->SpawnActor<ABDrawGrenadeAim>(SpawnParams);
 
-	InteractionObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
-	InteractionObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-	InteractionObserver->SetCollisionProfileName("Interaction");
-	InteractionObserver->SetActorRelativeLocation(FVector(0, 0, 30));
-	InteractionObserver->CollosionComp->SetSphereRadius(120.0f);
+	CreateCollision();
 
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
@@ -184,6 +180,11 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (LeonFSMState == ELeonState::KickAttack)
+	{
+		return 0.0f;
+	}
 
 	if (LeonFSMState == ELeonState::Damage)
 	{
@@ -339,6 +340,11 @@ ELeonDirection ABLeon::GetLeonDirection() const
 	{
 		return ELeonDirection::B;
 	}
+}
+
+ABInventoryActor* ABLeon::GetInventoryActor() const
+{
+	return ABInventoryActor::Instance;
 }
 
 FTransform ABLeon::GetWeaponLeftSocketTransform() const
@@ -513,6 +519,11 @@ void ABLeon::ThrowingWeapon()
 void ABLeon::ThrowingEnd()
 {
 	bIsThrowingEnd = true;
+}
+
+void ABLeon::KickEnd()
+{
+	bIsKickEnd = true;
 }
 
 void ABLeon::AttachLeftHandSocket()
@@ -695,8 +706,31 @@ void ABLeon::PlayIdle(const FInputActionInstance& _MoveAction)
 	MoveInput = FVector::ZeroVector;
 }
 
+bool ABLeon::AbleInteraction() const
+{
+	switch (LeonFSMState)
+	{
+	case ELeonState::Aim:
+	case ELeonState::KnifeAttack:
+	case ELeonState::KickAttack:
+	case ELeonState::Throwing:
+	case ELeonState::Damage:
+	case ELeonState::Death:
+		return false;
+	default:
+		return true;
+	}
+
+	return true;
+}
+
 void ABLeon::TryInteraction()
 {
+	if (false == AbleInteraction())
+	{
+		return;
+	}
+
 	TArray<AActor*> Overlaps;
 	InteractionObserver->GetOverlappingActors(Overlaps);
 
@@ -737,7 +771,8 @@ void ABLeon::TryInteraction()
 			return;
 		case EInteraction::GroggyMonster:
 		{
-			int a = 0;
+			KickLocation = Overlaps[i]->GetActorLocation();
+			FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
 		}
 			return;
 		case EInteraction::JumpWindow:
@@ -1293,19 +1328,6 @@ void ABLeon::DamageEnd()
 	bIsHitEnd = true;
 }
 
-bool ABLeon::AbleInteraction() const
-{
-	switch (LeonFSMState)
-	{
-	case ELeonState::Walk:
-		return true;
-	case ELeonState::Jog:
-		return true;
-	default:
-		return false;
-	}
-}
-
 EInteraction ABLeon::GetInteractionType() const
 {
 	switch (LeonFSMState)
@@ -1454,6 +1476,12 @@ void ABLeon::CreateFSM()
 	KnifeAttackFSMState.ExitDel.BindUObject(this, &ABLeon::KnifeAttackExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::KnifeAttack), KnifeAttackFSMState);
 
+	UBFsm::FStateCallback KickAttackFSMState;
+	KickAttackFSMState.EnterDel.BindUObject(this, &ABLeon::KickAttackEnter);
+	KickAttackFSMState.UpdateDel.BindUObject(this, &ABLeon::KickAttackUpdate);
+	KickAttackFSMState.ExitDel.BindUObject(this, &ABLeon::KickAttackExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::KickAttack), KickAttackFSMState);
+
 	UBFsm::FStateCallback ThrowingFSMState;
 	ThrowingFSMState.EnterDel.BindUObject(this, &ABLeon::ThrowingEnter);
 	ThrowingFSMState.UpdateDel.BindUObject(this, &ABLeon::ThrowingUpdate);
@@ -1475,7 +1503,26 @@ void ABLeon::CreateFSM()
 
 void ABLeon::CreateCollision()
 {
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
 
+	InteractionObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
+	InteractionObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	InteractionObserver->SetCollisionProfileName("Interaction");
+	InteractionObserver->SetActorRelativeLocation(FVector(0, 0, 30));
+	InteractionObserver->CollosionComp->SetSphereRadius(120.0f);
+
+	KickOverlapObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
+	KickOverlapObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform, "R_Shin");
+	KickOverlapObserver->SetCollisionProfileName("Interaction");
+	KickOverlapObserver->SetActorRelativeLocation(FVector(0, 0, 0));
+	KickOverlapObserver->CollosionComp->SetSphereRadius(30.0f);
+
+	KnifeOverlapObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
+	KnifeOverlapObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform, "R_HandSocket");
+	KnifeOverlapObserver->SetCollisionProfileName("Interaction");
+	KnifeOverlapObserver->SetActorRelativeLocation(FVector(0, 0, 0));
+	KnifeOverlapObserver->CollosionComp->SetSphereRadius(30.0f);
 }
 
 bool ABLeon::AbleWeaponSwap() const

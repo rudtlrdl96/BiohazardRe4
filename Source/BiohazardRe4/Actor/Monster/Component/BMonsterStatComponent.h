@@ -49,6 +49,7 @@ public:
 
 	void SetHp(float _Hp) { CurrentHp = _Hp; };
 	void DecreaseHp(float _Hp);
+	
 	bool isDeath() { return CurrentHp <= 0; };
 
 protected:

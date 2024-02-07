@@ -7,6 +7,7 @@
 #include "../../Define/MonsterDefine.h"
 #include "GameFramework/Character.h"
 #include "BiohazardRe4.h"
+#include "../../DataAsset/BMonsterStatData.h"
 
 void UBBasicMonsterAnimInstance::NativeUpdateAnimation(float _DeltaSeconds)
 {

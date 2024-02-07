@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "../Interface/BMonsterStateInterface.h"
 #include "../Interface/BMonsterStatInterface.h"
+#include "DamageType/BDMGPlayerDamage.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "BMonsterBase.generated.h"
 
@@ -19,6 +20,13 @@ enum class EDamagedPart
 	LLEg,
 	RLEg,
 	Body,
+};
+
+UENUM()
+enum class EDeathType
+{
+	Point,
+	Radial,
 };
 
 UCLASS()
@@ -42,10 +50,6 @@ public:
 	virtual void SetIsAttack(bool _IsAttacking) override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
-	
-	virtual void Flashed() override;
-	virtual void MonsterDeath() override;
-	virtual void Hit() override;
 
 	//Stat
 public:
@@ -55,6 +59,8 @@ public:
 	virtual float GetPatrolRadius() override;
 	virtual float GetRunSpeed() override;
 	virtual float GetWalkSpeed() override;
+
+	UFUNCTION(BlueprintCallable)
 	virtual float GetWalkDistanceThreshold() override;
 
 	virtual void StatInit(const class UBMonsterStatData* _DataAsset);
@@ -84,6 +90,7 @@ protected:
 protected:
 	FMonsterAttackEnd OnAttackEnd;
 	TArray<class UClass*> DamageTypes;
+	TMap<FString, TMap<FString, int>> DamagedMontageSectionNums;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
@@ -93,10 +100,23 @@ private:
 	uint8 bIsAttacking : 1;
 
 private:
-	void TakePointDamage(const FPointDamageEvent* const& _DamageEvent);
+	virtual void SetDamagedSectionNums();
+
+	float TakePointDamage(const FPointDamageEvent* const& _DamageEvent, float _DamagedAmount);
 	void TakeRadialDamage();
 
 	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
+	
+	void DamagedByGun(const FString& _DamagedPart);
+	void DamagedByKnife(const FString& _DamagedPart);
+	void DamagedByKick(const FString& _DamagedPart);
 
-	TMap<FString, TMap<FString, int>> DamagedSecionSizes;
+	void SmallDamaged(const FString& _DamagedPart);
+	void MediumDamaged(const FString& _DamagedPart);
+	void LargeDamaged(const FString& _DamagedPart);
+
+	float CaculateDamage(float _OriginDamage, const FString& _DamagedPart, EPlayerDamageType _PlayerDamageType);
+
+	virtual void MonsterDeath(EDeathType _DeathType, const FPointDamageEvent* const& _DamageEvent);
+	virtual void Flashed();
 };

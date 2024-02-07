@@ -27,6 +27,7 @@ class UCapsuleComponent;
 class USceneComponent;
 class ABDrawGrenadeAim;
 class ABCollisionObserver;
+class ABInventoryActor;
 class IBInteraction;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
@@ -335,6 +336,16 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
+	inline ABLeonWeapon* GetCurrentWeapon() const
+	{
+		return CurrentWeapon;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	ABInventoryActor* GetInventoryActor() const;
+
+
+	UFUNCTION(BlueprintCallable)
 	FTransform GetWeaponLeftSocketTransform() const;
 
 
@@ -347,6 +358,7 @@ public:
 	virtual void WeaponShootEnd() override;
 	virtual void ThrowingWeapon() override;
 	virtual void ThrowingEnd() override;
+	virtual void KickEnd() override;
 
 	virtual void AttachLeftHandSocket() override;
 	virtual void AttachRightHandSocket() override;
@@ -436,9 +448,12 @@ private:
 	uint32 bIsHitEnd : 1 = false;
 	uint32 bIsDeathEnd : 1 = false;
 	uint32 bIsThrowingEnd : 1 = false;
+	uint32 bIsKickEnd : 1 = false;
 
 	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
 	ELeonThrowingAnim ThrowingAnim = ELeonThrowingAnim::Top;
+
+	FVector KickLocation = FVector::ZeroVector;
 
 	//*****************************************************//
 
@@ -524,9 +539,15 @@ private:
 	FVector ThrowLocation = FVector::ZeroVector;
 	FVector ThrowVelocity = FVector::ZeroVector;
 
-	//UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditAnywhere, Category = Input)
 	ABCollisionObserver* InteractionObserver = nullptr;
 	
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	ABCollisionObserver* KickOverlapObserver = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	ABCollisionObserver* KnifeOverlapObserver = nullptr;
+
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	ABDrawGrenadeAim* GrenadeAimActor = nullptr;
 	
@@ -607,6 +628,10 @@ private:
 	void AimEnter();
 	void AimUpdate(float _DeltaTime);
 	void AimExit();
+
+	void KickAttackEnter();
+	void KickAttackUpdate(float _DeltaTime);
+	void KickAttackExit();
 
 	void KnifeAttackEnter();
 	void KnifeAttackUpdate(float _DeltaTime);
