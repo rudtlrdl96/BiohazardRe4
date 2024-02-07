@@ -13,6 +13,7 @@
 #include "Interface\BIWeaponReload.h"
 #include "Interface\BIKnifeAttack.h"
 #include "Interface\BIDamage.h"
+#include "Actor/Generic/Interface/BInteraction.h"
 #include "BLeon.generated.h"
 
 struct FInputActionInstance;
@@ -157,7 +158,7 @@ struct FPlayerStat
 
 UCLASS()
 class BIOHAZARDRE4_API ABLeon : public ACharacter, 
-	public IBIWeaponPutAway, public IBIWeaponPutOut, public IBIWeaponShoot, public IBIWeaponHandSocketSwap, public IBIWeaponReload, public IBIKnifeAttack, public IBIDamage
+	public IBIWeaponPutAway, public IBIWeaponPutOut, public IBIWeaponShoot, public IBIWeaponHandSocketSwap, public IBIWeaponReload, public IBIKnifeAttack, public IBIDamage, public IBInteraction
 {
 	GENERATED_BODY()
 
@@ -365,6 +366,10 @@ public:
 	virtual void KnifeCollisionDisable() override;
 
 	virtual void DamageEnd() override;
+
+	virtual bool AbleInteraction() const override;
+	virtual EInteraction GetInteractionType() const override;
+	virtual FVector GetUIPivot() const override;
 
 protected:
 	// Called when the game starts or when spawned

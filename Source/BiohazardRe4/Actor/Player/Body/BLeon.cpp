@@ -719,7 +719,7 @@ void ABLeon::TryInteraction()
 			continue;
 		}
 
-		if (false == Interface->AbleGroggy())
+		if (false == Interface->AbleInteraction())
 		{
 			continue;
 		}
@@ -1291,6 +1291,37 @@ void ABLeon::KnifeCollisionDisable()
 void ABLeon::DamageEnd()
 {
 	bIsHitEnd = true;
+}
+
+bool ABLeon::AbleInteraction() const
+{
+	switch (LeonFSMState)
+	{
+	case ELeonState::Walk:
+		return true;
+	case ELeonState::Jog:
+		return true;
+	default:
+		return false;
+	}
+}
+
+EInteraction ABLeon::GetInteractionType() const
+{
+	switch (LeonFSMState)
+	{
+	case ELeonState::Walk:
+		return EInteraction::WalkPlayer;
+	case ELeonState::Jog:
+		return EInteraction::JogPlayer;
+	default:
+		return EInteraction::None;
+	}
+}
+
+FVector ABLeon::GetUIPivot() const
+{
+	return FVector::ZeroVector;
 }
 
 void ABLeon::ReloadActive()

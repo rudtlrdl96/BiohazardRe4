@@ -25,7 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool AbleGroggy() const override
+	virtual bool AbleInteraction() const override
 	{
 		return bIsActiveInteraction;
 	}

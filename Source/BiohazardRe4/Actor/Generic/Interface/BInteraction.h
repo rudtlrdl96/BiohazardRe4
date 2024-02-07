@@ -24,6 +24,8 @@ enum class EInteraction
 	JumpFence		UMETA(DisplayName = "JumpFence"),
 	OpenDoor		UMETA(DisplayName = "OpenDoor"),
 	DropItem		UMETA(DisplayName = "DropItem"),
+	WalkPlayer		UMETA(DisplayName = "WalkPlayer"),
+	JogPlayer		UMETA(DisplayName = "JogPlayer"),
 };
 
 /**
@@ -35,7 +37,12 @@ class BIOHAZARDRE4_API IBInteraction
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual bool AbleGroggy() const = 0;
+	// 현재 상호작용이 가능한 상태인지
+	virtual bool AbleInteraction() const = 0;
+
+	// 현재 상호작용의 상태를 반환
 	virtual EInteraction GetInteractionType() const = 0;
+
+	// UI Pivot 위치를 반환
 	virtual FVector GetUIPivot() const = 0;
 };
