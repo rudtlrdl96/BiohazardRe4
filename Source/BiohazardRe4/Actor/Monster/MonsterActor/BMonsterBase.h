@@ -130,6 +130,6 @@ public:
 	// UI Pivot 위치를 반환
 	virtual FVector GetUIPivot() const override;
 
-	uint8 bisAbleInteraction = true;
+	uint8 bisAbleInteraction : 1;
 	EInteraction InteractionType;
 };

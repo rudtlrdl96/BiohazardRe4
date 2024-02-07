@@ -663,7 +663,7 @@ EInteraction ABMonsterBase::GetInteractionType() const
 		return EInteraction::GroggyMonster;
 	}
 	default:
-		break;
+		return EInteraction::None;
 	}
 }
 
