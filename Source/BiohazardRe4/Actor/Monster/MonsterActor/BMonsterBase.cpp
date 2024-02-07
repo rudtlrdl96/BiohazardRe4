@@ -606,7 +606,7 @@ float ABMonsterBase::CaculateDamage(float _OriginDamage, const FString& _Damaged
 	CriticalStr = (isCritical) ? TEXT("[Critical]") : TEXT(" ");
 	LOG_MSG(TEXT("Monster is Damaged : %f %s, RemainHp = %f"), _OriginDamage, *CriticalStr, Stat->GetCurrentHp());
 
-	return 20000;
+	return _OriginDamage;
 }
 
 void ABMonsterBase::InitDamageTypes()
