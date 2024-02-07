@@ -238,6 +238,13 @@ void ABInventoryActor::AddItemRowName(FName ItemRowName, int Num)
 	Widget->AddItemRowName(ItemRowName, Num);
 }
 
+void ABInventoryActor::AddMoney(int Num)
+{
+	Widget->SetMoney(Money);
+	Money += Num;
+	Widget->AddMoney(Num);
+}
+
 int ABInventoryActor::GetItemCount(EItemCode ItemCode) const
 {
 	return Inventory->GetItemCount(ItemCode);
@@ -269,6 +276,7 @@ void ABInventoryActor::OpenInventory()
 	Timeline.SetNewTime(0);		// SubCase의 위치를 조정
 	CaseMesh->PlayAnimation(OpenAnim, false);	// 애니메이션 재생
 	Widget->WidgetOn();
+	Widget->SetMoney(Money);
 	Subsystem->AddMappingContext(DefaultMappingContext, 1);	// 매핑컨텍스트 추가해서 조작 할 수 있게 만듬
 	Controller->SetViewTarget(this);	// 뷰타겟을 이 엑터로 지정
 	FInputModeGameAndUI InputMode;

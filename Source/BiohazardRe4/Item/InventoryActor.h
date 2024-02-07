@@ -43,6 +43,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddItemRowName(FName ItemRowName, int Num = 1);
 
+	// 돈을 획득한다
+	UFUNCTION(BlueprintCallable)
+	void AddMoney(int Num);
+
 	// 해당 코드의 아이템의 개수를 찾는다
 	UFUNCTION(BlueprintCallable)
 	int GetItemCount(EItemCode ItemCode) const;

@@ -58,6 +58,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void AddItemRowName(FName ItemCode, int Num);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetMoney(int Num);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AddMoney(int Num);
+
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemName;
 
