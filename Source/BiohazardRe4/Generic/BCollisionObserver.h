@@ -9,9 +9,7 @@
 DECLARE_DELEGATE_OneParam(CollisionEnterDelegate, AActor*)
 DECLARE_DELEGATE_OneParam(CollisionExitDelegate, AActor*)
 
-class USphereComponent;
-
-UCLASS()
+UCLASS(Abstract)
 class BIOHAZARDRE4_API ABCollisionObserver : public AActor
 {
 	GENERATED_BODY()
@@ -20,22 +18,29 @@ public:
 	// Sets default values for this actor's properties
 	ABCollisionObserver();
 
-	void SetCollisionProfileName(FName InCollisionProfileName, bool bUpdateOverlaps = true);
 
-	UFUNCTION()
-	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
-	UFUNCTION()
-	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UPROPERTY(EditAnywhere, Category = "Collision")
-	USphereComponent* CollosionComp = nullptr;
-
-	CollisionEnterDelegate CollisionEnterCallback;
-	CollisionExitDelegate CollisionExitCallback;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+public:
+	CollisionEnterDelegate CollisionEnterCallback;
+	CollisionExitDelegate CollisionExitCallback;
 
-public:	
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	void SetCollisionProfileName(FName InCollisionProfileName, bool bUpdateOverlaps = true);
+
+	void SetVisibilityCollision(bool _IsActive);
+
+protected:
+	UPROPERTY(EditAnywhere)
+	UShapeComponent* CollisionComp = nullptr;
+
+	FName CollisionProfileName = "";
+
+	virtual void CreateCollision() PURE_VIRTUAL(ABCollisionObserver::CreateCollision, return;);
 };

@@ -615,7 +615,19 @@ void ABMonsterBase::InitDamageTypes()
 
 bool ABMonsterBase::AbleInteraction() const
 {
-	return bisAbleInteraction;
+	// Todo : 테스트용 코드 추후 기능완성 후 추가해주세요
+
+	switch (CurState)
+	{
+	case EMonsterState::Attack:
+	case EMonsterState::Flashed:
+	case EMonsterState::Groggy:
+	{
+		return true;
+	}
+	}
+
+	return false;
 }
 
 EInteraction ABMonsterBase::GetInteractionType() const
@@ -652,7 +664,7 @@ EInteraction ABMonsterBase::GetInteractionType() const
 	}
 	case EMonsterState::Damaged:
 	{
-		return EInteraction::GroggyMonster;
+		return EInteraction::None;
 	}
 	case EMonsterState::Death:
 	{

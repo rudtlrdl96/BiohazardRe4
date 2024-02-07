@@ -26,9 +26,11 @@ class ABLeonWeapon;
 class UCapsuleComponent;
 class USceneComponent;
 class ABDrawGrenadeAim;
-class ABCollisionObserver;
+class ABCollisionObserverSphere;
+class ABCollisionObserverCapsule;
 class ABInventoryActor;
 class IBInteraction;
+class UDamageType;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -70,7 +72,7 @@ enum class ELeonWeaponSwap : uint8
 };
 
 UENUM(BlueprintType)
-enum class ELeonKnifeAttackState: uint8
+enum class ELeonKnifeAttackState : uint8
 {
 	EnterAttack	UMETA(DisplayName = "EnterAttack"),
 	LeftAttack	UMETA(DisplayName = "LeftAttack"),
@@ -120,9 +122,9 @@ enum class ELeonDamageType : uint8
 	Small		UMETA(DisplayName = "Small"),
 	Medium		UMETA(DisplayName = "Medium"),
 	Large		UMETA(DisplayName = "Large"),
-	ExLarge		UMETA(DisplayName = "ExLarge"),	
-	Guard		UMETA(DisplayName = "Guard"),	
-	Explosion	UMETA(DisplayName = "Explosion"),	
+	ExLarge		UMETA(DisplayName = "ExLarge"),
+	Guard		UMETA(DisplayName = "Guard"),
+	Explosion	UMETA(DisplayName = "Explosion"),
 };
 
 UENUM(BlueprintType)
@@ -138,9 +140,9 @@ enum class ELeonInteractionState : uint8
 	Empty			UMETA(DisplayName = "Empty"),
 	GroggyMonster	UMETA(DisplayName = "GroggyMonster"),
 	Window			UMETA(DisplayName = "Window"),
-	Cliff			UMETA(DisplayName = "Cliff"),				
-	Fence			UMETA(DisplayName = "Fence"),		
-	Door			UMETA(DisplayName = "Door"),			
+	Cliff			UMETA(DisplayName = "Cliff"),
+	Fence			UMETA(DisplayName = "Fence"),
+	Door			UMETA(DisplayName = "Door"),
 	DropItem		UMETA(DisplayName = "DropItem"),
 };
 
@@ -158,7 +160,7 @@ struct FPlayerStat
 };
 
 UCLASS()
-class BIOHAZARDRE4_API ABLeon : public ACharacter, 
+class BIOHAZARDRE4_API ABLeon : public ACharacter,
 	public IBIWeaponPutAway, public IBIWeaponPutOut, public IBIWeaponShoot, public IBIWeaponHandSocketSwap, public IBIWeaponReload, public IBIKnifeAttack, public IBIDamage, public IBInteraction
 {
 	GENERATED_BODY()
@@ -211,7 +213,7 @@ public:
 
 	// 현재 플레이어의 FSM 상태를 반환합니다
 	UFUNCTION(BlueprintCallable)
-	ELeonState GetCurrentFSMState() const;	
+	ELeonState GetCurrentFSMState() const;
 
 	// 현재 플레이어의 무기 애니메이션 상태를 반환합니다
 	UFUNCTION(BlueprintCallable)
@@ -225,7 +227,7 @@ public:
 	inline ELeonHealth GetHealthState() const
 	{
 		return LeonHealth;
-	}	
+	}
 
 	// 현재 플레이어의 조준 상태를 반환합니다
 	UFUNCTION(BlueprintCallable)
@@ -246,7 +248,7 @@ public:
 	inline bool IsJog() const
 	{
 		return bIsJog;
-	}	
+	}
 
 	// 현재 플레이어의 이동 방향을 반환합니다
 	UFUNCTION(BlueprintCallable)
@@ -260,7 +262,7 @@ public:
 	inline FVector GetInputDirection() const
 	{
 		return MoveInput;
-	}	
+	}
 
 	// 현재 플레이어의  입력 방향을 월드 기준으로 반환합니다
 	UFUNCTION(BlueprintCallable)
@@ -276,8 +278,8 @@ public:
 	inline FVector GetLookDirection() const
 	{
 		return LookInput;
-	}	
-	
+	}
+
 	// 플레이어의 무기 변경 상태를 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline ELeonWeaponSwap GetWeaponSwapState() const
@@ -326,8 +328,8 @@ public:
 	inline ELeonDamageDirection GetDamageDirection() const
 	{
 		return DamageDirection;
-	}	
-	
+	}
+
 	// 실행할 투척 애니메이션을 반환합니다
 	UFUNCTION(BlueprintCallable)
 	inline ELeonThrowingAnim GetThrowingAnim() const
@@ -358,6 +360,8 @@ public:
 	virtual void WeaponShootEnd() override;
 	virtual void ThrowingWeapon() override;
 	virtual void ThrowingEnd() override;
+	virtual void KickAttackStart() override;
+	virtual void KickAttackEnd() override;
 	virtual void KickEnd() override;
 
 	virtual void AttachLeftHandSocket() override;
@@ -367,7 +371,7 @@ public:
 	virtual void Reload() override;
 	virtual void ReloadEnd() override;
 	virtual bool AbleReload() const override;
-	
+
 	virtual void KnifeComboStart() override;
 	virtual void KnifeComboEnd() override;
 
@@ -391,27 +395,27 @@ private:
 	//************** Animation 변수 **************//
 
 	uint32 bIsMove : 1 = false;
-	uint32 bIsJog : 1 = false;		
-	uint32 bIsAim : 1 = false;		
+	uint32 bIsJog : 1 = false;
+	uint32 bIsAim : 1 = false;
 	uint32 bIsCombat : 1 = false;
-	uint32 bIsJogTrigger : 1 = false;	
-	uint32 bIsCrouch : 1 = false;		
+	uint32 bIsJogTrigger : 1 = false;
+	uint32 bIsCrouch : 1 = false;
 
 	ELeonState LeonFSMState = ELeonState::Idle;
-	
+
 	UPROPERTY(EditAnywhere, Category = Animation)
 	ELeonWeaponAnim LeonWeaponState = ELeonWeaponAnim::Empty;
 
 	UPROPERTY(EditAnywhere, Category = Animation)
 	EItemCode PutOutWeapon = EItemCode::Empty;
-			
+
 	UPROPERTY(EditAnywhere, Category = Animation)
-	ELeonHealth LeonHealth = ELeonHealth::Normal;	
-	
-	ELeonAim LeonAim = ELeonAim::Start;		
+	ELeonHealth LeonHealth = ELeonHealth::Normal;
+
+	ELeonAim LeonAim = ELeonAim::Start;
 	ELeonWeaponSwap  LeonWeaponSwap = ELeonWeaponSwap::None;
 
-	float AimUpdateTime = 0.0f;	
+	float AimUpdateTime = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	FAlphaBlend AbsolutAlphaBlend;
@@ -461,7 +465,7 @@ private:
 	//************** Input 변수 **************//
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	float TurnSpeed = 10.0f;	
+	float TurnSpeed = 10.0f;
 	UPROPERTY(EditAnywhere, Category = Input)
 	float MaxTurnSpeed = 10.0f;
 
@@ -474,11 +478,11 @@ private:
 	UInputAction* MoveAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
-	UInputAction* LookAction = nullptr;	
+	UInputAction* LookAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* ShootAction = nullptr;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* AimAction = nullptr;
 
@@ -486,8 +490,8 @@ private:
 	UInputAction* JogAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
-	UInputAction* CrouchAction = nullptr;	
-	
+	UInputAction* CrouchAction = nullptr;
+
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* InteractionAction = nullptr;
 
@@ -518,7 +522,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArm = nullptr;
 	UPROPERTY(EditAnywhere)
-	UCameraComponent* PlayerCamera = nullptr;	
+	UCameraComponent* PlayerCamera = nullptr;
 
 	//*****************************************************//
 
@@ -531,26 +535,29 @@ private:
 	EItemCode  UseWeaponCode = EItemCode::Empty;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat)
-	FPlayerStat Stat;	
+	FPlayerStat Stat;
 
-	uint32 bDrawGrenadeAim: 1 = false;
-	uint32 bIsThrowingWeapon : 1 = false; 
+	uint32 bDrawGrenadeAim : 1 = false;
+	uint32 bIsThrowingWeapon : 1 = false;
+
+	uint32 bIsKickAttackActive : 1 = false;
+
 
 	FVector ThrowLocation = FVector::ZeroVector;
 	FVector ThrowVelocity = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	ABCollisionObserver* InteractionObserver = nullptr;
-	
-	UPROPERTY(EditAnywhere, Category = Weapon)
-	ABCollisionObserver* KickOverlapObserver = nullptr;
+	ABCollisionObserverSphere* InteractionObserver = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Stat)
+	TSubclassOf<UDamageType> KickDamageType;
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
-	ABCollisionObserver* KnifeOverlapObserver = nullptr;
+	ABCollisionObserverCapsule* KickOverlapObserver = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	ABDrawGrenadeAim* GrenadeAimActor = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	USceneComponent* GrenadeThrowingLocation = nullptr;
 
@@ -578,7 +585,7 @@ private:
 	void VPlayerCameraToWorld(FVector& _Result) const;
 
 	void JogLookAt(float _DeltaTime);
-	
+
 	bool AbleKnifeAttack() const;
 	bool AbleShoot() const;
 	void KnifeComboCheck();
@@ -605,12 +612,14 @@ private:
 	void CreateSprintArm();
 	void CreateFSM();
 	void CreateCollision();
-		
+
 	ABLeonWeapon* CreateWeapon(EItemCode _WeaponCode);
 	void DeleteCurrentWeapon();
 
 	ELeonWeaponAnim GetUseWeaponAnimation(EItemCode _WeaponCode) const;
 	double GetAxisZAngle(const FVector& _Location) const;
+
+	void KickAttack(AActor* _OverlapActor);
 
 	/* FSM */
 	void IdleEnter();

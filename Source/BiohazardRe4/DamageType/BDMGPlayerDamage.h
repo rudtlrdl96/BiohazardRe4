@@ -11,10 +11,10 @@
 UENUM(BlueprintType)
 enum class EPlayerDamageType : uint8
 {
-	Gun			UMETA(DisplayName = "Small"),
-	Knife		UMETA(DisplayName = "Medium"),
-	Kick		UMETA(DisplayName = "Large"),
-	Grenade		UMETA(DisplayName = "ExLarge"),
+	Gun			UMETA(DisplayName = "Gun"),
+	Knife		UMETA(DisplayName = "Knife"),
+	Kick		UMETA(DisplayName = "Kick"),
+	Grenade		UMETA(DisplayName = "Grenade"),
 	FlashBang	UMETA(DisplayName = "FlashBang"),
 };
 

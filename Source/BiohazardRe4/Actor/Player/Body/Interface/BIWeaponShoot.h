@@ -26,5 +26,8 @@ public:
 	virtual void WeaponShootEnd() = 0;
 	virtual void ThrowingWeapon() = 0;
 	virtual void ThrowingEnd() = 0;
+
+	virtual void KickAttackStart() = 0;
+	virtual void KickAttackEnd() = 0;
 	virtual void KickEnd() = 0;
 };

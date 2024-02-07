@@ -25,7 +25,8 @@
 #include "Item/InventoryActor.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
-#include "Generic/BCollisionObserver.h"
+#include "Generic/BCollisionObserverCapsule.h"
+#include "Generic/BCollisionObserverSphere.h"
 #include "Actor/Generic/Interface/BInteraction.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
@@ -39,7 +40,7 @@ const float ABLeon::GreanadeAimSpringArmLength = 120.0f;
 // Sets default values
 ABLeon::ABLeon()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CreateSprintArm();
@@ -143,7 +144,7 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	if (nullptr == ShootAction)
 	{
 		LOG_FATAL(TEXT("is Not Set ShootAction"));
-	}	
+	}
 	if (nullptr == WeaponReloadAction)
 	{
 		LOG_FATAL(TEXT("is Not Set WeaponReloadAction"));
@@ -198,13 +199,13 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 
 	bool bIsSafeDamage = false;
 
-	FVector AttackerLocation = DamageCauser->GetActorLocation();	
+	FVector AttackerLocation = DamageCauser->GetActorLocation();
 
 	Stat.CurrentHp -= DamageValue;
 
 	if (0 >= Stat.CurrentHp)
 	{
-		Stat.CurrentHp = 0; 
+		Stat.CurrentHp = 0;
 		FsmComp->ChangeState(TO_KEY(ELeonState::Death));
 		return DamageValue;
 	}
@@ -264,7 +265,7 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			DamageDirection = ELeonDamageDirection::B;
 			LOG_MSG(TEXT("B"));
 		}
-		
+
 		switch (MonsterDamageClass->DamagePower)
 		{
 		case EMonsterDamagePower::Small:
@@ -408,7 +409,7 @@ void ABLeon::WeaponPutAwayStart()
 	if (nullptr != CurrentWeapon)
 	{
 		ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
-		
+
 		SocketLocationLerpTime = 0.0f;
 		SocketRotationLerpTime = 0.0f;
 
@@ -437,7 +438,7 @@ void ABLeon::WeaponPutAwayStart()
 			SocketLocationLerpTime = 0.0f;
 			SocketRotationLerpTime = 0.0f;
 		}
-			break;
+		break;
 		case ELeonWeaponAnim::Rifle:
 		{
 			LOG_MSG(TEXT("Leon Weapon DetachFromActor"));
@@ -461,7 +462,7 @@ void ABLeon::WeaponPutAwayStart()
 			SocketLocationLerpTime = 0.0f;
 			SocketRotationLerpTime = 0.0f;
 		}
-			break;
+		break;
 		default:
 			break;
 		}
@@ -521,6 +522,18 @@ void ABLeon::ThrowingEnd()
 	bIsThrowingEnd = true;
 }
 
+void ABLeon::KickAttackStart()
+{
+	bIsKickAttackActive = true;
+	KickOverlapObserver->SetVisibilityCollision(true);
+}
+
+void ABLeon::KickAttackEnd()
+{
+	bIsKickAttackActive = false;
+	KickOverlapObserver->SetVisibilityCollision(false);
+}
+
 void ABLeon::KickEnd()
 {
 	bIsKickEnd = true;
@@ -568,7 +581,7 @@ void ABLeon::AttachLeftHandSocket()
 		SocketSwapRotationSpeed = 50.0f;
 		break;
 	}
-	
+
 	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, Socket);
 	bIsLerpSocket = true;
 }
@@ -768,44 +781,44 @@ void ABLeon::TryInteraction()
 		{
 			int a = 0;
 		}
-			return;
+		return;
 		case EInteraction::GroggyMonster:
 		{
 			KickLocation = Overlaps[i]->GetActorLocation();
 			FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
 		}
-			return;
+		return;
 		case EInteraction::JumpWindow:
 		{
 			int a = 0;
 		}
-			return;
+		return;
 		case EInteraction::FallCliff:
 		{
 			int a = 0;
 		}
-			return;
+		return;
 		case EInteraction::JumpFence:
 		{
 			int a = 0;
 		}
-			return;
+		return;
 		case EInteraction::OpenDoor:
 		{
 			int a = 0;
 		}
-			return;
+		return;
 		case EInteraction::DropItem:
 		{
 			int a = 0;
 		}
-			return;
+		return;
 		default:
 		{
 			LOG_ERROR(TEXT("Wrong Type Interaction"));
 			continue;
 		}
-			break;
+		break;
 		}
 	}
 }
@@ -855,13 +868,13 @@ void ABLeon::DrawGrenadeAim(float _DeltaTime)
 	ThrowLocation = GetGrenadeStartLocation(Angle);
 
 	FPredictProjectilePathParams PredictParams(5.0f, ThrowLocation, ThrowVelocity, 2.0f, ECollisionChannel::ECC_GameTraceChannel11);
-	PredictParams.DrawDebugType = EDrawDebugTrace::Type::None; 
+	PredictParams.DrawDebugType = EDrawDebugTrace::Type::None;
 	PredictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
 	FPredictProjectilePathResult Result;
 	UGameplayStatics::PredictProjectilePath(this, PredictParams, Result);
 
 	DrawDebugSphere(GetWorld(), Result.HitResult.Location, 10, 30, FColor::Red);
-		
+
 	if (0 < Angle)
 	{
 		ThrowingAnim = ELeonThrowingAnim::Top;
@@ -937,7 +950,7 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, StandSocketOffset, _DeltaTime, 200.0f);
 			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, StandSpringArmLength, _DeltaTime, 200.0f);
 		}
-			break;
+		break;
 		case ELeonWeaponAnim::Pistol:
 		case ELeonWeaponAnim::Shotgun:
 		case ELeonWeaponAnim::Rifle:
@@ -945,19 +958,19 @@ void ABLeon::SpringArmUpdate(float _DeltaTime)
 			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, GunAimSocketOffset, _DeltaTime, 400.0f);
 			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, GunAimSpringArmLength, _DeltaTime, 400.0f);
 		}
-			break;
+		break;
 		case ELeonWeaponAnim::Knife:
 		case ELeonWeaponAnim::Grenade:
-		{		
+		{
 			SpringArm->SocketOffset = FMath::VInterpConstantTo(SpringArm->SocketOffset, GreanadeAimSocketOffset, _DeltaTime, 200.0f);
 			SpringArm->TargetArmLength = FMath::FInterpConstantTo(SpringArm->TargetArmLength, GreanadeAimSpringArmLength, _DeltaTime, 200.0f);
 		}
-			break;
+		break;
 		default:
 		{
 			LOG_ERROR(TEXT("Player Wrong Type UseWeapon Code"));
 		}
-			break;
+		break;
 		}
 	}
 	else
@@ -992,7 +1005,7 @@ void ABLeon::WeaponSocketUpdate(float _DeltaTime)
 
 	SocketLocationLerpTime += _DeltaTime * SocketLocationLerpSpeed * SocketLocationBlend.GetBlendedValue();
 	SocketRotationLerpTime += _DeltaTime * SocketRotationLerpSpeed * SocketRotationBlend.GetBlendedValue();
-		
+
 	FVector StartLocation = GetMesh()->GetSocketLocation(LerpSocketStart);
 	FRotator StartRotation = GetMesh()->GetSocketRotation(LerpSocketStart);
 
@@ -1126,7 +1139,7 @@ bool ABLeon::AbleKnifeAttack() const
 	{
 		return false;
 	}
-	
+
 	switch (LeonFSMState)
 	{
 	case ELeonState::Idle:
@@ -1198,12 +1211,12 @@ void ABLeon::KnifeComboCheck()
 		{
 			KnifeAttackState = ELeonKnifeAttackState::LeftAttack;
 		}
-			break;
+		break;
 		case ELeonKnifeAttackState::ResetAttack:
 		{
 			KnifeAttackState = ELeonKnifeAttackState::LeftAttack;
 		}
-			break;
+		break;
 		}
 	}
 	else
@@ -1223,7 +1236,7 @@ void ABLeon::KnifeComboCheck()
 void ABLeon::Attack()
 {
 	LOG_MSG(TEXT("Try Player Weapon Shoot"));
-	
+
 	if (true == AbleShoot())
 	{
 		bIsWeaponShootTrigger = true;
@@ -1238,8 +1251,8 @@ void ABLeon::Attack()
 		FsmComp->ChangeState(TO_KEY(ELeonState::KnifeAttack));
 		return;
 	}
-	
-	if(ELeonState::KnifeAttack == LeonFSMState)
+
+	if (ELeonState::KnifeAttack == LeonFSMState)
 	{
 		KnifeComboCheck();
 	}
@@ -1280,7 +1293,7 @@ bool ABLeon::AbleReload() const
 
 	switch (WeaponAnim)
 	{
-	// Gun 
+		// Gun 
 	case ELeonWeaponAnim::Pistol:
 	case ELeonWeaponAnim::Shotgun:
 	case ELeonWeaponAnim::Rifle:
@@ -1492,8 +1505,8 @@ void ABLeon::CreateFSM()
 	DamageFSMState.EnterDel.BindUObject(this, &ABLeon::DamageEnter);
 	DamageFSMState.UpdateDel.BindUObject(this, &ABLeon::DamageUpdate);
 	DamageFSMState.ExitDel.BindUObject(this, &ABLeon::DamageExit);
-	FsmComp->CreateState(TO_KEY(ELeonState::Damage), DamageFSMState);	
-	
+	FsmComp->CreateState(TO_KEY(ELeonState::Damage), DamageFSMState);
+
 	UBFsm::FStateCallback DeathFSMState;
 	DeathFSMState.EnterDel.BindUObject(this, &ABLeon::DeathEnter);
 	DeathFSMState.UpdateDel.BindUObject(this, &ABLeon::DeathUpdate);
@@ -1506,23 +1519,20 @@ void ABLeon::CreateCollision()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 
-	InteractionObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
+	InteractionObserver = GetWorld()->SpawnActor<ABCollisionObserverSphere>(SpawnParams);
 	InteractionObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	InteractionObserver->SetCollisionProfileName("Interaction");
 	InteractionObserver->SetActorRelativeLocation(FVector(0, 0, 30));
-	InteractionObserver->CollosionComp->SetSphereRadius(120.0f);
+	InteractionObserver->SetRadius(120.0f);
 
-	KickOverlapObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
-	KickOverlapObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform, "R_Shin");
+	KickOverlapObserver = GetWorld()->SpawnActor<ABCollisionObserverCapsule>(SpawnParams);
+	KickOverlapObserver->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, "R_ShinSocket");
 	KickOverlapObserver->SetCollisionProfileName("Interaction");
-	KickOverlapObserver->SetActorRelativeLocation(FVector(0, 0, 0));
-	KickOverlapObserver->CollosionComp->SetSphereRadius(30.0f);
-
-	KnifeOverlapObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
-	KnifeOverlapObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform, "R_HandSocket");
-	KnifeOverlapObserver->SetCollisionProfileName("Interaction");
-	KnifeOverlapObserver->SetActorRelativeLocation(FVector(0, 0, 0));
-	KnifeOverlapObserver->CollosionComp->SetSphereRadius(30.0f);
+	KickOverlapObserver->SetActorRelativeLocation(FVector(1.3, 6.45, 0));
+	KickOverlapObserver->SetActorRelativeRotation(FRotator(0.0, -9.5, 81.5));
+	KickOverlapObserver->SetRadius(10.0f);
+	KickOverlapObserver->SetHeight(30.0f);
+	KickOverlapObserver->CollisionEnterCallback.BindUObject(this, &ABLeon::KickAttack);
 }
 
 bool ABLeon::AbleWeaponSwap() const
@@ -1552,7 +1562,7 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 	{
 		ChangeUseWeapon(EItemCode::Empty);
 	}
-		break;
+	break;
 	case 1:
 	{
 		ChangeUseWeapon(EItemCode::Handgun_SR09R);
@@ -1613,7 +1623,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 
 		SocketLocationBlend = AbsolutAlphaBlend;
 		SocketRotationBlend = PutOutTurnAlphaBlend;
-		
+
 		SocketLocationLerpSpeed = 10.0f;
 		SocketRotationLerpSpeed = 2.0f;
 
@@ -1669,7 +1679,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 		const UEnum* EnupPtr = FindObject<UEnum>(nullptr, TEXT("/Script/BiohazardRe4.EItemCode"), true);
 
 		FName CodeName;
-		
+
 		if (nullptr != EnupPtr)
 		{
 			CodeName = EnupPtr->GetNameByValue((int64)_WeaponCode);
@@ -1677,7 +1687,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 
 		LOG_FATAL(TEXT("Wrong Item Code. Cannot be use as Weapons [%s]"), *CodeName.ToString());
 	}
-		break;
+	break;
 	}
 
 	UBlueprint* ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), NULL, *Path.ToString()));
@@ -1702,7 +1712,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 	}
 
 	NewWeapon->SetPlayer(this);
-	
+
 	return NewWeapon;
 }
 
@@ -1754,7 +1764,7 @@ ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode) const
 
 		LOG_FATAL(TEXT("Wrong Item Code. Cannot be use as Weapons [%s]"), *CodeName.ToString());
 	}
-		return ELeonWeaponAnim::Empty;
+	return ELeonWeaponAnim::Empty;
 	}
 }
 
@@ -1774,7 +1784,7 @@ double ABLeon::GetAxisZAngle(const FVector& _Location) const
 
 	double Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, ToDirection)));
 
-	
+
 	FVector Cross = FVector::CrossProduct(ActorForward, ToDirection);
 
 	LOG_MSG(TEXT("Cross : %f, Y : %f, Z : %f"), Cross.X, Cross.Y, Cross.Z);
@@ -1787,4 +1797,19 @@ double ABLeon::GetAxisZAngle(const FVector& _Location) const
 	LOG_MSG(TEXT("Angle : %f"), Angle);
 
 	return Angle;
+}
+
+void ABLeon::KickAttack(AActor* _OverlapActor)
+{
+	if (ELeonState::KickAttack != LeonFSMState)
+	{
+		return;
+	}
+
+	if (false == bIsKickAttackActive)
+	{
+		return;
+	}
+
+	UGameplayStatics::ApplyDamage(_OverlapActor, 180, GetController(), this, KickDamageType);
 }

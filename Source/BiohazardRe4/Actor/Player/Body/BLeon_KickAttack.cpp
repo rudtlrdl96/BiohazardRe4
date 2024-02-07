@@ -2,10 +2,11 @@
 
 
 #include "Actor/Player/Body/BLeon.h"
-#include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BiohazardRe4.h"
+#include "Generic/BFsm.h"
+#include "Generic/BCollisionObserverCapsule.h"
 
 void ABLeon::KickAttackEnter()
 {
@@ -13,8 +14,10 @@ void ABLeon::KickAttackEnter()
 	bIsMove = false;
 	bIsCrouch = false;
 	bIsKickEnd = false;
+	bIsKickAttackActive = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	KickOverlapObserver->SetVisibilityCollision(false);
 }
 
 void ABLeon::KickAttackUpdate(float _DeltaTime)
@@ -51,5 +54,7 @@ void ABLeon::KickAttackUpdate(float _DeltaTime)
 void ABLeon::KickAttackExit()
 {
 	bIsKickEnd = false;
+	bIsKickAttackActive = false;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+	KickOverlapObserver->SetVisibilityCollision(false);
 }
