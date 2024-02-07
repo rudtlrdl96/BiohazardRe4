@@ -36,14 +36,12 @@ EBTNodeResult::Type UBBTTask_MonsterWait::ExecuteTask(UBehaviorTreeComponent& Ow
 
 void UBBTTask_MonsterWait::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
-	LOG_MSG(TEXT("OnWaitFinished"));
-
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 
 	ACharacter* MyCharacter = OwnerComp.GetAIOwner()->GetCharacter();
 	if (MyCharacter == nullptr)
 	{
-		LOG_FATAL(TEXT("MyCharacter == nullptr : UBBTTask_SetPatrolPos::ExecuteTask"));
+		LOG_WARNING(TEXT("MyCharacter == nullptr : UBBTTask_SetPatrolPos::ExecuteTask"));
 		return;
 	}
 

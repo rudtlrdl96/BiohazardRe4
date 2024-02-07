@@ -12,5 +12,5 @@ UCLASS()
 class BIOHAZARDRE4_API UBChainsawManAnimInstance : public UBMonsterAnimInstanceBase
 {
 	GENERATED_BODY()
-	
+public:
 };

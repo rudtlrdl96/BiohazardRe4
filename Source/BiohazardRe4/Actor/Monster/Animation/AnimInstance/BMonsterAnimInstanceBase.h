@@ -42,8 +42,10 @@ protected:
 	float DistanceToPlayer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
-	FRotator GroundRotation;
+	float WalkDistanceThreshold;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
+	FRotator GroundRotation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	UObject* TraceTarget;

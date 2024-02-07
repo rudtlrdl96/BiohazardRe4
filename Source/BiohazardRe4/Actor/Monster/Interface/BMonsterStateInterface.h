@@ -26,6 +26,7 @@ enum class EMonsterState : uint8
 	Attack UMETA(DisplayName = "Attack"),
 	Flashed UMETA(DisplayName = "Flashed"),
 	Damaged UMETA(DisplayName = "Damaged"),
+	Death UMETA(DisplayName = "Death"),
 	Groggy UMETA(DisplayName = "Groggy"),
 };
 
@@ -46,11 +47,8 @@ public:
 	virtual void SetCurrentState(EMonsterState _InState) = 0;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) = 0;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() = 0;
-	virtual void MonsterDeath() = 0;
 
 protected:
-	virtual void Flashed() = 0;
-	virtual void Hit() = 0;
 
 private:
 };

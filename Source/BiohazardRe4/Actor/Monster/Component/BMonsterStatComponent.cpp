@@ -30,7 +30,6 @@ void UBMonsterStatComponent::StatInit(const FStatStruct& _StatData)
 void UBMonsterStatComponent::DecreaseHp(float _Hp)
 {
 	CurrentHp -= _Hp;
-
 }
 
 // Called when the game starts

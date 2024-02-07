@@ -27,6 +27,7 @@ public:
 
 protected:
 	virtual void OnPossess(APawn* _InPawn) override;
+	virtual void OnUnPossess() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	class UAIPerceptionComponent* AIPerceptionComponent;

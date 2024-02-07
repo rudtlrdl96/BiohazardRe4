@@ -81,7 +81,7 @@ void ABLeonGun::Shoot()
 		AActor* DamagedActor = GunHitInfo.GetActor();
 		GunDamageEvent.HitInfo = GunHitInfo;
 		GunDamageEvent.ShotDirection = Player->GetActorForwardVector();
-		
+
 		float CalDamage = DefaultDamage * DamageUnit;
 		LOG_MSG(TEXT("Damage : %f"), CalDamage);
 

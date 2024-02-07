@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../../Interface/BMonsterStateInterface.h"
+#include "../../Interface/BMonsterStatInterface.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../../Define/MonsterDefine.h"
@@ -64,10 +65,22 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 
 	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(GetOwningActor());
 	
-	if (StateInterface != nullptr)
+	if (StateInterface == nullptr)
 	{
-		CurState = StaticCast<uint8>(StateInterface->GetCurrentState());
+		LOG_MSG(TEXT("StateInterface casting failed"));
+		return;
 	}
+	CurState = StaticCast<uint8>(StateInterface->GetCurrentState());
+
+	IBMonsterStatInterface* StatInterface = Cast<IBMonsterStatInterface>(Owner);
+
+	if (StatInterface == nullptr)
+	{
+		LOG_MSG(TEXT("StatInterface casting failed"));
+		return;
+	}
+
+	WalkDistanceThreshold = StatInterface->GetWalkDistanceThreshold();
 
 	if (TraceTarget != nullptr)
 	{
