@@ -22,6 +22,7 @@ public:
 
 protected:
 	virtual void OnPossess(APawn* _InPawn) override;
+	virtual void OnUnPossess() override;
 private:
 	UPROPERTY()
 	TObjectPtr<class UBlackboardData> BBAsset;

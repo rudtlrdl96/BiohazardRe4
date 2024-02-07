@@ -603,12 +603,72 @@ float ABMonsterBase::CaculateDamage(float _OriginDamage, const FString& _Damaged
 	}
 
 	FString CriticalStr = "";
-	CriticalStr = (isCritical) ? TEXT("Critical") : TEXT(" ");
-	LOG_MSG(TEXT("Monster is Damaged : %f %s"), _OriginDamage, *CriticalStr);
+	CriticalStr = (isCritical) ? TEXT("[Critical]") : TEXT(" ");
+	LOG_MSG(TEXT("Monster is Damaged : %f %s, RemainHp = %f"), _OriginDamage, *CriticalStr, Stat->GetCurrentHp());
 
-	return _OriginDamage;
+	return 20000;
 }
 
 void ABMonsterBase::InitDamageTypes()
 {
+}
+
+
+bool ABMonsterBase::AbleInteraction() const
+{
+	return bisAbleInteraction;
+}
+
+EInteraction ABMonsterBase::GetInteractionType() const
+{
+	switch (CurState)
+	{
+	case EMonsterState::Idle:
+	{
+		return EInteraction::None;
+	}
+	case EMonsterState::Turn:
+	{
+		return EInteraction::None;
+	}
+	case EMonsterState::Patrol:
+	{
+		return EInteraction::None;
+	}
+	case EMonsterState::Walk:
+	{
+		return EInteraction::None;
+	}
+	case EMonsterState::Run:
+	{
+		return EInteraction::None;
+	}
+	case EMonsterState::Attack:
+	{
+		return EInteraction::AttackMonster;
+	}
+	case EMonsterState::Flashed:
+	{
+		return EInteraction::GroggyMonster;
+	}
+	case EMonsterState::Damaged:
+	{
+		return EInteraction::GroggyMonster;
+	}
+	case EMonsterState::Death:
+	{
+		return EInteraction::None;
+	}
+	case EMonsterState::Groggy:
+	{
+		return EInteraction::GroggyMonster;
+	}
+	default:
+		break;
+	}
+}
+
+FVector ABMonsterBase::GetUIPivot() const
+{
+	return FVector();
 }

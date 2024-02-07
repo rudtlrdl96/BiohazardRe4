@@ -42,6 +42,7 @@ public:
 	float GetPatrolRadius() { return PatrolRadius; };
 	float GetWalkSpeed() { return WalkSPeed; };
 	float GetRunSpeed() { return RunSpeed; };
+	float GetCurrentHp() { return CurrentHp; };
 	float GetWalkDistanceThreshold() { return WalkDistanceThreshold; };
 	float GetBaseAttackPower() { return BaseAttackPower; };
 

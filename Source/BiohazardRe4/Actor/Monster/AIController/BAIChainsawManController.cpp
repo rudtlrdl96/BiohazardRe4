@@ -58,3 +58,10 @@ void ABAIChainsawManController::OnPossess(APawn* _InPawn)
 
 	RunAI();
 }
+
+void ABAIChainsawManController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
+	StopAI();
+}

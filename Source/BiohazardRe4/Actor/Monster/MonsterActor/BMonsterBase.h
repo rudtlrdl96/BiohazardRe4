@@ -8,6 +8,7 @@
 #include "../Interface/BMonsterStatInterface.h"
 #include "DamageType/BDMGPlayerDamage.h"
 #include "DamageType/BDMGMonsterDamage.h"
+#include "Actor/Generic/Interface/BInteraction.h"
 #include "BMonsterBase.generated.h"
 
 UENUM()
@@ -30,7 +31,7 @@ enum class EDeathType
 };
 
 UCLASS()
-class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface
+class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface, public IBInteraction
 {
 	GENERATED_BODY()
 
@@ -119,4 +120,16 @@ private:
 
 	virtual void MonsterDeath(EDeathType _DeathType, const FPointDamageEvent* const& _DamageEvent);
 	virtual void Flashed();
+
+public:
+	virtual bool AbleInteraction() const = 0;
+
+	// 현재 상호작용의 상태를 반환
+	virtual EInteraction GetInteractionType() const = 0;
+
+	// UI Pivot 위치를 반환
+	virtual FVector GetUIPivot() const = 0;
+
+	uint8 bisAbleInteraction = true;
+	EInteraction InteractionType;
 };

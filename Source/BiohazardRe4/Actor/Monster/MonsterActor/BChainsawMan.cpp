@@ -13,6 +13,8 @@
 #include "DamageType/MonsterDamageType/BDMGMonsterSmallBottom.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterSmallTop.h"
 
+#include "Engine/DamageEvents.h"
+
 ABChainsawMan::ABChainsawMan()
 {
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ChainsawSkeletalMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/ChainsawMan/Chainsaw/SK_Chainsaw.SK_Chainsaw'"));
@@ -72,6 +74,43 @@ void ABChainsawMan::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ABChainsawMan::MonsterDeath(EDeathType _DeathType, const FPointDamageEvent* const& _DamageEvent)
+{
+	//행동트리
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
+	{
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return;
+	}
+
+	AIController->UnPossess();
+
+	if (_DeathType == EDeathType::Point)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		int SectionIndex = FMath::RandRange(1, 3);
+		
+		FString SectionNameStr = TEXT("Death");
+		SectionNameStr += FString::FromInt(SectionIndex);
+
+		FName SectionName(SectionNameStr);
+
+		//기존 애니메이션 모두 중지
+		AnimInstance->StopAllMontages(0.1f);
+
+		AnimInstance->Montage_Play(DamagedMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
+
+		SetCurrentState(EMonsterState::Death);
+
+		DamagedMontage->bEnableAutoBlendOut = false;
+
+		GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+	}
+}
+
 void ABChainsawMan::InitDamageTypes()
 {
 	DamageTypes.Reserve(10);
@@ -81,6 +120,55 @@ void ABChainsawMan::InitDamageTypes()
 	
 	//Attack2
 	DamageTypes.Emplace(UBDMGMonsterLargeBottom::StaticClass());
+}
+
+void ABChainsawMan::SetDamagedSectionNums()
+{
+	//Head
+	{
+		TMap<FString, int32> Maps;
+		DamagedMontageSectionNums.Add(TEXT("HEAD"), Maps);
+		DamagedMontageSectionNums[TEXT("HEAD")].Add(TEXT("SMALL"), 3);
+	}
+
+	//Body
+	{
+		TMap<FString, int32> Maps;
+		DamagedMontageSectionNums.Add(TEXT("BODY"), Maps);
+		DamagedMontageSectionNums[TEXT("BODY")].Add(TEXT("SMALL"), 3);
+		DamagedMontageSectionNums[TEXT("BODY")].Add(TEXT("MEDIUM"), 1);
+	}
+
+	//LArm
+	{
+		TMap<FString, int32> Maps;
+		DamagedMontageSectionNums.Add(TEXT("LARM"), Maps);
+		DamagedMontageSectionNums[TEXT("LARM")].Add(TEXT("SMALL"), 1);
+		DamagedMontageSectionNums[TEXT("LARM")].Add(TEXT("MEDIUM"), 1);
+	}
+
+	//RArm
+	{
+		TMap<FString, int32> Maps;
+		DamagedMontageSectionNums.Add(TEXT("RARM"), Maps);
+		DamagedMontageSectionNums[TEXT("RARM")].Add(TEXT("SMALL"), 1);
+	}
+
+	//LReg
+	{
+		TMap<FString, int32> Maps;
+		DamagedMontageSectionNums.Add(TEXT("LLEG"), Maps);
+		DamagedMontageSectionNums[TEXT("LLEG")].Add(TEXT("SMALL"), 1);
+		DamagedMontageSectionNums[TEXT("LLEG")].Add(TEXT("MEDIUM"), 1);
+	}
+
+	//RReg
+	{
+		TMap<FString, int32> Maps;
+		DamagedMontageSectionNums.Add(TEXT("RLEG"), Maps);
+		DamagedMontageSectionNums[TEXT("RLEG")].Add(TEXT("SMALL"), 1);
+		DamagedMontageSectionNums[TEXT("RLEG")].Add(TEXT("MEDIUM"), 1);
+	}
 }
 
 
