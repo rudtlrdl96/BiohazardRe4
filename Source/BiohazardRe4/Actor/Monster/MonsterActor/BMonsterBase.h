@@ -122,13 +122,13 @@ private:
 	virtual void Flashed();
 
 public:
-	virtual bool AbleInteraction() const = 0;
+	virtual bool AbleInteraction() const override;
 
 	// 현재 상호작용의 상태를 반환
-	virtual EInteraction GetInteractionType() const = 0;
+	virtual EInteraction GetInteractionType() const override;
 
 	// UI Pivot 위치를 반환
-	virtual FVector GetUIPivot() const = 0;
+	virtual FVector GetUIPivot() const override;
 
 	uint8 bisAbleInteraction = true;
 	EInteraction InteractionType;

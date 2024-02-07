@@ -613,7 +613,6 @@ void ABMonsterBase::InitDamageTypes()
 {
 }
 
-
 bool ABMonsterBase::AbleInteraction() const
 {
 	return bisAbleInteraction;
