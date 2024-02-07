@@ -60,6 +60,8 @@ public:
 
 	void ActiveSimulatePhysics(bool _bIsActive);
 
+	virtual void ActiveCollision(bool _IsActive) {}
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
 	USkeletalMeshComponent* WeaponMesh = nullptr;
@@ -77,5 +79,8 @@ protected:
 	int32 WeaponDamage;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	UProjectileMovementComponent* ProjectileComp = nullptr;
+	UProjectileMovementComponent* ProjectileComp = nullptr;	
+	
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<UDamageType> DamageType = nullptr;
 };

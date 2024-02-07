@@ -2,4 +2,40 @@
 
 
 #include "Actor/Player/Weapon/Knife/BLeonKnife.h"
+#include "Generic/BCollisionObserverCapsule.h"
+#include "Kismet/GameplayStatics.h"
 
+void ABLeonKnife::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FActorSpawnParameters Params;
+	Params.Owner = this;
+
+	AttackCollision = GetWorld()->SpawnActor<ABCollisionObserverCapsule>(Params);
+
+	AttackCollision->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	AttackCollision->SetActorRelativeLocation(FVector(0, 0, 0));
+	AttackCollision->SetActorRelativeRotation(FRotator(0, 0, 0));
+
+	AttackCollision->CollisionEnterCallback.BindUObject(this, &ABLeonKnife::KnifeAttack);
+
+	AttackCollision->SetCollisionProfileName("Interaction");
+	ActiveCollision(false);
+}
+
+void ABLeonKnife::ActiveCollision(bool _IsActive)
+{
+	bCollisionActive = _IsActive;
+	AttackCollision->SetVisibilityCollision(_IsActive);
+}
+
+void ABLeonKnife::KnifeAttack(AActor* _OverlapActor)
+{
+	if (false == bCollisionActive)
+	{
+		return;
+	}
+
+	UGameplayStatics::ApplyDamage(_OverlapActor, 100, nullptr, this, DamageType);
+}

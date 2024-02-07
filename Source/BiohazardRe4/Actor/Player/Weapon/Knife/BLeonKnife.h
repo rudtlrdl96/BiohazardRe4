@@ -6,6 +6,8 @@
 #include "Actor/Player/Weapon/BLeonWeapon.h"
 #include "BLeonKnife.generated.h"
 
+class ABCollisionObserverCapsule;
+
 /**
  * 
  */
@@ -14,4 +16,16 @@ class BIOHAZARDRE4_API ABLeonKnife : public ABLeonWeapon
 {
 	GENERATED_BODY()
 	
+public:	
+	virtual void BeginPlay() override;
+
+	virtual void ActiveCollision(bool _IsActive) override;
+
+private:
+	uint32 bCollisionActive : 1 = false;
+
+	ABCollisionObserverCapsule* AttackCollision = nullptr;
+
+	void KnifeAttack(AActor* _OverlapActor);
+
 };

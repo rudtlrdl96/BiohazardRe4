@@ -1330,10 +1330,22 @@ void ABLeon::KnifeAttackEnd()
 
 void ABLeon::KnifeCollisionActive()
 {
+	if (nullptr == CurrentWeapon)
+	{
+		return;
+	}
+
+	CurrentWeapon->ActiveCollision(true);
 }
 
 void ABLeon::KnifeCollisionDisable()
 {
+	if (nullptr == CurrentWeapon)
+	{
+		return;
+	}
+
+	CurrentWeapon->ActiveCollision(false);
 }
 
 void ABLeon::DamageEnd()
@@ -1533,6 +1545,7 @@ void ABLeon::CreateCollision()
 	KickOverlapObserver->SetRadius(10.0f);
 	KickOverlapObserver->SetHeight(30.0f);
 	KickOverlapObserver->CollisionEnterCallback.BindUObject(this, &ABLeon::KickAttack);
+	KickOverlapObserver->SetVisibilityCollision(false);
 }
 
 bool ABLeon::AbleWeaponSwap() const

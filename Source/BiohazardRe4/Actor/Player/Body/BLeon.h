@@ -550,7 +550,7 @@ private:
 	ABCollisionObserverSphere* InteractionObserver = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Stat)
-	TSubclassOf<UDamageType> KickDamageType;
+	TSubclassOf<UDamageType> KickDamageType = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	ABCollisionObserverCapsule* KickOverlapObserver = nullptr;
