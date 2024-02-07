@@ -10,7 +10,7 @@ ABLeonPistol::ABLeonPistol()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+		LOG_WARNING(TEXT("InventoryInst == nullptr"))
 		return;
 	}
 

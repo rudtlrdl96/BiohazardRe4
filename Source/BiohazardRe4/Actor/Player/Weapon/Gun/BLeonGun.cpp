@@ -44,13 +44,13 @@ bool ABLeonGun::AbleReload() const
 
 	if (InventoryInst == nullptr)
 	{
-		LOG_ERROR(TEXT("InventoryInst == nullptr"))
-		return false;
+		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+			return false;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_ERROR(TEXT("CurGun == nullptr"))
+		LOG_WARNING(TEXT("CurGun == nullptr"))
 			return false;
 	}
 
@@ -64,13 +64,13 @@ void ABLeonGun::Reload()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_ERROR(TEXT("InventoryInst == nullptr"))
-		return;
+		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_ERROR(TEXT("CurGun == nullptr"))
+		LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -103,15 +103,15 @@ void ABLeonGun::Shoot()
 {
 	LOG_MSG(TEXT("Shoot"))
 
-	if (InventoryInst == nullptr)
-	{
-		LOG_ERROR(TEXT("InventoryInst == nullptr"))
-			return;
-	}
+		if (InventoryInst == nullptr)
+		{
+			LOG_WARNING(TEXT("InventoryInst == nullptr"))
+				return;
+		}
 
 	if (CurGun == nullptr)
 	{
-		LOG_ERROR(TEXT("CurGun == nullptr"))
+		LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -127,8 +127,8 @@ void ABLeonGun::Shoot()
 	if (bIsTarget)
 	{
 		LOG_MSG(TEXT("There Is Target"))
-		DrawDebugLine(GetWorld(), CamLineTraceStart, CamLineTraceEnd, FColor::Blue, true, 0.1, (uint8)0U, 1.f);
-		
+			DrawDebugLine(GetWorld(), CamLineTraceStart, CamLineTraceEnd, FColor::Blue, true, 0.1, (uint8)0U, 1.f);
+
 		GunLineTraceEnd = (CamHitInfo.ImpactPoint - GunLineTraceStart);
 		GunLineTraceEnd.Normalize();
 		GunLineTraceEnd *= Range;
@@ -137,15 +137,15 @@ void ABLeonGun::Shoot()
 	else
 	{
 		LOG_MSG(TEXT("There Is No Target"))
-		GunLineTraceEnd = CamLineTraceEnd;
-	}	
+			GunLineTraceEnd = CamLineTraceEnd;
+	}
 
 	bool bIsHit = GetWorld()->LineTraceSingleByChannel(GunHitInfo, GunLineTraceStart, GunLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel4, LineTraceParams);
 	if (bIsHit)
 	{
 		LOG_MSG(TEXT("AttackSuccess"))
-		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
-		
+			DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
+
 		AActor* DamagedActor = GunHitInfo.GetActor();
 		GunDamageEvent.HitInfo = GunHitInfo;
 		GunDamageEvent.ShotDirection = Player->GetActorForwardVector();
@@ -158,14 +158,14 @@ void ABLeonGun::Shoot()
 	else
 	{
 		LOG_MSG(TEXT("AttackFail"))
-		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
+			DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
 	}
 
 	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	CurGun->SetLoadedAmmo(--CurAmmo);
 	LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
 
-	FireStart();
+		FireStart();
 }
 
 void ABLeonGun::DropShell()
@@ -182,13 +182,13 @@ void ABLeonGun::FireStart()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+		LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_ERROR(TEXT("CurGun == nullptr"))
+		LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -209,13 +209,13 @@ void ABLeonGun::FireEnd()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+		LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_ERROR(TEXT("CurGun == nullptr"))
+		LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -236,13 +236,13 @@ void ABLeonGun::ReloadStart()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+		LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_ERROR(TEXT("CurGun == nullptr"))
+		LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
