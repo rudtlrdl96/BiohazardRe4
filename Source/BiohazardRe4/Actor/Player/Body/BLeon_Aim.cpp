@@ -19,6 +19,7 @@ void ABLeon::AimEnter()
 	AimUpdateTime = 0.0f;
 	LeonAim = ELeonAim::Start;
 	bDrawGrenadeAim = false;
+	bIsPlayGetItem = false;
 }
 
 void ABLeon::AimUpdate(float _DeltaTime)

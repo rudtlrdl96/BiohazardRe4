@@ -15,6 +15,7 @@ void ABLeon::ThrowingEnter()
 {
 	bIsThrowingEnd = false;
 	bIsThrowingWeapon = false;
+	bIsPlayGetItem = false;
 }
 
 void ABLeon::ThrowingUpdate(float _DeltaTime)

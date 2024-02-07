@@ -18,6 +18,8 @@ void ABLeon::DeathEnter()
 
 		CurrentWeapon->ActiveSimulatePhysics(true);
 	}
+
+	bIsPlayGetItem = false;
 }
 
 void ABLeon::DeathUpdate(float _DeltaTime)

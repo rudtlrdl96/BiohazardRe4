@@ -26,7 +26,7 @@ bool ABLeonGun::AbleAttack() const
 	LOG_MSG(TEXT("AbleAttack"))
 	if (CurGun == nullptr)
 	{
-		return false;
+		return true;
 	}
 	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	return CurAmmo > 0;

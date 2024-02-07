@@ -12,6 +12,7 @@ void ABLeon::KnifeAttackEnter()
 	bIsJog = false;
 	bIsMove = false;
 	bIsCrouch = false;
+	bIsPlayGetItem = false;
 
 	KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
 

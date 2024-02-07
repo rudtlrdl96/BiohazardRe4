@@ -9,6 +9,7 @@
 void ABLeon::DamageEnter()
 {
 	bIsHitEnd = false;
+	bIsPlayGetItem = false;
 }
 
 void ABLeon::DamageUpdate(float _DeltaTime)

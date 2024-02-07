@@ -810,7 +810,29 @@ void ABLeon::TryInteraction()
 		return;
 		case EInteraction::DropItem:
 		{
-			int a = 0;
+			// Todo : GetItem
+
+			switch (LeonFSMState)
+			{
+			case ELeonState::Idle:
+			case ELeonState::Walk:
+			case ELeonState::Jog:
+				break;
+			default:
+				return;
+			}
+
+			if (true == bIsGunReload)
+			{
+				return;
+			}			
+			
+			if (true == bIsGunReload)
+			{
+				return;
+			}
+
+			bIsPlayGetItem = true;
 		}
 		return;
 		default:
@@ -1369,6 +1391,11 @@ EInteraction ABLeon::GetInteractionType() const
 FVector ABLeon::GetUIPivot() const
 {
 	return FVector::ZeroVector;
+}
+
+void ABLeon::GetItemEnd()
+{
+	bIsPlayGetItem = false;
 }
 
 void ABLeon::ReloadActive()

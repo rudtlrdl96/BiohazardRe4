@@ -15,6 +15,7 @@ void ABLeon::KickAttackEnter()
 	bIsCrouch = false;
 	bIsKickEnd = false;
 	bIsKickAttackActive = false;
+	bIsPlayGetItem = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	KickOverlapObserver->SetVisibilityCollision(false);

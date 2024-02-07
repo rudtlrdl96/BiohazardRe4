@@ -6,13 +6,14 @@
 #include "GameFramework/Character.h"
 #include "Item/ItemData.h"
 #include "Data/BLeonStat.h"
-#include "Interface\BIWeaponPutOut.h"
-#include "Interface\BIWeaponPutAway.h"
-#include "Interface\BIWeaponShoot.h"
-#include "Interface\BIWeaponHandSocketSwap.h"
-#include "Interface\BIWeaponReload.h"
-#include "Interface\BIKnifeAttack.h"
-#include "Interface\BIDamage.h"
+#include "Interface/BIWeaponPutOut.h"
+#include "Interface/BIWeaponPutAway.h"
+#include "Interface/BIWeaponShoot.h"
+#include "Interface/BIWeaponHandSocketSwap.h"
+#include "Interface/BIWeaponReload.h"
+#include "Interface/BIKnifeAttack.h"
+#include "Interface/BIDamage.h"
+#include "Interface/BIPlayerInteractionAnim.h"
 #include "Actor/Generic/Interface/BInteraction.h"
 #include "BLeon.generated.h"
 
@@ -161,7 +162,8 @@ struct FPlayerStat
 
 UCLASS()
 class BIOHAZARDRE4_API ABLeon : public ACharacter,
-	public IBIWeaponPutAway, public IBIWeaponPutOut, public IBIWeaponShoot, public IBIWeaponHandSocketSwap, public IBIWeaponReload, public IBIKnifeAttack, public IBIDamage, public IBInteraction
+	public IBIWeaponPutAway, public IBIWeaponPutOut, public IBIWeaponShoot, public IBIWeaponHandSocketSwap, 
+	public IBIWeaponReload, public IBIKnifeAttack, public IBIDamage, public IBInteraction, public IBIPlayerInteractionAnim
 {
 	GENERATED_BODY()
 
@@ -341,6 +343,12 @@ public:
 	inline ABLeonWeapon* GetCurrentWeapon() const
 	{
 		return CurrentWeapon;
+	}	
+	
+	UFUNCTION(BlueprintCallable)
+	inline bool IsPlayGetItemAnim() const
+	{
+		return bIsPlayGetItem;
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -387,6 +395,8 @@ public:
 	virtual EInteraction GetInteractionType() const override;
 	virtual FVector GetUIPivot() const override;
 
+	virtual void GetItemEnd() override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -400,6 +410,7 @@ private:
 	uint32 bIsCombat : 1 = false;
 	uint32 bIsJogTrigger : 1 = false;
 	uint32 bIsCrouch : 1 = false;
+	uint32 bIsPlayGetItem : 1 = false;
 
 	ELeonState LeonFSMState = ELeonState::Idle;
 
