@@ -25,20 +25,18 @@ class BIOHAZARDRE4_API ABLeonGun : public ABLeonWeapon
 	GENERATED_BODY()
 
 public:
+	ABLeonGun();
+
 	virtual bool AbleAttack() const override;
 	virtual void Attack() override;
 
 	virtual bool AbleReload() const override;
 	virtual void Reload() override;
+	virtual uint32 GetAmmo() const override;
 
 	float GetFireRate() const
 	{
 		return RateOfFire;
-	}
-
-	virtual uint32 GetAmmo() const override
-	{
-		return static_cast<uint32>(CurAmmo);
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -101,20 +99,13 @@ protected:
 	float Range = 5000.f;
 
 	UPROPERTY()
-	int32 MaxAmmo = 5;
-
-	UPROPERTY()
-	int32 CurAmmo = 0;
-
-	UPROPERTY()
-	int32 ExtraAmmo = 100;
-
-	UPROPERTY()
 	FPointDamageEvent GunDamageEvent;
 
 	UPROPERTY(BlueprintReadWrite)
 	EGunState CurState = EGunState::ENoAmmo_Loop;
 
+	EItemCode AmmoType = EItemCode::End;
 
+	class ABInventoryWeapon* CurGun = nullptr;
 
 };

@@ -13,7 +13,8 @@ UCLASS()
 class BIOHAZARDRE4_API ABLeonShotgun : public ABLeonGun
 {
 	GENERATED_BODY()
-	
+public:
+	ABLeonShotgun();
 protected:
 	virtual void BeginPlay() override;
 };

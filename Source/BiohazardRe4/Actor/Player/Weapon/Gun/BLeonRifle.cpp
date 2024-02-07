@@ -2,13 +2,25 @@
 
 
 #include "Actor/Player/Weapon/Gun/BLeonRifle.h"
+#include "Item/InventoryActor.h"
 
-void ABLeonRifle::BeginPlay()
+ABLeonRifle::ABLeonRifle()
 {
-	Super::BeginPlay();
+	if (InventoryInst == nullptr)
+	{
+		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+			return;
+	}
+
+	CurGun = InventoryInst->FindWeapon(EItemCode::Rifle_SRM1903);
+	AmmoType = EItemCode::RifleAmmo;
 	DamageUnit = 100.f;
 	DefaultDamage = 2.5f;
 	RateOfFire = 0.42f;
 	Range = 10000.f;
-	MaxAmmo = 5;
+}
+
+void ABLeonRifle::BeginPlay()
+{
+	Super::BeginPlay();
 }

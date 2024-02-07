@@ -13,7 +13,11 @@ UCLASS()
 class BIOHAZARDRE4_API ABLeonPistol : public ABLeonGun
 {
 	GENERATED_BODY()
-	
+	static int32 CurAmmoRecord;
+
+public:	
+	ABLeonPistol();
+
 protected:
 	virtual void BeginPlay() override;
 

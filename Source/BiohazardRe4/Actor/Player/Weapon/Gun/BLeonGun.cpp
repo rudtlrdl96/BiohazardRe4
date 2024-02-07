@@ -3,19 +3,32 @@
 #include "Actor/Player/Weapon/Gun/BLeonGun.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DamageEvents.h"
+#include "Item/InventoryActor.h"
+#include "Item/InventoryWeapon.h"
 #include "DamageType/BDMGPlayerDamage.h"
 
 
+ABLeonGun::ABLeonGun()
+{
+
+}
 
 void ABLeonGun::BeginPlay()
 {
 	Super::BeginPlay();
+	LOG_MSG(TEXT("ABLeonGun Constructor"))
 	PlayerCamManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 }
+
 
 bool ABLeonGun::AbleAttack() const
 {
 	LOG_MSG(TEXT("AbleAttack"))
+	if (CurGun == nullptr)
+	{
+		return false;
+	}
+	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	return CurAmmo > 0;
 }
 
@@ -28,25 +41,80 @@ void ABLeonGun::Attack()
 bool ABLeonGun::AbleReload() const
 {
 	LOG_MSG(TEXT("AbleReload"))
-	return CurAmmo < MaxAmmo && ExtraAmmo > 0;
+
+	if (InventoryInst == nullptr)
+	{
+		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+		return false;
+	}
+
+	if (CurGun == nullptr)
+	{
+		LOG_ERROR(TEXT("CurGun == nullptr"))
+			return false;
+	}
+
+	int32 CurAmmo = CurGun->GetLoadedAmmo();
+	int32 MaxAmmo = CurGun->GetMaxAmmo();
+	int32 StoredAmmo = InventoryInst->GetItemCount(AmmoType);
+	return CurAmmo < MaxAmmo && StoredAmmo > 0;
 }
 
 void ABLeonGun::Reload()
 {
-	int32 ReloadAmmoCount = MaxAmmo - CurAmmo;
-	if (ReloadAmmoCount > ExtraAmmo)
+	if (InventoryInst == nullptr)
 	{
-		ReloadAmmoCount = ExtraAmmo;
+		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+		return;
+	}
+
+	if (CurGun == nullptr)
+	{
+		LOG_ERROR(TEXT("CurGun == nullptr"))
+			return;
+	}
+
+	int32 MaxAmmo = CurGun->GetMaxAmmo();
+	int32 CurAmmo = CurGun->GetLoadedAmmo();
+	int32 StoredAmmo = InventoryInst->GetItemCount(AmmoType);
+	int32 ReloadAmmoCount = MaxAmmo - CurAmmo;
+
+	if (ReloadAmmoCount > StoredAmmo)
+	{
+		ReloadAmmoCount = StoredAmmo;
 	}
 	CurAmmo += ReloadAmmoCount;
-	ExtraAmmo -= ReloadAmmoCount;
+	CurGun->SetLoadedAmmo(CurAmmo);
+	InventoryInst->RemoveItem(AmmoType, ReloadAmmoCount);
 	LOG_MSG(TEXT("Reload"))
+}
 
+uint32 ABLeonGun::GetAmmo() const
+{
+	if (InventoryInst == nullptr)
+	{
+		return UINT32_MAX;
+	}
+
+	return CurGun->GetLoadedAmmo();
 }
 
 void ABLeonGun::Shoot()
 {
 	LOG_MSG(TEXT("Shoot"))
+
+	if (InventoryInst == nullptr)
+	{
+		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+			return;
+	}
+
+	if (CurGun == nullptr)
+	{
+		LOG_ERROR(TEXT("CurGun == nullptr"))
+			return;
+	}
+
 	CamLineTraceStart = PlayerCamManager->GetCameraLocation();
 	CamLineTraceEnd = CamLineTraceStart + PlayerCamManager->GetActorForwardVector() * Range;
 
@@ -86,7 +154,6 @@ void ABLeonGun::Shoot()
 		LOG_MSG(TEXT("Damage : %f"), CalDamage);
 
 		UGameplayStatics::ApplyPointDamage(DamagedActor, CalDamage, Player->GetActorForwardVector(), GunDamageEvent.HitInfo, Player->GetController(), this, UBDMGPlayerDamage::StaticClass());
-		//DamagedActor->TakeDamage(CalDamage, GunDamageEvent, Player->GetController(), this);
 	}
 	else
 	{
@@ -94,7 +161,8 @@ void ABLeonGun::Shoot()
 		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
 	}
 
-	int32 PrevAmmo = CurAmmo--;
+	int32 CurAmmo = CurGun->GetLoadedAmmo();
+	CurGun->SetLoadedAmmo(--CurAmmo);
 	LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
 
 	FireStart();
@@ -112,6 +180,19 @@ void ABLeonGun::DropMagazine()
 
 void ABLeonGun::FireStart()
 {
+	if (InventoryInst == nullptr)
+	{
+		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+			return;
+	}
+
+	if (CurGun == nullptr)
+	{
+		LOG_ERROR(TEXT("CurGun == nullptr"))
+			return;
+	}
+
+	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	if (CurAmmo != 0)
 	{
 		CurState = EGunState::EAmmo_Fire_Ammo;
@@ -126,6 +207,19 @@ void ABLeonGun::FireStart()
 
 void ABLeonGun::FireEnd()
 {
+	if (InventoryInst == nullptr)
+	{
+		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+			return;
+	}
+
+	if (CurGun == nullptr)
+	{
+		LOG_ERROR(TEXT("CurGun == nullptr"))
+			return;
+	}
+
+	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	if (CurAmmo == 0)
 	{
 		CurState = EGunState::ENoAmmo_Loop;
@@ -140,6 +234,19 @@ void ABLeonGun::FireEnd()
 
 void ABLeonGun::ReloadStart()
 {
+	if (InventoryInst == nullptr)
+	{
+		LOG_ERROR(TEXT("InventoryInst == nullptr"))
+			return;
+	}
+
+	if (CurGun == nullptr)
+	{
+		LOG_ERROR(TEXT("CurGun == nullptr"))
+			return;
+	}
+
+	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	if (CurAmmo == 0)
 	{
 		CurState = EGunState::ENoAmmo_Reload;

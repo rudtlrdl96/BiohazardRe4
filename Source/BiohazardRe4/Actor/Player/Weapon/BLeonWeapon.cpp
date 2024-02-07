@@ -4,7 +4,9 @@
 #include "Actor/Player/Weapon/BLeonWeapon.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Item/InventoryActor.h"
 #include "BiohazardRe4.h"
+
 
 // Sets default values
 ABLeonWeapon::ABLeonWeapon()
@@ -20,7 +22,13 @@ ABLeonWeapon::ABLeonWeapon()
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
 	WeaponMesh->SetCollisionProfileName("Weapon");
-	RootComponent = WeaponMesh;	
+	RootComponent = WeaponMesh;
+
+	if (ABInventoryActor::Instance == nullptr)
+	{
+		return;
+	}
+	InventoryInst = ABInventoryActor::Instance;
 }
 
 // Called when the game starts or when spawned
