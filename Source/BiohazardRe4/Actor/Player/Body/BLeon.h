@@ -26,6 +26,7 @@ class UCapsuleComponent;
 class USceneComponent;
 class ABDrawGrenadeAim;
 class ABCollisionObserver;
+class IBInteraction;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -530,6 +531,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	float GrenadeThrowingPower = 850.0f;
 
+	TSet<IBInteraction*> InteractionActors;
 
 	//*****************************************************//
 

@@ -25,6 +25,7 @@
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
 #include "Generic/BCollisionObserver.h"
+#include "Actor/Generic/Interface/BInteraction.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
 const FVector ABLeon::GunAimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
@@ -69,7 +70,8 @@ void ABLeon::BeginPlay()
 	InteractionObserver = GetWorld()->SpawnActor<ABCollisionObserver>(SpawnParams);
 	InteractionObserver->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	InteractionObserver->SetCollisionProfileName("Interaction");
-	InteractionObserver->SetScale(120.0f);
+	InteractionObserver->SetActorRelativeLocation(FVector(0, 0, 30));
+	InteractionObserver->CollosionComp->SetSphereRadius(120.0f);
 
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
@@ -618,7 +620,12 @@ void ABLeon::AttachRightHandSocket()
 
 void ABLeon::ReloadStart()
 {
+	if (nullptr == CurrentWeapon)
+	{
+		LOG_FATAL(TEXT("Player Weapon is nullptr"));
+	}
 
+	CurrentWeapon->ReloadStart();
 }
 
 void ABLeon::Reload()
@@ -690,7 +697,82 @@ void ABLeon::PlayIdle(const FInputActionInstance& _MoveAction)
 
 void ABLeon::TryInteraction()
 {
-	// Todo :: 상호작용 처리
+	TArray<AActor*> Overlaps;
+	InteractionObserver->GetOverlappingActors(Overlaps);
+
+	FVector ActorLocation;
+
+	Overlaps.Sort([ActorLocation](const AActor& _Lhs, const AActor& _Rhs)
+		{
+			float DistanceL = FVector::Distance(ActorLocation, _Lhs.GetActorLocation());
+			float DistanceR = FVector::Distance(ActorLocation, _Rhs.GetActorLocation());
+
+			return DistanceL > DistanceR;
+		});
+
+	for (size_t i = 0; i < Overlaps.Num(); i++)
+	{
+		IBInteraction* Interface = Cast<IBInteraction>(Overlaps[i]);
+
+		if (nullptr == Interface)
+		{
+			continue;
+		}
+
+		if (false == Interface->AbleGroggy())
+		{
+			continue;
+		}
+
+		EInteraction InteractionType = Interface->GetInteractionType();
+
+		switch (InteractionType)
+		{
+		case EInteraction::Empty:
+			continue;
+		case EInteraction::AttackMonster:
+		{
+			int a = 0;
+		}
+			return;
+		case EInteraction::GroggyMonster:
+		{
+			int a = 0;
+		}
+			return;
+		case EInteraction::JumpWindow:
+		{
+			int a = 0;
+		}
+			return;
+		case EInteraction::FallCliff:
+		{
+			int a = 0;
+		}
+			return;
+		case EInteraction::JumpFence:
+		{
+			int a = 0;
+		}
+			return;
+		case EInteraction::OpenDoor:
+		{
+			int a = 0;
+		}
+			return;
+		case EInteraction::DropItem:
+		{
+			int a = 0;
+		}
+			return;
+		default:
+		{
+			LOG_ERROR(TEXT("Wrong Type Interaction"));
+			continue;
+		}
+			break;
+		}
+	}
 }
 
 bool ABLeon::AbleAim() const

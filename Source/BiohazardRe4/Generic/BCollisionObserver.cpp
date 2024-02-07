@@ -16,23 +16,12 @@ ABCollisionObserver::ABCollisionObserver()
 
 	CollosionComp->OnComponentBeginOverlap.AddDynamic(this, &ABCollisionObserver::OnOverlapBegin);
 	CollosionComp->OnComponentEndOverlap.AddDynamic(this, &ABCollisionObserver::OnOverlapEnd);
-
 	RootComponent = CollosionComp;
 }
-
+ 
 void ABCollisionObserver::SetCollisionProfileName(FName InCollisionProfileName, bool bUpdateOverlaps)
 {
 	CollosionComp->SetCollisionProfileName(InCollisionProfileName, bUpdateOverlaps);
-}
-
-void ABCollisionObserver::SetLocation(const FVector& _Location)
-{
-	CollosionComp->SetRelativeLocation(_Location);
-}
-
-void ABCollisionObserver::SetScale(float _Radius)
-{
-	CollosionComp->SetSphereRadius(_Radius);
 }
 
 // Called when the game starts
@@ -46,12 +35,20 @@ void ABCollisionObserver::BeginPlay()
 
 void ABCollisionObserver::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	LOG_MSG(TEXT("Name %s"), *OtherActor->GetName());
-	int a = 0;
+	if (false == CollisionEnterCallback.IsBound())
+	{
+		return;
+	}
+
+	CollisionEnterCallback.Execute(OtherActor);
 }
 
 void ABCollisionObserver::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	LOG_MSG(TEXT("Name %s"), *OtherActor->GetName());
-	int a = 0;
+	if (false == CollisionExitCallback.IsBound())
+	{
+		return;
+	}
+
+	CollisionExitCallback.Execute(OtherActor);
 }
