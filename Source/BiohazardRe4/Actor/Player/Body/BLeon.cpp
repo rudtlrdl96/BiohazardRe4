@@ -728,7 +728,7 @@ void ABLeon::TryInteraction()
 
 		switch (InteractionType)
 		{
-		case EInteraction::Empty:
+		case EInteraction::None:
 			continue;
 		case EInteraction::AttackMonster:
 		{

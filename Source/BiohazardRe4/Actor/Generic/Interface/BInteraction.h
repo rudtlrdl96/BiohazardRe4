@@ -16,7 +16,7 @@ class UBInteraction : public UInterface
 UENUM(BlueprintType)
 enum class EInteraction
 {
-	Empty			UMETA(DisplayName = "Empty"),
+	None			UMETA(DisplayName = "None"),
 	AttackMonster	UMETA(DisplayName = "AttackMonster"),
 	GroggyMonster	UMETA(DisplayName = "GroggyMonster"),
 	JumpWindow		UMETA(DisplayName = "JumpWindow"),
