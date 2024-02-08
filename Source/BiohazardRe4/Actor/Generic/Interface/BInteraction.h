@@ -14,7 +14,7 @@ class UBInteraction : public UInterface
 };
 
 UENUM(BlueprintType)
-enum class EInteraction
+enum class EInteraction : uint8
 {
 	None			UMETA(DisplayName = "None"),
 	AttackMonster	UMETA(DisplayName = "AttackMonster"),

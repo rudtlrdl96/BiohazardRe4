@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Item/ItemData.h"
+#include "Actor/Generic/Interface/BInteraction.h"
 #include "HUDBase.generated.h"
 
 UCLASS()
@@ -71,8 +72,8 @@ public :
 
 	// _______________Interaction_____________________
 	// HUD의 상호작용 키 표시를 지정합니다
-	//UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	//void SetInteraction(EInteractionState State);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void SetInteraction(EInteraction Intreaction);
 	// HUD의 상호작용 키 표시를 끕니다
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OffInteraction();
