@@ -143,31 +143,52 @@ void ABMonsterMale::SetClothesSkeletalMeshByRandomInBeginPlay()
 	GetMesh()->SetSkeletalMesh(LoadedBodyMesh);
 	BodyBase = GetMesh();
 
-	//Head
+	//Head, Hat
 	FString HeadPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/1/SK_MonsterMaleHead_1.SK_MonsterMaleHead_1'");
 	FString HeadPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/2/SK_MonsterMaleHead_2.SK_MonsterMaleHead_2'");
 	FString HeadPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/3/SK_MonsterMaleHead_3.SK_MonsterMaleHead_3'");
 	FString HeadPath_4 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/4/SK_MonsterMaleHead_4.SK_MonsterMaleHead_4'");
 
-	TArray<FString> HeadPaths;
-	HeadPaths.Reserve(4);
+	FString HatPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/1/SK_MonsterMaleHat_1.SK_MonsterMaleHat_1'");
+	FString HatPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/2/SK_MonsterMaleHat_2.SK_MonsterMaleHat_2'");
+	FString HatPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/3/SK_MonsterMaleHat_3.SK_MonsterMaleHat_3'");
 
-	HeadPaths.Add(HeadPath_1);
-	HeadPaths.Add(HeadPath_2);
-	HeadPaths.Add(HeadPath_3);
-	HeadPaths.Add(HeadPath_4);
+	//¸Ó¸®, ¸ðÀÚ ½Ö
+	TArray<TPair<FString, FString>> HeadHatPaths;
+	HeadHatPaths.Reserve(4);
 
-	int HeadIndex = FMath::RandRange(0, 3);
+	HeadHatPaths.Add({ HeadPath_1, HatPath_1 });
+	HeadHatPaths.Add({ HeadPath_2, HatPath_2 });
+	HeadHatPaths.Add({ HeadPath_3, HatPath_3 });
+	HeadHatPaths.Add({ HeadPath_4, FString(TEXT(""))});
 
-	USkeletalMesh* LoadedHeadMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *HeadPaths[HeadIndex]));
+	int HeadHatIndex = FMath::RandRange(0, 3);
 
-	if (LoadedHeadMesh != nullptr)
+	USkeletalMesh* LoadedHeadMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *HeadHatPaths[HeadHatIndex].Key));
+	if (LoadedHeadMesh == nullptr)
 	{
-		Head->SetSkeletalMesh(LoadedHeadMesh);
+		LOG_WARNING(TEXT("Head Mesh is failed to load"));
 	}
 	else
 	{
-		LOG_MSG(TEXT("Head Mesh is Nullptr : Index = %d"), HeadIndex);
+		Head->SetSkeletalMesh(LoadedHeadMesh);
+	}
+
+	if (*HeadHatPaths[HeadHatIndex].Value == FString(TEXT("")))
+	{
+		Hat->SetVisibility(false);
+	}
+	else
+	{
+		USkeletalMesh* LoadedHatMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *HeadHatPaths[HeadHatIndex].Value));
+		if (LoadedHatMesh == nullptr)
+		{
+			LOG_WARNING(TEXT("Hat Mesh is failed to load"));
+		}
+		else
+		{
+			Hat->SetSkeletalMesh(LoadedHatMesh);
+		}
 	}
 
 	//Jacket
@@ -219,36 +240,6 @@ void ABMonsterMale::SetClothesSkeletalMeshByRandomInBeginPlay()
 	else
 	{
 		LOG_MSG(TEXT("Pants Mesh is Nullptr : Index = %d"), PantsIndex);
-	}
-
-	//Hat
-	int HatIndex = FMath::RandRange(0, 3);
-	if (HatIndex == 3)
-	{
-		Hat->SetVisibility(false);
-		return;
-	}
-
-	FString HatPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/1/SK_MonsterMaleHat_1.SK_MonsterMaleHat_1'");
-	FString HatPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/2/SK_MonsterMaleHat_2.SK_MonsterMaleHat_2'");
-	FString HatPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/3/SK_MonsterMaleHat_3.SK_MonsterMaleHat_3'");
-
-	TArray<FString> HatRefs;
-	HatRefs.Reserve(3);
-
-	HatRefs.Add(HatPath_1);
-	HatRefs.Add(HatPath_2);
-	HatRefs.Add(HatPath_3);
-
-	USkeletalMesh* LoadedHatMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *HatRefs[HatIndex]));
-
-	if (LoadedHatMesh != nullptr)
-	{
-		Hat->SetSkeletalMesh(LoadedHatMesh);
-	}
-	else
-	{
-		LOG_MSG(TEXT("Hat Mesh is Nullptr : Index = %d"), HatIndex);
 	}
 }
 
