@@ -22,7 +22,7 @@ protected:
 
 private:
 
-	virtual void MonsterDeath(EDeathType _DeathType, const FPointDamageEvent* const& _DamageEvent);
+	virtual void MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 	virtual void InitDamageTypes() override;
 	virtual void SetDamagedSectionNums() override;
 };

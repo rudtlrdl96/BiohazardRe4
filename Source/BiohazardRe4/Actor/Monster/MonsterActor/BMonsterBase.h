@@ -26,6 +26,7 @@ enum class EDamagedPart
 UENUM()
 enum class EDeathType
 {
+	Normal,
 	Point,
 	Radial,
 };
@@ -35,11 +36,11 @@ class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateI
 {
 	GENERATED_BODY()
 
+	//Constructor
 public:
-	// Sets default values for this character's properties
 	ABMonsterBase();
 	
-	//State
+	//IBMonsterStateInterface
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual EMonsterState GetCurrentState() override;
@@ -51,27 +52,33 @@ public:
 	virtual void SetIsAttack(bool _IsAttacking) override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
+	virtual void AttackStart() override;
 
-	//Stat
+	//IBMonsterStatInterface
 public:
-	virtual float GetAttackRadius() override;
-	virtual float GetAttackSweepRadius() override;
-	virtual float GetDetectRadius() override;
-	virtual float GetPatrolRadius() override;
 	virtual float GetRunSpeed() override;
 	virtual float GetWalkSpeed() override;
+	virtual float GetAttackRadius() override;
+	virtual float GetDetectRadius() override;
+	virtual float GetPatrolRadius() override;
+	virtual float GetAttackSweepRadius() override;
 
+	virtual void StatInit(const class UBMonsterStatData* _DataAsset);
+	
 	UFUNCTION(BlueprintCallable)
 	virtual float GetWalkDistanceThreshold() override;
 
-	virtual void StatInit(const class UBMonsterStatData* _DataAsset);
+	//IBInteraction
+public:
+	virtual bool AbleInteraction() const override;
+	virtual EInteraction GetInteractionType() const override;
+	virtual FVector GetUIPivot() const override;
+
+	//Actor Function
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-protected:
 	virtual void BeginPlay() override;
-	virtual void AttackStart() override;
 
-	virtual void InitDamageTypes();
 	//Component
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
@@ -88,11 +95,45 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> DamagedMontage = nullptr;
 
+	//Delegate
 protected:
 	FMonsterAttackEnd OnAttackEnd;
+
+	//Variable
+protected:
 	TArray<class UClass*> DamageTypes;
 	TMap<FString, TMap<FString, int>> DamagedMontageSectionNums;
 
+	//Init
+protected:
+	virtual void InitDamageTypes();
+	virtual void SetDamagedSectionNums();
+
+	//Damaged
+private:
+	float TakeNormalDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
+	float TakePointDamage(const FDamageEvent& _DamageEvent, float _DamagedAmount);
+	void TakeRadialDamage();
+	
+	void DamagedByGun(const FString& _DamagedPart);
+	void DamagedByKnife(const FString& _DamagedPart);
+
+	void DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
+
+	void SmallDamaged(const FString& _DamagedPart);
+	void MediumDamaged(const FString& _DamagedPart);
+	void LargeDamaged(const FString& _DamagedPart);
+
+	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
+	float CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, EPlayerDamageType _PlayerDamageType);
+	float CaculateNormalDamage(float _OriginDamage, EPlayerDamageType _PlayerDamageType);
+	float CaculateCriticalDamage(float _OriginDamage, EPlayerDamageType _PlayerDamageType);
+
+	virtual void MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
+	virtual void Flashed();
+
+
+	//State Variable
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	EMonsterState CurState;
@@ -100,36 +141,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	uint8 bIsAttacking : 1;
 
+	//Interaction Variable
 private:
-	virtual void SetDamagedSectionNums();
-
-	float TakePointDamage(const FPointDamageEvent* const& _DamageEvent, float _DamagedAmount);
-	void TakeRadialDamage();
-
-	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
-	
-	void DamagedByGun(const FString& _DamagedPart);
-	void DamagedByKnife(const FString& _DamagedPart);
-	void DamagedByKick(const FString& _DamagedPart);
-
-	void SmallDamaged(const FString& _DamagedPart);
-	void MediumDamaged(const FString& _DamagedPart);
-	void LargeDamaged(const FString& _DamagedPart);
-
-	float CaculateDamage(float _OriginDamage, const FString& _DamagedPart, EPlayerDamageType _PlayerDamageType);
-
-	virtual void MonsterDeath(EDeathType _DeathType, const FPointDamageEvent* const& _DamageEvent);
-	virtual void Flashed();
-
-public:
-	virtual bool AbleInteraction() const override;
-
-	// 현재 상호작용의 상태를 반환
-	virtual EInteraction GetInteractionType() const override;
-
-	// UI Pivot 위치를 반환
-	virtual FVector GetUIPivot() const override;
-
-	uint8 bisAbleInteraction : 1;
 	EInteraction InteractionType;
+
 };

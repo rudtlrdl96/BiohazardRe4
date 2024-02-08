@@ -74,7 +74,7 @@ void ABChainsawMan::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABChainsawMan::MonsterDeath(EDeathType _DeathType, const FPointDamageEvent* const& _DamageEvent)
+void ABChainsawMan::MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent)
 {
 	//행동트리
 	AAIController* AIController = Cast<AAIController>(GetController());

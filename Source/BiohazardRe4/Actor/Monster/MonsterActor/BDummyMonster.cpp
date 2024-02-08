@@ -2,6 +2,7 @@
 
 
 #include "Actor/Monster/MonsterActor/BDummyMonster.h"
+#include "Actor/Monster/Component/BMonsterStatComponent.h"
 
 ABDummyMonster::ABDummyMonster()
 {
@@ -14,4 +15,6 @@ ABDummyMonster::ABDummyMonster()
 	{
 		GetMesh()->SetSkeletalMesh(MeshRef.Object);
 	}
+
+	Stat->SetHp(100000);
 }

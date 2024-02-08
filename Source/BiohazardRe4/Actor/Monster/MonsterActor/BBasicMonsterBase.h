@@ -31,6 +31,8 @@ protected:
 	virtual void SetWeaponSkeletalMeshByRandomInBeginPlay();
 	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay();
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	void InitAI();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
@@ -43,5 +45,4 @@ private:
 	virtual void InitDamageTypes() override;
 	virtual void SetDamagedSectionNums() override;
 
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
