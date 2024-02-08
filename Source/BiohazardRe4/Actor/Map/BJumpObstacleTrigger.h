@@ -16,6 +16,8 @@ public:
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere)
+	uint32 bAbleJump = false;
+	UPROPERTY(VisibleAnywhere)
 	FVector Start = FVector::ZeroVector;
 	UPROPERTY(VisibleAnywhere)
 	FVector End = FVector::ZeroVector;
@@ -59,7 +61,7 @@ public:
 	}
 
 	// 변수 기준 가까운 트리거 위치를 반환합니다
-	FJumpData GetJumpMetaData(const FVector& _Location) const;
+	virtual FJumpData GetJumpMetaData(const FVector& _Location) const;
 
 	inline bool UseWindow()
 	{
@@ -77,7 +79,6 @@ public:
 		bIsUse = false;
 	}
 
-private:
+protected:
 	uint8 bIsUse = false;
-	uint8 bIsBroken = false;
 };

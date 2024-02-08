@@ -795,6 +795,11 @@ void ABLeon::TryInteraction()
 
 			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
 
+			if (false == JumpData.bAbleJump)
+			{
+				continue;
+			}
+
 			FVector ActorForward = GetActorForwardVector();
 			ActorForward.Z = 0;
 			ActorForward.Normalize();

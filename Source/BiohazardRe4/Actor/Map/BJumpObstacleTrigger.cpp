@@ -45,6 +45,8 @@ FJumpData ABJumpObstacleTrigger::GetJumpMetaData(const FVector& _Location) const
 {
 	FJumpData Result;
 
+	Result.bAbleJump = AbleInteraction();
+
 	float DistanceA = FVector::Distance(_Location, LocationATrigger->GetComponentLocation());
 	float DistanceB = FVector::Distance(_Location, LocationBTrigger->GetComponentLocation());
 
