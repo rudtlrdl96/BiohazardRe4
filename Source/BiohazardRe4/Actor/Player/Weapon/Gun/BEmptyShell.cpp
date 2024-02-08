@@ -8,12 +8,12 @@ ABEmptyShell::ABEmptyShell()
 {
 	GetStaticMeshComponent()->Mobility = EComponentMobility::Movable;
 	GetStaticMeshComponent()->SetSimulatePhysics(true);
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ABEmptyShell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	LOG_MSG(TEXT("ABEmptyShellTick"))
 	Time += DeltaTime;
 	if (Time >= LifeTime)
 	{

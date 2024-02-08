@@ -16,6 +16,11 @@ void ABLeonPistol::SpawnShell_Implementation()
 	LOG_MSG(TEXT("SpawnShell"))
 }
 
+void ABLeonPistol::SpawnMagazine_Implementation()
+{
+	LOG_MSG(TEXT("SpawnMagazine"))
+}
+
 void ABLeonPistol::BeginPlay()
 {
 	Super::BeginPlay();
@@ -35,7 +40,9 @@ void ABLeonPistol::BeginPlay()
 
 void ABLeonPistol::DropMagazine()
 {
-
+	Super::DropMagazine();
+	SpawnMagazine();
+	LOG_MSG(TEXT("ABLeonPistol::DropMagazine"))
 }
 
 void ABLeonPistol::DropShell()

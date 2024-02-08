@@ -21,9 +21,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category = "Option")
-	FVector Velocity = FVector::Zero();
-	
-	UPROPERTY(EditAnywhere, Category = "Option")
 	float LifeTime = 3.f;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Option")

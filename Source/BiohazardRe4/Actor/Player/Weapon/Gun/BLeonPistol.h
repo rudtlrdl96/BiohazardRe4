@@ -22,6 +22,9 @@ public:
 	void SpawnShell();
 	virtual void SpawnShell_Implementation();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void SpawnMagazine();
+	virtual void SpawnMagazine_Implementation();
 
 protected:
 	virtual void BeginPlay() override;
