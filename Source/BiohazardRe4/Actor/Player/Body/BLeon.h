@@ -592,6 +592,7 @@ private:
 	void WeaponSocketUpdate(float _DeltaTime);
 	void SocketSwapUpdate(float _DeltaTime);
 	void HealthStateUpdate(float _DeltaTime);
+	void InteractionUpdate(float _DeltaTime);
 
 	void VPlayerCameraToWorld(FVector& _Result) const;
 

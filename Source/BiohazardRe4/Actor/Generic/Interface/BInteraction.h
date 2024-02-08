@@ -26,6 +26,7 @@ enum class EInteraction
 	DropItem		UMETA(DisplayName = "DropItem"),
 	WalkPlayer		UMETA(DisplayName = "WalkPlayer"),
 	JogPlayer		UMETA(DisplayName = "JogPlayer"),
+	StoreEnter		UMETA(DisplayName = "StoreEnter"),
 };
 
 /**
@@ -45,4 +46,8 @@ public:
 
 	// UI Pivot 위치를 반환
 	virtual FVector GetUIPivot() const = 0;
+
+	// 상호작용 UI를 표시한다
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void EnableInteractionUI();
 };

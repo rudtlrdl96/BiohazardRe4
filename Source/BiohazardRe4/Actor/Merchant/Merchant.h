@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Actor/Generic/Interface/BInteraction.h"
 #include "Item/ItemData.h"
 #include "Merchant.generated.h"
 
@@ -42,7 +43,7 @@ struct FSaleItem
 };
 
 UCLASS()
-class BIOHAZARDRE4_API ABMerchant : public AActor
+class BIOHAZARDRE4_API ABMerchant : public AActor, public IBInteraction
 {
 	GENERATED_BODY()
 	
@@ -57,6 +58,15 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// 현재 상호작용이 가능한 상태인지
+	virtual bool AbleInteraction() const { return true; }
+
+	// 현재 상호작용의 상태를 반환
+	virtual EInteraction GetInteractionType() const { return EInteraction::StoreEnter; }
+
+	// UI Pivot 위치를 반환
+	virtual FVector GetUIPivot() const { return FVector::ZeroVector; }
 
 	UFUNCTION(BlueprintCallable)
 	class ABInventoryActor* GetInventory() const;

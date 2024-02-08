@@ -84,4 +84,8 @@ public :
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OffInteraction();
 
+	// ______________Crosshair___________________
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void SetCrosshair(bool IsVisible);
 };

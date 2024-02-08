@@ -82,6 +82,7 @@ void ABLeon::Tick(float _DeltaTime)
 	WeaponSocketUpdate(_DeltaTime);
 	SocketSwapUpdate(_DeltaTime);
 	HealthStateUpdate(_DeltaTime);
+	InteractionUpdate(_DeltaTime);
 
 	LeonFSMState = GetCurrentFSMState();
 }
@@ -835,6 +836,11 @@ void ABLeon::TryInteraction()
 			bIsPlayGetItem = true;
 		}
 		return;
+		case EInteraction::StoreEnter:
+		{
+			LOG_MSG(TEXT("상점"));
+		}
+		return;
 		default:
 		{
 			LOG_ERROR(TEXT("Wrong Type Interaction"));
@@ -1088,6 +1094,45 @@ void ABLeon::HealthStateUpdate(float _DeltaTime)
 	else
 	{
 		LeonHealth = ELeonHealth::Danger;
+	}
+}
+
+void ABLeon::InteractionUpdate(float _DeltaTime)
+{
+	if (false == AbleInteraction())
+	{
+		return;
+	}
+
+	TArray<AActor*> Overlaps;
+	InteractionObserver->GetOverlappingActors(Overlaps);
+
+	FVector ActorLocation;
+
+	Overlaps.Sort([ActorLocation](const AActor& _Lhs, const AActor& _Rhs)
+		{
+			float DistanceL = FVector::Distance(ActorLocation, _Lhs.GetActorLocation());
+			float DistanceR = FVector::Distance(ActorLocation, _Rhs.GetActorLocation());
+
+			return DistanceL > DistanceR;
+		});
+
+	for (size_t i = 0; i < Overlaps.Num(); i++)
+	{
+		IBInteraction* Interface = Cast<IBInteraction>(Overlaps[i]);
+
+		if (nullptr == Interface)
+		{
+			continue;
+		}
+
+		if (false == Interface->AbleInteraction())
+		{
+			continue;
+		}
+
+		Interface->Execute_EnableInteractionUI(Cast<UObject>(Interface));
+		return;
 	}
 }
 
