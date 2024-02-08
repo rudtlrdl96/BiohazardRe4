@@ -6,6 +6,13 @@
 
 ABLeonShotgun::ABLeonShotgun()
 {
+
+
+}
+
+void ABLeonShotgun::BeginPlay()
+{
+	Super::BeginPlay();
 	if (InventoryInst == nullptr)
 	{
 		LOG_WARNING(TEXT("InventoryInst == nullptr"))
@@ -17,9 +24,5 @@ ABLeonShotgun::ABLeonShotgun()
 	DefaultDamage = 5.6f;
 	RateOfFire = 0.45f;
 	Range = 2500.f;
-}
-
-void ABLeonShotgun::BeginPlay()
-{
-	Super::BeginPlay();
+	SetCurLoopState();
 }

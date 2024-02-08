@@ -18,7 +18,16 @@ class BIOHAZARDRE4_API ABLeonPistol : public ABLeonGun
 public:	
 	ABLeonPistol();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void SpawnShell();
+	virtual void SpawnShell_Implementation();
+
+
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void DropMagazine() override;
+	virtual void DropShell() override;
+
 
 };

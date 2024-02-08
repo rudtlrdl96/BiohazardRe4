@@ -52,12 +52,15 @@ public:
 	void ReloadEnd();
 	void PutoutEnd();
 
+	//Drop
+	virtual void DropShell();
+	virtual void DropMagazine();
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void Shoot();
-	virtual void DropShell();
-	virtual void DropMagazine();
+
 
 	//  ______________________LineTraceOption_Camera
 	UPROPERTY()
@@ -102,10 +105,12 @@ protected:
 	FPointDamageEvent GunDamageEvent;
 
 	UPROPERTY(BlueprintReadWrite)
-	EGunState CurState = EGunState::ENoAmmo_Loop;
+	EGunState CurState = EGunState::EIdle_Loop;
 
 	EItemCode AmmoType = EItemCode::End;
 
 	class ABInventoryWeapon* CurGun = nullptr;
+
+	void SetCurLoopState();
 
 };

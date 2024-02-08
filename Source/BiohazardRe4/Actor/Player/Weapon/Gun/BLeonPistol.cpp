@@ -8,20 +8,39 @@
 
 ABLeonPistol::ABLeonPistol()
 {
+
+}
+
+void ABLeonPistol::SpawnShell_Implementation()
+{
+	LOG_MSG(TEXT("SpawnShell"))
+}
+
+void ABLeonPistol::BeginPlay()
+{
+	Super::BeginPlay();
 	if (InventoryInst == nullptr)
 	{
 		LOG_WARNING(TEXT("InventoryInst == nullptr"))
-		return;
+			return;
 	}
 
 	CurGun = InventoryInst->FindWeapon(EItemCode::Handgun_SR09R);
 	AmmoType = EItemCode::HandgunAmmo;
 	DefaultDamage = 1.f;
 	RateOfFire = 1.f;
+	SetCurLoopState();
+	LOG_MSG(TEXT("ABLeonPistol::BeginPlay()"))
 }
 
-void ABLeonPistol::BeginPlay()
+void ABLeonPistol::DropMagazine()
 {
-	Super::BeginPlay();
-	LOG_MSG(TEXT("ABLeonPistol::BeginPlay()"))
+
+}
+
+void ABLeonPistol::DropShell()
+{
+	Super::DropShell();
+	SpawnShell();
+	LOG_MSG(TEXT("ABLeonPistol::DropShell"))
 }

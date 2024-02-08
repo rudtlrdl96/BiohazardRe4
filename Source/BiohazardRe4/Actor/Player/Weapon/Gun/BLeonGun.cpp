@@ -178,6 +178,23 @@ void ABLeonGun::DropMagazine()
 	LOG_MSG(TEXT("DropMagazine"))
 }
 
+void ABLeonGun::SetCurLoopState()
+{
+	if (CurGun == nullptr)
+	{
+		return;
+	}
+
+	if (CurGun->GetLoadedAmmo() != 0)
+	{
+		CurState = EGunState::EIdle_Loop;
+	}
+	else
+	{
+		CurState = EGunState::ENoAmmo_Loop;
+	}
+}
+
 void ABLeonGun::FireStart()
 {
 	if (InventoryInst == nullptr)

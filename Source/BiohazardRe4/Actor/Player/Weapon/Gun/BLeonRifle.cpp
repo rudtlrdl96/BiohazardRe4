@@ -6,6 +6,12 @@
 
 ABLeonRifle::ABLeonRifle()
 {
+
+}
+
+void ABLeonRifle::BeginPlay()
+{
+	Super::BeginPlay();
 	if (InventoryInst == nullptr)
 	{
 		LOG_WARNING(TEXT("InventoryInst == nullptr"))
@@ -18,9 +24,5 @@ ABLeonRifle::ABLeonRifle()
 	DefaultDamage = 2.5f;
 	RateOfFire = 0.42f;
 	Range = 10000.f;
-}
-
-void ABLeonRifle::BeginPlay()
-{
-	Super::BeginPlay();
+	SetCurLoopState();
 }
