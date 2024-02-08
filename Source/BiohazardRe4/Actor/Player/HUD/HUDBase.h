@@ -7,13 +7,6 @@
 #include "Item/ItemData.h"
 #include "HUDBase.generated.h"
 
-UENUM(BlueprintType)
-enum class EInteractionState : uint8
-{
-	JumpOver			UMETA(DisplayName = "JumpOver"),
-	JumpDown			UMETA(DisplayName = "JumpDown"),
-};
-
 UCLASS()
 class BIOHAZARDRE4_API ABHUDBase : public AHUD
 {
@@ -78,8 +71,8 @@ public :
 
 	// _______________Interaction_____________________
 	// HUD의 상호작용 키 표시를 지정합니다
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void SetInteraction(EInteractionState State);
+	//UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	//void SetInteraction(EInteractionState State);
 	// HUD의 상호작용 키 표시를 끕니다
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OffInteraction();

@@ -58,6 +58,8 @@ public:
 	void CraftItem(const FBCraftRecipe& Recipe);
 	// 특정 크기의 아이템이 들어갈 공간이 존재한다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& Scale);
+	// 아이템이 들어갈 공간이 존재한다면 true를 반환한다
+	bool IsEmptySlot(EItemCode ItemCode, int Count);
 	// 입력된 크기와 위치에 아이템을 놓을 수 있다면 true를 반환한다
 	bool IsEmptySlot(const FIntPoint& Pos, const FIntPoint& Scale);
 	// 아이템이 해당 슬롯에 놓을 수 있다면 true를 반환한다
@@ -72,6 +74,8 @@ public:
 	bool CheckChange(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 해당 아이템을 병합하고 남는 개수를 리턴한다
 	int ItemMerge(const FBItemData& Data, int Num);
+	// 해당 아이템을 병합한다면 남는 개수를 리턴한다
+	int ItemMergeCheck(const FBItemData& Data, int Num);
 	// 현재 들고있는 아이템을 내려 놓고 그 자리에 있는 아이템을 들어올린다
 	ABInventoryItem* ChangeItem(ABInventoryItem* Item, const UBInventorySlot* Slot);
 	// 특정 크기의 아이템이 들어갈 공간이 있다면 그 위치를 반환한다. 아이템이 들어갈 공간이 없다면 FIntPoint::NoneValue를 리턴

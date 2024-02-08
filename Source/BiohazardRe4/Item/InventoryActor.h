@@ -62,9 +62,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ABInventoryWeapon* FindWeapon(EItemCode ItemCode);
 
-	// 특정 크기의 아이템이 들어갈 공간이 존재한다면 true를 반환한다
+	// 아이템이 들어갈 공간이 존재한다면 true를 반환한다
 	UFUNCTION(BlueprintCallable)
-	bool IsEmptySlot(const FIntPoint& Scale);
+	bool IsEmptySlot(EItemCode ItemCode, int Count);
 
 	// * 인벤토리를 연다, UI를 킬때 이걸 실행해주세요
 	UFUNCTION(BlueprintCallable)

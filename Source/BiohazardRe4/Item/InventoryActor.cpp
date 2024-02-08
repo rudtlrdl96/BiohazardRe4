@@ -265,9 +265,9 @@ ABInventoryWeapon* ABInventoryActor::FindWeapon(EItemCode ItemCode)
 	return Inventory->FindWeapon(ItemCode);
 }
 
-bool ABInventoryActor::IsEmptySlot(const FIntPoint& Scale)
+bool ABInventoryActor::IsEmptySlot(EItemCode ItemCode, int Count)
 {
-	return Inventory->IsEmptySlot(Scale);
+	return Inventory->IsEmptySlot(ItemCode, Count);
 }
 
 // 인벤토리UI 켜기

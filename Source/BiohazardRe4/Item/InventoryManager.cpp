@@ -341,6 +341,35 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& Scale)
 	return false;
 }
 
+bool UBInventoryManager::IsEmptySlot(EItemCode ItemCode, int Count)
+{
+	TArray<FName> RowNames = ItemDataTable->GetRowNames();
+	FBItemData* Data = nullptr;
+
+	for (FName Name : RowNames)
+	{
+		FBItemData* ItemData = ItemDataTable->FindRow<FBItemData>(Name, "");
+		if (ItemData->ItemCode == ItemCode)
+		{
+			Data = ItemData;
+			break;
+		}
+	}
+
+	// 기존 아이템에 합칠 수 있는지 체크
+	if (1 < Data->MaxCount)
+	{
+		Count = ItemMergeCheck(*Data, Count);
+		if (Count <= 0)
+		{
+			// 공간이 남음
+			return true;
+		}
+	}
+
+	return IsEmptySlot(Data->ItemSize);
+}
+
 bool UBInventoryManager::IsEmptySlot(const FIntPoint& Pos, const FIntPoint& Scale)
 {
 	for (int y = 0; y < Scale.Y; y++)
@@ -489,6 +518,32 @@ int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
 	}
 	return Num;
 }
+
+int UBInventoryManager::ItemMergeCheck(const FBItemData& Data, int Num)
+{
+	TArray<ABInventoryItem*> Items;
+	ItemMap.MultiFind(Data.ItemCode, Items, true);
+	for (ABInventoryItem* Item : Items)
+	{
+		if (Item->Count < Data.MaxCount)
+		{
+			// 아이템을 더 넣을 수 있음
+			int EmptyNum = Data.MaxCount - Item->Count;		// 빈공간
+			if (Num <= EmptyNum)
+			{
+				// 남은 수를 모두 넣을 수 있다면
+				return 0;
+			}
+			else
+			{
+				// 공간이 부족한 경우
+				Num -= EmptyNum;
+			}
+		}
+	}
+	return Num;
+}
+
 
 ABInventoryItem* UBInventoryManager::ChangeItem(ABInventoryItem* Item, const UBInventorySlot* Slot)
 {
