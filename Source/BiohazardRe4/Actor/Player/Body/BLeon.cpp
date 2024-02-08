@@ -22,6 +22,7 @@
 #include "../Weapon/Gun/BLeonShotgun.h"
 #include "../Weapon/Knife/BLeonKnife.h"
 #include "../Weapon/BDrawGrenadeAim.h"
+#include "../../Map/BJumpObstacleTrigger.h"
 #include "Item/InventoryActor.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
@@ -183,18 +184,12 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 {
 	float DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-	if (LeonFSMState == ELeonState::KickAttack)
+	switch (LeonFSMState)
 	{
-		return 0.0f;
-	}
-
-	if (LeonFSMState == ELeonState::Damage)
-	{
-		return 0.0f;
-	}
-
-	if (LeonFSMState == ELeonState::Death)
-	{
+	case ELeonState::KickAttack:
+	case ELeonState::Damage:
+	case ELeonState::Death:
+	case ELeonState::ObstacleJump:
 		return 0.0f;
 	}
 
@@ -730,9 +725,8 @@ bool ABLeon::AbleInteraction() const
 	case ELeonState::Throwing:
 	case ELeonState::Damage:
 	case ELeonState::Death:
+	case ELeonState::ObstacleJump:
 		return false;
-	default:
-		return true;
 	}
 
 	return true;
@@ -789,9 +783,34 @@ void ABLeon::TryInteraction()
 			FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
 		}
 		return;
-		case EInteraction::JumpWindow:
+		case EInteraction::JumpObstacle:
 		{
-			int a = 0;
+			ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(Overlaps[i]);
+
+			if (nullptr == TriggerActor)
+			{
+				LOG_FATAL(TEXT("Only classes that inherit ABJumpObstacleTrigger can have a JumpObstacle Interaction Type"));
+				continue;
+			}
+
+			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
+
+			FVector ActorForward = GetActorForwardVector();
+			ActorForward.Z = 0;
+			ActorForward.Normalize();
+
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
+
+			if (70 < Angle)
+			{
+				continue;
+			}
+
+			JumpStart = JumpData.Start;
+			JumpEnd = JumpData.End;
+			JumpDir = JumpData.MoveVector;
+
+			FsmComp->ChangeState(TO_KEY(ELeonState::ObstacleJump));
 		}
 		return;
 		case EInteraction::FallCliff:
@@ -1443,6 +1462,19 @@ void ABLeon::GetItemEnd()
 	bIsPlayGetItem = false;
 }
 
+void ABLeon::JumpObstacleEnd()
+{
+	JumpState = ELeonJumpState::End;
+}
+
+void ABLeon::GravityActive()
+{
+	GetCharacterMovement()->GravityScale = 1.0f;
+	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
+	GetCapsuleComponent()->SetCollisionProfileName("PlayerCollision");
+	GetMesh()->SetCollisionProfileName("PlayerCollision");
+}
+
 void ABLeon::ReloadActive()
 {
 	if (false == AbleReload())
@@ -1530,6 +1562,7 @@ void ABLeon::CreateSprintArm()
 	SpringArm->bEnableCameraRotationLag = true;
 	SpringArm->CameraRotationLagSpeed = 10.0f;
 	SpringArm->SocketOffset = StandSocketOffset;
+	SpringArm->ProbeChannel = ECollisionChannel::ECC_GameTraceChannel5;
 
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
@@ -1596,6 +1629,12 @@ void ABLeon::CreateFSM()
 	DeathFSMState.UpdateDel.BindUObject(this, &ABLeon::DeathUpdate);
 	DeathFSMState.ExitDel.BindUObject(this, &ABLeon::DeathExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Death), DeathFSMState);
+
+	UBFsm::FStateCallback JumpObstacleFSMState;
+	JumpObstacleFSMState.EnterDel.BindUObject(this, &ABLeon::JumpObstacleEnter);
+	JumpObstacleFSMState.UpdateDel.BindUObject(this, &ABLeon::JumpObstacleUpdate);
+	JumpObstacleFSMState.ExitDel.BindUObject(this, &ABLeon::JumpObstacleExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::ObstacleJump), JumpObstacleFSMState);
 }
 
 void ABLeon::CreateCollision()

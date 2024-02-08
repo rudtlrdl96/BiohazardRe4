@@ -19,7 +19,7 @@ enum class EInteraction
 	None			UMETA(DisplayName = "None"),
 	AttackMonster	UMETA(DisplayName = "AttackMonster"),
 	GroggyMonster	UMETA(DisplayName = "GroggyMonster"),
-	JumpWindow		UMETA(DisplayName = "JumpWindow"),
+	JumpObstacle	UMETA(DisplayName = "JumpObstacle"),
 	FallCliff		UMETA(DisplayName = "FallCliff"),
 	JumpFence		UMETA(DisplayName = "JumpFence"),
 	OpenDoor		UMETA(DisplayName = "OpenDoor"),
@@ -45,7 +45,10 @@ public:
 	virtual EInteraction GetInteractionType() const = 0;
 
 	// UI Pivot 위치를 반환
-	virtual FVector GetUIPivot() const = 0;
+	virtual FVector GetUIPivot() const
+	{
+		return FVector::ZeroVector;
+	}
 
 	// 상호작용 UI를 표시한다
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)

@@ -47,6 +47,7 @@ enum class ELeonState : uint8
 	Throwing		UMETA(DisplayName = "Throwing"),
 	Damage			UMETA(DisplayName = "Damage"),
 	Death			UMETA(DisplayName = "Death"),
+	ObstacleJump		UMETA(DisplayName = "ObstacleJump"),
 };
 
 UENUM(BlueprintType)
@@ -140,11 +141,19 @@ enum class ELeonInteractionState : uint8
 {
 	Empty			UMETA(DisplayName = "Empty"),
 	GroggyMonster	UMETA(DisplayName = "GroggyMonster"),
-	Window			UMETA(DisplayName = "Window"),
+	Obstacle		UMETA(DisplayName = "Obstacle"),
 	Cliff			UMETA(DisplayName = "Cliff"),
 	Fence			UMETA(DisplayName = "Fence"),
 	Door			UMETA(DisplayName = "Door"),
 	DropItem		UMETA(DisplayName = "DropItem"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonJumpState : uint8
+{
+	MoveStart	UMETA(DisplayName = "MoveStart"),
+	Jump		UMETA(DisplayName = "Jump"),
+	End			UMETA(DisplayName = "End"),
 };
 
 USTRUCT()
@@ -236,6 +245,13 @@ public:
 	inline ELeonAim GetAimState() const
 	{
 		return LeonAim;
+	}	
+	
+	// 현재 플레이어의 점프 상태를 반환합니다
+	UFUNCTION(BlueprintCallable)
+	inline ELeonJumpState GetJumpState() const
+	{
+		return JumpState;
 	}
 
 	// 현재 플레이어의 나이프 공격 상태를 반환합니다
@@ -396,6 +412,8 @@ public:
 	virtual FVector GetUIPivot() const override;
 
 	virtual void GetItemEnd() override;
+	virtual void JumpObstacleEnd() override;
+	virtual void GravityActive() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -465,6 +483,12 @@ private:
 	uint32 bIsThrowingEnd : 1 = false;
 	uint32 bIsKickEnd : 1 = false;
 
+	FVector JumpLerpStartLocation = FVector::ZeroVector;
+	FRotator JumpLerpStartRotation = FRotator::ZeroRotator;
+
+	float JumpToStartLerp = 0.0f;
+
+	ELeonJumpState JumpState = ELeonJumpState::End;
 	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
 	ELeonThrowingAnim ThrowingAnim = ELeonThrowingAnim::Top;
 
@@ -553,9 +577,12 @@ private:
 
 	uint32 bIsKickAttackActive : 1 = false;
 
-
 	FVector ThrowLocation = FVector::ZeroVector;
 	FVector ThrowVelocity = FVector::ZeroVector;
+
+	FVector JumpStart = FVector::ZeroVector;
+	FVector JumpEnd = FVector::ZeroVector;
+	FVector JumpDir = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	ABCollisionObserverSphere* InteractionObserver = nullptr;
@@ -669,4 +696,8 @@ private:
 	void DeathEnter();
 	void DeathUpdate(float _DeltaTime);
 	void DeathExit();
+
+	void JumpObstacleEnter();
+	void JumpObstacleUpdate(float _DeltaTime);
+	void JumpObstacleExit();
 };

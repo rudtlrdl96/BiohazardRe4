@@ -24,4 +24,7 @@ class BIOHAZARDRE4_API IBIPlayerInteractionAnim
 public:
 
 	virtual void GetItemEnd() = 0;
+	virtual void JumpObstacleEnd() = 0;
+
+	virtual void GravityActive() = 0;
 };
