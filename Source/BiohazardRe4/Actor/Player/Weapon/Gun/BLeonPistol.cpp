@@ -11,15 +11,7 @@ ABLeonPistol::ABLeonPistol()
 
 }
 
-void ABLeonPistol::SpawnShell_Implementation()
-{
-	LOG_MSG(TEXT("SpawnShell"))
-}
 
-void ABLeonPistol::SpawnMagazine_Implementation()
-{
-	LOG_MSG(TEXT("SpawnMagazine"))
-}
 
 void ABLeonPistol::BeginPlay()
 {
@@ -36,18 +28,4 @@ void ABLeonPistol::BeginPlay()
 	RateOfFire = 1.f;
 	SetCurLoopState();
 	LOG_MSG(TEXT("ABLeonPistol::BeginPlay()"))
-}
-
-void ABLeonPistol::DropMagazine()
-{
-	Super::DropMagazine();
-	SpawnMagazine();
-	LOG_MSG(TEXT("ABLeonPistol::DropMagazine"))
-}
-
-void ABLeonPistol::DropShell()
-{
-	Super::DropShell();
-	SpawnShell();
-	LOG_MSG(TEXT("ABLeonPistol::DropShell"))
 }

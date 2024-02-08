@@ -17,6 +17,8 @@ enum class EGunState : uint8
 	EAmmo_Reload UMETA(DisplayName = "Ammo_Reload"),
 	ENoAmmo_Reload UMETA(DisplayName = "NoAmmo_Reload"),
 	EPutout UMETA(DisplayName = "Putout"),
+	EReload_Loop UMETA(DisplayName = "Reload_Loop"),
+	EReload_End UMETA(DisplayName = "Reload_End")
 };
 
 UCLASS()
@@ -46,15 +48,24 @@ public:
 	}
 
 	// State
-	void FireStart();
-	void FireEnd();
-	void ReloadStart() override;
-	void ReloadEnd();
-	void PutoutEnd();
+	virtual void FireStart();
+	virtual void FireEnd();
+	virtual void ReloadStart() override;
+	virtual void ReloadEnd();
+	virtual void ReloadEndAfter() {}
+	virtual void PutoutEnd();
 
 	//Drop
 	virtual void DropShell();
 	virtual void DropMagazine();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SpawnShell();
+	virtual void SpawnShell_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SpawnMagazine();
+	virtual void SpawnMagazine_Implementation();
 
 protected:
 	virtual void BeginPlay() override;

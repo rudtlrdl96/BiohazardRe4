@@ -170,11 +170,13 @@ void ABLeonGun::Shoot()
 
 void ABLeonGun::DropShell()
 {
+	SpawnShell();
 	LOG_MSG(TEXT("DropShell"))
 }
 
 void ABLeonGun::DropMagazine()
 {
+	SpawnMagazine();
 	LOG_MSG(TEXT("DropMagazine"))
 }
 
@@ -286,4 +288,14 @@ void ABLeonGun::PutoutEnd()
 {
 	CurState = EGunState::EIdle_Loop;
 	LOG_MSG(TEXT("CurState : EIdle_Loop"))
+}
+
+void ABLeonGun::SpawnShell_Implementation()
+{
+	LOG_MSG(TEXT("SpawnShell"))
+}
+
+void ABLeonGun::SpawnMagazine_Implementation()
+{
+	LOG_MSG(TEXT("SpawnMagazine"))
 }
