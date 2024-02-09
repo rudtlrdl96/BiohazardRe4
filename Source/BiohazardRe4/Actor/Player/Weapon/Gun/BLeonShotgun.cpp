@@ -62,7 +62,7 @@ void ABLeonShotgun::Reload()
 		else
 		{
 			LOG_MSG(TEXT("ABLeonRifle::Reload_Loop"))
-				CurState = EGunState::EReload_Loop;
+			CurState = EGunState::EReload_Loop;
 		}
 }
 
