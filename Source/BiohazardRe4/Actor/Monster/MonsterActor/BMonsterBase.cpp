@@ -2,22 +2,22 @@
 
 
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
-#include "../Component/BMonsterStatComponent.h"
-#include "BiohazardRe4.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "../Define/MonsterDefine.h"
 #include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Engine/DamageEvents.h"
-#include "../DataAsset/BMonsterStatData.h"
-#include "PhysicsEngine/PhysicsAsset.h"
+#include "Components/CapsuleComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
+
+#include "BiohazardRe4.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/DataAsset/BMonsterStatData.h"
+#include "Actor/Monster/Component/BMonsterStatComponent.h"
 
 // Sets default values
 ABMonsterBase::ABMonsterBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.05f;
+
 	bUseControllerRotationYaw = false;
 
 	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
@@ -29,6 +29,12 @@ void ABMonsterBase::BeginPlay()
 	Super::BeginPlay();
 
 	SetDamagedSectionNums();
+}
+
+void ABMonsterBase::Tick(float _DeltaTime)
+{
+	Super::Tick(_DeltaTime);
+	KickJumpUpdate();
 }
 
 void ABMonsterBase::AttackStart()
@@ -246,78 +252,4 @@ void ABMonsterBase::SetDamagedSectionNums()
 void ABMonsterBase::InitDamageTypes()
 {
 	//override
-}
-
-bool ABMonsterBase::AbleInteraction() const
-{
-	// Todo : 테스트용 코드 추후 기능완성 후 추가해주세요
-	switch (CurState)
-	{
-	case EMonsterState::Attack:
-	case EMonsterState::Flashed:
-	case EMonsterState::Damaged:
-	{
-		return true;
-	}
-	case EMonsterState::Groggy:
-	{
-		return true;
-	}
-
-	}
-	return false;
-}
-
-EInteraction ABMonsterBase::GetInteractionType() const
-{
-	switch (CurState)
-	{
-	case EMonsterState::Idle:
-	{
-		return EInteraction::None;
-	}
-	case EMonsterState::Turn:
-	{
-		return EInteraction::None;
-	}
-	case EMonsterState::Patrol:
-	{
-		return EInteraction::None;
-	}
-	case EMonsterState::Walk:
-	{
-		return EInteraction::None;
-	}
-	case EMonsterState::Run:
-	{
-		return EInteraction::None;
-	}
-	case EMonsterState::Attack:
-	{
-		return EInteraction::AttackMonster;
-	}
-	case EMonsterState::Flashed:
-	{
-		return EInteraction::GroggyMonster;
-	}
-	case EMonsterState::Damaged:
-	{
-		return EInteraction::GroggyMonster;
-	}
-	case EMonsterState::Death:
-	{
-		return EInteraction::None;
-	}
-	case EMonsterState::Groggy:
-	{
-		return EInteraction::GroggyMonster;
-	}
-	default:
-		return EInteraction::None;
-	}
-}
-
-FVector ABMonsterBase::GetUIPivot() const
-{
-	return FVector();
 }

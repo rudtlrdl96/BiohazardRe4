@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/Component/BMonsterStatComponent.h"
-#include "../Interface/BMonsterStateInterface.h"
+#include "BMonsterStatComponent.h"
 #include "BiohazardRe4.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
 // Sets default values for this component's properties
 UBMonsterStatComponent::UBMonsterStatComponent()
 {

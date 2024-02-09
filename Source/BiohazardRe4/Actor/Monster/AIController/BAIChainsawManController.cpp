@@ -1,14 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/AIController/BAIChainsawManController.h"
+#include "BAIChainsawManController.h"
+
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
-#include "../Define/MonsterDefine.h"
+
 #include "BiohazardRe4.h"
 #include "GameFramework/Character.h"
-#include "../Interface/BMonsterAnimInterface.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 
 ABAIChainsawManController::ABAIChainsawManController()
 {

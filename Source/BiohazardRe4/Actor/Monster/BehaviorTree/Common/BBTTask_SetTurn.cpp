@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/BehaviorTree/Common/BBTTask_SetTurn.h"
+#include "BBTTask_SetTurn.h"
 #include "AIController.h"
-#include "../../Interface/BMonsterStateInterface.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
 
 EBTNodeResult::Type UBBTTask_SetTurn::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

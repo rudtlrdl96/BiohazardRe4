@@ -26,6 +26,7 @@ enum class EMonsterState : uint8
 	Attack UMETA(DisplayName = "Attack"),
 	Flashed UMETA(DisplayName = "Flashed"),
 	Damaged UMETA(DisplayName = "Damaged"),
+	Kicked UMETA(DisplayName = "Kicked"),
 	Death UMETA(DisplayName = "Death"),
 	Groggy UMETA(DisplayName = "Groggy"),
 };

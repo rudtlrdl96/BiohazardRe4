@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "../Interface/BMonsterStateInterface.h"
-#include "../Interface/BMonsterStatInterface.h"
 #include "DamageType/BDMGPlayerDamage.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Actor/Generic/Interface/BInteraction.h"
+#include "Actor/Monster/Interface/BMonsterStatInterface.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
 #include "BMonsterBase.generated.h"
 
 UENUM()
@@ -30,6 +30,8 @@ enum class EDeathType
 	Point,
 	Radial,
 };
+
+DECLARE_DELEGATE(FOnLandedByKickJump)
 
 UCLASS()
 class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface, public IBInteraction
@@ -78,7 +80,7 @@ public:
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void BeginPlay() override;
-
+	virtual void Tick(float _DeltaTime) override;
 	//Component
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
@@ -98,6 +100,7 @@ protected:
 	//Delegate
 protected:
 	FMonsterAttackEnd OnAttackEnd;
+	FOnLandedByKickJump OnLandedByKickJump;
 
 	//Variable
 protected:
@@ -132,6 +135,7 @@ private:
 	virtual void MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 	virtual void Flashed();
 
+	void KickJumpUpdate();
 
 	//State Variable
 private:
@@ -144,5 +148,4 @@ private:
 	//Interaction Variable
 private:
 	EInteraction InteractionType;
-
 };

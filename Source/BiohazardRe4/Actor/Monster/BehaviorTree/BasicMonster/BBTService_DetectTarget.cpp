@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/BehaviorTree/BasicMonster/BBTService_DetectTarget.h"
-#include "../../Interface/BMonsterStatInterface.h"
+#include "BBTService_DetectTarget.h"
 #include "AIController.h"
-#include "../../Define/MonsterDefine.h"
-#include "BiohazardRe4.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BiohazardRe4.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/Interface/BMonsterStatInterface.h"
 
 void UBBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {

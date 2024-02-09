@@ -2,10 +2,11 @@
 
 
 #include "Actor/Monster/MonsterActor/BMonsterMale.h"
-#include "BiohazardRe4.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../Component/BMonsterStatComponent.h"
-#include "../Interface/BMonsterAnimInterface.h"
+
+#include "BiohazardRe4.h"
+#include "Actor/Monster/Component/BMonsterStatComponent.h"
+#include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 
 ABMonsterMale::ABMonsterMale()
 {
@@ -116,6 +117,8 @@ void ABMonsterMale::SetSkeletalMeshInConstructor()
 
 void ABMonsterMale::Tick(float _DeltaTIme)
 {
+	Super::Tick(_DeltaTIme);
+
 	IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
 	if (AnimInterface == nullptr)
 	{

@@ -6,9 +6,6 @@
 #include "Actor/Monster/Animation/AnimInstance/BMonsterAnimInstanceBase.h"
 #include "BBasicMonsterAnimInstance.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class BIOHAZARDRE4_API UBBasicMonsterAnimInstance : public UBMonsterAnimInstanceBase
 {

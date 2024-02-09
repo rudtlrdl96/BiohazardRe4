@@ -2,19 +2,19 @@
 
 
 #include "BAIBasicMonsterController.h"
+#include "BiohazardRe4.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
-#include "../Define/MonsterDefine.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "GameFramework/Character.h"
-#include "BiohazardRe4.h"
-#include "../Interface/BMonsterStatInterface.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../DataAsset/BMonsterStatData.h"
-#include "../Interface/BMonsterAnimInterface.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/DataAsset/BMonsterStatData.h"
+#include "Actor/Monster/Interface/BMonsterStatInterface.h"
+#include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 
 ABAIBasicMonsterController::ABAIBasicMonsterController()
 {

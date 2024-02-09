@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/Animation/Notify/BAnimNotify_MonsterAttack.h"
-#include "../../Interface/BMonsterStateInterface.h"
-#include "BiohazardRe4.h"
+#include "BAnimNotify_MonsterAttack.h"
 #include "GameFramework/Character.h"
-
-#include "../../Interface/BMonsterStatInterface.h"
+#include "BiohazardRe4.h"
+#include "Actor/Monster/Interface/BMonsterStatInterface.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
 
 void UBAnimNotify_MonsterAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {

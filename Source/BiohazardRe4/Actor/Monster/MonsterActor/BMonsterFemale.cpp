@@ -2,10 +2,11 @@
 
 
 #include "BMonsterFemale.h"
-#include "BiohazardRe4.h"
-#include "../AIController/BAIBasicMonsterController.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../Component/BMonsterStatComponent.h"
+
+#include "BiohazardRe4.h"
+#include "Actor/Monster/AIController/BAIBasicMonsterController.h"
+#include "Actor/Monster/Component/BMonsterStatComponent.h"
 
 ABMonsterFemale::ABMonsterFemale()
 {

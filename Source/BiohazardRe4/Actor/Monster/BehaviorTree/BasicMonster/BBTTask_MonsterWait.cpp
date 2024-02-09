@@ -3,9 +3,9 @@
 
 #include "Actor/Monster/BehaviorTree/BasicMonster/BBTTask_MonsterWait.h"
 #include "AIController.h"
-#include "../../Interface/BMonsterStateInterface.h"
-#include "BiohazardRe4.h"
 #include "GameFramework/Character.h"
+#include "BiohazardRe4.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
 
 UBBTTask_MonsterWait::UBBTTask_MonsterWait()
 {

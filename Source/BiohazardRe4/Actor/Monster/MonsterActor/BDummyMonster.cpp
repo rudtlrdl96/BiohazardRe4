@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/MonsterActor/BDummyMonster.h"
+#include "BDummyMonster.h"
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
 
 ABDummyMonster::ABDummyMonster()

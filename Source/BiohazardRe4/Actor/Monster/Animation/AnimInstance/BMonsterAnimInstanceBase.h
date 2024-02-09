@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "../../Interface/BMonsterAnimInterface.h"
+#include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 #include "BMonsterAnimInstanceBase.generated.h"
 
 /**

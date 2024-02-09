@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/Animation/AnimInstance/BMonsterAnimInstanceBase.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "../../Interface/BMonsterStateInterface.h"
-#include "../../Interface/BMonsterStatInterface.h"
+#include "BMonsterAnimInstanceBase.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "../../Define/MonsterDefine.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "BiohazardRe4.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/Interface/BMonsterStatInterface.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
 
 UBMonsterAnimInstanceBase::UBMonsterAnimInstanceBase()
 {

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actor/Monster/MonsterActor/BMonsterBase.h"
+#include "BMonsterBase.h"
 #include "BBasicMonsterBase.generated.h"
 
 UENUM(BlueprintType)

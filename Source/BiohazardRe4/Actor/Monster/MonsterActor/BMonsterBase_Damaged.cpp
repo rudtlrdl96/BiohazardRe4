@@ -1,16 +1,15 @@
 
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
-#include "../Component/BMonsterStatComponent.h"
-#include "BiohazardRe4.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "../Define/MonsterDefine.h"
+
 #include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Engine/DamageEvents.h"
-#include "../DataAsset/BMonsterStatData.h"
-#include "PhysicsEngine/PhysicsAsset.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+#include "BiohazardRe4.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/Component/BMonsterStatComponent.h"
 
 float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -252,13 +251,43 @@ void ABMonsterBase::DamagedByKnife(const FString& _DamagedPart)
 
 void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
 {
+
+	SetCurrentState(EMonsterState::Kicked);
+
 	FVector CauserLocation = DamageCauser->GetActorLocation();
 	FVector MyLocation = GetActorLocation();
 
-	FVector ImpulsedDirection = MyLocation - CauserLocation;
-	ImpulsedDirection.Normalize();
+	FVector LaunchDirXY = MyLocation - CauserLocation;
+	LaunchDirXY.Z = 0;
+	LaunchDirXY.Normalize();
 
-	GetCharacterMovement()->AddImpulse(ImpulsedDirection * 1000.0f);
+	//60도
+	float LaunchZ = 2.0f;
+	LaunchDirXY.Z = LaunchZ;
+
+	FVector LaunchDir = FVector(LaunchDirXY.X, LaunchDirXY.Y, LaunchZ);
+	LaunchDir.Normalize();
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//기존 애니메이션 모두 중지
+	AnimInstance->StopAllMontages(0.1f);
+	AnimInstance->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+
+	AnimInstance->Montage_Play(DamagedMontage, 1.0f);
+	AnimInstance->Montage_JumpToSection(FName(TEXT("Kick")), DamagedMontage);
+	LaunchCharacter(LaunchDir * 400.0f, false, true);
+
+	TWeakObjectPtr<UAnimInstance> WeakAnimInstance = AnimInstance;
+
+	OnLandedByKickJump.BindLambda([this, WeakAnimInstance]()
+		{
+			WeakAnimInstance.Get()->StopAllMontages(0.1f);
+			WeakAnimInstance.Get()->Montage_Play(DamagedMontage, 1.0f);
+			WeakAnimInstance.Get()->Montage_JumpToSection(FName(TEXT("KickEnd")), DamagedMontage);
+
+			WeakAnimInstance.Get()->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
+		}
+	);
 }
 
 void ABMonsterBase::SmallDamaged(const FString& _DamagedPart)
@@ -481,4 +510,16 @@ void ABMonsterBase::Flashed()
 
 	AnimInstance->Montage_Play(DamagedMontage, 1.0f);
 	AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
+}
+
+void ABMonsterBase::KickJumpUpdate()
+{
+	if (GetCurrentState() == EMonsterState::Kicked)
+	{
+		if (GetCharacterMovement()->IsFalling() != true)
+		{
+			OnLandedByKickJump.ExecuteIfBound();
+			OnLandedByKickJump.Unbind();
+		}
+	}
 }

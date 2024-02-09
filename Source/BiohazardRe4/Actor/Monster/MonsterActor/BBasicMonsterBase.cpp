@@ -1,20 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/MonsterActor/BBasicMonsterBase.h"
-#include "../AIController/BAIBasicMonsterController.h"
-#include "../DataAsset/BMonsterStatData.h"
+#include "BBasicMonsterBase.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "BiohazardRe4.h"
 
-#include "DamageType/MonsterDamageType/BDMGMonsterLargeBottom.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterSmallTop.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterLargeTop.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterSmallBottom.h"
-#include "DamageType/MonsterDamageType/BDMGMonsterSmallTop.h"
+#include "DamageType/MonsterDamageType/BDMGMonsterLargeBottom.h"
 
-#include "BehaviorTree/BlackboardComponent.h"
-#include "../Define/MonsterDefine.h"
-
-#include "../Interface/BMonsterAnimInterface.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/DataAsset/BMonsterStatData.h"
+#include "Actor/Monster/Interface/BMonsterAnimInterface.h"
+#include "Actor/Monster/AIController/BAIBasicMonsterController.h"
 
 ABBasicMonsterBase::ABBasicMonsterBase()
 {
@@ -46,7 +45,7 @@ void ABBasicMonsterBase::SetlMeshAndAnimationByRandomInBeginPlay()
 void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 {
 	//Weapon
-	int WeaponIndex = FMath::RandRange(0, 4);
+	int WeaponIndex = FMath::RandRange(4, 4);
 	if (WeaponIndex == 4)
 	{
 		LOG_MSG(TEXT("Monster Bare Hand"));

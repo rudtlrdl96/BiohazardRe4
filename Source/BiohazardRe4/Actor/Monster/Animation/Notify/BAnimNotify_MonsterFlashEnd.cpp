@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/Animation/Notify/BAnimNotify_MonsterFlashEnd.h"
+#include "BAnimNotify_MonsterFlashEnd.h"
 #include "GameFramework/Character.h"
 #include "BiohazardRe4.h"
 

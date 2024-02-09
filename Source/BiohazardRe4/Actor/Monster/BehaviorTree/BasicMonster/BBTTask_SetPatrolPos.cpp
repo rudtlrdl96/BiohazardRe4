@@ -2,15 +2,15 @@
 
 
 #include "Actor/Monster/BehaviorTree/BasicMonster/BBTTask_SetPatrolPos.h"
-#include "NavigationSystem.h"
 #include "AIController.h"
-#include "BiohazardRe4.h"
-#include "../../Interface/BMonsterStatInterface.h"
-#include "../../Interface/BMonsterStateInterface.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "../../Define/MonsterDefine.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "NavigationSystem.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BiohazardRe4.h"
+#include "Actor/Monster/Define/MonsterDefine.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
+#include "Actor/Monster/Interface/BMonsterStatInterface.h"
 
 EBTNodeResult::Type UBBTTask_SetPatrolPos::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
