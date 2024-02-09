@@ -8,7 +8,11 @@
 
 ABLeonRifle::ABLeonRifle()
 {
-
+	AmmoType = EItemCode::RifleAmmo;
+	DamageUnit = 100.f;
+	DefaultDamage = 2.5f;
+	RateOfFire = 0.42f;
+	Range = 10000.f;
 }
 
 void ABLeonRifle::BeginPlay()
@@ -21,11 +25,6 @@ void ABLeonRifle::BeginPlay()
 	}
 
 	CurGun = InventoryInst->FindWeapon(EItemCode::Rifle_SRM1903);
-	AmmoType = EItemCode::RifleAmmo;
-	DamageUnit = 100.f;
-	DefaultDamage = 2.5f;
-	RateOfFire = 0.42f;
-	Range = 10000.f;
 	SetCurLoopState();
 }
 

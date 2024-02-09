@@ -103,11 +103,11 @@ void ABLeonGun::Shoot()
 {
 	LOG_MSG(TEXT("Shoot"))
 
-		if (InventoryInst == nullptr)
-		{
-			LOG_WARNING(TEXT("InventoryInst == nullptr"))
-				return;
-		}
+	if (InventoryInst == nullptr)
+	{
+		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+			return;
+	}
 
 	if (CurGun == nullptr)
 	{
@@ -165,7 +165,7 @@ void ABLeonGun::Shoot()
 	CurGun->SetLoadedAmmo(--CurAmmo);
 	LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
 
-		FireStart();
+	FireStart();
 }
 
 void ABLeonGun::DropShell()

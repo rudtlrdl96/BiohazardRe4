@@ -6,8 +6,10 @@
 
 ABLeonShotgun::ABLeonShotgun()
 {
-
-
+	AmmoType = EItemCode::ShotgunShells;
+	DefaultDamage = 5.6f;
+	RateOfFire = 0.45f;
+	Range = 2500.f;
 }
 
 void ABLeonShotgun::BeginPlay()
@@ -20,9 +22,5 @@ void ABLeonShotgun::BeginPlay()
 	}
 
 	CurGun = InventoryInst->FindWeapon(EItemCode::Shotgun_W870);
-	AmmoType = EItemCode::ShotgunShells;
-	DefaultDamage = 5.6f;
-	RateOfFire = 0.45f;
-	Range = 2500.f;
 	SetCurLoopState();
 }

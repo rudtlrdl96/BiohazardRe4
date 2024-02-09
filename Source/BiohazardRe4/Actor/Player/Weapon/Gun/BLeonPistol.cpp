@@ -8,7 +8,9 @@
 
 ABLeonPistol::ABLeonPistol()
 {
-
+	AmmoType = EItemCode::HandgunAmmo;
+	DefaultDamage = 1.f;
+	RateOfFire = 1.f;
 }
 
 
@@ -23,9 +25,6 @@ void ABLeonPistol::BeginPlay()
 	}
 
 	CurGun = InventoryInst->FindWeapon(EItemCode::Handgun_SR09R);
-	AmmoType = EItemCode::HandgunAmmo;
-	DefaultDamage = 1.f;
-	RateOfFire = 1.f;
 	SetCurLoopState();
 	LOG_MSG(TEXT("ABLeonPistol::BeginPlay()"))
 }
