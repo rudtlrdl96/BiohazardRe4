@@ -18,4 +18,8 @@ public:
 		
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void Reload() override;
+	virtual void ReloadEnd() override;
+	virtual void ReloadEndAfter() override;
 };
