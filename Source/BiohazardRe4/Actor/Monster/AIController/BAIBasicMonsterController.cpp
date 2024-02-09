@@ -2,7 +2,7 @@
 
 
 #include "BAIBasicMonsterController.h"
-#include "BiohazardRe4.h"
+
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
@@ -11,6 +11,8 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+#include "BiohazardRe4.h"
 #include "Actor/Monster/Define/MonsterDefine.h"
 #include "Actor/Monster/DataAsset/BMonsterStatData.h"
 #include "Actor/Monster/Interface/BMonsterStatInterface.h"

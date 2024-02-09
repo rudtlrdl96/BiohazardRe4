@@ -14,6 +14,7 @@
 float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float OriginResultDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	SetCurrentState(EMonsterState::Damaged);
 
 	//0 -> Normal, 1->Point, 2-> Radial
 	int TypeID = DamageEvent.GetTypeID();
@@ -46,8 +47,6 @@ float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	{
 		ResultDamage = TakeNormalDamage(DamageEvent, DamageCauser, OriginResultDamage);
 	}
-
-	SetCurrentState(EMonsterState::Damaged);
 
 	return ResultDamage;
 }
@@ -177,59 +176,64 @@ void ABMonsterBase::MonsterDeath(EDeathType _DeathType, const FDamageEvent& _Dam
 	}
 
 	AIController->UnPossess();
+	
 
-	if (_DeathType == EDeathType::Point)
+	if (_DeathType == EDeathType::Normal)
 	{
-		const FPointDamageEvent* const PointDamage = (FPointDamageEvent*)&_DamageEvent;
-		if (PointDamage == nullptr)
-		{
-			LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
-			return;
-		}
 
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-		FVector ShotDir = PointDamage->ShotDirection;
-		ShotDir *= -1.0f;
-		ShotDir.Normalize();
-
-		FVector MonsterForward = GetActorForwardVector();
-		MonsterForward.Normalize();
-
-		double Dot = FVector::DotProduct(ShotDir, MonsterForward);
-
-		LOG_MSG(TEXT("Monster Dead Dot is %f"), Dot);
-
-		FName SectionName;
-		if (Dot >= 0.0f && Dot <= 1.0f)
-		{
-			SectionName = FName(TEXT("DeadFront"));
-		}
-		else
-		{
-			SectionName = FName(TEXT("DeadBack"));
-		}
-
-		//기존 애니메이션 모두 중지
-		AnimInstance->StopAllMontages(0.1f);
-
-		AnimInstance->Montage_Play(DamagedMontage, 1.0f);
-		AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
-
-		SetCurrentState(EMonsterState::Death);
-
-		DamagedMontage->bEnableAutoBlendOut = false;
-
-		GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	}
-	else if (_DeathType == EDeathType::Normal)
+	else if (_DeathType == EDeathType::Point)
 	{
-
+		MonsterDeathByPoint(_DamageEvent);
 	}
 	else if (_DeathType == EDeathType::Radial)
 	{
 
 	}
+}
+
+void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
+{
+	const FPointDamageEvent* const PointDamage = (FPointDamageEvent*)&_DamageEvent;
+	if (PointDamage == nullptr)
+	{
+		LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
+		return;
+	}
+
+	FVector ShotDir = PointDamage->ShotDirection;
+	ShotDir *= -1.0f;
+	ShotDir.Normalize();
+
+	FVector MonsterForward = GetActorForwardVector();
+	MonsterForward.Normalize();
+
+	double Dot = FVector::DotProduct(ShotDir, MonsterForward);
+
+	LOG_MSG(TEXT("Monster Dead Dot is %f"), Dot);
+
+	FName SectionName;
+	if (Dot >= 0.0f && Dot <= 1.0f)
+	{
+		SectionName = FName(TEXT("DeadFront"));
+	}
+	else
+	{
+		SectionName = FName(TEXT("DeadBack"));
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	//기존 애니메이션 모두 중지
+	AnimInstance->StopAllMontages(0.1f);
+
+	AnimInstance->Montage_Play(DamagedMontage, 1.0f);
+	AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
+
+	SetCurrentState(EMonsterState::Death);
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+
+	DamagedMontage->bEnableAutoBlendOut = false;
 }
 
 void ABMonsterBase::DamagedByGun(const FString& _DamagedPart)
@@ -516,7 +520,7 @@ void ABMonsterBase::KickJumpUpdate()
 {
 	if (GetCurrentState() == EMonsterState::Kicked)
 	{
-		if (GetCharacterMovement()->IsFalling() != true)
+		if (GetCharacterMovement()->IsMovingOnGround() == false)
 		{
 			OnLandedByKickJump.ExecuteIfBound();
 			OnLandedByKickJump.Unbind();

@@ -120,7 +120,6 @@ private:
 	
 	void DamagedByGun(const FString& _DamagedPart);
 	void DamagedByKnife(const FString& _DamagedPart);
-
 	void DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 
 	void SmallDamaged(const FString& _DamagedPart);
@@ -133,6 +132,10 @@ private:
 	float CaculateCriticalDamage(float _OriginDamage, EPlayerDamageType _PlayerDamageType);
 
 	virtual void MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
+	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
+	//virtual void MonsterDeathByRadial(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
+	//virtual void MonsterDeathByNormal(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
+
 	virtual void Flashed();
 
 	void KickJumpUpdate();
