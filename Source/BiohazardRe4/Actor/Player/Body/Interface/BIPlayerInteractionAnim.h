@@ -25,6 +25,8 @@ public:
 
 	virtual void GetItemEnd() = 0;
 	virtual void JumpObstacleEnd() = 0;
-
+	virtual void FallGravityActive() = 0;
+	virtual void FallTraceActive() = 0;
+	virtual void FallLandingEnd() = 0;
 	virtual void GravityActive() = 0;
 };

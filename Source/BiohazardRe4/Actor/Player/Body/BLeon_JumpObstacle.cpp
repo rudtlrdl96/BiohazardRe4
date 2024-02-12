@@ -22,9 +22,9 @@ void ABLeon::JumpObstacleEnter()
 	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_None;
 	JumpState = ELeonJumpState::MoveStart;
 
-	JumpToStartLerp = 0.0f;
-	JumpLerpStartLocation = GetActorLocation();
-	JumpLerpStartRotation = GetActorRotation();
+	MoveInteractionStartLerp = 0.0f;
+	InteractionStartLocation = GetActorLocation();
+	InteractionStartRotation = GetActorRotation();
 	SpringArm->ProbeChannel = ECollisionChannel::ECC_GameTraceChannel14;
 	GetCapsuleComponent()->SetCollisionProfileName("NoCollision");
 	GetMesh()->SetCollisionProfileName("NoCollision");
@@ -33,23 +33,21 @@ void ABLeon::JumpObstacleEnter()
 
 void ABLeon::JumpObstacleUpdate(float _DeltaTime)
 {
-	//SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), Rotator, _DeltaTime, 360.0f));
-
 	if (JumpState == ELeonJumpState::MoveStart)
 	{
-		JumpToStartLerp += _DeltaTime * 10;
+		MoveInteractionStartLerp += _DeltaTime * 10;
 
-		if (1.0f < JumpToStartLerp)
+		if (1.0f < MoveInteractionStartLerp)
 		{
-			JumpToStartLerp = 1.0f;
+			MoveInteractionStartLerp = 1.0f;
 			JumpState = ELeonJumpState::Jump;
 
 			GetCharacterMovement()->Velocity = FVector::ZeroVector;
 			GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Flying;
 		}
 
-		SetActorLocation(FMath::Lerp(JumpLerpStartLocation, JumpStart, JumpToStartLerp));
-		SetActorRotation(FMath::Lerp(JumpLerpStartRotation, JumpDir.Rotation(), JumpToStartLerp));
+		SetActorLocation(FMath::Lerp(InteractionStartLocation, JumpStart, MoveInteractionStartLerp));
+		SetActorRotation(FMath::Lerp(InteractionStartRotation, JumpDir.Rotation(), MoveInteractionStartLerp));
 	}
 	else if (JumpState == ELeonJumpState::End)
 	{

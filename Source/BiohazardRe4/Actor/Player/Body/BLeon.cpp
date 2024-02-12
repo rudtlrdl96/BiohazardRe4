@@ -23,6 +23,7 @@
 #include "../Weapon/Knife/BLeonKnife.h"
 #include "../Weapon/BDrawGrenadeAim.h"
 #include "../../Map/BJumpObstacleTrigger.h"
+#include "../../Map/BCliffLineTrigger.h"
 #include "Item/InventoryActor.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
@@ -46,6 +47,8 @@ ABLeon::ABLeon()
 
 	CreateSprintArm();
 	CreateFSM();
+	GravityActive();
+	GetCharacterMovement()->bCanWalkOffLedges = true;
 
 	GrenadeThrowingLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Grenade Start"));
 	GrenadeThrowingLocation->SetupAttachment(GetMesh(), TEXT("R_GrenadeSocket"));
@@ -726,6 +729,7 @@ bool ABLeon::AbleInteraction() const
 	case ELeonState::Damage:
 	case ELeonState::Death:
 	case ELeonState::ObstacleJump:
+	case ELeonState::Fall:
 		return false;
 	}
 
@@ -806,7 +810,7 @@ void ABLeon::TryInteraction()
 
 			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
 
-			if (70 < Angle)
+			if (45 < Angle)
 			{
 				continue;
 			}
@@ -820,7 +824,46 @@ void ABLeon::TryInteraction()
 		return;
 		case EInteraction::FallCliff:
 		{
-			int a = 0;
+			ABCliffLineTrigger* TriggerActor = Cast<ABCliffLineTrigger>(Overlaps[i]);
+
+			if (nullptr == TriggerActor)
+			{
+				LOG_FATAL(TEXT("Only classes that inherit ABCliffLineTrigger can have a FallCliff Interaction Type"));
+				continue;
+			}
+
+			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
+
+			if (false == JumpData.bAbleJump)
+			{
+				continue;
+			}
+
+			FVector ActorForward = GetActorForwardVector();
+			ActorForward.Z = 0;
+			ActorForward.Normalize();
+
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
+
+			if (45 < Angle)
+			{
+				continue;
+			}
+
+			JumpStart = JumpData.Start;
+			JumpEnd = JumpData.End;
+			JumpDir = JumpData.MoveVector;
+
+			if (300 < JumpStart.Z - JumpEnd.Z)
+			{
+				FallAnimation = ELeonFallAnimation::HighHeight;
+			}
+			else
+			{
+				FallAnimation = ELeonFallAnimation::LowHeight;
+			}
+
+			FsmComp->ChangeState(TO_KEY(ELeonState::Fall));
 		}
 		return;
 		case EInteraction::JumpFence:
@@ -1472,12 +1515,29 @@ void ABLeon::JumpObstacleEnd()
 	JumpState = ELeonJumpState::End;
 }
 
+void ABLeon::FallGravityActive()
+{
+	GetCharacterMovement()->GravityScale = 4.0f;
+	GetCapsuleComponent()->SetCollisionProfileName("PlayerCollision");
+	GetMesh()->SetCollisionProfileName("PlayerOverlap");
+}
+
+void ABLeon::FallTraceActive()
+{
+	bIsFallEndCheck = true;
+}
+
+void ABLeon::FallLandingEnd()
+{
+	bIsFallLandingEnd = true;
+}
+
 void ABLeon::GravityActive()
 {
-	GetCharacterMovement()->GravityScale = 1.0f;
+	GetCharacterMovement()->GravityScale = 4.0f;
 	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
 	GetCapsuleComponent()->SetCollisionProfileName("PlayerCollision");
-	GetMesh()->SetCollisionProfileName("PlayerCollision");
+	GetMesh()->SetCollisionProfileName("PlayerOverlap");
 }
 
 void ABLeon::ReloadActive()
@@ -1640,6 +1700,12 @@ void ABLeon::CreateFSM()
 	JumpObstacleFSMState.UpdateDel.BindUObject(this, &ABLeon::JumpObstacleUpdate);
 	JumpObstacleFSMState.ExitDel.BindUObject(this, &ABLeon::JumpObstacleExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::ObstacleJump), JumpObstacleFSMState);
+
+	UBFsm::FStateCallback FallFSMState;
+	FallFSMState.EnterDel.BindUObject(this, &ABLeon::FallEnter);
+	FallFSMState.UpdateDel.BindUObject(this, &ABLeon::FallUpdate);
+	FallFSMState.ExitDel.BindUObject(this, &ABLeon::FallExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Fall), FallFSMState);
 }
 
 void ABLeon::CreateCollision()

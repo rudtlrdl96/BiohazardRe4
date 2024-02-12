@@ -47,7 +47,8 @@ enum class ELeonState : uint8
 	Throwing		UMETA(DisplayName = "Throwing"),
 	Damage			UMETA(DisplayName = "Damage"),
 	Death			UMETA(DisplayName = "Death"),
-	ObstacleJump		UMETA(DisplayName = "ObstacleJump"),
+	ObstacleJump	UMETA(DisplayName = "ObstacleJump"),
+	Fall			UMETA(DisplayName = "Fall")
 };
 
 UENUM(BlueprintType)
@@ -154,6 +155,21 @@ enum class ELeonJumpState : uint8
 	MoveStart	UMETA(DisplayName = "MoveStart"),
 	Jump		UMETA(DisplayName = "Jump"),
 	End			UMETA(DisplayName = "End"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonFallState : uint8
+{
+	FallStart	UMETA(DisplayName = "FallStart"),
+	FallLoop	UMETA(DisplayName = "FallLoop"),
+	FallEnd		UMETA(DisplayName = "FallEnd"),
+};
+
+UENUM(BlueprintType)
+enum class ELeonFallAnimation : uint8
+{
+	LowHeight	UMETA(DisplayName = "LowHeight"),
+	HighHeight  UMETA(DisplayName = "HighHeight"),
 };
 
 USTRUCT()
@@ -360,6 +376,18 @@ public:
 	{
 		return CurrentWeapon;
 	}	
+
+	UFUNCTION(BlueprintCallable)
+	inline ELeonFallState GetFallState() const
+	{
+		return FallState;
+	}	
+	
+	UFUNCTION(BlueprintCallable)
+	inline ELeonFallAnimation GetFallAnim() const
+	{
+		return FallAnimation;
+	}
 	
 	UFUNCTION(BlueprintCallable)
 	inline bool IsPlayGetItemAnim() const
@@ -413,6 +441,9 @@ public:
 
 	virtual void GetItemEnd() override;
 	virtual void JumpObstacleEnd() override;
+	virtual void FallGravityActive() override;
+	virtual void FallTraceActive() override;
+	virtual void FallLandingEnd() override;
 	virtual void GravityActive() override;
 
 protected:
@@ -429,6 +460,8 @@ private:
 	uint32 bIsJogTrigger : 1 = false;
 	uint32 bIsCrouch : 1 = false;
 	uint32 bIsPlayGetItem : 1 = false;
+	uint32 bIsFallEndCheck : 1 = false;
+	uint32 bIsFallLandingEnd: 1 = false;
 
 	ELeonState LeonFSMState = ELeonState::Idle;
 
@@ -483,12 +516,15 @@ private:
 	uint32 bIsThrowingEnd : 1 = false;
 	uint32 bIsKickEnd : 1 = false;
 
-	FVector JumpLerpStartLocation = FVector::ZeroVector;
-	FRotator JumpLerpStartRotation = FRotator::ZeroRotator;
+	FVector InteractionStartLocation = FVector::ZeroVector;
+	FRotator InteractionStartRotation = FRotator::ZeroRotator;
 
-	float JumpToStartLerp = 0.0f;
+	float MoveInteractionStartLerp = 0.0f;
 
+	ELeonFallState FallState = ELeonFallState::FallEnd;
+	ELeonFallAnimation FallAnimation = ELeonFallAnimation::HighHeight;
 	ELeonJumpState JumpState = ELeonJumpState::End;
+
 	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
 	ELeonThrowingAnim ThrowingAnim = ELeonThrowingAnim::Top;
 
@@ -545,7 +581,7 @@ private:
 	uint32 bAbleComboInput : 1 = false;
 	uint32 bAbleNextCombo : 1 = false;
 	uint32 bIsComboEnd : 1 = false;
-
+	
 	ELeonDamageType DamageType = ELeonDamageType::Small;
 	ELeonDamageDirection DamageDirection = ELeonDamageDirection::B;
 	ELeonInteractionState InteractionState = ELeonInteractionState::Empty;
@@ -583,6 +619,10 @@ private:
 	FVector JumpStart = FVector::ZeroVector;
 	FVector JumpEnd = FVector::ZeroVector;
 	FVector JumpDir = FVector::ZeroVector;
+
+	FVector FallStart = FVector::ZeroVector;
+	FVector FallEnd = FVector::ZeroVector;
+	FVector FallDir = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	ABCollisionObserverSphere* InteractionObserver = nullptr;
@@ -700,4 +740,8 @@ private:
 	void JumpObstacleEnter();
 	void JumpObstacleUpdate(float _DeltaTime);
 	void JumpObstacleExit();
+
+	void FallEnter();
+	void FallUpdate(float _DeltaTime);
+	void FallExit();
 };
