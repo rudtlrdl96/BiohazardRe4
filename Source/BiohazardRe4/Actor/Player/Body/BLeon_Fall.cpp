@@ -22,7 +22,6 @@ void ABLeon::FallEnter()
 	GetCharacterMovement()->GravityScale = 0.0f;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Flying;
-	GetCharacterMovement()->bCanWalkOffLedges = false;
 
 	FallState = ELeonFallState::FallStart;
 
@@ -45,7 +44,6 @@ void ABLeon::FallUpdate(float _DeltaTime)
 			GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
 			//GetMesh()->GetAnimInstance()->RootMotionMode = ERootMotionMode::Type::RootMotionFromEverything;
 			FallState = ELeonFallState::FallEnd;
-			GetCharacterMovement()->bCanWalkOffLedges = true;
 		}
 	}
 
@@ -89,10 +87,7 @@ void ABLeon::FallUpdate(float _DeltaTime)
 
 void ABLeon::FallExit()
 {
-	GetCapsuleComponent()->SetCollisionProfileName("PlayerCollision");
-	GetMesh()->SetCollisionProfileName("PlayerOverlap");
 	GetCharacterMovement()->bOrientRotationToMovement = false;
-	GetCharacterMovement()->bCanWalkOffLedges = true;
 	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
 	SpringArm->ProbeChannel = ECollisionChannel::ECC_GameTraceChannel5;
 }

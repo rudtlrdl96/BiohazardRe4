@@ -1187,12 +1187,6 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			continue;
 		}
 		break;
-		case EInteraction::GroggyMonster:
-		{
-			KickLocation = Overlaps[i]->GetActorLocation();
-			FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
-		}
-		break;
 		case EInteraction::JumpObstacle:
 		{
 			ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(Overlaps[i]);
@@ -1265,10 +1259,6 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 		}
 		break;
 		default:
-		{
-			LOG_ERROR(TEXT("Wrong Type Interaction"));
-			continue;
-		}
 		break;
 		}
 
