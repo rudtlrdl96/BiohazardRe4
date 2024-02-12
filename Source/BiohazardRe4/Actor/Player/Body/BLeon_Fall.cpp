@@ -89,6 +89,10 @@ void ABLeon::FallUpdate(float _DeltaTime)
 
 void ABLeon::FallExit()
 {
+	GetCapsuleComponent()->SetCollisionProfileName("PlayerCollision");
+	GetMesh()->SetCollisionProfileName("PlayerOverlap");
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bCanWalkOffLedges = true;
+	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
 	SpringArm->ProbeChannel = ECollisionChannel::ECC_GameTraceChannel5;
 }

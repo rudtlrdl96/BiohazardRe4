@@ -738,183 +738,157 @@ bool ABLeon::AbleInteraction() const
 
 void ABLeon::TryInteraction()
 {
+	if (nullptr == InteractionObject)
+	{
+		return;
+	}
+
 	if (false == AbleInteraction())
 	{
 		return;
 	}
 
-	TArray<AActor*> Overlaps;
-	InteractionObserver->GetOverlappingActors(Overlaps);
+	EInteraction InteractionType = InteractionObject->GetInteractionType();
 
-	FVector ActorLocation;
-
-	Overlaps.Sort([ActorLocation](const AActor& _Lhs, const AActor& _Rhs)
-		{
-			float DistanceL = FVector::Distance(ActorLocation, _Lhs.GetActorLocation());
-			float DistanceR = FVector::Distance(ActorLocation, _Rhs.GetActorLocation());
-
-			return DistanceL > DistanceR;
-		});
-
-	for (size_t i = 0; i < Overlaps.Num(); i++)
+	switch (InteractionType)
 	{
-		IBInteraction* Interface = Cast<IBInteraction>(Overlaps[i]);
-
-		if (nullptr == Interface)
-		{
-			continue;
-		}
-
-		if (false == Interface->AbleInteraction())
-		{
-			continue;
-		}
-
-		EInteraction InteractionType = Interface->GetInteractionType();
-
-		switch (InteractionType)
-		{
-		case EInteraction::None:
-			continue;
-		case EInteraction::AttackMonster:
-		{
-			int a = 0;
-		}
+	case EInteraction::None:
 		return;
-		case EInteraction::GroggyMonster:
+	case EInteraction::AttackMonster:
+	{
+		// Todo : 패링 호출
+
+		int a = 0;
+	}
+	return;
+	case EInteraction::GroggyMonster:
+	{
+		KickLocation = InteractionActor->GetActorLocation();
+		FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
+	}
+	return;
+	case EInteraction::JumpObstacle:
+	{
+		ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(InteractionActor);
+
+		if (nullptr == TriggerActor)
 		{
-			KickLocation = Overlaps[i]->GetActorLocation();
-			FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
+			LOG_FATAL(TEXT("Only classes that inherit ABJumpObstacleTrigger can have a JumpObstacle Interaction Type"));
+			return;
 		}
-		return;
-		case EInteraction::JumpObstacle:
+
+		FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
+
+		if (false == JumpData.bAbleJump)
 		{
-			ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(Overlaps[i]);
-
-			if (nullptr == TriggerActor)
-			{
-				LOG_FATAL(TEXT("Only classes that inherit ABJumpObstacleTrigger can have a JumpObstacle Interaction Type"));
-				continue;
-			}
-
-			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
-
-			if (false == JumpData.bAbleJump)
-			{
-				continue;
-			}
-
-			FVector ActorForward = GetActorForwardVector();
-			ActorForward.Z = 0;
-			ActorForward.Normalize();
-
-			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
-
-			if (45 < Angle)
-			{
-				continue;
-			}
-
-			JumpStart = JumpData.Start;
-			JumpEnd = JumpData.End;
-			JumpDir = JumpData.MoveVector;
-
-			FsmComp->ChangeState(TO_KEY(ELeonState::ObstacleJump));
+			return;
 		}
-		return;
-		case EInteraction::FallCliff:
+
+		FVector ActorForward = GetActorForwardVector();
+		ActorForward.Z = 0;
+		ActorForward.Normalize();
+
+		float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
+
+		if (45 < Angle)
 		{
-			ABCliffLineTrigger* TriggerActor = Cast<ABCliffLineTrigger>(Overlaps[i]);
-
-			if (nullptr == TriggerActor)
-			{
-				LOG_FATAL(TEXT("Only classes that inherit ABCliffLineTrigger can have a FallCliff Interaction Type"));
-				continue;
-			}
-
-			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
-
-			if (false == JumpData.bAbleJump)
-			{
-				continue;
-			}
-
-			FVector ActorForward = GetActorForwardVector();
-			ActorForward.Z = 0;
-			ActorForward.Normalize();
-
-			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
-
-			if (45 < Angle)
-			{
-				continue;
-			}
-
-			JumpStart = JumpData.Start;
-			JumpEnd = JumpData.End;
-			JumpDir = JumpData.MoveVector;
-
-			if (300 < JumpStart.Z - JumpEnd.Z)
-			{
-				FallAnimation = ELeonFallAnimation::HighHeight;
-			}
-			else
-			{
-				FallAnimation = ELeonFallAnimation::LowHeight;
-			}
-
-			FsmComp->ChangeState(TO_KEY(ELeonState::Fall));
+			return;
 		}
-		return;
-		case EInteraction::JumpFence:
+
+		JumpStart = JumpData.Start;
+		JumpEnd = JumpData.End;
+		JumpDir = JumpData.MoveVector;
+
+		FsmComp->ChangeState(TO_KEY(ELeonState::ObstacleJump));
+	}
+	return;
+	case EInteraction::FallCliff:
+	{
+		ABCliffLineTrigger* TriggerActor = Cast<ABCliffLineTrigger>(InteractionActor);
+
+		if (nullptr == TriggerActor)
 		{
-			int a = 0;
+			LOG_FATAL(TEXT("Only classes that inherit ABCliffLineTrigger can have a FallCliff Interaction Type"));
+			return;
 		}
-		return;
-		case EInteraction::OpenDoor:
-		{
-			int a = 0;
-		}
-		return;
-		case EInteraction::DropItem:
-		{
-			// Todo : GetItem
 
-			switch (LeonFSMState)
-			{
-			case ELeonState::Idle:
-			case ELeonState::Walk:
-			case ELeonState::Jog:
-				break;
-			default:
-				return;
-			}
+		FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
 
-			if (true == bIsGunReload)
-			{
-				return;
-			}			
-			
-			if (true == bIsGunReload)
-			{
-				return;
-			}
-
-			bIsPlayGetItem = true;
-		}
-		return;
-		case EInteraction::StoreEnter:
+		if (false == JumpData.bAbleJump)
 		{
-			LOG_MSG(TEXT("상점"));
+			return;
 		}
-		return;
+
+		FVector ActorForward = GetActorForwardVector();
+		ActorForward.Z = 0;
+		ActorForward.Normalize();
+
+		float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
+
+		if (45 < Angle)
+		{
+			return;
+		}
+
+		JumpStart = JumpData.Start;
+		JumpEnd = JumpData.End;
+		JumpDir = JumpData.MoveVector;
+
+		if (300 < JumpStart.Z - JumpEnd.Z)
+		{
+			FallAnimation = ELeonFallAnimation::HighHeight;
+		}
+		else
+		{
+			FallAnimation = ELeonFallAnimation::LowHeight;
+		}
+
+		FsmComp->ChangeState(TO_KEY(ELeonState::Fall));
+	}
+	return;
+	case EInteraction::OpenDoor:
+	{
+		int a = 0;
+	}
+	return;
+	case EInteraction::DropItem:
+	{
+		// Todo : GetItem
+
+		switch (LeonFSMState)
+		{
+		case ELeonState::Idle:
+		case ELeonState::Walk:
+		case ELeonState::Jog:
+			break;
 		default:
+			return;
+		}
+
+		if (true == bIsGunReload)
 		{
-			LOG_ERROR(TEXT("Wrong Type Interaction"));
-			continue;
+			return;
 		}
-		break;
+
+		if (true == bIsGunReload)
+		{
+			return;
 		}
+
+		bIsPlayGetItem = true;
+	}
+	return;
+	case EInteraction::StoreEnter:
+	{
+		LOG_MSG(TEXT("상점"));
+	}
+	return;
+	default:
+	{
+		LOG_ERROR(TEXT("Wrong Type Interaction"));
+		return;
+	}
+	break;
 	}
 }
 
@@ -1184,6 +1158,9 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			return DistanceL > DistanceR;
 		});
 
+	InteractionActor = nullptr;
+	InteractionObject = nullptr;
+
 	for (size_t i = 0; i < Overlaps.Num(); i++)
 	{
 		IBInteraction* Interface = Cast<IBInteraction>(Overlaps[i]);
@@ -1198,7 +1175,106 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			continue;
 		}
 
-		Interface->Execute_EnableInteractionUI(Cast<UObject>(Interface));
+		EInteraction InteractionType = Interface->GetInteractionType();
+
+		switch (InteractionType)
+		{
+		case EInteraction::None:
+			continue;
+		case EInteraction::AttackMonster:
+		{
+			// Todo : 패링 호출
+			continue;
+		}
+		break;
+		case EInteraction::GroggyMonster:
+		{
+			KickLocation = Overlaps[i]->GetActorLocation();
+			FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
+		}
+		break;
+		case EInteraction::JumpObstacle:
+		{
+			ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(Overlaps[i]);
+
+			if (nullptr == TriggerActor)
+			{
+				LOG_FATAL(TEXT("Only classes that inherit ABJumpObstacleTrigger can have a JumpObstacle Interaction Type"));
+				continue;
+			}
+
+			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
+
+			if (false == JumpData.bAbleJump)
+			{
+				continue;
+			}
+
+			FVector ActorForward = GetActorForwardVector();
+			ActorForward.Z = 0;
+			ActorForward.Normalize();
+
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
+
+			if (45 < Angle)
+			{
+				continue;
+			}
+		}
+		break;
+		case EInteraction::FallCliff:
+		{
+			ABCliffLineTrigger* TriggerActor = Cast<ABCliffLineTrigger>(Overlaps[i]);
+
+			if (nullptr == TriggerActor)
+			{
+				LOG_FATAL(TEXT("Only classes that inherit ABCliffLineTrigger can have a FallCliff Interaction Type"));
+				continue;
+			}
+
+			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
+
+			if (false == JumpData.bAbleJump)
+			{
+				continue;
+			}
+
+			FVector ActorForward = GetActorForwardVector();
+			ActorForward.Z = 0;
+			ActorForward.Normalize();
+
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, JumpData.MoveVector)));
+
+			if (45 < Angle)
+			{
+				continue;
+			}
+		}
+		break;
+		case EInteraction::OpenDoor:
+		{
+			// Todo : OpenDoor
+
+			continue;
+		}
+		break;
+		case EInteraction::StoreEnter:
+		{
+			LOG_MSG(TEXT("상점"));
+			continue;
+		}
+		break;
+		default:
+		{
+			LOG_ERROR(TEXT("Wrong Type Interaction"));
+			continue;
+		}
+		break;
+		}
+
+		InteractionActor = Overlaps[i];
+		InteractionObject = Interface;
+		InteractionObject->Execute_EnableInteractionUI(Cast<UObject>(Interface));
 		return;
 	}
 }

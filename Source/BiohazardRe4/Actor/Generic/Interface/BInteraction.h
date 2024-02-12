@@ -21,7 +21,6 @@ enum class EInteraction : uint8
 	GroggyMonster	UMETA(DisplayName = "GroggyMonster"),
 	JumpObstacle	UMETA(DisplayName = "JumpObstacle"),
 	FallCliff		UMETA(DisplayName = "FallCliff"),
-	JumpFence		UMETA(DisplayName = "JumpFence"),
 	OpenDoor		UMETA(DisplayName = "OpenDoor"),
 	DropItem		UMETA(DisplayName = "DropItem"),
 	WalkPlayer		UMETA(DisplayName = "WalkPlayer"),

@@ -642,7 +642,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	float GrenadeThrowingPower = 850.0f;
 
-	TSet<IBInteraction*> InteractionActors;
+	AActor* InteractionActor = nullptr;
+	IBInteraction* InteractionObject = nullptr;
 
 	//*****************************************************//
 
