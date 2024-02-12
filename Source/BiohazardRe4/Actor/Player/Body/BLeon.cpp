@@ -5,6 +5,7 @@
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "MathUtil.h"
 #include "Components/InputComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -87,6 +88,7 @@ void ABLeon::Tick(float _DeltaTime)
 	SocketSwapUpdate(_DeltaTime);
 	HealthStateUpdate(_DeltaTime);
 	InteractionUpdate(_DeltaTime);
+	GunRecoilUpdate(_DeltaTime);
 
 	LeonFSMState = GetCurrentFSMState();
 }
@@ -1267,6 +1269,43 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 		InteractionObject->Execute_EnableInteractionUI(Cast<UObject>(Interface));
 		return;
 	}
+}
+
+void ABLeon::GunRecoilUpdate(float _DeltaTime)
+{
+	if (false == bIsCameraRecoil)
+	{
+		return;
+	}
+
+	GunRecoilAlpha += _DeltaTime * 20.0f;
+
+	if (3 < GunRecoilAlpha)
+	{
+		bIsCameraRecoil = false;
+		GunRecoilAlpha = 3;
+	}
+
+	switch (GunRecoilType)
+	{
+	case EGunRecoilType::Pistol:
+		AddControllerYawInput(FMath::Cos(GunRecoilAlpha) * 10 * _DeltaTime);
+		AddControllerPitchInput(-FMath::Cos(GunRecoilAlpha) * 25 * _DeltaTime);
+		break;
+	case EGunRecoilType::Shotgun:
+		AddControllerYawInput(FMath::Cos(GunRecoilAlpha) * 16 * _DeltaTime);
+		AddControllerPitchInput(-FMath::Cos(GunRecoilAlpha) * 60 * _DeltaTime);
+		break;
+	case EGunRecoilType::Rifle:
+		AddControllerYawInput(FMath::Cos(GunRecoilAlpha) * 20 * _DeltaTime);
+		AddControllerPitchInput(-FMath::Cos(GunRecoilAlpha) * 45 * _DeltaTime);
+		break;
+	default:
+		break;
+	}
+
+
+
 }
 
 void ABLeon::VPlayerCameraToWorld(FVector& _Vector) const

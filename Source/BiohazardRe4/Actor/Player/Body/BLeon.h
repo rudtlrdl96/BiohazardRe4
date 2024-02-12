@@ -172,6 +172,14 @@ enum class ELeonFallAnimation : uint8
 	HighHeight  UMETA(DisplayName = "HighHeight"),
 };
 
+UENUM(BlueprintType)
+enum class EGunRecoilType : uint8
+{
+	Pistol	UMETA(DisplayName = "Pistol"),
+	Shotgun UMETA(DisplayName = "Shotgun"),
+	Rifle	UMETA(DisplayName = "Rifle"),
+};
+
 USTRUCT()
 struct FPlayerStat
 {
@@ -506,7 +514,11 @@ private:
 
 	uint32 bIsWeaponShootTrigger : 1 = false;
 	uint32 bIsGunRecoil : 1 = false;
+	uint32 bIsCameraRecoil : 1 = false;
 	uint32 bIsGunReload : 1 = false;
+
+	EGunRecoilType GunRecoilType = EGunRecoilType::Pistol;
+	float GunRecoilAlpha = 0.0f;
 
 	FName LerpSocketStart = "";
 	FName LerpSocketEnd = "";
@@ -661,6 +673,7 @@ private:
 	void SocketSwapUpdate(float _DeltaTime);
 	void HealthStateUpdate(float _DeltaTime);
 	void InteractionUpdate(float _DeltaTime);
+	void GunRecoilUpdate(float _DeltaTime);
 
 	void VPlayerCameraToWorld(FVector& _Result) const;
 

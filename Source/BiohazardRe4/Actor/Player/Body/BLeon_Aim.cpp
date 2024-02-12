@@ -49,16 +49,34 @@ void ABLeon::AimUpdate(float _DeltaTime)
 
 		if (true == CurrentWeapon->AbleAttack())
 		{
-
 			switch (WeaponAnim)
 			{
 			// Gun 
 			case ELeonWeaponAnim::Pistol:
-			case ELeonWeaponAnim::Shotgun:
-			case ELeonWeaponAnim::Rifle:
 			{
+				GunRecoilType = EGunRecoilType::Pistol;
 				CurrentWeapon->Attack();
 				bIsGunRecoil = true;
+				bIsCameraRecoil = true;
+				GunRecoilAlpha = 0.0f;
+			}
+			break;
+			case ELeonWeaponAnim::Shotgun:
+			{
+				GunRecoilType = EGunRecoilType::Shotgun;
+				CurrentWeapon->Attack();
+				bIsGunRecoil = true;
+				bIsCameraRecoil = true;
+				GunRecoilAlpha = 0.0f;
+			}
+			break;
+			case ELeonWeaponAnim::Rifle:
+			{
+				GunRecoilType = EGunRecoilType::Rifle;
+				CurrentWeapon->Attack();
+				bIsGunRecoil = true;
+				bIsCameraRecoil = true;
+				GunRecoilAlpha = 0.0f;
 			}
 			break;
 			// Knife
