@@ -19,7 +19,7 @@ class BIOHAZARDRE4_API ABLeonWeapon : public AActor
 	GENERATED_BODY()
 	
 protected:
-	class ABInventoryActor* InventoryInst;
+	class ABInventoryActor* InventoryInst = nullptr;
 
 public:
 	// Sets default values for this actor's properties
