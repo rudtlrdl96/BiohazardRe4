@@ -496,7 +496,7 @@ private:
 
 	ELeonAim LeonAim = ELeonAim::Start;
 	ELeonWeaponSwap  LeonWeaponSwap = ELeonWeaponSwap::None;
-
+	
 	float AimUpdateTime = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)

@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "..\Weapon\BLeonWeapon.h"
 #include "BiohazardRe4.h"
+#include "Actor/Player/HUD/HUDBase.h"
 #include "..\Weapon\BDrawGrenadeAim.h"
 
 void ABLeon::AimEnter()
@@ -20,6 +21,7 @@ void ABLeon::AimEnter()
 	LeonAim = ELeonAim::Start;
 	bDrawGrenadeAim = false;
 	bIsPlayGetItem = false;
+	HUD->SetCrosshair(true);
 }
 
 void ABLeon::AimUpdate(float _DeltaTime)
@@ -155,4 +157,5 @@ void ABLeon::AimExit()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bDrawGrenadeAim = false;
 	GrenadeAimActor->DisableDraw();
+	HUD->SetCrosshair(false);
 }
