@@ -29,6 +29,7 @@
 #include "../../Map/BCliffLineTrigger.h"
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
+#include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
 #include "Generic/BCollisionObserverCapsule.h"
@@ -557,6 +558,11 @@ void ABLeon::KickEnd()
 	bIsKickEnd = true;
 }
 
+void ABLeon::ParryEnd()
+{
+	bIsParryEnd = true;
+}
+
 void ABLeon::AttachLeftHandSocket()
 {
 	if (nullptr == CurrentWeapon)
@@ -749,6 +755,9 @@ bool ABLeon::AbleInteraction() const
 	case ELeonState::Death:
 	case ELeonState::ObstacleJump:
 	case ELeonState::Fall:
+	case ELeonState::OpenDoor:
+	case ELeonState::Parry:
+	case ELeonState::BreakBox:
 		return false;
 	}
 
@@ -775,9 +784,21 @@ void ABLeon::TryInteraction()
 		return;
 	case EInteraction::AttackMonster:
 	{
-		// Todo : 패링 호출
+		ABMonsterBase* MonsterActor = Cast<ABMonsterBase>(InteractionActor);
 
-		int a = 0;
+		if (nullptr == MonsterActor)
+		{
+			LOG_FATAL(TEXT("Only classes that inherit ABMonsterBase can have a AttackMonster Interaction Type"));
+			return;
+		}
+
+		MonsterActor->Parry();
+
+		UseWeaponCode = EItemCode::CombatKnife;
+		CurrentWeapon = CreateWeapon(UseWeaponCode);
+		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
+
+		FsmComp->ChangeState(TO_KEY(ELeonState::Parry));
 	}
 	return;
 	case EInteraction::GroggyMonster:
@@ -1209,12 +1230,6 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 		{
 		case EInteraction::None:
 			continue;
-		case EInteraction::AttackMonster:
-		{
-			// Todo : 패링 호출
-			continue;
-		}
-		break;
 		case EInteraction::JumpObstacle:
 		{
 			ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(Overlaps[i]);

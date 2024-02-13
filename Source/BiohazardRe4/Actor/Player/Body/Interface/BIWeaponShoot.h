@@ -30,4 +30,6 @@ public:
 	virtual void KickAttackStart() = 0;
 	virtual void KickAttackEnd() = 0;
 	virtual void KickEnd() = 0;
+
+	virtual void ParryEnd() = 0;
 };

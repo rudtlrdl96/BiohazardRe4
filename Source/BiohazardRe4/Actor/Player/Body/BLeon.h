@@ -32,6 +32,7 @@ class ABCollisionObserverCapsule;
 class ABInventoryActor;
 class IBInteraction;
 class UDamageType;
+class USceneCaptureComponent2D;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -427,6 +428,8 @@ public:
 	virtual void KickAttackEnd() override;
 	virtual void KickEnd() override;
 
+	virtual void ParryEnd() override;
+
 	virtual void AttachLeftHandSocket() override;
 	virtual void AttachRightHandSocket() override;
 
@@ -600,6 +603,7 @@ private:
 	uint32 bAbleComboInput : 1 = false;
 	uint32 bAbleNextCombo : 1 = false;
 	uint32 bIsComboEnd : 1 = false;
+	uint32 bIsParryEnd : 1 = false;
 	
 	ELeonDamageType DamageType = ELeonDamageType::Small;
 	ELeonDamageDirection DamageDirection = ELeonDamageDirection::B;

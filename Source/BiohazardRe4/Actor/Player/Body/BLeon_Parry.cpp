@@ -13,16 +13,12 @@ void ABLeon::ParryEnter()
 	bIsMove = false;
 	bIsCrouch = false;
 	bIsPlayGetItem = false;
-
-	KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
-
-	bAbleComboInput = false;
-	bIsComboEnd = false;
+	bIsParryEnd = false;
 }
 
 void ABLeon::ParryUpdate(float _DeltaTime)
 {
-	if (true == bIsComboEnd)
+	if (true == bIsParryEnd)
 	{
 		if (true == AbleAim() && true == bIsAim)
 		{
@@ -46,6 +42,4 @@ void ABLeon::ParryUpdate(float _DeltaTime)
 
 void ABLeon::ParryExit()
 {
-	bAbleComboInput = false;
-	bIsComboEnd = false;
 }
