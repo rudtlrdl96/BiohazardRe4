@@ -28,8 +28,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	uint32 bIsOpen : 1 = 0;
 
 	static UBInventoryManager* Instance;
 
@@ -41,6 +41,9 @@ public:
 	TArray<class UBInventorySlot*> MainSlot;	// 2차원 인벤토리 공간
 
 	TArray<class UBInventorySlot*> SubSlot;	// 2차원 서브 인벤토리 공간 (버리는 공간)
+
+	void Open();
+	void Close();
 
 // Function
 	const FBItemData& FindItemData(EItemCode Code);

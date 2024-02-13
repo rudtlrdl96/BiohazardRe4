@@ -47,6 +47,8 @@ void UBInventoryWidgetBehavior::SetItemData(const FBItemData& Data)
 	case EItemCode::Handgun_SR09R:
 	case EItemCode::Shotgun_W870:
 	case EItemCode::Rifle_SRM1903:
+	case EItemCode::Grenade:
+	case EItemCode::Flashbang:
 		SetButton(0, State_BehaviorButton::Equip);
 		SetButton(1, State_BehaviorButton::Investigate);
 		SetButton(2, State_BehaviorButton::QuickSlot);
@@ -194,4 +196,7 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 	default:
 		break;
 	}
+
+	Panels[Index]->SetVisibility(ESlateVisibility::Visible);
+
 }

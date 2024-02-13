@@ -12,7 +12,7 @@ UBInventoryManager* UBInventoryManager::Instance = nullptr;
 UBInventoryManager::UBInventoryManager()
 {
 	Instance = this;
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> Data(TEXT("/Script/Engine.DataTable'/Game/Assets/Data/Item/DT_Items.DT_Items'"));
 	if (Data.Object)
@@ -26,9 +26,25 @@ void UBInventoryManager::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UBInventoryManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBInventoryManager::Open()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	bIsOpen = true;
+	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = ItemMap.CreateIterator();
+	for (; it; ++it)
+	{
+		it.Value()->SetItemNumText();
+	}
+}
+
+void UBInventoryManager::Close()
+{
+	bIsOpen = false;
+
+	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = ItemMap.CreateIterator();
+	for (; it; ++it)
+	{
+		it.Value()->OffItemNumText();
+	}
 }
 
 const FBItemData& UBInventoryManager::FindItemData(EItemCode Code)
@@ -238,6 +254,10 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
 		PlaceItemSlot(NewItem, Point);
 		NewItem->GetRootComponent()->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
+		if (!bIsOpen)
+		{
+			NewItem->OffItemNumText();
+		}
 	}
 }
 
@@ -304,6 +324,10 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
 		PlaceItemSlot(NewItem, Pos);
 		NewItem->GetRootComponent()->SetRelativeLocation(FVector(Pos.X * GridScale, Pos.Y * GridScale, 0) + GridStart);
+		if (!bIsOpen)
+		{
+			NewItem->OffItemNumText();
+		}
 	}
 }
 

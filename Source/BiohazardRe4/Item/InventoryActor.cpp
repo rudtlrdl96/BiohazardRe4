@@ -286,6 +286,7 @@ void ABInventoryActor::OpenInventory()
 	Controller->SetInputMode(InputMode);
 	Controller->SetShowMouseCursor(true);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	Inventory->Open();
 
 	Player->DisableInput(Controller);
 
@@ -330,6 +331,21 @@ void ABInventoryActor::ItemUse()
 	// SelectItem을 사용
 	// 아직 Item종류별 효과를 처리하지 않음
 	// 아이템 사용후 Default 상태로 돌아감
+	switch (SelectItem->GetItemCode())
+	{
+	case EItemCode::GreenHerb:
+		Player->TakeHeal(400);
+		break;
+	case EItemCode::MixedHerb_GG:
+		Player->TakeHeal(800);
+		break;
+	case EItemCode::MixedHerb_GR:
+		Player->TakeHeal(1500);
+		break;
+	case EItemCode::FirstAidSpray:
+		Player->TakeHeal(9999);
+		break;
+	}
 	Inventory->RemoveItem(SelectItem);
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
@@ -393,6 +409,7 @@ void ABInventoryActor::CloseInventory()
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
 	HUD->QuickSlotUpdate(QuickSlot);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
+	Inventory->Close();
 
 	Player->EnableInput(Controller);
 }
@@ -420,21 +437,23 @@ void ABInventoryActor::CloseQuickSlot()
 void ABInventoryActor::SetHealPreview()
 {
 	if (nullptr == SelectItem) { return; }
+	float HP = Player->Stat.CurrentHp;
 	switch (SelectItem->GetItemCode())
 	{
 	case EItemCode::GreenHerb:
-		HUD->SetHealPreview(0.5f);
+		HP += 400;
 		break;
 	case EItemCode::MixedHerb_GG:
-		HUD->SetHealPreview(0.8f);
+		HP += 800;
 		break;
 	case EItemCode::MixedHerb_GR:
-		HUD->SetHealPreview(1.0f);
+		HP += 1500;
 		break;
 	case EItemCode::FirstAidSpray:
-		HUD->SetHealPreview(1.0f);
+		HP += 9999;
 		break;
 	}
+	HUD->SetHealPreview(FMath::Min(HP / Player->Stat.MaxHp, 1));
 }
 
 void ABInventoryActor::OffHealPreview()
@@ -696,11 +715,7 @@ void ABInventoryActor::InvestigateEnter()
 	StartRot = SelectItem->Mesh->GetComponentRotation();
 	EndRot = SelectItem->GetData().Rotation;
 	Timer = 0;
-	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = Inventory->ItemMap.CreateIterator();
-	for (; it; ++it)
-	{
-		it.Value()->OffItemNumText();
-	}
+	Inventory->Close();
 }	
 
 
@@ -716,11 +731,7 @@ void ABInventoryActor::InvestigateExit()
 	// 버그생김 조합한 허브에서 오류생겼음
 	SelectItem->Mesh->SetWorldLocation(StartLocation);
 	SelectItem->Mesh->SetWorldRotation(StartRot);
-	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = Inventory->ItemMap.CreateIterator();
-	for (; it; ++it)
-	{
-		it.Value()->SetItemNumText();
-	}
+	Inventory->Open();
 }
 
 void ABInventoryActor::InvestigateRotate(const FInputActionInstance& _MoveAction)

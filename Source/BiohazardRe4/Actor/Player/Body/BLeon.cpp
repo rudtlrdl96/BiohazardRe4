@@ -317,6 +317,12 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 	return DamageValue;
 }
 
+void ABLeon::TakeHeal(float Heal)
+{
+	Stat.CurrentHp = FMath::Min(Stat.CurrentHp + Heal, Stat.MaxHp);
+	HUD->SetHP(Stat.CurrentHp / Stat.MaxHp);
+}
+
 FVector ABLeon::GetCameraDirection() const
 {
 	return PlayerCamera->GetForwardVector();
