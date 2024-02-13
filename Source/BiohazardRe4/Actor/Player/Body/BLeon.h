@@ -613,6 +613,8 @@ private:
 	USpringArmComponent* SpringArm = nullptr;
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* PlayerCamera = nullptr;
+	UPROPERTY(EditAnywhere)
+	USceneCaptureComponent2D* SceneCapture = nullptr;
 
 	//*****************************************************//
 
