@@ -217,6 +217,9 @@ public:
 	class ABHUDBase* HUD;
 
 	UPROPERTY()
+	class ABLeon* Player;
+
+	UPROPERTY()
 	class UBInventorySlot* SelectSlot;		// 현재 선택한 슬롯
 	class ABInventoryItem* SelectItem;		// 현재 선택한 슬롯
 	uint8 bIsDragMove : 1;

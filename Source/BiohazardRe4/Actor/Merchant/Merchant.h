@@ -68,6 +68,9 @@ public:
 	// UI Pivot 위치를 반환
 	virtual FVector GetUIPivot() const { return FVector::ZeroVector; }
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OpenStore();
+
 	UFUNCTION(BlueprintCallable)
 	class ABInventoryActor* GetInventory() const;
 

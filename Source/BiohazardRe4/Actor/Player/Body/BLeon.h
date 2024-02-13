@@ -591,6 +591,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* WeaponReloadAction = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UInputAction* InventoryAction = nullptr;
+
 	FVector MoveInput = FVector::ZeroVector;
 	FVector LookInput = FVector::ZeroVector;
 
@@ -661,6 +664,14 @@ private:
 	AActor* InteractionActor = nullptr;
 	IBInteraction* InteractionObject = nullptr;
 
+	//************************UI***************************//
+
+	UPROPERTY(EditAnywhere, Category = UI)
+	TSubclassOf<ABInventoryActor> InventoryClass;		// 인벤토리 생성 클래스
+	UPROPERTY(EditAnywhere, Category = UI)
+	FTransform InventoryTransform;						// 인벤토리 생성 트랜스폼
+
+
 	//*****************************************************//
 
 	void PlayMove(const FInputActionInstance& _MoveAction);
@@ -701,6 +712,7 @@ private:
 	void TryCrouch();
 	void TryInteraction();
 	bool AbleAim() const;
+	void OpenInventory();
 
 	void DrawGrenadeAim(float _DeltaTime);
 

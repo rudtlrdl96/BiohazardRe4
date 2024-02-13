@@ -13,7 +13,7 @@
 #include "Actor/Player/HUD/HUDBase.h"
 #include "BiohazardRe4.h"
 #include "Generic/BFsm.h"
-
+#include "Actor/Player/Body/BLeon.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -184,6 +184,7 @@ void ABInventoryActor::BeginPlay()
 	Controller = UGameplayStatics::GetPlayerController(this, 0);
 	HUD = Cast<ABHUDBase>(Controller->GetHUD());
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
+	Player = Cast<ABLeon>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	//Subsystem->AddMappingContext(DefaultMappingContext, 1);
 
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(Controller->InputComponent);
@@ -284,6 +285,9 @@ void ABInventoryActor::OpenInventory()
 	Controller->SetInputMode(InputMode);
 	Controller->SetShowMouseCursor(true);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+
+	Player->DisableInput(Controller);
+
 }
 
 void ABInventoryActor::OpenSub()
@@ -401,6 +405,8 @@ void ABInventoryActor::CloseInventory()
 	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
 	HUD->QuickSlotUpdate(QuickSlot);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
+
+	Player->EnableInput(Controller);
 }
 
 void ABInventoryActor::StartInvestigate()

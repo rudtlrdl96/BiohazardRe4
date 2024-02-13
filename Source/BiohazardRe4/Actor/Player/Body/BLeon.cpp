@@ -30,7 +30,7 @@
 #include "Generic/BFsm.h"
 #include "Generic/BCollisionObserverCapsule.h"
 #include "Generic/BCollisionObserverSphere.h"
-#include "Actor/Generic/Interface/BInteraction.h"
+#include "Actor/Merchant/Merchant.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(-10.0f, 35.0f, -12.0f);
 const FVector ABLeon::GunAimSocketOffset = FVector(-10.0f, 35.0f, -1.0f);
@@ -74,6 +74,8 @@ void ABLeon::BeginPlay()
 	GrenadeAimActor = GetWorld()->SpawnActor<ABDrawGrenadeAim>(SpawnParams);
 
 	CreateCollision();
+
+	GetWorld()->SpawnActor<ABInventoryActor>(InventoryClass, InventoryTransform);
 
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
@@ -156,6 +158,10 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	{
 		LOG_FATAL(TEXT("is Not Set WeaponReloadAction"));
 	}
+	if (nullptr == InventoryAction)
+	{
+		LOG_FATAL(TEXT("is Not Set InventoryAction"));
+	}
 
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABLeon::PlayMove);
 	Input->BindAction(MoveAction, ETriggerEvent::None, this, &ABLeon::PlayIdle);
@@ -169,6 +175,8 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 
 	Input->BindAction(CrouchAction, ETriggerEvent::Completed, this, &ABLeon::TryCrouch);
 	Input->BindAction(InteractionAction, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
+
+	Input->BindAction(InventoryAction, ETriggerEvent::Completed, this, &ABLeon::OpenInventory);
 
 	for (uint32 i = 0; i < 8; ++i)
 	{
@@ -882,7 +890,10 @@ void ABLeon::TryInteraction()
 	return;
 	case EInteraction::StoreEnter:
 	{
-		LOG_MSG(TEXT("상점"));
+		if (ABMerchant* Merchant = Cast<ABMerchant>(InteractionObject))
+		{
+			Merchant->OpenStore();
+		}
 	}
 	return;
 	default:
@@ -917,6 +928,11 @@ bool ABLeon::AbleAim() const
 	}
 
 	return true;
+}
+
+void ABLeon::OpenInventory()
+{
+	ABInventoryActor::Instance->OpenInventory();
 }
 
 void ABLeon::DrawGrenadeAim(float _DeltaTime)
@@ -1256,8 +1272,7 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 		break;
 		case EInteraction::StoreEnter:
 		{
-			LOG_MSG(TEXT("상점"));
-			continue;
+			// Store Enter
 		}
 		break;
 		default:
