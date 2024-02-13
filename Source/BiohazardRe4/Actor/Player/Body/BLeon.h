@@ -50,6 +50,8 @@ enum class ELeonState : uint8
 	ObstacleJump	UMETA(DisplayName = "ObstacleJump"),
 	Fall			UMETA(DisplayName = "Fall"),
 	Parry			UMETA(DisplayName = "Parry"),
+	OpenDoor		UMETA(DisplayName = "OpenDoor"),
+	BreakBox		UMETA(DisplayName = "BreakBox"),
 };
 
 UENUM(BlueprintType)
