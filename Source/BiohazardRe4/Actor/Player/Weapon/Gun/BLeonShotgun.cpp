@@ -5,6 +5,7 @@
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
 #include "Actor/Player/HUD/HUDBase.h"
+#include "DamageType/PlayerDamageType/BDMGPlayerShotgun.h"
 
 ABLeonShotgun::ABLeonShotgun()
 {
@@ -12,6 +13,7 @@ ABLeonShotgun::ABLeonShotgun()
 	DefaultDamage = 5.6f;
 	RateOfFire = 0.45f;
 	Range = 500.f;
+	DamageType = UBDMGPlayerShotgun::StaticClass();
 }
 
 void ABLeonShotgun::BeginPlay()
@@ -59,15 +61,15 @@ void ABLeonShotgun::Reload()
 
 	LOG_MSG(TEXT("ABLeonShotgun::Reload"))
 
-		if (CurAmmo == MaxAmmo)
-		{
-			ReloadEnd();
-		}
-		else
-		{
-			//LOG_MSG(TEXT("ABLeonShotgun::Reload_Loop"))
-			//CurState = EGunState::EReload_Loop;
-		}
+	if (CurAmmo == MaxAmmo)
+	{
+		ReloadEnd();
+	}
+	else
+	{
+		LOG_MSG(TEXT("ABLeonShotgun::Reload_Loop"))
+		CurState = EGunState::EReload_Loop;
+	}
 }
 
 void ABLeonShotgun::ReloadLoopStart()

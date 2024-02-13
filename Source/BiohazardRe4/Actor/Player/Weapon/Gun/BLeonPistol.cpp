@@ -4,6 +4,7 @@
 #include "Actor/Player/Weapon/Gun/BLeonPistol.h"
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
+#include "DamageType/PlayerDamageType/BDMGPlayerPistol.h"
 
 
 ABLeonPistol::ABLeonPistol()
@@ -11,6 +12,7 @@ ABLeonPistol::ABLeonPistol()
 	AmmoType = EItemCode::HandgunAmmo;
 	DefaultDamage = 1.f;
 	RateOfFire = 1.f;
+	DamageType = UBDMGPlayerPistol::StaticClass();
 }
 
 

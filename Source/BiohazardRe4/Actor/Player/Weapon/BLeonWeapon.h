@@ -72,8 +72,6 @@ protected:
 	FDamageEvent WeaponDamageEvent;
 
 	//WeaponInformation
-	UPROPERTY()
-	UBDMGPlayerDamage* WeaponType;
 
 	UPROPERTY()
 	int32 WeaponDamage;
@@ -82,5 +80,5 @@ protected:
 	UProjectileMovementComponent* ProjectileComp = nullptr;	
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TSubclassOf<UDamageType> DamageType = nullptr;
+	TSubclassOf<UBDMGPlayerDamage> DamageType = nullptr;
 };

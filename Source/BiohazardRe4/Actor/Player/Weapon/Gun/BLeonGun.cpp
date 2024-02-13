@@ -156,7 +156,16 @@ void ABLeonGun::Shoot()
 		float CalDamage = DefaultDamage * DamageUnit;
 		LOG_MSG(TEXT("Damage : %f"), CalDamage);
 
-		UGameplayStatics::ApplyPointDamage(DamagedActor, CalDamage, Player->GetActorForwardVector(), GunDamageEvent.HitInfo, Player->GetController(), this, UBDMGPlayerDamage::StaticClass());
+		if (DamageType != nullptr)
+		{
+			UGameplayStatics::ApplyPointDamage(DamagedActor, CalDamage, Player->GetActorForwardVector(), GunDamageEvent.HitInfo, Player->GetController(), this, DamageType);
+		}
+		else
+		{
+			UGameplayStatics::ApplyPointDamage(DamagedActor, CalDamage, Player->GetActorForwardVector(), GunDamageEvent.HitInfo, Player->GetController(), this, UBDMGPlayerDamage::StaticClass());
+			LOG_WARNING(TEXT("CurDamageType == nullptr"));
+		}
+
 	}
 	else
 	{

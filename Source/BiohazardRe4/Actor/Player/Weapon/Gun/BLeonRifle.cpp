@@ -5,6 +5,7 @@
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
 #include "Actor/Player/HUD/HUDBase.h"
+#include "DamageType/PlayerDamageType/BDMGPlayerRifle.h"
 
 ABLeonRifle::ABLeonRifle()
 {
@@ -13,6 +14,7 @@ ABLeonRifle::ABLeonRifle()
 	DefaultDamage = 2.5f;
 	RateOfFire = 0.42f;
 	Range = 10000.f;
+	DamageType = UBDMGPlayerRifle::StaticClass();
 }
 
 void ABLeonRifle::BeginPlay()
