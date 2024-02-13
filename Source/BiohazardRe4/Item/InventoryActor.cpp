@@ -353,6 +353,7 @@ void ABInventoryActor::WeaponEquip()
 		LOG_ERROR(TEXT("Error, Select Item is Not Weapon class"))
 		return;
 	}
+	Player->ChangeUseWeapon(Weapon->GetItemCode());
 	HUD->SetWeapon(Weapon);
 	int StoredAmmo = 0;
 	switch (Weapon->GetItemCode())

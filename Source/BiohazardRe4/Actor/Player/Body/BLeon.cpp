@@ -10,6 +10,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
@@ -933,6 +934,7 @@ bool ABLeon::AbleAim() const
 
 void ABLeon::OpenInventory()
 {
+	SceneCapture->CaptureScene();
 	ABInventoryActor::Instance->OpenInventory();
 }
 
@@ -1768,6 +1770,9 @@ void ABLeon::CreateSprintArm()
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+	SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
+	SceneCapture->SetupAttachment(PlayerCamera);
 }
 
 void ABLeon::CreateFSM()
