@@ -23,14 +23,6 @@ enum class EDamagedPart
 	Body,
 };
 
-UENUM()
-enum class EDeathType
-{
-	Normal,
-	Point,
-	Radial,
-};
-
 DECLARE_DELEGATE(FOnLandedByKickJump)
 
 UCLASS()
@@ -47,28 +39,36 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual EMonsterState GetCurrentState() override;
 
-	virtual void DamagedEnd() override;
-	virtual void SetCurrentState(EMonsterState _InState) override;
 	virtual void Attack() override;
-	virtual bool IsAttacking() override;
-	virtual void SetIsAttack(bool _IsAttacking) override;
-	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
-	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
 	virtual void AttackStart() override;
+	
+	virtual void DamagedEnd() override;
+	
+	virtual void Parry() override;
+	virtual void ParryTimeOn() override;
+	virtual void ParryTimeOff() override;
+	virtual bool isAbleParring() override;
+
+	virtual void GroggyEnd() override;
+
+	virtual void SetCurrentState(EMonsterState _InState) override;
+	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
+	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
+
 
 	//IBMonsterStatInterface
 public:
-	virtual float GetRunSpeed() override;
-	virtual float GetWalkSpeed() override;
-	virtual float GetAttackRadius() override;
-	virtual float GetDetectRadius() override;
-	virtual float GetPatrolRadius() override;
-	virtual float GetAttackSweepRadius() override;
+	virtual float GetRunSpeed() const override;
+	virtual float GetWalkSpeed() const override;
+	virtual float GetAttackRadius() const override;
+	virtual float GetDetectRadius() const override;
+	virtual float GetPatrolRadius() const override;
+	virtual float GetAttackSweepRadius() const override;
 
 	virtual void StatInit(const class UBMonsterStatData* _DataAsset);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual float GetWalkDistanceThreshold() override;
+	virtual float GetWalkDistanceThreshold() const override;
 
 	//IBInteraction
 public:
@@ -97,6 +97,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> DamagedMontage = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> ParriedMontage = nullptr;
+
 	//Delegate
 protected:
 	FMonsterAttackEnd OnAttackEnd;
@@ -113,13 +116,13 @@ protected:
 	virtual void SetDamagedSectionNums();
 
 	//Damaged
-private:
+protected:
 	float TakeNormalDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	float TakePointDamage(const FDamageEvent& _DamageEvent, float _DamagedAmount);
 	void TakeRadialDamage();
 	
 	void DamagedByGun(const FString& _DamagedPart);
-	void DamagedByKnife(const FString& _DamagedPart);
+	void DamagedByKnife(const FDamageEvent& _DamageEvent);
 	void DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 
 	void SmallDamaged(const FString& _DamagedPart);
@@ -127,14 +130,14 @@ private:
 	void LargeDamaged(const FString& _DamagedPart);
 
 	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
-	float CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, EPlayerDamageType _PlayerDamageType);
-	float CaculateNormalDamage(float _OriginDamage, EPlayerDamageType _PlayerDamageType);
-	float CaculateCriticalDamage(float _OriginDamage, EPlayerDamageType _PlayerDamageType);
+	float CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, const EPlayerDamageType _PlayerDamageType);
+	float CaculateNormalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType);
+	float CaculateCriticalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType);
 
-	virtual void MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
+	//virtual void MonsterDeath(const EDeathType _DeathType, const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
+	virtual void MonsterDeathByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	//virtual void MonsterDeathByRadial(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
-	//virtual void MonsterDeathByNormal(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 
 	virtual void Flashed();
 
@@ -144,11 +147,8 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	EMonsterState CurState;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
-	uint8 bIsAttacking : 1;
-
 	//Interaction Variable
 private:
+	uint8 bIsAbleParry : 1;
 	EInteraction InteractionType;
 };

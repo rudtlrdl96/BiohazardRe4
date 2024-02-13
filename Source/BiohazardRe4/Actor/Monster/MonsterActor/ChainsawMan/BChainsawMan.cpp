@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/MonsterActor/BChainsawMan.h"
+#include "Actor/Monster/MonsterActor/ChainsawMan/BChainsawMan.h"
 
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -75,7 +75,7 @@ void ABChainsawMan::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABChainsawMan::MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent)
+void ABChainsawMan::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 {
 	//행동트리
 	AAIController* AIController = Cast<AAIController>(GetController());
@@ -87,29 +87,31 @@ void ABChainsawMan::MonsterDeath(EDeathType _DeathType, const FDamageEvent& _Dam
 
 	AIController->UnPossess();
 
-	if (_DeathType == EDeathType::Point)
-	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
-		int SectionIndex = FMath::RandRange(1, 3);
-		
-		FString SectionNameStr = TEXT("Death");
-		SectionNameStr += FString::FromInt(SectionIndex);
+	int SectionIndex = FMath::RandRange(1, 3);
 
-		FName SectionName(SectionNameStr);
+	FString SectionNameStr = TEXT("Death");
+	SectionNameStr += FString::FromInt(SectionIndex);
 
-		//기존 애니메이션 모두 중지
-		AnimInstance->StopAllMontages(0.1f);
+	FName SectionName(SectionNameStr);
 
-		AnimInstance->Montage_Play(DamagedMontage, 1.0f);
-		AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
+	//기존 애니메이션 모두 중지
+	AnimInstance->StopAllMontages(0.1f);
 
-		SetCurrentState(EMonsterState::Death);
+	AnimInstance->Montage_Play(DamagedMontage, 1.0f);
+	AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
 
-		DamagedMontage->bEnableAutoBlendOut = false;
+	SetCurrentState(EMonsterState::Death);
 
-		GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
-	}
+	DamagedMontage->bEnableAutoBlendOut = false;
+
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
+void ABChainsawMan::MonsterDeathByNormal(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
+{
+	//Super::MonsterDeathByNormal(_DamageEvent, DamageCauser);
 }
 
 void ABChainsawMan::InitDamageTypes()

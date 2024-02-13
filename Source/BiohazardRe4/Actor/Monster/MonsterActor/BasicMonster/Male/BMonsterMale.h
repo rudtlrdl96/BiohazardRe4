@@ -3,41 +3,48 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actor/Monster/MonsterActor/BBasicMonsterBase.h"
-#include "BMonsterFemale.generated.h"
+#include "Actor/Monster/MonsterActor/BasicMonster/BBasicMonsterBase.h"
+#include "BMonsterMale.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API ABMonsterFemale : public ABBasicMonsterBase
+class BIOHAZARDRE4_API ABMonsterMale : public ABBasicMonsterBase
 {
 	GENERATED_BODY()
+	
 public:
-	ABMonsterFemale();
-
+	ABMonsterMale();
+	
 protected:
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	USkeletalMeshComponent* Head = nullptr;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
-	USkeletalMeshComponent* Shirt = nullptr;
-
+	USkeletalMeshComponent* Jacket = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	USkeletalMeshComponent* Pants = nullptr;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	USkeletalMeshComponent* Hat = nullptr;
 
 	UFUNCTION()
 	virtual void BeginPlay() override;
-	
+
+protected:
+	virtual void SetClothesSkeletalMeshByRandomInBeginPlay() override;
+	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay() override;
+
 private:
 	void CreateComponent();
-	void InitAI();
 	void InitValue();
 
-	void SetSkeletalMeshByRandomInBeginPlay();
 	void SetSkeletalMeshInConstructor();
+
+private:
+
+	virtual void Tick(float _DeltaTIme) override;
 };

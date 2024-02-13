@@ -21,8 +21,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
+	virtual void MonsterDeathByNormal(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 
-	virtual void MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 	virtual void InitDamageTypes() override;
 	virtual void SetDamagedSectionNums() override;
 };

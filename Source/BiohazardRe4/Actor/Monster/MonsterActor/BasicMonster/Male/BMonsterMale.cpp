@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actor/Monster/MonsterActor/BMonsterMale.h"
+#include "BMonsterMale.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "BiohazardRe4.h"
@@ -81,6 +81,9 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 		
 		FString DamagedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_BareHands.AM_MonsterMale_Damaged_BareHands'");
 		DamagedMontage = LoadObject<UAnimMontage>(nullptr, *DamagedMontagePath);
+
+		FString ParriedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_Bare_Hands.AM_MonsterMale_Parry_Bare_Hands'");
+		ParriedMontage = LoadObject<UAnimMontage>(nullptr, *ParriedMontagePath);
 	}
 	else if (MyWeaponType == EWeaponType::OneHand)
 	{

@@ -87,4 +87,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float BaseAttackPower = 0.0f;
 
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float GroggyAmount = 0.0f;
 };

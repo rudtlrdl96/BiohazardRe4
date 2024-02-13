@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BMonsterBase.h"
+#include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "BDummyMonster.generated.h"
 
 /**

@@ -17,13 +17,13 @@ class BIOHAZARDRE4_API IBMonsterStatInterface
 	GENERATED_BODY()
 
 public:
-	virtual float GetAttackRadius() = 0;
-	virtual float GetAttackSweepRadius() = 0;
-	virtual float GetDetectRadius() = 0;
-	virtual float GetPatrolRadius() = 0;
-	virtual float GetRunSpeed() = 0;
-	virtual float GetWalkSpeed() = 0;
-	virtual float GetWalkDistanceThreshold() = 0;
+	virtual float GetRunSpeed() const = 0;
+	virtual float GetWalkSpeed() const = 0;
+	virtual float GetAttackRadius() const = 0;
+	virtual float GetDetectRadius() const = 0;
+	virtual float GetPatrolRadius() const = 0;
+	virtual float GetAttackSweepRadius() const = 0;
+	virtual float GetWalkDistanceThreshold() const = 0;
 };
 
 

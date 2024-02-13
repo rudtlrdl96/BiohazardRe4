@@ -21,7 +21,6 @@ ABMonsterBase::ABMonsterBase()
 	bUseControllerRotationYaw = false;
 
 	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
-
 }
 
 void ABMonsterBase::BeginPlay()
@@ -51,14 +50,14 @@ void ABMonsterBase::AttackStart()
 	FName SectionName = *FString::Printf(TEXT("Attack%d"), SectionNumber);
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
+		
 	if (AnimInstance == nullptr)
 	{
 		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
 		return;
 	}
 
-	AnimInstance->Montage_Play(AttackMontage, 1.0f/*공속이 있다면, 바꿔줘야겠지?*/);
+	AnimInstance->Montage_Play(AttackMontage);
 	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 }
 
@@ -134,88 +133,6 @@ void ABMonsterBase::Attack()
 #endif
 }
 
-bool ABMonsterBase::IsAttacking()
-{
-	return bIsAttacking;
-}
-
-void ABMonsterBase::SetIsAttack(bool _IsAttacking)
-{
-	bIsAttacking = _IsAttacking;
-}
-
-void ABMonsterBase::SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd)
-{
-	OnAttackEnd = _InAttackEnd;
-}
-
-const FMonsterAttackEnd& ABMonsterBase::GetMonsterAttackEndDelegate()
-{
-	return OnAttackEnd;
-}
-
-float ABMonsterBase::GetAttackRadius()
-{
-	return Stat->GetAttackRadius();
-}
-
-float ABMonsterBase::GetAttackSweepRadius()
-{
-	return Stat->GetAttackSweepRadius();
-}
-
-float ABMonsterBase::GetDetectRadius()
-{
-	return Stat->GetDetectRadius();
-}
-
-float ABMonsterBase::GetPatrolRadius()
-{
-	return Stat->GetPatrolRadius();
-}
-
-float ABMonsterBase::GetRunSpeed()
-{
-	return Stat->GetRunSpeed();
-}
-
-float ABMonsterBase::GetWalkSpeed()
-{
-	return Stat->GetWalkSpeed();
-}
-
-float ABMonsterBase::GetWalkDistanceThreshold()
-{
-	return Stat->GetWalkDistanceThreshold();
-}
-
-void ABMonsterBase::StatInit(const UBMonsterStatData* _DataAsset)
-{
-	FStatStruct StatStruct;
-
-	StatStruct.MaxHp = _DataAsset->MaxHp;
-	StatStruct.CurrentHp = _DataAsset->CurrentHp;
-
-	StatStruct.AttackRadius = _DataAsset->AttackRadius;
-	StatStruct.AttackSweepRadius = _DataAsset->AttackSweepRadius;
-
-	StatStruct.DetectRadius = _DataAsset->DetectRadius;
-	StatStruct.PatrolRadius = _DataAsset->PatrolRadius;
-
-	StatStruct.WalkSpeed = _DataAsset->WalkSpeed;
-	StatStruct.RunSpeed = _DataAsset->RunSpeed;
-	StatStruct.WalkDistanceThreshold = _DataAsset->WalkDistanceThreshold;
-
-	StatStruct.BaseAttackPower = _DataAsset->BaseAttackPower;
-
-	Stat->StatInit(StatStruct);
-}
-
-EMonsterState ABMonsterBase::GetCurrentState()
-{
-	return CurState;
-}
-
 void ABMonsterBase::DamagedEnd()
 {
 	AAIController* AIController = Cast<AAIController>(GetController());
@@ -240,10 +157,6 @@ void ABMonsterBase::DamagedEnd()
 	AnimInstance->StopAllMontages(1.0f);
 }
 
-void ABMonsterBase::SetCurrentState(EMonsterState _InState)
-{
-	CurState = _InState;
-}
 
 void ABMonsterBase::SetDamagedSectionNums()
 {

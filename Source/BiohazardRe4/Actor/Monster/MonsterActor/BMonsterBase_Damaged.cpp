@@ -82,7 +82,7 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, float _Da
 	Stat->DecreaseHp(ResultDamage);
 	if (Stat->isDeath() == true)
 	{
-		MonsterDeath(EDeathType::Point, _DamageEvent);
+		MonsterDeathByPoint(_DamageEvent);
 		return ResultDamage;
 	}
 
@@ -138,7 +138,7 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 
 	if (Stat->isDeath() == true)
 	{
-		MonsterDeath(EDeathType::Normal, _DamageEvent);
+		MonsterDeathByKick(_DamageEvent, DamageCauser);
 		return ResultDamage;
 	}
 
@@ -146,6 +146,10 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 	if (DamagedType == EPlayerDamageType::Kick)
 	{
 		DamagedByKick(_DamageEvent, DamageCauser);
+	}
+	else if (DamagedType == EPlayerDamageType::Knife)
+	{
+		DamagedByKnife(_DamageEvent);
 	}
 	else
 	{
@@ -164,8 +168,7 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 	return ResultDamage;
 }
 
-
-void ABMonsterBase::MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent)
+void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 {
 	//행동트리
 	AAIController* AIController = Cast<AAIController>(GetController());
@@ -176,24 +179,7 @@ void ABMonsterBase::MonsterDeath(EDeathType _DeathType, const FDamageEvent& _Dam
 	}
 
 	AIController->UnPossess();
-	
 
-	if (_DeathType == EDeathType::Normal)
-	{
-
-	}
-	else if (_DeathType == EDeathType::Point)
-	{
-		MonsterDeathByPoint(_DamageEvent);
-	}
-	else if (_DeathType == EDeathType::Radial)
-	{
-
-	}
-}
-
-void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
-{
 	const FPointDamageEvent* const PointDamage = (FPointDamageEvent*)&_DamageEvent;
 	if (PointDamage == nullptr)
 	{
@@ -236,59 +222,163 @@ void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 	DamagedMontage->bEnableAutoBlendOut = false;
 }
 
-void ABMonsterBase::DamagedByGun(const FString& _DamagedPart)
+void ABMonsterBase::MonsterDeathByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
 {
-	SmallDamaged(_DamagedPart);
-}
-
-void ABMonsterBase::DamagedByKnife(const FString& _DamagedPart)
-{
-	if (DamagedMontageSectionNums[_DamagedPart].Contains(TEXT("MEDIUM")) == false)
+	//행동트리
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
 	{
-		SmallDamaged(_DamagedPart);
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return;
 	}
-	else
-	{
-		MediumDamaged(_DamagedPart);
-	}
-}
 
-void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
-{
+	AIController->UnPossess();
 
 	SetCurrentState(EMonsterState::Kicked);
 
 	FVector CauserLocation = DamageCauser->GetActorLocation();
 	FVector MyLocation = GetActorLocation();
 
-	FVector LaunchDirXY = MyLocation - CauserLocation;
-	LaunchDirXY.Z = 0;
-	LaunchDirXY.Normalize();
+	FString KickSectionStr = TEXT("Kick");
 
-	//60도
-	float LaunchZ = 2.0f;
+	//피격 각도
+	FVector CauserToMonsterVector = MyLocation - CauserLocation;
+	CauserToMonsterVector.Z = 0;
+	CauserToMonsterVector.Normalize();
+
+	FVector MyForwardVector = GetActorForwardVector();
+	MyForwardVector.Z = 0;
+	MyForwardVector.Normalize();
+
+	double DotProductValue = FVector::DotProduct(-CauserToMonsterVector, MyForwardVector);
+	double Radian = FMath::Acos(DotProductValue);
+	double Degree = FMath::RadiansToDegrees(Radian);
+
+	LOG_MSG(TEXT("Kick Angle is %f"), Degree);
+
+	if (Degree >= 0.0f && Degree < 45.0f)
+	{
+		KickSectionStr += TEXT("Front");
+	}
+	else if (Degree > 135.0f && Degree <= 180.0f)
+	{
+		KickSectionStr += TEXT("Back");
+	}
+	else
+	{
+		KickSectionStr += TEXT("Side");
+	}
+
+	//날아가는 각도
+	FVector LaunchDirXY = CauserToMonsterVector;
+	float LaunchZ = 1.0f;
 	LaunchDirXY.Z = LaunchZ;
 
 	FVector LaunchDir = FVector(LaunchDirXY.X, LaunchDirXY.Y, LaunchZ);
 	LaunchDir.Normalize();
 
+	LaunchCharacter(LaunchDir * 500.0f, false, false);
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	//기존 애니메이션 모두 중지
 	AnimInstance->StopAllMontages(0.1f);
-	AnimInstance->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
-
 	AnimInstance->Montage_Play(DamagedMontage, 1.0f);
-	AnimInstance->Montage_JumpToSection(FName(TEXT("Kick")), DamagedMontage);
-	LaunchCharacter(LaunchDir * 400.0f, false, true);
+	AnimInstance->Montage_JumpToSection(FName(KickSectionStr + TEXT("Start")), DamagedMontage);
+	AnimInstance->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
 
 	TWeakObjectPtr<UAnimInstance> WeakAnimInstance = AnimInstance;
 
-	OnLandedByKickJump.BindLambda([this, WeakAnimInstance]()
+	OnLandedByKickJump.BindLambda([this, WeakAnimInstance, KickSectionStr]()
+		{
+			SetCurrentState(EMonsterState::Death);
+
+			WeakAnimInstance.Get()->StopAllMontages(0.1f);
+			WeakAnimInstance.Get()->Montage_Play(DamagedMontage, 1.0f);
+			WeakAnimInstance.Get()->Montage_JumpToSection(FName(KickSectionStr + TEXT("End")), DamagedMontage);
+			WeakAnimInstance.Get()->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
+		}
+	);
+}
+
+void ABMonsterBase::DamagedByGun(const FString& _DamagedPart)
+{
+	SmallDamaged(_DamagedPart);
+}
+
+void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
+{
+	//if (DamagedMontageSectionNums[_DamagedPart].Contains(TEXT("MEDIUM")) == false)
+	//{
+	//	SmallDamaged(_DamagedPart);
+	//}
+	//else
+	//{
+	//	MediumDamaged(_DamagedPart);
+	//}
+}
+
+void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
+{
+	SetCurrentState(EMonsterState::Kicked);
+
+	FVector CauserLocation = DamageCauser->GetActorLocation();
+	FVector MyLocation = GetActorLocation();
+
+	FString KickSectionStr = TEXT("Kick");
+
+	//피격 각도
+	FVector CauserToMonsterVector = MyLocation - CauserLocation;
+	CauserToMonsterVector.Z = 0;
+	CauserToMonsterVector.Normalize();
+
+	FVector MyForwardVector = GetActorForwardVector();
+	MyForwardVector.Z = 0;
+	MyForwardVector.Normalize();
+
+	double DotProductValue = FVector::DotProduct(-CauserToMonsterVector, MyForwardVector);
+	double Radian = FMath::Acos(DotProductValue);
+	double Degree = FMath::RadiansToDegrees(Radian);
+
+	LOG_MSG(TEXT("Kick Angle is %f"), Degree);
+
+	if (Degree >= 0.0f && Degree < 45.0f)
+	{
+		KickSectionStr += TEXT("Front");
+	}
+	else if (Degree > 135.0f && Degree <= 180.0f)
+	{
+		KickSectionStr += TEXT("Back");
+	}
+	else
+	{
+		KickSectionStr += TEXT("Side");
+	}
+
+	//날아가는 각도
+	FVector LaunchDirXY = CauserToMonsterVector;
+	float LaunchZ = 1.0f;
+	LaunchDirXY.Z = LaunchZ;
+
+	FVector LaunchDir = FVector(LaunchDirXY.X, LaunchDirXY.Y, LaunchZ);
+	LaunchDir.Normalize();
+
+	//GetCharacterMovement()->AddImpulse(LaunchDir * 300.0f);
+	LaunchCharacter(LaunchDir * 500.0f, true, true);
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//기존 애니메이션 모두 중지
+	AnimInstance->StopAllMontages(0.1f);
+	AnimInstance->Montage_Play(DamagedMontage, 1.0f);
+	AnimInstance->Montage_JumpToSection(FName(KickSectionStr + TEXT("Start")), DamagedMontage);
+	AnimInstance->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+
+	TWeakObjectPtr<UAnimInstance> WeakAnimInstance = AnimInstance;
+
+	OnLandedByKickJump.BindLambda([this, WeakAnimInstance, KickSectionStr]()
 		{
 			WeakAnimInstance.Get()->StopAllMontages(0.1f);
 			WeakAnimInstance.Get()->Montage_Play(DamagedMontage, 1.0f);
-			WeakAnimInstance.Get()->Montage_JumpToSection(FName(TEXT("KickEnd")), DamagedMontage);
-
+			WeakAnimInstance.Get()->Montage_JumpToSection(FName(KickSectionStr + TEXT("End")), DamagedMontage);
 			WeakAnimInstance.Get()->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
 		}
 	);
@@ -353,9 +443,8 @@ void ABMonsterBase::LargeDamaged(const FString& _DamagedPart)
 }
 
 
-float ABMonsterBase::CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, EPlayerDamageType _PlayerDamageType)
+float ABMonsterBase::CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, const EPlayerDamageType _PlayerDamageType)
 {
-	//체력감소 - 기본 딜
 	if (_DamagedPart.Compare(TEXT("HEAD")) == 0)
 	{
 		if (_PlayerDamageType == EPlayerDamageType::Gun)
@@ -397,7 +486,7 @@ float ABMonsterBase::CaculatePointDamage(float _OriginDamage, const FString& _Da
 	return _OriginDamage;
 }
 
-float ABMonsterBase::CaculateNormalDamage(float _OriginDamage, EPlayerDamageType _PlayerDamageType)
+float ABMonsterBase::CaculateNormalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType)
 {
 	int Critical = FMath::RandRange(1, 100);
 	bool isCritical = false;
@@ -415,7 +504,7 @@ float ABMonsterBase::CaculateNormalDamage(float _OriginDamage, EPlayerDamageType
 	return _OriginDamage;
 }
 
-float ABMonsterBase::CaculateCriticalDamage(float _OriginDamage, EPlayerDamageType _PlayerDamageType)
+float ABMonsterBase::CaculateCriticalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType)
 {
 	if (_PlayerDamageType == EPlayerDamageType::Gun)
 	{
@@ -489,6 +578,28 @@ const FString ABMonsterBase::GetDamagedPartToString(const FPointDamageEvent* con
 	}
 
 	return TEXT("BODY");
+}
+
+void ABMonsterBase::Parry()
+{
+	if (isAbleParring() == false)
+	{
+		LOG_MSG(TEXT("OnParry in Not ParryTime"));
+		return;
+	}
+
+	ParryTimeOff();
+	SetCurrentState(EMonsterState::Groggy);
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance == nullptr)
+	{
+		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
+		return;
+	}
+
+	AnimInstance->Montage_Play(ParriedMontage, 1.0f);
 }
 
 void ABMonsterBase::Flashed()

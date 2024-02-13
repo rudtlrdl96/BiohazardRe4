@@ -9,6 +9,9 @@ bool ABMonsterBase::AbleInteraction() const
 	switch (CurState)
 	{
 		case EMonsterState::Attack:
+		{
+			return bIsAbleParry;
+		}
 		case EMonsterState::Flashed:
 		case EMonsterState::Damaged:
 		{
