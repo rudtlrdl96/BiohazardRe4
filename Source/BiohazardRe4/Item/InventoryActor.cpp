@@ -356,7 +356,7 @@ void ABInventoryActor::DropItem()
 {
 	// 아이템 버리기를 선택하여
 	// 버리기를 확인하는 문구를 표시.
-	Widget->SetFocus();
+	//Widget->SetFocus();
 	Widget->DropItem();
 	// State를 변경
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
@@ -587,7 +587,7 @@ void ABInventoryActor::Turn()
 
 void ABInventoryActor::DefaultEnter()
 {
-	Widget->SetFocus();
+	//Widget->SetFocus();
 }
 
 void ABInventoryActor::DefaultUpdate(float _DeltaTime)
@@ -691,7 +691,7 @@ void ABInventoryActor::DragExit()
 
 void ABInventoryActor::SelectEnter()
 {
-	BehaviorWidget->SetFocus();
+	//BehaviorWidget->SetFocus();
 	BehaviorWidget->WidgetOn();
 }
 
@@ -708,7 +708,7 @@ static FRotator  EndRot;
 static float Timer;
 void ABInventoryActor::InvestigateEnter()
 {
-	Widget->SetFocus();
+	//Widget->SetFocus();
 
 	StartLocation = SelectItem->Mesh->GetComponentLocation();
 	EndLocation = InvestigatePivot->GetComponentLocation();
@@ -753,7 +753,7 @@ void ABInventoryActor::CraftEnter()
 	UGameplayStatics::ProjectWorldToScreen(Controller, Location, Pos);
 	CraftWidget->SetPositionInViewport(Pos);
 	CraftWidget->SetItemData(SelectItem->GetData());
-	CraftWidget->SetFocus();
+	//CraftWidget->SetFocus();
 	CraftWidget->WidgetOn();
 }
 
@@ -773,7 +773,7 @@ void ABInventoryActor::QuickSlotEnter()
 	}
 
 	QuickSlotWidget->AddWeaponPtr = Weapon;
-	QuickSlotWidget->SetFocus();
+	//QuickSlotWidget->SetFocus();
 	QuickSlotWidget->WidgetOn();
 }
 

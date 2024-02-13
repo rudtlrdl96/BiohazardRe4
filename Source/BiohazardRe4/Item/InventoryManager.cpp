@@ -546,6 +546,7 @@ int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
 			{
 				// 남은 수를 모두 넣을 수 있다면
 				Item->AddCount(Num);
+				Item->SetItemNumText();
 				return 0;
 			}
 			else
@@ -553,6 +554,7 @@ int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
 				// 공간이 부족한 경우
 				Num -= EmptyNum;
 				Item->SetCount(Data.MaxCount);
+				Item->SetItemNumText();
 			}
 		}
 	}
