@@ -803,3 +803,43 @@ void ABInventoryActor::CloseCheckExit()
 {
 	Widget->DropWidgetOff();
 }
+
+void ABInventoryActor::RemoveQuickSlot(EItemCode Code)
+{
+	switch (Code)
+	{
+	case EItemCode::Handgun_SR09R:
+	case EItemCode::Shotgun_W870:
+	case EItemCode::Rifle_SRM1903:
+	case EItemCode::Grenade:
+	case EItemCode::Flashbang:
+		break;
+	default:
+		return;
+	}
+
+	for (int i = 0; i < 8; i++)
+	{
+		if (QuickSlot[i]->GetItemCode() == Code)
+		{
+			QuickSlot[i] = nullptr;
+			return;
+		}
+	}
+}
+
+void ABInventoryActor::RemoveQuickSlot(ABInventoryItem* Item)
+{
+	if (ABInventoryWeapon* Weapon = Cast<ABInventoryWeapon>(Item))
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			if (QuickSlot[i] == Weapon)
+			{
+				QuickSlot[i] = nullptr;
+				return;
+			}
+		}
+	}
+
+}

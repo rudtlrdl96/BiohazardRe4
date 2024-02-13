@@ -129,6 +129,7 @@ void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 			RemoveNum -= Item->Count;
 			ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
 			ItemMap.Remove(ItemCode, Item);
+			ABInventoryActor::Instance->RemoveQuickSlot(Item);
 			Item->Destroy();
 		}
 		else
@@ -157,6 +158,7 @@ void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
 	{
 		ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
 		ItemMap.Remove(Item->GetData().ItemCode, Item);
+		ABInventoryActor::Instance->RemoveQuickSlot(Item);
 		Item->Destroy();
 	}
 	if (0 < RemoveNum)
@@ -233,6 +235,13 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 		NewItem = Cast<ABInventoryItem>(Weapon);
 		break;
 	}
+	case EItemCode::Grenade:
+	case EItemCode::Flashbang:
+	{
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>();
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
+	}
 	default:
 		if (1 == Data.MaxCount)
 		{
@@ -248,7 +257,7 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 	// 아이템 생성
 	if (NewItem)
 	{
-		NewItem->Count = Num;
+		NewItem->Count = FMath::Min(Num, Data.MaxCount);
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		NewItem->SetItemData(Data);
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
@@ -303,6 +312,13 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 		NewItem = Cast<ABInventoryItem>(Weapon);
 		break;
 	}
+	case EItemCode::Grenade:
+	case EItemCode::Flashbang:
+	{
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>();
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
+	}
 	default:
 		if (1 == Data.MaxCount)
 		{
@@ -318,7 +334,7 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 	// 아이템 생성
 	if (NewItem)
 	{
-		NewItem->Count = 1;
+		NewItem->Count = FMath::Min(Num, Data.MaxCount);
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		NewItem->SetItemData(Data);
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
@@ -858,6 +874,7 @@ void UBInventoryManager::RemoveAllItemInSubSlot()
 			{
 				ItemMap.Remove(Item->GetData().ItemCode, Item);
 				SubSlot[y * SubCaseSize.X + x]->SetItem(nullptr);
+				ABInventoryActor::Instance->RemoveQuickSlot(Item);
 				Item->Destroy();
 			}
 		}
