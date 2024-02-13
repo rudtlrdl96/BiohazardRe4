@@ -664,6 +664,8 @@ private:
 	AActor* InteractionActor = nullptr;
 	IBInteraction* InteractionObject = nullptr;
 
+	ABInventoryActor* InventoryActor = nullptr;
+
 	//************************UI***************************//
 
 	UPROPERTY(EditAnywhere, Category = UI)
@@ -774,4 +776,8 @@ private:
 	void FallEnter();
 	void FallUpdate(float _DeltaTime);
 	void FallExit();
+
+	void ParryEnter();
+	void ParryUpdate(float _DeltaTime);
+	void ParryExit();
 };

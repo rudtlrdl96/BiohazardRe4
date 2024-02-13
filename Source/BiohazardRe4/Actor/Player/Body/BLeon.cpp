@@ -26,6 +26,7 @@
 #include "../../Map/BJumpObstacleTrigger.h"
 #include "../../Map/BCliffLineTrigger.h"
 #include "Item/InventoryActor.h"
+#include "Item/InventoryWeapon.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
 #include "Generic/BCollisionObserverCapsule.h"
@@ -75,7 +76,7 @@ void ABLeon::BeginPlay()
 
 	CreateCollision();
 
-	GetWorld()->SpawnActor<ABInventoryActor>(InventoryClass, InventoryTransform);
+	InventoryActor = GetWorld()->SpawnActor<ABInventoryActor>(InventoryClass, InventoryTransform);
 
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
 }
@@ -1838,6 +1839,12 @@ void ABLeon::CreateFSM()
 	FallFSMState.UpdateDel.BindUObject(this, &ABLeon::FallUpdate);
 	FallFSMState.ExitDel.BindUObject(this, &ABLeon::FallExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Fall), FallFSMState);
+
+	UBFsm::FStateCallback ParryFSMState;
+	ParryFSMState.EnterDel.BindUObject(this, &ABLeon::ParryEnter);
+	ParryFSMState.UpdateDel.BindUObject(this, &ABLeon::ParryUpdate);
+	ParryFSMState.ExitDel.BindUObject(this, &ABLeon::ParryExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::Parry), ParryFSMState);
 }
 
 void ABLeon::CreateCollision()
@@ -1882,49 +1889,21 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 
 	LOG_MSG(TEXT("Swap Slot : %d"), _Index);
 
-	// Todo : 디버그용 퀵슬롯 정보가 완성되면 교체
-	switch (_Index)
-	{
-	case 0:
-	{
-		ChangeUseWeapon(EItemCode::Empty);
-	}
-	break;
-	case 1:
-	{
-		ChangeUseWeapon(EItemCode::Handgun_SR09R);
-	}
-	break;
-	case 2:
-	{
-		ChangeUseWeapon(EItemCode::Shotgun_W870);
-	}
-	break;
-	case 3:
-	{
-		ChangeUseWeapon(EItemCode::Rifle_SRM1903);
-	}
-	break;
-	case 4:
-	{
-		ChangeUseWeapon(EItemCode::Grenade);
-	}
-	break;
-	case 5:
-	{
-		ChangeUseWeapon(EItemCode::Flashbang);
-	}
-	break;
-	case 6:
-	{
-		ChangeUseWeapon(EItemCode::CombatKnife);
-	}
-	break;
+	ABInventoryWeapon* QuickSlotWeaponClass = InventoryActor->GetQuickSlot(_Index);
 
-	default:
-		break;
+	if (nullptr == QuickSlotWeaponClass)
+	{
+		return;
 	}
 
+	EItemCode QuickSlotItemCode = QuickSlotWeaponClass->GetItemCode();
+
+	if (EItemCode::Empty == QuickSlotItemCode)
+	{
+		return;
+	}
+
+	ChangeUseWeapon(QuickSlotItemCode);
 }
 
 ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
