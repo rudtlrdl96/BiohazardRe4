@@ -668,13 +668,14 @@ private:
 
 	ABInventoryActor* InventoryActor = nullptr;
 
-	//************************UI***************************//
+	//************************ UI ***************************//
+
+	class ABHUDBase* HUD = nullptr;								// HUD
 
 	UPROPERTY(EditAnywhere, Category = UI)
 	TSubclassOf<ABInventoryActor> InventoryClass;		// 인벤토리 생성 클래스
 	UPROPERTY(EditAnywhere, Category = UI)
 	FTransform InventoryTransform;						// 인벤토리 생성 트랜스폼
-
 
 	//*****************************************************//
 

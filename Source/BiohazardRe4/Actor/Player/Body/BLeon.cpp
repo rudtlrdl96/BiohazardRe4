@@ -2,6 +2,7 @@
 
 
 #include "Actor/Player/Body/BLeon.h"
+#include "Actor/Player/HUD/HUDBase.h"
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -111,8 +112,13 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 		LOG_FATAL(TEXT("Failed Find APlayerController"));
 	}
 
+	HUD = Cast<ABHUDBase>(PlayerController->GetHUD());
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 
+	if (HUD == nullptr)
+	{
+		LOG_ERROR(TEXT("Failed Get ABHUDBase."));
+	}
 	if (Subsystem == nullptr)
 	{
 		LOG_FATAL(TEXT("Failed Get GetSubsystem<UEnhancedInputLocalPlayerSubsystem>"));
@@ -213,6 +219,7 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 	FVector AttackerLocation = DamageCauser->GetActorLocation();
 
 	Stat.CurrentHp -= DamageValue;
+	HUD->SetHP(Stat.CurrentHp / Stat.MaxHp);
 
 	if (0 >= Stat.CurrentHp)
 	{
@@ -1322,8 +1329,6 @@ void ABLeon::GunRecoilUpdate(float _DeltaTime)
 		break;
 	}
 
-
-
 }
 
 void ABLeon::VPlayerCameraToWorld(FVector& _Vector) const
@@ -1905,6 +1910,7 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 	}
 
 	LOG_MSG(TEXT("Swap Slot : %d"), _Index);
+	HUD->SetQuickSlotNumber(_Index);
 
 	ABInventoryWeapon* QuickSlotWeaponClass = InventoryActor->GetQuickSlot(_Index);
 
