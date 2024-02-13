@@ -136,7 +136,10 @@ void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 		{
 			Item->Count -= RemoveNum;
 			RemoveNum = 0;
-			Item->SetItemNumText();
+			if (bIsOpen)
+			{
+				Item->SetItemNumText();
+			}
 			break;
 		}
 	}
@@ -152,7 +155,10 @@ void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
 	int RemoveNum = Num;
 	RemoveNum -= Item->Count;
 	Item->Count -= Num;
-	Item->SetItemNumText();
+	if (bIsOpen)
+	{
+		Item->SetItemNumText();
+	}
 
 	if (Item->Count <= 0)
 	{
@@ -170,6 +176,11 @@ void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
 void UBInventoryManager::CraftItem(const FBCraftRecipe& Recipe)
 {
 	ABInventoryItem* SelectItem = ABInventoryActor::Instance->SelectItem;
+	if (nullptr == SelectItem)
+	{
+		LOG_ERROR(TEXT("Failed Craft Item"));
+		return;
+	}
 	FIntPoint Pos = SelectItem->GetItemPosition();
 
 	if (Recipe.AItem == SelectItem->GetData().ItemCode)
@@ -546,7 +557,10 @@ int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
 			{
 				// 남은 수를 모두 넣을 수 있다면
 				Item->AddCount(Num);
-				Item->SetItemNumText();
+				if (bIsOpen)
+				{
+					Item->SetItemNumText();
+				}
 				return 0;
 			}
 			else
@@ -554,7 +568,10 @@ int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
 				// 공간이 부족한 경우
 				Num -= EmptyNum;
 				Item->SetCount(Data.MaxCount);
-				Item->SetItemNumText();
+				if (bIsOpen)
+				{
+					Item->SetItemNumText();
+				}
 			}
 		}
 	}
