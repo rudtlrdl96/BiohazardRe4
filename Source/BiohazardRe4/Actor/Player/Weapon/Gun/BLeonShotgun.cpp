@@ -53,7 +53,7 @@ void ABLeonShotgun::Reload()
 	CurAmmo += 1;
 	CurGun->SetLoadedAmmo(CurAmmo);
 	InventoryInst->RemoveItem(AmmoType);
-	LOG_MSG(TEXT("ABLeonRifle::Reload"))
+	LOG_MSG(TEXT("ABLeonShotgun::Reload"))
 
 		if (CurAmmo == MaxAmmo)
 		{
@@ -61,25 +61,25 @@ void ABLeonShotgun::Reload()
 		}
 		else
 		{
-			LOG_MSG(TEXT("ABLeonRifle::Reload_Loop"))
-			CurState = EGunState::EReload_Loop;
+			//LOG_MSG(TEXT("ABLeonShotgun::Reload_Loop"))
+			//CurState = EGunState::EReload_Loop;
 		}
 }
 
 void ABLeonShotgun::ReloadLoopStart()
 {
-	LOG_MSG(TEXT("ABLeonRifle::ReloadEnd"))
+	LOG_MSG(TEXT("ABLeonShotgun::ReloadLoopStart"))
 		CurState = EGunState::EReload_Loop;
 }
 
 void ABLeonShotgun::ReloadEnd()
 {
-	LOG_MSG(TEXT("ABLeonRifle::ReloadEnd"))
+	LOG_MSG(TEXT("ABLeonShotgun::ReloadEnd"))
 		CurState = EGunState::EReload_End;
 }
 
 void ABLeonShotgun::ReloadEndAfter()
 {
-	LOG_MSG(TEXT("ABLeonRifle::ReloadEndAfter"))
+	LOG_MSG(TEXT("ABLeonShotgun::ReloadEndAfter"))
 		CurState = EGunState::EIdle_Loop;
 }
