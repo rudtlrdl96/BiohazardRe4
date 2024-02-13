@@ -15,6 +15,7 @@ class BIOHAZARDRE4_API ABLeonShotgun : public ABLeonGun
 	GENERATED_BODY()
 public:
 	ABLeonShotgun();
+	void ReloadLoopStart();
 		
 protected:
 	virtual void BeginPlay() override;
