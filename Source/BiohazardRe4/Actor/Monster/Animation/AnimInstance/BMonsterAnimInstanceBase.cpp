@@ -38,6 +38,11 @@ void UBMonsterAnimInstanceBase::SetAnimationType(EMonsterAnimType _AnimType)
 	}
 }
 
+void UBMonsterAnimInstanceBase::SetDamagedBlendAlpha(float _Alpha)
+{
+	DamagedBlendAlpha = _Alpha;
+}
+
 void UBMonsterAnimInstanceBase::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
@@ -72,6 +77,8 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 		LOG_MSG(TEXT("StateInterface casting failed"));
 		return;
 	}
+
+	DamagedBlendAlpha = StateInterface->GetDamagedBlendAlpha();
 	CurState = StaticCast<uint8>(StateInterface->GetCurrentState());
 
 	IBMonsterStatInterface* StatInterface = Cast<IBMonsterStatInterface>(Owner);

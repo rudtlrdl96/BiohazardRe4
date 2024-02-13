@@ -6,6 +6,8 @@
 
 void UBAnimNotify_MontageStop::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
+	Super::Notify(MeshComp, Animation, EventReference);
+
 	AActor* Actor = MeshComp->GetOwner();
 	if (Actor == nullptr)
 	{
