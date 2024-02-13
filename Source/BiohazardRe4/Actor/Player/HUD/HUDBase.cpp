@@ -3,3 +3,10 @@
 
 #include "HUDBase.h"
 #include "Item/InventoryActor.h"
+
+ABHUDBase* ABHUDBase::Instance = nullptr;
+
+ABHUDBase::ABHUDBase()
+{
+	Instance = this;
+}

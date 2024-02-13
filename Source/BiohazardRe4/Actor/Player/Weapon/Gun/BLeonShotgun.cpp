@@ -4,6 +4,7 @@
 #include "Actor/Player/Weapon/Gun/BLeonShotgun.h"
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
+#include "Actor/Player/HUD/HUDBase.h"
 
 ABLeonShotgun::ABLeonShotgun()
 {
@@ -53,6 +54,9 @@ void ABLeonShotgun::Reload()
 	CurAmmo += 1;
 	CurGun->SetLoadedAmmo(CurAmmo);
 	InventoryInst->RemoveItem(AmmoType);
+	ABHUDBase::Instance->UpdateLoadedAmmo();
+	ABHUDBase::Instance->UpdateStoredAmmo();
+
 	LOG_MSG(TEXT("ABLeonShotgun::Reload"))
 
 		if (CurAmmo == MaxAmmo)

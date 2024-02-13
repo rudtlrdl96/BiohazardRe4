@@ -6,7 +6,7 @@
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
 #include "DamageType/BDMGPlayerDamage.h"
-
+#include "Actor/Player/HUD/HUDBase.h"
 
 ABLeonGun::ABLeonGun()
 {
@@ -86,6 +86,9 @@ void ABLeonGun::Reload()
 	CurAmmo += ReloadAmmoCount;
 	CurGun->SetLoadedAmmo(CurAmmo);
 	InventoryInst->RemoveItem(AmmoType, ReloadAmmoCount);
+	ABHUDBase::Instance->UpdateLoadedAmmo();
+	ABHUDBase::Instance->UpdateStoredAmmo();
+
 	LOG_MSG(TEXT("Reload"))
 }
 
@@ -164,6 +167,7 @@ void ABLeonGun::Shoot()
 	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	CurGun->SetLoadedAmmo(--CurAmmo);
 	LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
+	ABHUDBase::Instance->UpdateLoadedAmmo();
 
 	FireStart();
 }

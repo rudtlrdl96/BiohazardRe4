@@ -15,6 +15,15 @@ class BIOHAZARDRE4_API ABHUDBase : public AHUD
 	
 public :
 
+	ABHUDBase();
+
+	static ABHUDBase* Instance;
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void UpdateLoadedAmmo();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void UpdateStoredAmmo();
+
 	// _________________ HP ______________________
 	
 	// HUD의 최대 체력을 지정합니다. 0.37이 초기 최대체력이며 0.75가 게임 내 최대 HP상태 입니다

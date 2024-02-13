@@ -1941,6 +1941,7 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 		return;
 	}
 
+	HUD->SetWeapon(QuickSlotWeaponClass);
 	ChangeUseWeapon(QuickSlotItemCode);
 }
 

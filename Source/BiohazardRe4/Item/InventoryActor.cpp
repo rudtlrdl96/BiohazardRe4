@@ -231,6 +231,7 @@ void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 {
 	Inventory->AddItem(ItemCode, Num);
 	Widget->AddItem(ItemCode, Num);
+	HUD->UpdateStoredAmmo();
 }
 
 void ABInventoryActor::AddItemRowName(FName ItemRowName, int Num)
@@ -355,20 +356,6 @@ void ABInventoryActor::WeaponEquip()
 	}
 	Player->ChangeUseWeapon(Weapon->GetItemCode());
 	HUD->SetWeapon(Weapon);
-	int StoredAmmo = 0;
-	switch (Weapon->GetItemCode())
-	{
-	case EItemCode::Handgun_SR09R:
-		StoredAmmo = Inventory->GetItemCount(EItemCode::HandgunAmmo);
-		break;
-	case EItemCode::Shotgun_W870:
-		StoredAmmo = Inventory->GetItemCount(EItemCode::ShotgunShells);
-		break;
-	case EItemCode::Rifle_SRM1903:
-		StoredAmmo = Inventory->GetItemCount(EItemCode::RifleAmmo);
-		break;
-	}
-	HUD->SetStoredAmmo(StoredAmmo);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
 }
 
