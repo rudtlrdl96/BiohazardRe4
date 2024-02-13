@@ -29,6 +29,7 @@
 #include "../../Map/BCliffLineTrigger.h"
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
+#include "Item/BItem.h"
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "Generic/BFsm.h"
@@ -920,6 +921,13 @@ void ABLeon::TryInteraction()
 		{
 			return;
 		}
+
+		ABItem* Item = Cast<ABItem>(InteractionObject);
+		if (nullptr == Item || false == Item->bCanPickup)
+		{
+			return;
+		}
+		Item->PickUp();
 
 		bIsPlayGetItem = true;
 	}
