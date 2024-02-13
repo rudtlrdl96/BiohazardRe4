@@ -1845,6 +1845,18 @@ void ABLeon::CreateFSM()
 	ParryFSMState.UpdateDel.BindUObject(this, &ABLeon::ParryUpdate);
 	ParryFSMState.ExitDel.BindUObject(this, &ABLeon::ParryExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Parry), ParryFSMState);
+
+	UBFsm::FStateCallback OpenDoorFSMState;
+	OpenDoorFSMState.EnterDel.BindUObject(this, &ABLeon::OpenDoorEnter);
+	OpenDoorFSMState.UpdateDel.BindUObject(this, &ABLeon::OpenDoorUpdate);
+	OpenDoorFSMState.ExitDel.BindUObject(this, &ABLeon::OpenDoorExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::OpenDoor), OpenDoorFSMState);
+
+	UBFsm::FStateCallback BreakBoxFSMState;
+	BreakBoxFSMState.EnterDel.BindUObject(this, &ABLeon::BreakBoxEnter);
+	BreakBoxFSMState.UpdateDel.BindUObject(this, &ABLeon::BreakBoxUpdate);
+	BreakBoxFSMState.ExitDel.BindUObject(this, &ABLeon::BreakBoxExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::BreakBox), BreakBoxFSMState);
 }
 
 void ABLeon::CreateCollision()

@@ -780,4 +780,12 @@ private:
 	void ParryEnter();
 	void ParryUpdate(float _DeltaTime);
 	void ParryExit();
+
+	void OpenDoorEnter();
+	void OpenDoorUpdate(float _DeltaTime);
+	void OpenDoorExit();
+
+	void BreakBoxEnter();
+	void BreakBoxUpdate(float _DeltaTime);
+	void BreakBoxExit();
 };
