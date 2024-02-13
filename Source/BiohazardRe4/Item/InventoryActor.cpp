@@ -761,6 +761,7 @@ void ABInventoryActor::CraftEnter()
 void ABInventoryActor::CraftExit()
 {
 	CraftWidget->WidgetOff();
+	Widget->SetFocus();
 }
 
 void ABInventoryActor::QuickSlotEnter()
