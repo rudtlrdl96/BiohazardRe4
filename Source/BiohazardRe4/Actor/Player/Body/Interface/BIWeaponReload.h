@@ -26,4 +26,5 @@ public:
 	virtual void Reload() = 0;
 	virtual void ReloadEnd() = 0;
 	virtual bool AbleReload() const = 0;
+	virtual void ShotgunReloadAnimStart() = 0;
 };

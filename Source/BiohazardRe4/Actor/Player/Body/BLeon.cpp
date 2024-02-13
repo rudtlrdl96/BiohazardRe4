@@ -32,13 +32,13 @@
 #include "Generic/BCollisionObserverSphere.h"
 #include "Actor/Generic/Interface/BInteraction.h"
 
-const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
-const FVector ABLeon::GunAimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
-const FVector ABLeon::GreanadeAimSocketOffset = FVector(0.0f, 50.0f, -12.0f);
+const FVector ABLeon::StandSocketOffset = FVector(-10.0f, 35.0f, -12.0f);
+const FVector ABLeon::GunAimSocketOffset = FVector(-10.0f, 35.0f, -1.0f);
+const FVector ABLeon::GreanadeAimSocketOffset = FVector(-10.0f, 50.0f, -12.0f);
 
-const float ABLeon::StandSpringArmLength = 100.0f;
-const float ABLeon::GunAimSpringArmLength = 50.0f;
-const float ABLeon::GreanadeAimSpringArmLength = 120.0f;
+const float ABLeon::StandSpringArmLength = 90.0f;
+const float ABLeon::GunAimSpringArmLength = 40.0f;
+const float ABLeon::GreanadeAimSpringArmLength = 110.0f;
 
 // Sets default values
 ABLeon::ABLeon()
@@ -1542,6 +1542,18 @@ bool ABLeon::AbleReload() const
 	}
 
 	return true;
+}
+
+void ABLeon::ShotgunReloadAnimStart()
+{
+	ABLeonShotgun* ShotgunClass = Cast<ABLeonShotgun>(CurrentWeapon);
+
+	if (nullptr == ShotgunClass)
+	{
+		return;
+	}
+
+	ShotgunClass->ReloadLoopStart();
 }
 
 void ABLeon::KnifeComboStart()

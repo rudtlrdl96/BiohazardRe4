@@ -48,7 +48,8 @@ enum class ELeonState : uint8
 	Damage			UMETA(DisplayName = "Damage"),
 	Death			UMETA(DisplayName = "Death"),
 	ObstacleJump	UMETA(DisplayName = "ObstacleJump"),
-	Fall			UMETA(DisplayName = "Fall")
+	Fall			UMETA(DisplayName = "Fall"),
+	Parry			UMETA(DisplayName = "Parry"),
 };
 
 UENUM(BlueprintType)
@@ -431,6 +432,7 @@ public:
 	virtual void Reload() override;
 	virtual void ReloadEnd() override;
 	virtual bool AbleReload() const override;
+	virtual void ShotgunReloadAnimStart() override;
 
 	virtual void KnifeComboStart() override;
 	virtual void KnifeComboEnd() override;
