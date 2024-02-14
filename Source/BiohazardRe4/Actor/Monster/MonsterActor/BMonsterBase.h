@@ -23,7 +23,7 @@ enum class EDamagedPart
 	Body,
 };
 
-DECLARE_DELEGATE(FOnLandedByKickJump)
+DECLARE_DELEGATE(FOnLandedByBurstJump)
 
 UCLASS()
 class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface, public IBInteraction
@@ -104,7 +104,7 @@ protected:
 	//Delegate
 protected:
 	FMonsterAttackEnd OnAttackEnd;
-	FOnLandedByKickJump OnLandedByKickJump;
+	FOnLandedByBurstJump OnLandedByBurstJump;
 
 	//Variable
 protected:
@@ -120,11 +120,15 @@ protected:
 protected:
 	float TakeNormalDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	float TakePointDamage(const FDamageEvent& _DamageEvent, float _DamagedAmount);
-	void TakeRadialDamage();
+	float TakeRadialDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	
 	void DamagedByGun(const FString& _DamagedPart);
 	void DamagedByKnife(const FDamageEvent& _DamageEvent);
 	void DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
+	void DamagedByGrenade(const FDamageEvent& _DamageEvent, float _DamagedAmount);
+
+	void BurstJumpStart(FVector _Direction, float _JumpPower, TFunction<void()> _OnLanded, bool _XYOverride, bool _ZOverride);
+	const FString GetBurstJumpSectionName(FVector _MyLocation, FVector _JumpCauserLocation);
 
 	void SmallDamaged(const FString& _DamagedPart);
 	void MediumDamaged(const FString& _DamagedPart);
@@ -139,11 +143,12 @@ protected:
 	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
 	virtual void MonsterDeathByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	virtual void MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
+	virtual void MonsterDeathByGrenade(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 
 	//virtual void MonsterDeathByRadial(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 
-	virtual void Flashed();
-	void KickJumpUpdate();
+	virtual void DamagedByFlashed();
+	void BurstJumpUpdate();
 
 	//State Variable
 private:

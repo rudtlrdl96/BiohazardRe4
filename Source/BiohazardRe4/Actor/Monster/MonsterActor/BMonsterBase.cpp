@@ -33,7 +33,7 @@ void ABMonsterBase::BeginPlay()
 void ABMonsterBase::Tick(float _DeltaTime)
 {
 	Super::Tick(_DeltaTime);
-	KickJumpUpdate();
+	BurstJumpUpdate();
 }
 
 void ABMonsterBase::AttackStart()

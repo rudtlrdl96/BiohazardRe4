@@ -17,7 +17,7 @@ bool ABMonsterBase::AbleInteraction() const
 		{
 			return true;
 		}
-		case EMonsterState::Kicked:
+		case EMonsterState::Burst:
 		{
 			return false;
 		}
@@ -70,7 +70,7 @@ EInteraction ABMonsterBase::GetInteractionType() const
 	{
 		return EInteraction::None;
 	}
-	case EMonsterState::Kicked:
+	case EMonsterState::Burst:
 	{
 		return EInteraction::None;
 	}
