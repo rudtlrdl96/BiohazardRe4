@@ -4,12 +4,15 @@
 #include "Actor/Player/Weapon/Grenade/BLeonGrenade.h"
 #include "Generic/BCollisionObserverSphere.h"
 #include "DamageType/PlayerDamageType/BDMGPlayerGranade.h"
+#include "DamageType/PlayerDamageType/BDMGPlayerFlashBang.h"
 #include "Kismet/GameplayStatics.h"
+#include "Item/InventoryActor.h"
 
 
 ABLeonGrenade::ABLeonGrenade()
 {
 	DamageType = UBDMGPlayerGranade::StaticClass();
+	WeaponDamage = 100.f;
 }
 
 void ABLeonGrenade::Tick(float DeltaTime)
@@ -33,7 +36,7 @@ void ABLeonGrenade::Explosion()
 	UGameplayStatics::ApplyRadialDamage
 	(
 		GetWorld(),
-		Damage,
+		WeaponDamage,
 		GetActorLocation(),
 		Radius,
 		DamageType,
@@ -50,4 +53,12 @@ void ABLeonGrenade::Explosion()
 void ABLeonGrenade::Attack()
 {
 	IsThrowing = true;
+	InventoryInst->RemoveItem(WeaponType);
+}
+
+void ABLeonGrenade::SetFlashbang()
+{
+	WeaponType = EItemCode::Flashbang;
+	DamageType = UBDMGPlayerFlashBang::StaticClass();
+	WeaponDamage = 0.f;
 }

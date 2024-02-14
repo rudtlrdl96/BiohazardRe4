@@ -23,6 +23,9 @@ public:
 
 	virtual void Attack() override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetFlashbang();
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Option")
@@ -31,13 +34,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Option")
 	float Radius = 300.f;
 
-	UPROPERTY(EditAnywhere, Category = "Option")
-	float Damage = 100.f;
-
 	float Time = 0.f;
 
 	bool IsThrowing = false;
 	
 	TArray<AActor*, FDefaultAllocator> IgnoreDamageActor;
+
+	EItemCode WeaponType = EItemCode::Grenade;
 
 };
