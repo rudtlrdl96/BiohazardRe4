@@ -28,5 +28,4 @@ class BIOHAZARDRE4_API IBMonsterAnimInterface
 public:
 	virtual void SetTarget(UObject* _Target) = 0;
 	virtual void SetAnimationType(EMonsterAnimType _AnimType) = 0;
-	virtual void SetDamagedBlendAlpha(float _Alpha) = 0;
 };

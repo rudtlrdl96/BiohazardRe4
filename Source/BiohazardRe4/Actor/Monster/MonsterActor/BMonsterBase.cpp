@@ -133,32 +133,6 @@ void ABMonsterBase::Attack()
 #endif
 }
 
-void ABMonsterBase::DamagedEnd()
-{
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (AIController == nullptr)
-	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
-		return;
-	}
-
-	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, false);
-	DamagedBlendAlpha = 0.0f;
-
-	SetCurrentState(EMonsterState::Walk);
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-	if (AnimInstance == nullptr)
-	{
-		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
-		return;
-	}
-
-	AnimInstance->StopAllMontages(1.0f);
-}
-
-
 void ABMonsterBase::SetDamagedSectionNums()
 {
 }

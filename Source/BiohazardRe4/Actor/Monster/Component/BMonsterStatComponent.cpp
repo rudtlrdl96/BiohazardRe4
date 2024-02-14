@@ -25,6 +25,7 @@ void UBMonsterStatComponent::StatInit(const FStatStruct& _StatData)
 	WalkDistanceThreshold = _StatData.WalkDistanceThreshold;
 
 	BaseAttackPower = _StatData.BaseAttackPower;
+	GroggyThreshold = _StatData.GroggyThreshold;
 }
 
 void UBMonsterStatComponent::DecreaseHp(float _Hp)

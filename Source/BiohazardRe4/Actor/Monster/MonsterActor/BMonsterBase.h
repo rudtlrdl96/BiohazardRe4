@@ -42,6 +42,7 @@ public:
 	virtual void Attack() override;
 	virtual void AttackStart() override;
 	
+	virtual bool isDamaged() override;
 	virtual void DamagedEnd() override;
 	
 	virtual void Parry() override;
@@ -52,11 +53,10 @@ public:
 	virtual void GroggyEnd() override;
 
 	virtual void SetCurrentState(EMonsterState _InState) override;
-	virtual float GetDamagedBlendAlpha() override;
-	virtual void SetDamagedBlendAlpha(float _Alpha) override;
 
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
+
 	//IBMonsterStatInterface
 public:
 	virtual float GetRunSpeed() const override;
@@ -64,8 +64,8 @@ public:
 	virtual float GetAttackRadius() const override;
 	virtual float GetDetectRadius() const override;
 	virtual float GetPatrolRadius() const override;
+	virtual float GetGroggyThreshold() const override;
 	virtual float GetAttackSweepRadius() const override;
-
 	virtual void StatInit(const class UBMonsterStatData* _DataAsset);
 	
 	UFUNCTION(BlueprintCallable)
@@ -138,6 +138,8 @@ protected:
 
 	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
 	virtual void MonsterDeathByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
+	virtual void MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
+
 	//virtual void MonsterDeathByRadial(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 
 	virtual void Flashed();
@@ -155,6 +157,9 @@ private:
 
 	//Basic Variable
 private:
+	uint8 bIsDamaged : 1;
+	uint8 bIsDamagedCooltime : 1;
+
+	FTimerHandle TimerHandle;
 	float GroggyAmount = 0.0f;
-	float DamagedBlendAlpha = 0.0f;
 };

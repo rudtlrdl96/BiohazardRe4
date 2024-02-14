@@ -22,6 +22,7 @@ public:
 	virtual float GetAttackRadius() const = 0;
 	virtual float GetDetectRadius() const = 0;
 	virtual float GetPatrolRadius() const = 0;
+	virtual float GetGroggyThreshold() const = 0;
 	virtual float GetAttackSweepRadius() const = 0;
 	virtual float GetWalkDistanceThreshold() const = 0;
 };

@@ -26,6 +26,6 @@ void UBAnimNotify_DamagedBlendEnd::Notify(USkeletalMeshComponent* MeshComp, UAni
 			return;
 		}
 
-		Interface->SetDamagedBlendAlpha(0.0f);
+		Interface->DamagedEnd();
 	}
 }

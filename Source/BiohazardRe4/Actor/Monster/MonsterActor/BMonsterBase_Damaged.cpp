@@ -15,7 +15,6 @@
 float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float OriginResultDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	SetCurrentState(EMonsterState::Damaged);
 
 	//0 -> Normal, 1->Point, 2-> Radial
 	int TypeID = DamageEvent.GetTypeID();
@@ -76,23 +75,35 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, float _Da
 		return ResultDamage;
 	}
 
-	//
+	if (GetCurrentState() == EMonsterState::Attack)
+	{
+		return ResultDamage;
+	}
+
 	if (GetCurrentState() == EMonsterState::Groggy && DamagedPart.Compare(TEXT("HEAD")) != 0)
 	{
 		return ResultDamage;
 	}
 
-	GroggyAmount += 0.5f;
-	if (DamagedPart.Compare(TEXT("HEAD")) == 0)
+	if (DamagedPart.Compare(TEXT("HEAD")) != 0)
 	{
-		GroggyAmount += 1.5f;
+		GroggyAmount += 0.5f;
+
+		if (bIsDamaged == false && bIsDamagedCooltime == false)
+		{
+			bIsDamagedCooltime = true;
+			bIsDamaged = true;
+
+			GetWorldTimerManager().SetTimer(TimerHandle, [this] {bIsDamagedCooltime = false; }, 1.5f, false);
+		}
+
+		if (GroggyAmount <= GetGroggyThreshold())
+		{
+			return ResultDamage;
+		}
 	}
 
-	if (GroggyAmount <= 1.5f)
-	{
-		DamagedBlendAlpha = 0.5f;
-		return ResultDamage;
-	}
+	SetCurrentState(EMonsterState::Groggy);
 
 	//데미지 크기
 	if (DamagedType == EPlayerDamageType::Gun)
@@ -144,19 +155,25 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 	float ResultDamage = CaculateNormalDamage(_DamagedAmount, DamagedType);
 	Stat->DecreaseHp(ResultDamage);
 
-	if (Stat->isDeath() == true)
-	{
-		MonsterDeathByKick(_DamageEvent, DamageCauser);
-		return ResultDamage;
-	}
-
 		//데미지 크기
 	if (DamagedType == EPlayerDamageType::Kick)
 	{
+		if (Stat->isDeath() == true)
+		{
+			MonsterDeathByKick(_DamageEvent, DamageCauser);
+			return ResultDamage;
+		}
+
 		DamagedByKick(_DamageEvent, DamageCauser);
 	}
 	else if (DamagedType == EPlayerDamageType::Knife)
 	{
+		if (Stat->isDeath() == true)
+		{
+			MonsterDeathByKnife(_DamageEvent, DamageCauser);
+			return ResultDamage;
+		}
+
 		DamagedByKnife(_DamageEvent);
 	}
 	else
@@ -308,6 +325,52 @@ void ABMonsterBase::MonsterDeathByKick(const FDamageEvent& _DamageEvent, const A
 	);
 }
 
+void ABMonsterBase::MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
+{
+	//행동트리
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
+	{
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return;
+	}
+
+	AIController->UnPossess();
+
+	FVector ShotDir = DamageCauser->GetActorLocation() - GetActorLocation();
+	ShotDir.Normalize();
+
+	FVector MonsterForward = GetActorForwardVector();
+	MonsterForward.Normalize();
+
+	double Dot = FVector::DotProduct(ShotDir, MonsterForward);
+
+	LOG_MSG(TEXT("Monster Dead Dot is %f"), Dot);
+
+	FName SectionName;
+	if (Dot >= 0.0f && Dot <= 1.0f)
+	{
+		SectionName = FName(TEXT("DeadFront"));
+	}
+	else
+	{
+		SectionName = FName(TEXT("DeadBack"));
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	//기존 애니메이션 모두 중지
+	AnimInstance->StopAllMontages(0.1f);
+
+	AnimInstance->Montage_Play(DamagedMontage, 1.0f);
+	AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
+
+	SetCurrentState(EMonsterState::Death);
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+
+	DamagedMontage->bEnableAutoBlendOut = false;
+}
+
 void ABMonsterBase::DamagedByGun(const FString& _DamagedPart)
 {
 	SmallDamaged(_DamagedPart);
@@ -315,14 +378,33 @@ void ABMonsterBase::DamagedByGun(const FString& _DamagedPart)
 
 void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 {
-	//if (DamagedMontageSectionNums[_DamagedPart].Contains(TEXT("MEDIUM")) == false)
-	//{
-	//	SmallDamaged(_DamagedPart);
-	//}
-	//else
-	//{
-	//	MediumDamaged(_DamagedPart);
-	//}
+	if (GetCurrentState() == EMonsterState::Attack)
+	{
+		return;
+	}
+
+	if (GetCurrentState() == EMonsterState::Groggy)
+	{
+		return;
+	}
+
+	GroggyAmount += 0.5f;
+
+	if (bIsDamaged == false && bIsDamagedCooltime == false)
+	{
+		bIsDamagedCooltime = true;
+		bIsDamaged = true;
+
+		GetWorldTimerManager().SetTimer(TimerHandle, [this] {bIsDamagedCooltime = false; }, 1.5f, false);
+	}
+
+	if (GroggyAmount <= GetGroggyThreshold())
+	{
+		return;
+	}
+
+	SetCurrentState(EMonsterState::Groggy);
+	MediumDamaged(FString(TEXT("Body")));
 }
 
 void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
@@ -423,7 +505,7 @@ void ABMonsterBase::SmallDamaged(const FString& _DamagedPart)
 	FName CurSection = AnimInstance->Montage_GetCurrentSection();
 	FString CurSectionStr = CurSection.ToString();
 
-	if (CurSectionStr.Mid(0, 4).Compare(TEXT("HEAD")) != 0)
+	if (CurSectionStr.Compare(SectionNameStr) != 0)
 	{
 		//기존 애니메이션 모두 중지
 		AnimInstance->StopAllMontages(0.1f);

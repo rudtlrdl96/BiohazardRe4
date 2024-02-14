@@ -39,19 +39,19 @@ void ABMonsterBase::SetCurrentState(EMonsterState _InState)
 	CurState = _InState;
 }
 
-float ABMonsterBase::GetDamagedBlendAlpha()
+bool ABMonsterBase::isDamaged()
 {
-	return DamagedBlendAlpha;
-}
-
-void ABMonsterBase::SetDamagedBlendAlpha(float _Alpha)
-{
-	DamagedBlendAlpha = _Alpha;
+	return bIsDamaged;
 }
 
 EMonsterState ABMonsterBase::GetCurrentState()
 {
 	return CurState;
+}
+
+void ABMonsterBase::DamagedEnd()
+{
+	bIsDamaged = false;
 }
 
 void ABMonsterBase::GroggyEnd()
@@ -65,6 +65,7 @@ void ABMonsterBase::GroggyEnd()
 
 	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, false);
 	SetCurrentState(EMonsterState::Walk);
+	bIsDamaged = false;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 

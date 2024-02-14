@@ -25,6 +25,7 @@ struct FStatStruct
 	float WalkDistanceThreshold = 0.0f;
 
 	float BaseAttackPower = 0.0f;
+	float GroggyThreshold = 0.0f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -36,15 +37,17 @@ public:
 	UBMonsterStatComponent();
 
 	void SetAttackRadius(float _AttackRadius) { AttackRadius = _AttackRadius; };
+
+	float GetRunSpeed() { return RunSpeed; };
+	float GetWalkSpeed() { return WalkSPeed; };
+	float GetCurrentHp() { return CurrentHp; };
 	float GetAttackRadius() { return AttackRadius; };
-	float GetAttackSweepRadius() { return AttackSweepRadius; };
 	float GetDetectRadius() { return DetectRadius; };
 	float GetPatrolRadius() { return PatrolRadius; };
-	float GetWalkSpeed() { return WalkSPeed; };
-	float GetRunSpeed() { return RunSpeed; };
-	float GetCurrentHp() { return CurrentHp; };
-	float GetWalkDistanceThreshold() { return WalkDistanceThreshold; };
 	float GetBaseAttackPower() { return BaseAttackPower; };
+	float GetGroggyThreshold() { return GroggyThreshold; };
+	float GetAttackSweepRadius() { return AttackSweepRadius; };
+	float GetWalkDistanceThreshold() { return WalkDistanceThreshold; };
 
 	void StatInit(const FStatStruct& _StatData);
 
@@ -88,5 +91,5 @@ protected:
 	float BaseAttackPower = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
-	float GroggyAmount = 0.0f;
+	float GroggyThreshold = 0.0f;
 };

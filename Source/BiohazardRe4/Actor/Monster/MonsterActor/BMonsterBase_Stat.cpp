@@ -23,6 +23,7 @@ void ABMonsterBase::StatInit(const UBMonsterStatData* _DataAsset)
 	StatStruct.WalkDistanceThreshold = _DataAsset->WalkDistanceThreshold;
 
 	StatStruct.BaseAttackPower = _DataAsset->BaseAttackPower;
+	StatStruct.GroggyThreshold = _DataAsset->GroggyThreshold;
 
 	Stat->StatInit(StatStruct);
 }
@@ -45,6 +46,11 @@ float ABMonsterBase::GetDetectRadius() const
 float ABMonsterBase::GetPatrolRadius() const
 {
 	return Stat->GetPatrolRadius();
+}
+
+float ABMonsterBase::GetGroggyThreshold() const
+{
+	return Stat->GetGroggyThreshold();
 }
 
 float ABMonsterBase::GetRunSpeed() const

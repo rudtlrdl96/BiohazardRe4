@@ -38,6 +38,8 @@ class BIOHAZARDRE4_API IBMonsterStateInterface
 public:
 	virtual void Attack() = 0;
 	virtual void AttackStart() = 0;
+	
+	virtual bool isDamaged() = 0;
 	virtual void DamagedEnd() = 0;
 
 	virtual void Parry() = 0;
@@ -46,9 +48,6 @@ public:
 	virtual bool isAbleParring() = 0;
 	
 	virtual void GroggyEnd() = 0;
-	
-	virtual float GetDamagedBlendAlpha() = 0;
-	virtual void SetDamagedBlendAlpha(float _Alpha) = 0;
 
 	virtual EMonsterState GetCurrentState() = 0;
 	virtual void SetCurrentState(EMonsterState _InState) = 0;
