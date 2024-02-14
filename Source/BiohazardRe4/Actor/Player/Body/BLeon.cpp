@@ -1381,6 +1381,11 @@ double ABLeon::GetInputAngle() const
 	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(PlayerForward, InputVector)));
 }
 
+void ABLeon::DebugGrenade()
+{
+	ChangeUseWeapon(EItemCode::Grenade);
+}
+
 void ABLeon::JogLookAt(float _DeltaTime)
 {
 	FVector JogInput = MoveDir;

@@ -237,6 +237,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	double GetInputAngle() const;
 
+	UFUNCTION(BlueprintCallable)
+	void DebugGrenade();
+
 	// 플레이어가 사용하는 무기 아이템 코드를 반환합니다
 	inline EItemCode GetUseWeaponCode() const
 	{
