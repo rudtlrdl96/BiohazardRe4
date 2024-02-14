@@ -12,11 +12,6 @@ ABLeonGrenade::ABLeonGrenade()
 	DamageType = UBDMGPlayerGranade::StaticClass();
 }
 
-void ABLeonGrenade::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ABLeonGrenade::Tick(float DeltaTime)
 {
 	if (IsThrowing)
@@ -33,12 +28,12 @@ void ABLeonGrenade::Tick(float DeltaTime)
 void ABLeonGrenade::Explosion()
 {
 	LOG_MSG(TEXT("Explosion"))
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 30, FColor::Green);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 30, FColor::Green, false, 2.f);
 
 	UGameplayStatics::ApplyRadialDamage
 	(
 		GetWorld(),
-		100,
+		Damage,
 		GetActorLocation(),
 		Radius,
 		DamageType,

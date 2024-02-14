@@ -1485,6 +1485,11 @@ void ABLeon::DebugGrenade()
 	ChangeUseWeapon(EItemCode::Grenade);
 }
 
+void ABLeon::DebugFlashBang()
+{
+	ChangeUseWeapon(EItemCode::Flashbang);
+}
+
 void ABLeon::JogLookAt(float _DeltaTime)
 {
 	FVector JogInput = MoveDir;

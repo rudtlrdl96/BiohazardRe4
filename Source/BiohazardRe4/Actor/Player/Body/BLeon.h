@@ -242,6 +242,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DebugGrenade();
 
+	UFUNCTION(BlueprintCallable)
+	void DebugFlashBang();
+
 	// 플레이어가 사용하는 무기 아이템 코드를 반환합니다
 	inline EItemCode GetUseWeaponCode() const
 	{

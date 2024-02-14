@@ -17,13 +17,13 @@ class BIOHAZARDRE4_API ABLeonGrenade : public ABLeonWeapon
 public:
 	ABLeonGrenade();
 
-	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void Explosion();
+
 	virtual void Attack() override;
 
-private:
+protected:
 
 	UPROPERTY(EditAnywhere, Category = "Option")
 	float LifeTime = 3.f;
@@ -31,10 +31,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Option")
 	float Radius = 300.f;
 
+	UPROPERTY(EditAnywhere, Category = "Option")
+	float Damage = 100.f;
+
 	float Time = 0.f;
 
-	ABCollisionObserverSphere* ExplosionCollision = nullptr;
-	
 	bool IsThrowing = false;
 	
 	TArray<AActor*, FDefaultAllocator> IgnoreDamageActor;

@@ -2,8 +2,10 @@
 
 
 #include "Actor/Player/Weapon/Grenade/BLeonFlashBang.h"
+#include "DamageType/PlayerDamageType/BDMGPlayerFlashBang.h"
 
 ABLeonFlashBang::ABLeonFlashBang()
 {
-	//DamageType = UBDMGPlayerRifle::StaticClass();
+	DamageType = UBDMGPlayerFlashBang::StaticClass();
+	Damage = 0.f;
 }
