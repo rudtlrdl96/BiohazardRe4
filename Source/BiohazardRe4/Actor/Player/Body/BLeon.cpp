@@ -374,6 +374,7 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 		if (100 > Distance)
 		{
 			DamageType = ELeonDamageType::Guard;
+			return;
 		}
 		else
 		{
