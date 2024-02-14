@@ -11,6 +11,7 @@
 #include "InventoryWidgetQuickSlot.h"
 #include "InventoryCursor.h"
 #include "Actor/Player/HUD/HUDBase.h"
+#include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "BiohazardRe4.h"
 #include "Generic/BFsm.h"
 #include "Actor/Player/Body/BLeon.h"
@@ -295,7 +296,37 @@ void ABInventoryActor::OpenInventory()
 	Inventory->Open();
 
 	Player->DisableInput(Controller);
+	Player->CustomTimeDilation = 0;
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(this, ABMonsterBase::StaticClass(), Actors);
+	for (AActor* Actor : Actors)
+	{
+		Actor->CustomTimeDilation = 0;
+	}
+}
 
+void ABInventoryActor::CloseInventory()
+{
+	// 인벤토리를 닫는다
+	// Subslot에 있는 아이템은 버림
+	Inventory->RemoveAllItemInSubSlot();
+	Widget->WidgetOff();
+	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
+	Controller->SetInputMode(FInputModeGameOnly());
+	Controller->SetShowMouseCursor(false);
+	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
+	HUD->QuickSlotUpdate(QuickSlot);
+	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
+	Inventory->Close();
+
+	Player->EnableInput(Controller);
+	Player->CustomTimeDilation = 1;
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(this, ABMonsterBase::StaticClass(), Actors);
+	for (AActor* Actor : Actors)
+	{
+		Actor->CustomTimeDilation = 1;
+	}
 }
 
 void ABInventoryActor::OpenSub()
@@ -401,23 +432,6 @@ void ABInventoryActor::CloseCancel()
 {
 	// 아이템을 버리고 인벤토리를 닫는 선택을 취소함
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
-}
-
-void ABInventoryActor::CloseInventory()
-{
-	// 인벤토리를 닫는다
-	// Subslot에 있는 아이템은 버림
-	Inventory->RemoveAllItemInSubSlot();
-	Widget->WidgetOff();
-	Controller->SetViewTarget(UGameplayStatics::GetPlayerPawn(this, 0));	// ViewTarget 전환
-	Controller->SetInputMode(FInputModeGameOnly());
-	Controller->SetShowMouseCursor(false);
-	Subsystem->RemoveMappingContext(DefaultMappingContext);		// MappingContext 제거하여 조작 끔
-	HUD->QuickSlotUpdate(QuickSlot);
-	FSMComp->ChangeState(TO_KEY(EInventoryState::Wait));
-	Inventory->Close();
-
-	Player->EnableInput(Controller);
 }
 
 void ABInventoryActor::StartInvestigate()
