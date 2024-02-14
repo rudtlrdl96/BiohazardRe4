@@ -90,7 +90,7 @@ void ABLeon::AimUpdate(float _DeltaTime)
 			// Grenade
 			case ELeonWeaponAnim::Grenade:
 			{
-				CurrentWeapon->Attack();
+				//CurrentWeapon->Attack();
 				FsmComp->ChangeState(TO_KEY(ELeonState::Throwing));
 			}
 			break;
