@@ -32,18 +32,19 @@
 #include "Item/BItem.h"
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "DamageType/BDMGMonsterDamage.h"
+#include "DamageType/PlayerDamageType/BDMGPlayerGranade.h"
 #include "Generic/BFsm.h"
 #include "Generic/BCollisionObserverCapsule.h"
 #include "Generic/BCollisionObserverSphere.h"
 #include "Actor/Merchant/Merchant.h"
 
-const FVector ABLeon::StandSocketOffset = FVector(-10.0f, 35.0f, -12.0f);
-const FVector ABLeon::GunAimSocketOffset = FVector(-10.0f, 35.0f, -1.0f);
-const FVector ABLeon::GreanadeAimSocketOffset = FVector(-10.0f, 50.0f, -12.0f);
+const FVector ABLeon::StandSocketOffset = FVector(-20.0f, 35.0f, -12.0f);
+const FVector ABLeon::GunAimSocketOffset = FVector(-20.0f, 35.0f, -1.0f);
+const FVector ABLeon::GreanadeAimSocketOffset = FVector(-20.0f, 50.0f, -12.0f);
 
-const float ABLeon::StandSpringArmLength = 90.0f;
-const float ABLeon::GunAimSpringArmLength = 40.0f;
-const float ABLeon::GreanadeAimSpringArmLength = 110.0f;
+const float ABLeon::StandSpringArmLength = 80.0f;
+const float ABLeon::GunAimSpringArmLength = 30.0f;
+const float ABLeon::GreanadeAimSpringArmLength = 100.0f;
 
 // Sets default values
 ABLeon::ABLeon()
@@ -220,21 +221,21 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 
 	FVector AttackerLocation = DamageCauser->GetActorLocation();
 
-	Stat.CurrentHp -= DamageValue;
-	HUD->SetHP(Stat.CurrentHp / Stat.MaxHp);
-
-	if (0 >= Stat.CurrentHp)
-	{
-		Stat.CurrentHp = 0;
-		FsmComp->ChangeState(TO_KEY(ELeonState::Death));
-		return DamageValue;
-	}
-
 	FsmComp->ChangeState(TO_KEY(ELeonState::Damage));
 	UBDMGMonsterDamage* MonsterDamageClass = Cast<UBDMGMonsterDamage>(DamageEvent.DamageTypeClass.GetDefaultObject());
 
 	if (nullptr != MonsterDamageClass)
 	{
+		Stat.CurrentHp -= DamageValue;
+		HUD->SetHP(Stat.CurrentHp / Stat.MaxHp);
+
+		if (0 >= Stat.CurrentHp)
+		{
+			Stat.CurrentHp = 0;
+			FsmComp->ChangeState(TO_KEY(ELeonState::Death));
+			return DamageValue;
+		}
+
 		double Angle = GetAxisZAngle(AttackerLocation);
 
 		if (Angle > -45.0 && Angle <= 45.0)
@@ -311,6 +312,89 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 		}
 
 		return DamageValue;
+	}
+
+	UBDMGPlayerGranade* GrenadeDamageClass = Cast<UBDMGPlayerGranade>(DamageEvent.DamageTypeClass.GetDefaultObject());
+
+	if (nullptr != GrenadeDamageClass)
+	{
+		double Angle = GetAxisZAngle(AttackerLocation);
+
+		if (Angle > -45.0 && Angle <= 45.0)
+		{
+			// Forward
+			if (GetActorLocation().Z < AttackerLocation.Z)
+			{
+				DamageDirection = ELeonDamageDirection::FT;
+				LOG_MSG(TEXT("FT"));
+			}
+			else
+			{
+				DamageDirection = ELeonDamageDirection::FU;
+				LOG_MSG(TEXT("FU"));
+			}
+		}
+		else if (Angle > 45.0 && Angle <= 135.0)
+		{
+			// Right
+			if (GetActorLocation().Z < AttackerLocation.Z)
+			{
+				DamageDirection = ELeonDamageDirection::RT;
+				LOG_MSG(TEXT("RT"));
+			}
+			else
+			{
+				DamageDirection = ELeonDamageDirection::RU;
+				LOG_MSG(TEXT("RU"));
+			}
+		}
+		else if (Angle > -135.0 && Angle <= -45.0)
+		{
+			// Left
+			if (GetActorLocation().Z < AttackerLocation.Z)
+			{
+				DamageDirection = ELeonDamageDirection::LT;
+				LOG_MSG(TEXT("LT"));
+			}
+			else
+			{
+				DamageDirection = ELeonDamageDirection::LU;
+				LOG_MSG(TEXT("LU"));
+			}
+		}
+		else
+		{
+			// Back
+			DamageDirection = ELeonDamageDirection::B;
+			LOG_MSG(TEXT("B"));
+		}
+
+		float Distance = FVector::Distance(AttackerLocation, GetActorLocation());
+
+		if (100 > Distance)
+		{
+			DamageType = ELeonDamageType::Guard;
+		}
+		else
+		{
+			DamageType = ELeonDamageType::Explosion;
+
+			FVector ToVector = AttackerLocation - GetActorLocation();
+			ToVector.Z = 0;
+			ToVector.Normalize();
+
+			SetActorRotation(ToVector.Rotation());
+
+			Stat.CurrentHp -= DamageValue;
+			HUD->SetHP(Stat.CurrentHp / Stat.MaxHp);
+
+			if (0 >= Stat.CurrentHp)
+			{
+				Stat.CurrentHp = 0;
+				FsmComp->ChangeState(TO_KEY(ELeonState::Death));
+				return DamageValue;
+			}
+		}		
 	}
 
 	LOG_ERROR(TEXT("Undefined DamageType"));
