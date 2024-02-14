@@ -46,7 +46,7 @@ void ABLeonGrenade::Explosion()
 		false,
 		ECollisionChannel::ECC_GameTraceChannel17
 	);
-
+	ExplosionEffect();
 	Destroy();
 }
 
@@ -61,4 +61,9 @@ void ABLeonGrenade::SetFlashbang()
 	WeaponType = EItemCode::Flashbang;
 	DamageType = UBDMGPlayerFlashBang::StaticClass();
 	WeaponDamage = 0.f;
+}
+
+void ABLeonGrenade::ExplosionEffect_Implementation()
+{
+	LOG_MSG(TEXT("ExplosionEffect_Implementation"))
 }

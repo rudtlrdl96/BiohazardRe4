@@ -26,6 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetFlashbang();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void ExplosionEffect();
+	virtual void ExplosionEffect_Implementation();
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Option")
