@@ -229,6 +229,11 @@ void ABInventoryActor::Tick(float DeltaTime)
 
 void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 {
+	if (ItemCode == EItemCode::Money)
+	{
+		AddMoney(Num);
+		return;
+	}
 	Inventory->AddItem(ItemCode, Num);
 	Widget->AddItem(ItemCode, Num);
 	HUD->UpdateStoredAmmo();

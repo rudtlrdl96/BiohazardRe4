@@ -394,6 +394,8 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& Scale)
 
 bool UBInventoryManager::IsEmptySlot(EItemCode ItemCode, int Count)
 {
+	if (ItemCode == EItemCode::Money) { return true; }
+
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
 	FBItemData* Data = nullptr;
 
