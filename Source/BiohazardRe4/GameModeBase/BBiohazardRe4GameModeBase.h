@@ -16,5 +16,4 @@ class BIOHAZARDRE4_API ABBiohazardRe4GameModeBase : public AGameModeBase
 
 public:
 	ABBiohazardRe4GameModeBase();
-
 };

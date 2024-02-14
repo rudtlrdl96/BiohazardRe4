@@ -12,7 +12,7 @@ UBInventoryManager* UBInventoryManager::Instance = nullptr;
 UBInventoryManager::UBInventoryManager()
 {
 	Instance = this;
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> Data(TEXT("/Script/Engine.DataTable'/Game/Assets/Data/Item/DT_Items.DT_Items'"));
 	if (Data.Object)
@@ -26,9 +26,25 @@ void UBInventoryManager::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UBInventoryManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBInventoryManager::Open()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	bIsOpen = true;
+	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = ItemMap.CreateIterator();
+	for (; it; ++it)
+	{
+		it.Value()->SetItemNumText();
+	}
+}
+
+void UBInventoryManager::Close()
+{
+	bIsOpen = false;
+
+	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = ItemMap.CreateIterator();
+	for (; it; ++it)
+	{
+		it.Value()->OffItemNumText();
+	}
 }
 
 const FBItemData& UBInventoryManager::FindItemData(EItemCode Code)
@@ -113,13 +129,17 @@ void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 			RemoveNum -= Item->Count;
 			ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
 			ItemMap.Remove(ItemCode, Item);
+			ABInventoryActor::Instance->RemoveQuickSlot(Item);
 			Item->Destroy();
 		}
 		else
 		{
 			Item->Count -= RemoveNum;
 			RemoveNum = 0;
-			Item->SetItemNumText();
+			if (bIsOpen)
+			{
+				Item->SetItemNumText();
+			}
 			break;
 		}
 	}
@@ -135,12 +155,16 @@ void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
 	int RemoveNum = Num;
 	RemoveNum -= Item->Count;
 	Item->Count -= Num;
-	Item->SetItemNumText();
+	if (bIsOpen)
+	{
+		Item->SetItemNumText();
+	}
 
 	if (Item->Count <= 0)
 	{
 		ClearSlot(Item->GetItemPosition(), Item->GetItemSize(), Item->IsSubSlot());
 		ItemMap.Remove(Item->GetData().ItemCode, Item);
+		ABInventoryActor::Instance->RemoveQuickSlot(Item);
 		Item->Destroy();
 	}
 	if (0 < RemoveNum)
@@ -152,6 +176,11 @@ void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)
 void UBInventoryManager::CraftItem(const FBCraftRecipe& Recipe)
 {
 	ABInventoryItem* SelectItem = ABInventoryActor::Instance->SelectItem;
+	if (nullptr == SelectItem)
+	{
+		LOG_ERROR(TEXT("Failed Craft Item"));
+		return;
+	}
 	FIntPoint Pos = SelectItem->GetItemPosition();
 
 	if (Recipe.AItem == SelectItem->GetData().ItemCode)
@@ -217,6 +246,13 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 		NewItem = Cast<ABInventoryItem>(Weapon);
 		break;
 	}
+	case EItemCode::Grenade:
+	case EItemCode::Flashbang:
+	{
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>();
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
+	}
 	default:
 		if (1 == Data.MaxCount)
 		{
@@ -232,12 +268,16 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 	// 아이템 생성
 	if (NewItem)
 	{
-		NewItem->Count = Num;
+		NewItem->Count = FMath::Min(Num, Data.MaxCount);
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		NewItem->SetItemData(Data);
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
 		PlaceItemSlot(NewItem, Point);
 		NewItem->GetRootComponent()->SetRelativeLocation(FVector(Point.X * GridScale, Point.Y * GridScale, 0) + GridStart);
+		if (!bIsOpen)
+		{
+			NewItem->OffItemNumText();
+		}
 	}
 }
 
@@ -283,6 +323,13 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 		NewItem = Cast<ABInventoryItem>(Weapon);
 		break;
 	}
+	case EItemCode::Grenade:
+	case EItemCode::Flashbang:
+	{
+		ABInventoryWeapon* Weapon = GetWorld()->SpawnActor<ABInventoryWeapon>();
+		NewItem = Cast<ABInventoryItem>(Weapon);
+		break;
+	}
 	default:
 		if (1 == Data.MaxCount)
 		{
@@ -298,12 +345,16 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 	// 아이템 생성
 	if (NewItem)
 	{
-		NewItem->Count = 1;
+		NewItem->Count = FMath::Min(Num, Data.MaxCount);
 		NewItem->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		NewItem->SetItemData(Data);
 		ItemMap.Add(TTuple<EItemCode, ABInventoryItem*>(Data.ItemCode, NewItem));
 		PlaceItemSlot(NewItem, Pos);
 		NewItem->GetRootComponent()->SetRelativeLocation(FVector(Pos.X * GridScale, Pos.Y * GridScale, 0) + GridStart);
+		if (!bIsOpen)
+		{
+			NewItem->OffItemNumText();
+		}
 	}
 }
 
@@ -343,6 +394,8 @@ bool UBInventoryManager::IsEmptySlot(const FIntPoint& Scale)
 
 bool UBInventoryManager::IsEmptySlot(EItemCode ItemCode, int Count)
 {
+	if (ItemCode == EItemCode::Money) { return true; }
+
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
 	FBItemData* Data = nullptr;
 
@@ -506,6 +559,10 @@ int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
 			{
 				// 남은 수를 모두 넣을 수 있다면
 				Item->AddCount(Num);
+				if (bIsOpen)
+				{
+					Item->SetItemNumText();
+				}
 				return 0;
 			}
 			else
@@ -513,6 +570,10 @@ int UBInventoryManager::ItemMerge(const FBItemData& Data, int Num)
 				// 공간이 부족한 경우
 				Num -= EmptyNum;
 				Item->SetCount(Data.MaxCount);
+				if (bIsOpen)
+				{
+					Item->SetItemNumText();
+				}
 			}
 		}
 	}
@@ -834,6 +895,7 @@ void UBInventoryManager::RemoveAllItemInSubSlot()
 			{
 				ItemMap.Remove(Item->GetData().ItemCode, Item);
 				SubSlot[y * SubCaseSize.X + x]->SetItem(nullptr);
+				ABInventoryActor::Instance->RemoveQuickSlot(Item);
 				Item->Destroy();
 			}
 		}

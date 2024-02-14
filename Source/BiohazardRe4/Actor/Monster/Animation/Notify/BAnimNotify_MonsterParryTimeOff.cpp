@@ -7,6 +7,8 @@
 
 void UBAnimNotify_MonsterParryTimeOff::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
+	Super::Notify(MeshComp, Animation, EventReference);
+
 	AActor* OwnerActor = MeshComp->GetOwner();
 	if (OwnerActor == nullptr)
 	{

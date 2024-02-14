@@ -226,6 +226,8 @@ public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	void TakeHeal(float Heal);
+
 	// 플레이어가 사용하는 무기를 교체합니다
 	void ChangeUseWeapon(EItemCode _WeaponCode);
 
@@ -464,6 +466,9 @@ public:
 	virtual void FallLandingEnd() override;
 	virtual void GravityActive() override;
 
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	FPlayerStat Stat;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -494,7 +499,7 @@ private:
 
 	ELeonAim LeonAim = ELeonAim::Start;
 	ELeonWeaponSwap  LeonWeaponSwap = ELeonWeaponSwap::None;
-
+	
 	float AimUpdateTime = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
@@ -632,9 +637,6 @@ private:
 	ABLeonWeapon* CurrentWeapon = nullptr;
 
 	EItemCode  UseWeaponCode = EItemCode::Empty;
-
-	UPROPERTY(VisibleAnywhere, Category = Stat)
-	FPlayerStat Stat;
 
 	uint32 bDrawGrenadeAim : 1 = false;
 	uint32 bIsThrowingWeapon : 1 = false;

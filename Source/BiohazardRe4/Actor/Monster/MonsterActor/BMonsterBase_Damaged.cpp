@@ -10,6 +10,7 @@
 #include "BiohazardRe4.h"
 #include "Actor/Monster/Define/MonsterDefine.h"
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
+#include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 
 float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -21,19 +22,8 @@ float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 
 	LOG_MSG(TEXT("Damaged TypeID is %d"), TypeID);
 
-	//青悼飘府
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (AIController == nullptr)
-	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
-		return 0.0f;
-	}
-	
-	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
-	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
-
 	float ResultDamage = 0.0f;
-
+	
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID) == true)
 	{
 		ResultDamage = TakePointDamage(DamageEvent, OriginResultDamage);
@@ -83,6 +73,24 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, float _Da
 	if (Stat->isDeath() == true)
 	{
 		MonsterDeathByPoint(_DamageEvent);
+		return ResultDamage;
+	}
+
+	//
+	if (GetCurrentState() == EMonsterState::Groggy && DamagedPart.Compare(TEXT("HEAD")) != 0)
+	{
+		return ResultDamage;
+	}
+
+	GroggyAmount += 0.5f;
+	if (DamagedPart.Compare(TEXT("HEAD")) == 0)
+	{
+		GroggyAmount += 1.5f;
+	}
+
+	if (GroggyAmount <= 1.5f)
+	{
+		DamagedBlendAlpha = 0.5f;
 		return ResultDamage;
 	}
 
@@ -386,6 +394,19 @@ void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor
 
 void ABMonsterBase::SmallDamaged(const FString& _DamagedPart)
 {
+	GroggyAmount = 0.0f;
+
+	//青悼飘府
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
+	{
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return;
+	}
+
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
+
 	FString DamagedPower = TEXT("SMALL");
 
 	int SectionIndex = FMath::RandRange(1, DamagedMontageSectionNums[_DamagedPart][DamagedPower]);

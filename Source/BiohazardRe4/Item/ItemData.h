@@ -32,6 +32,8 @@ enum class EItemCode : uint8
 	// ¼ö·ùÅº
 	Grenade			UMETA(DisplayName = "Grenade"),     // ¼ö·ùÅº
 	Flashbang		UMETA(DisplayName = "Flashbang"),   // ¼¶±¤Åº
+
+	Money			UMETA(DisplayName = "Money"),   // µ·
 	End,
 };
 

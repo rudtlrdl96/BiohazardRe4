@@ -143,6 +143,7 @@ void ABMonsterBase::DamagedEnd()
 	}
 
 	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, false);
+	DamagedBlendAlpha = 0.0f;
 
 	SetCurrentState(EMonsterState::Walk);
 

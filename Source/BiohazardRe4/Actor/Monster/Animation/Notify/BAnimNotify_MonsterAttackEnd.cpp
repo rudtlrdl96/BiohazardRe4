@@ -10,6 +10,8 @@
 
 void UBAnimNotify_MonsterAttackEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
+	Super::Notify(MeshComp, Animation, EventReference);
+
 	if (MeshComp == nullptr)
 	{
 		LOG_WARNING(TEXT("MeshComp is Nullptr"));

@@ -3,7 +3,7 @@
 
 #include "BItem.h"
 #include "Components/SphereComponent.h"
-
+#include "Item/InventoryActor.h"
 // Sets default values
 ABItem::ABItem()
 {
@@ -29,5 +29,11 @@ void ABItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABItem::PickUp()
+{
+	ABInventoryActor::Instance->AddItem(ItemCode, Count);
+	PickUpEvent();
 }
 

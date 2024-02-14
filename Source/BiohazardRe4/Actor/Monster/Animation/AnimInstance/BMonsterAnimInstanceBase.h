@@ -19,6 +19,7 @@ public:
 
 	virtual void SetTarget(UObject* _Target) override;
 	virtual void SetAnimationType(EMonsterAnimType _AnimType) override;
+	virtual void SetDamagedBlendAlpha(float _Alpha) override;
 protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float _DeltaSeconds) override;
@@ -43,6 +44,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	float WalkDistanceThreshold;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
+	float DamagedBlendAlpha;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	FRotator GroundRotation;

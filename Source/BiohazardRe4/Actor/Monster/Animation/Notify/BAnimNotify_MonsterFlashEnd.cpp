@@ -7,6 +7,8 @@
 
 void UBAnimNotify_MonsterFlashEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
+	Super::Notify(MeshComp, Animation, EventReference);
+
 	AActor* MyActor = MeshComp->GetOwner();
 	if (MyActor == nullptr)
 	{

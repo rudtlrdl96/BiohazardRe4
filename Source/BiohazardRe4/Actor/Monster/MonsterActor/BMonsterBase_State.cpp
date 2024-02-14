@@ -39,6 +39,16 @@ void ABMonsterBase::SetCurrentState(EMonsterState _InState)
 	CurState = _InState;
 }
 
+float ABMonsterBase::GetDamagedBlendAlpha()
+{
+	return DamagedBlendAlpha;
+}
+
+void ABMonsterBase::SetDamagedBlendAlpha(float _Alpha)
+{
+	DamagedBlendAlpha = _Alpha;
+}
+
 EMonsterState ABMonsterBase::GetCurrentState()
 {
 	return CurState;

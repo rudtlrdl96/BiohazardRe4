@@ -37,13 +37,11 @@ public:
 	void SetCount(int _Count)
 	{
 		Count = _Count;
-		SetItemNumText();
 	}
 
 	void AddCount(int _Count)
 	{
 		Count += _Count;
-		SetItemNumText();
 	}
 
 	void Turn();

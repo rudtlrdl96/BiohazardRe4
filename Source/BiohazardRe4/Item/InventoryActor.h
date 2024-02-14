@@ -55,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(EItemCode ItemCode, int Num = 1);
 
+	void RemoveQuickSlot(EItemCode Code);
+	void RemoveQuickSlot(class ABInventoryItem* Item);
+
 	// 해당 퀵슬롯의 무기를 찾는다
 	UFUNCTION(BlueprintCallable)
 	ABInventoryWeapon* GetQuickSlot(int SlotNum);

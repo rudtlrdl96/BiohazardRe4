@@ -52,10 +52,11 @@ public:
 	virtual void GroggyEnd() override;
 
 	virtual void SetCurrentState(EMonsterState _InState) override;
+	virtual float GetDamagedBlendAlpha() override;
+	virtual void SetDamagedBlendAlpha(float _Alpha) override;
+
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
-
-
 	//IBMonsterStatInterface
 public:
 	virtual float GetRunSpeed() const override;
@@ -129,26 +130,31 @@ protected:
 	void MediumDamaged(const FString& _DamagedPart);
 	void LargeDamaged(const FString& _DamagedPart);
 
-	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
-	float CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, const EPlayerDamageType _PlayerDamageType);
 	float CaculateNormalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType);
+	float CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, const EPlayerDamageType _PlayerDamageType);
 	float CaculateCriticalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType);
+	
+	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
 
-	//virtual void MonsterDeath(const EDeathType _DeathType, const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
 	virtual void MonsterDeathByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	//virtual void MonsterDeathByRadial(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 
 	virtual void Flashed();
-
 	void KickJumpUpdate();
 
 	//State Variable
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
 	EMonsterState CurState;
+
 	//Interaction Variable
 private:
 	uint8 bIsAbleParry : 1;
 	EInteraction InteractionType;
+
+	//Basic Variable
+private:
+	float GroggyAmount = 0.0f;
+	float DamagedBlendAlpha = 0.0f;
 };
