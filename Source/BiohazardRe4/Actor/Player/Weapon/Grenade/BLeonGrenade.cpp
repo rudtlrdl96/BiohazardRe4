@@ -46,7 +46,7 @@ void ABLeonGrenade::Explosion()
 		this,
 		Player->GetController(),
 		false,
-		ECollisionChannel::ECC_EngineTraceChannel4
+		ECollisionChannel::ECC_GameTraceChannel17
 	);
 
 	Destroy();
