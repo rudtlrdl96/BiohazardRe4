@@ -79,4 +79,12 @@ void ABLeon::ThrowingExit()
 	}
 
 	CurrentWeapon = CreateWeapon(UseWeaponCode);
+
+	FVector EndLocation = GetMesh()->GetSocketLocation(LerpSocketEnd);
+	FRotator EndRotation = GetMesh()->GetSocketRotation(LerpSocketEnd);
+
+	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
+
+	CurrentWeapon->SetActorLocation(EndLocation);
+	CurrentWeapon->SetActorRotation(EndRotation);
 }
