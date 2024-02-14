@@ -3,13 +3,13 @@
 
 #include "Actor/Player/Weapon/Grenade/BLeonGrenade.h"
 #include "Generic/BCollisionObserverSphere.h"
-#include "DamageType/PlayerDamageType/BDMGPlayerRifle.h"
+#include "DamageType/PlayerDamageType/BDMGPlayerGranade.h"
 #include "Kismet/GameplayStatics.h"
 
 
 ABLeonGrenade::ABLeonGrenade()
 {
-	DamageType = UBDMGPlayerRifle::StaticClass();
+	DamageType = UBDMGPlayerGranade::StaticClass();
 }
 
 void ABLeonGrenade::BeginPlay()
