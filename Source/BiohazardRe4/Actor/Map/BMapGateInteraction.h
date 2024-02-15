@@ -16,7 +16,32 @@ class BIOHAZARDRE4_API ABMapGateInteraction : public ABMapBaseInteraction
 public:
 	ABMapGateInteraction();
 
-	virtual void MapObjOpen() override;
-	virtual void MapObjClose() override;
+	UPROPERTY(EditAnywhere, Category = "Open")
+	UBoxComponent* ATrigger = nullptr;
+	virtual EInteraction GetInteractionType() const
+	{
+		return EInteraction::OpenGate;
+	}
+	virtual bool AbleInteraction() const override
+	{
+		return false == bIsUse;
+	}
 
+	inline bool UseGate()
+	{
+		if (false == bIsUse)
+		{
+			bIsUse = true;
+			return true;
+		}
+
+		return false;
+	}
+
+	inline void UseGateEnd()
+	{
+		bIsUse = false;
+	}
+protected:
+	uint8 bIsUse = false;
 };

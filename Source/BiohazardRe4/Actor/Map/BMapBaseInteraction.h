@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Actor/Generic/Interface/BInteraction.h"
 #include "BMapBaseInteraction.generated.h"
 
+class UBoxComponent;
+
 UCLASS()
-class BIOHAZARDRE4_API ABMapBaseInteraction : public AActor
+class BIOHAZARDRE4_API ABMapBaseInteraction : public AActor , public IBInteraction
 {
 	GENERATED_BODY()
 	
@@ -28,9 +31,15 @@ public:
 	{
 		return bIsOpen;
 	}
+	virtual bool AbleInteraction() const override;
+	virtual EInteraction GetInteractionType() const override;
 protected:
 
+	UFUNCTION(BlueprintCallable)
 	virtual void MapObjOpen();
+
+	UFUNCTION(BlueprintCallable)
 	virtual void MapObjClose();
 	uint8 bIsOpen : 1;
+
 };

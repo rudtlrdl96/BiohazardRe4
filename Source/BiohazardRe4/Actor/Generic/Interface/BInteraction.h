@@ -22,6 +22,8 @@ enum class EInteraction : uint8
 	JumpObstacle	UMETA(DisplayName = "JumpObstacle"),
 	FallCliff		UMETA(DisplayName = "FallCliff"),
 	OpenDoor		UMETA(DisplayName = "OpenDoor"),
+	OpenGate		UMETA(DisplayName = "OpenGate"),
+	OpenDrawer		UMETA(DisplayName = "OpenDrawer"),
 	DropItem		UMETA(DisplayName = "DropItem"),
 	WalkPlayer		UMETA(DisplayName = "WalkPlayer"),
 	JogPlayer		UMETA(DisplayName = "JogPlayer"),

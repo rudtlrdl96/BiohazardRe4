@@ -25,6 +25,16 @@ void ABMapBaseInteraction::Tick(float DeltaTime)
 
 }
 
+bool ABMapBaseInteraction::AbleInteraction() const
+{
+	return true;
+}
+
+EInteraction ABMapBaseInteraction::GetInteractionType() const
+{
+	return EInteraction::OpenDoor;
+}
+
 void ABMapBaseInteraction::MapObjOpen()
 {
 	bIsOpen = true;
@@ -32,6 +42,6 @@ void ABMapBaseInteraction::MapObjOpen()
 
 void ABMapBaseInteraction::MapObjClose()
 {
-	bIsOpen = true;
+	bIsOpen = false;
 }
 

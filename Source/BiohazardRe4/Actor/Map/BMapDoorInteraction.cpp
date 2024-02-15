@@ -6,11 +6,3 @@
 ABMapDoorInteraction::ABMapDoorInteraction()
 {
 }
-
-void ABMapDoorInteraction::MapObjOpen()
-{
-}
-
-void ABMapDoorInteraction::MapObjClose()
-{
-}

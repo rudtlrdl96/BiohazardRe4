@@ -6,11 +6,3 @@
 ABMapDrawerInteraction::ABMapDrawerInteraction()
 {
 }
-
-void ABMapDrawerInteraction::MapObjOpen()
-{
-}
-
-void ABMapDrawerInteraction::MapObjClose()
-{
-}

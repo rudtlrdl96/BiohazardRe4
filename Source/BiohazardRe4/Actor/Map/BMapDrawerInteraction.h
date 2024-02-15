@@ -15,6 +15,5 @@ class BIOHAZARDRE4_API ABMapDrawerInteraction : public ABMapBaseInteraction
 	GENERATED_BODY()
 public:
 	ABMapDrawerInteraction();
-	virtual void MapObjOpen() override;
-	virtual void MapObjClose() override;
+
 };

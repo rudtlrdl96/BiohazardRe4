@@ -15,6 +15,5 @@ class BIOHAZARDRE4_API ABMapDoorInteraction : public ABMapBaseInteraction
 	GENERATED_BODY()
 public:
 	ABMapDoorInteraction();
-	virtual void MapObjOpen() override;
-	virtual void MapObjClose() override;
+
 };
