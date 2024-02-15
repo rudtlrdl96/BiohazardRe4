@@ -41,5 +41,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void MapObjClose();
 	uint8 bIsOpen : 1;
-
+	UPROPERTY(BlueprintReadWrite, Category = "InterValue")
+	uint8 bInter : 1;
 };

@@ -24,24 +24,9 @@ public:
 	}
 	virtual bool AbleInteraction() const override
 	{
-		return false == bIsUse;
+		return bInter;
 	}
 
-	inline bool UseGate()
-	{
-		if (false == bIsUse)
-		{
-			bIsUse = true;
-			return true;
-		}
-
-		return false;
-	}
-
-	inline void UseGateEnd()
-	{
-		bIsUse = false;
-	}
+	
 protected:
-	uint8 bIsUse = false;
 };
