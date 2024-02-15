@@ -118,13 +118,13 @@ protected:
 
 	//Damaged
 protected:
-	float TakeNormalDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	float TakePointDamage(const FDamageEvent& _DamageEvent, float _DamagedAmount);
+	float TakeNormalDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	float TakeRadialDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	
 	void DamagedByGun(const FString& _DamagedPart);
-	void DamagedByKnife(const FDamageEvent& _DamageEvent);
 	void DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
+	void DamagedByKnife(const FDamageEvent& _DamageEvent);
 	void DamagedByGrenade(const FDamageEvent& _DamageEvent, float _DamagedAmount);
 
 	void BurstJumpStart(FVector _Direction, float _JumpPower, TFunction<void()> _OnLanded, bool _XYOverride, bool _ZOverride);
@@ -134,14 +134,14 @@ protected:
 	void MediumDamaged(const FString& _DamagedPart);
 	void LargeDamaged(const FString& _DamagedPart);
 
-	float CaculateNormalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType);
 	float CaculatePointDamage(float _OriginDamage, const FString& _DamagedPart, const EPlayerDamageType _PlayerDamageType);
+	float CaculateNormalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType);
 	float CaculateCriticalDamage(float _OriginDamage, const EPlayerDamageType _PlayerDamageType);
 	
 	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
 
-	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
 	virtual void MonsterDeathByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
+	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
 	virtual void MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	virtual void MonsterDeathByGrenade(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 

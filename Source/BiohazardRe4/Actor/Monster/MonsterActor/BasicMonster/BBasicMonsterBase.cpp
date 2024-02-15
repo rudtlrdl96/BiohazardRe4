@@ -45,7 +45,7 @@ void ABBasicMonsterBase::SetlMeshAndAnimationByRandomInBeginPlay()
 void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 {
 	//Weapon
-	int WeaponIndex = FMath::RandRange(4, 4);
+	int WeaponIndex = FMath::RandRange(0, 4);
 	if (WeaponIndex == 4)
 	{
 		LOG_MSG(TEXT("Monster Bare Hand"));
