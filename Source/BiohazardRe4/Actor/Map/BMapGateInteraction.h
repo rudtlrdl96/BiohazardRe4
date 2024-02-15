@@ -16,17 +16,10 @@ class BIOHAZARDRE4_API ABMapGateInteraction : public ABMapBaseInteraction
 public:
 	ABMapGateInteraction();
 
-	UPROPERTY(EditAnywhere, Category = "Open")
-	UBoxComponent* ATrigger = nullptr;
 	virtual EInteraction GetInteractionType() const
 	{
 		return EInteraction::OpenGate;
 	}
-	virtual bool AbleInteraction() const override
-	{
-		return bInter;
-	}
-
 	
 protected:
 };

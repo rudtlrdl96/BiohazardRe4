@@ -31,6 +31,8 @@ public:
 	{
 		return bIsOpen;
 	}
+	UPROPERTY(EditAnywhere, Category = "Open")
+	UBoxComponent* ATrigger = nullptr;
 	virtual bool AbleInteraction() const override;
 	virtual EInteraction GetInteractionType() const override;
 protected:

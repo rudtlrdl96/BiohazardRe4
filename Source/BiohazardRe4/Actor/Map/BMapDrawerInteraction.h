@@ -16,17 +16,11 @@ class BIOHAZARDRE4_API ABMapDrawerInteraction : public ABMapBaseInteraction
 public:
 	ABMapDrawerInteraction();
 
-	UPROPERTY(EditAnywhere, Category = "Open")
-	UBoxComponent* ATrigger = nullptr;
+
 	virtual EInteraction GetInteractionType() const
 	{
 		return EInteraction::OpenDrawer;
 	}
-	virtual bool AbleInteraction() const override
-	{
-		return bInter;
-	}
-
 
 protected:
 };
