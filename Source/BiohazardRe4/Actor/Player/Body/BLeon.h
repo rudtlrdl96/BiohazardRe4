@@ -53,6 +53,7 @@ enum class ELeonState : uint8
 	Parry			UMETA(DisplayName = "Parry"),
 	OpenDoor		UMETA(DisplayName = "OpenDoor"),
 	BreakBox		UMETA(DisplayName = "BreakBox"),
+	CutScene00		UMETA(DisplayName = "CutScene00"),
 };
 
 UENUM(BlueprintType)
@@ -229,6 +230,7 @@ public:
 	void TakeHeal(float Heal);
 
 	// 플레이어가 사용하는 무기를 교체합니다
+	UFUNCTION(BlueprintCallable)
 	void ChangeUseWeapon(EItemCode _WeaponCode);
 
 	// 플레이어의 정면 벡터와 무브 벡터의 각도 차이를 반환합니다
@@ -261,6 +263,10 @@ public:
 	// 현재 플레이어의 FSM 상태를 반환합니다
 	UFUNCTION(BlueprintCallable)
 	ELeonState GetCurrentFSMState() const;
+
+	// 현재 플레이어의 FSM 상태를 변경합니다
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentFSMState(ELeonState State);
 
 	// 현재 플레이어의 무기 애니메이션 상태를 반환합니다
 	UFUNCTION(BlueprintCallable)
@@ -803,4 +809,7 @@ private:
 	void BreakBoxEnter();
 	void BreakBoxUpdate(float _DeltaTime);
 	void BreakBoxExit();
+
+	void CutsceenEnter();
+	void CutsceenExit();
 };

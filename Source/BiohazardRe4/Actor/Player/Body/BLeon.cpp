@@ -824,6 +824,11 @@ ELeonState ABLeon::GetCurrentFSMState() const
 	return static_cast<ELeonState>(FsmComp->GetCurrentFSMKey());
 }
 
+void ABLeon::SetCurrentFSMState(ELeonState State)
+{
+	FsmComp->ChangeState(TO_KEY(State));
+}
+
 void ABLeon::PlayMove(const FInputActionInstance& _MoveAction)
 {
 	FVector2D MoveInput2D = _MoveAction.GetValue().Get<FVector2D>();
@@ -1991,6 +1996,11 @@ void ABLeon::CreateFSM()
 	BreakBoxFSMState.UpdateDel.BindUObject(this, &ABLeon::BreakBoxUpdate);
 	BreakBoxFSMState.ExitDel.BindUObject(this, &ABLeon::BreakBoxExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::BreakBox), BreakBoxFSMState);
+
+	UBFsm::FStateCallback CutSceneFSMState;
+	CutSceneFSMState.EnterDel.BindUObject(this, &ABLeon::CutsceenEnter);
+	CutSceneFSMState.ExitDel.BindUObject(this, &ABLeon::CutsceenExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::CutScene00), CutSceneFSMState);
 }
 
 void ABLeon::CreateCollision()
@@ -2266,4 +2276,23 @@ void ABLeon::KickAttack(AActor* _OverlapActor)
 	}
 
 	UGameplayStatics::ApplyDamage(_OverlapActor, 180, GetController(), this, KickDamageType);
+}
+
+void ABLeon::CutsceenEnter()
+{
+	bIsJog = true;
+	bIsMove = true;
+	bIsCrouch = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	JogTurnAngle = 0.0;
+}
+
+void ABLeon::CutsceenExit()
+{
+	bIsJog = false;
+	bIsMove = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
