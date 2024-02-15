@@ -5,8 +5,11 @@
 충돌체 무기에 달기
 
 패리 - 현재 : 맨손만 만듬
+
 그로기(누적 수치에 따라 그로기가 실행되도록, 이 때 발차기 가능) : 맨손만 만듬
+
 칼에 대한 피해
+
 방사형 피해(수류탄 등)에 대한 행동
 
 
@@ -70,35 +73,4 @@ TakeDamage에 분기 만들기(공격 타입에 따라)
 
 _________________________________
 
-
-void AYourCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-    // FDamageEvent에서 피직스 에셋 얻기
-    UPrimitiveComponent* DamagedComponent = DamageEvent.HitComponent;
-
-    if (DamagedComponent && DamagedComponent->IsA(UPhysicsAssetComponent::StaticClass()))
-    {
-        UPhysicsAssetComponent* PhysicsAssetComponent = Cast<UPhysicsAssetComponent>(DamagedComponent);
-
-        if (PhysicsAssetComponent)
-        {
-            // 피직스 에셋으로부터 스켈레톤 얻기
-            USkeletalMeshComponent* SkeletalMeshComponent = PhysicsAssetComponent->SkeletalMeshComponent;
-
-            if (SkeletalMeshComponent)
-            {
-                // 본 인덱스나 이름을 사용하여 본 정보 얻기
-                FName BoneName = NAME_None; // 본 이름 설정
-                int32 BoneIndex = SkeletalMeshComponent->GetBoneIndex(BoneName);
-
-                if (BoneIndex != INDEX_NONE)
-                {
-                    FTransform BoneTransform = SkeletalMeshComponent->GetBoneTransform(BoneIndex);
-                    // 이제 BoneTransform을 사용하여 필요한 작업 수행
-                }
-            }
-        }
-    }
-
-    // 나머지 데미지 처리 로직 추가
 }

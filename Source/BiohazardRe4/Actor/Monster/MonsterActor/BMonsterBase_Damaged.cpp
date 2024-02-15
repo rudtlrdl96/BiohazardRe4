@@ -475,7 +475,7 @@ void ABMonsterBase::DamagedByGrenade(const FDamageEvent& _DamageEvent, float _Da
 	LaunchDir.Normalize();
 
 	float LaunchPower = 1000.0f;
-	LaunchPower *= DamageRatio;
+	LaunchPower = FMath::Clamp(LaunchPower * DamageRatio, 450.0f, 1000.0f);
 
 	LOG_MSG(TEXT("LaunchPower : %f"), LaunchPower);
 
@@ -551,13 +551,15 @@ void ABMonsterBase::SmallDamaged(const FString& _DamagedPart)
 const FString ABMonsterBase::GetBurstJumpSectionName(FVector _MyLocation, FVector _CauserLocation)
 {
 	//피격 각도
-	FVector CauserToMonsterVector = _CauserLocation - _MyLocation;
-	CauserToMonsterVector.Normalize();
+	FVector MonsterToCauserVector = _CauserLocation - _MyLocation;
+	MonsterToCauserVector.Z = 0.0f;
+	MonsterToCauserVector.Normalize();
 
 	FVector MyForwardVector = GetActorForwardVector();
+	MyForwardVector.Z = 0.0f;
 	MyForwardVector.Normalize();
 
-	double DotProductValue = FVector::DotProduct(-CauserToMonsterVector, MyForwardVector);
+	double DotProductValue = FVector::DotProduct(MonsterToCauserVector, MyForwardVector);
 	double Radian = FMath::Acos(DotProductValue);
 	double Degree = FMath::RadiansToDegrees(Radian);
 
@@ -573,7 +575,17 @@ const FString ABMonsterBase::GetBurstJumpSectionName(FVector _MyLocation, FVecto
 	}
 	else
 	{
-		ReturnSectionStr += TEXT("Side");
+		FVector MyRightVector = GetActorRightVector();
+		double SideDotProductValue = FVector::DotProduct(MonsterToCauserVector, MyRightVector);
+		
+		if (SideDotProductValue < 0.0f)
+		{
+			ReturnSectionStr += TEXT("Left");
+		}
+		else
+		{
+			ReturnSectionStr += TEXT("Right");
+		}
 	}
 
 	return ReturnSectionStr;
