@@ -11,6 +11,14 @@
 #include "Actor/Monster/Interface/BMonsterStateInterface.h"
 #include "BMonsterBase.generated.h"
 
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	None UMETA(DisplayName = "None"),
+	OneHand UMETA(DisplayName = "OneHand"),
+	TwoHands UMETA(DisplayName = "TwoHands"),
+};
+
 UENUM()
 enum class EDamagedPart
 {
@@ -61,11 +69,10 @@ public:
 public:
 	virtual float GetRunSpeed() const override;
 	virtual float GetWalkSpeed() const override;
-	virtual float GetAttackRadius() const override;
+	virtual float GetAttackRange() const override;
 	virtual float GetDetectRadius() const override;
 	virtual float GetPatrolRadius() const override;
 	virtual float GetGroggyThreshold() const override;
-	virtual float GetAttackSweepRadius() const override;
 	virtual void StatInit(const class UBMonsterStatData* _DataAsset);
 	
 	UFUNCTION(BlueprintCallable)
@@ -82,6 +89,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float _DeltaTime) override;
+	
 	//Component
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
@@ -90,6 +98,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USkeletalMeshComponent> Weapon = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCapsuleComponent> WeaponCollision = nullptr;
+	
 	//Montage
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
@@ -110,6 +121,9 @@ protected:
 protected:
 	TArray<class UClass*> DamageTypes;
 	TMap<FString, TMap<FString, int>> DamagedMontageSectionNums;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	EWeaponType MyWeaponType;
 
 	//Init
 protected:

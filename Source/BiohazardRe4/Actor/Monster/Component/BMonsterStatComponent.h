@@ -15,9 +15,6 @@ struct FStatStruct
 	float CurrentHp = 0.0f;
 
 	float DetectRadius = 0.0f;
-	float AttackRadius = 0.0f;
-
-	float AttackSweepRadius = 0.0f;
 	float PatrolRadius = 0.0f;
 
 	float RunSpeed = 0.0f;
@@ -26,6 +23,8 @@ struct FStatStruct
 
 	float BaseAttackPower = 0.0f;
 	float GroggyThreshold = 0.0f;
+
+	float AttackRange = 0.0f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -36,19 +35,15 @@ class BIOHAZARDRE4_API UBMonsterStatComponent : public UActorComponent
 public:	
 	UBMonsterStatComponent();
 
-	void SetAttackRadius(float _AttackRadius) { AttackRadius = _AttackRadius; };
-
 	float GetRunSpeed() { return RunSpeed; };
 	float GetWalkSpeed() { return WalkSPeed; };
 	float GetCurrentHp() { return CurrentHp; };
-	float GetAttackRadius() { return AttackRadius; };
+	float GetAttackRange() { return AttackRange; };
 	float GetDetectRadius() { return DetectRadius; };
 	float GetPatrolRadius() { return PatrolRadius; };
 	float GetBaseAttackPower() { return BaseAttackPower; };
 	float GetGroggyThreshold() { return GroggyThreshold; };
-	float GetAttackSweepRadius() { return AttackSweepRadius; };
 	float GetWalkDistanceThreshold() { return WalkDistanceThreshold; };
-
 	void StatInit(const FStatStruct& _StatData);
 
 	void SetHp(float _Hp) { CurrentHp = _Hp; };
@@ -70,12 +65,6 @@ protected:
 	float DetectRadius = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
-	float AttackRadius = 0.0f;
-
-	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
-	float AttackSweepRadius = 0.0f;
-
-	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float PatrolRadius = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
@@ -92,4 +81,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	float GroggyThreshold = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	float AttackRange = 0.0f;
 };

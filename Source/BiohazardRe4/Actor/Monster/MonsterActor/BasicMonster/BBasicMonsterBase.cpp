@@ -5,6 +5,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BiohazardRe4.h"
 
+#include "Components/CapsuleComponent.h"
+
 #include "DamageType/MonsterDamageType/BDMGMonsterSmallTop.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterLargeTop.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterSmallBottom.h"
@@ -52,6 +54,7 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 		Weapon->SetVisibility(false);
 		MyWeaponType = EWeaponType::None;
 
+		SetWeaponCollision(EWeaponName::Hands);
 		return;
 	}
 	else
@@ -59,7 +62,7 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 		LOG_MSG(TEXT("Monster One Hand"));
 		MyWeaponType = EWeaponType::OneHand;
 	}
-
+	
 	//이름, 경로
 	FString Weapon_1 = TEXT("HandAxe");
 	FString WeaponPath_1 = TEXT("/ Script / Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/HandAxe/SK_HandAxe.SK_HandAxe'");
@@ -72,7 +75,6 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 
 	FString Weapon_4 = TEXT("Torch");
 	FString WeaponPath_4 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/Torch/SK_Torch.SK_Torch'");
-
 
 	TArray<TPair<FString, FString>> WeaponNameArray;
 	WeaponNameArray.Reserve(5);
@@ -100,6 +102,7 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 	Weapon->SetSkeletalMesh(LoadedWeaponMesh);
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), SocketName);
 	
+	SetWeaponCollision(StaticCast<EWeaponName>(WeaponIndex));
 }
 
 void ABBasicMonsterBase::InitAI()
@@ -116,6 +119,34 @@ void ABBasicMonsterBase::SetClothesSkeletalMeshByRandomInBeginPlay()
 void ABBasicMonsterBase::SetAnimInstanceAndAnimationMontageInBeginPlay()
 {
 
+}
+
+void ABBasicMonsterBase::SetWeaponCollision(EWeaponName _WeaponName)
+{
+	switch (_WeaponName)
+	{
+	case EWeaponName::Hands:
+		WeaponCollision->SetCapsuleSize(20.0f, 20.0f);
+		break;
+	case EWeaponName::HandAxe:
+		WeaponCollision->AttachToComponent(Weapon, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("CollisionSocket")));
+		WeaponCollision->SetCapsuleSize(20.0f, 20.0f);
+		break;
+	case EWeaponName::KitchenKnife:
+		WeaponCollision->AttachToComponent(Weapon, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("CollisionSocket")));
+		WeaponCollision->SetCapsuleSize(10.0f, 40.0f);
+		break;
+	case EWeaponName::Sickle:
+		WeaponCollision->AttachToComponent(Weapon, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("CollisionSocket")));
+		WeaponCollision->SetCapsuleSize(10.0f, 30.0f);
+		break;
+	case EWeaponName::Torch:
+		WeaponCollision->AttachToComponent(Weapon, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("CollisionSocket")));
+		WeaponCollision->SetCapsuleSize(20.0f, 20.0f);
+		break;
+	default:
+		break;
+	}
 }
 
 void ABBasicMonsterBase::InitDamageTypes()

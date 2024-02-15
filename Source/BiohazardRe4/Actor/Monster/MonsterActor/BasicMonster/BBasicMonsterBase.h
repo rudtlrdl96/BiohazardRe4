@@ -6,12 +6,13 @@
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "BBasicMonsterBase.generated.h"
 
-UENUM(BlueprintType)
-enum class EWeaponType : uint8
+enum class EWeaponName : uint8
 {
-	None UMETA(DisplayName = "None"),
-	OneHand UMETA(DisplayName = "OneHand"),
-	TwoHands UMETA(DisplayName = "TwoHands"),
+	HandAxe,
+	KitchenKnife,
+	Sickle,
+	Torch,
+	Hands,
 };
 
 UCLASS()
@@ -24,22 +25,25 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	void InitAI();
 
+	//Init Mesh, Animation
+protected:
+	//Top
 	virtual void SetlMeshAndAnimationByRandomInBeginPlay();
 
-	virtual void SetClothesSkeletalMeshByRandomInBeginPlay();
+	//Inner
 	virtual void SetWeaponSkeletalMeshByRandomInBeginPlay();
+	virtual void SetClothesSkeletalMeshByRandomInBeginPlay();
 	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay();
 
+	virtual void SetWeaponCollision(EWeaponName _WeaponName);
+protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	void InitAI();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	TObjectPtr<class USkeletalMeshComponent> BodyBase = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	EWeaponType MyWeaponType;
 
 private:
 	virtual void InitDamageTypes() override;

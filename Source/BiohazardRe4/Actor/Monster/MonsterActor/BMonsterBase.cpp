@@ -19,7 +19,8 @@ ABMonsterBase::ABMonsterBase()
 	PrimaryActorTick.TickInterval = 0.05f;
 
 	bUseControllerRotationYaw = false;
-
+	
+	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCollision"));
 	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
 }
 
@@ -63,74 +64,49 @@ void ABMonsterBase::AttackStart()
 
 void ABMonsterBase::Attack()
 {
-	float SweepRadius = GetAttackSweepRadius();
-	float AttackRange = GetAttackRadius();
+	FName CurSection = GetMesh()->GetAnimInstance()->Montage_GetCurrentSection();
+	FString CurSectionStr = CurSection.ToString();
 
-	const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
-	const FVector End = Start + GetActorForwardVector() * AttackRange;
-	
-	FHitResult OutHitResult;
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
+	FString CurSectionNumberStr = CurSectionStr.Mid(CurSectionStr.Len() - 1, 1);
+	int CurSectionNumberInt = FCString::Atoi(*CurSectionNumberStr);
 
-	bool HitDetected = GetWorld()->SweepSingleByChannel(
-		                           OutHitResult, 
-		                           Start, End, 
-		                           FQuat::Identity, 
-		                           ECC_EngineTraceChannel2, 
-		                           FCollisionShape::MakeSphere(SweepRadius), Params);
-	
-	
-	AActor* HitActor = OutHitResult.GetActor();
-	ACharacter* HitCharacter = Cast<ACharacter>(HitActor);
-
-	if (HitCharacter == nullptr)
+	if (MyWeaponType == EWeaponType::None)
 	{
-		LOG_WARNING(TEXT("Type Casting failed : HitCharacter"));
-	}
-
-	AController* HitController = nullptr;
-	if (HitCharacter != nullptr)
-	{
-		LOG_MSG(TEXT("Monster Attack To %s"), *HitCharacter->GetName());
-
-		HitController = HitCharacter->GetController();
-		if (HitController == nullptr)
+		if (CurSectionNumberInt == 2)
 		{
-			LOG_WARNING(TEXT("HitController is nullptr"));
+			WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("L_Palm")));
+		}
+		else
+		{
+			WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("R_Palm")));
 		}
 	}
 
-	if (HitCharacter != nullptr && HitController != nullptr && HitController->IsPlayerController() == true)
+	TArray<AActor*> HitActors;
+	WeaponCollision->GetOverlappingActors(HitActors, AActor::StaticClass());
+
+	for (AActor* HitActor : HitActors)
 	{
-		FName CurSection = GetMesh()->GetAnimInstance()->Montage_GetCurrentSection();
-		FString CurSectionStr = CurSection.ToString();
-
-		FString CurSectionNumberStr = CurSectionStr.Mid(CurSectionStr.Len() - 1, 1);
-		int CurSectionNumberInt = FCString::Atoi(*CurSectionNumberStr);
-
-		if (DamageTypes.IsValidIndex(CurSectionNumberInt - 1) == false)
+		ACharacter* HitCharacter = Cast<ACharacter>(HitActor);
+		if (HitCharacter == nullptr)
 		{
-			LOG_FATAL(TEXT("CurSectionNumber is invalid : %d , %s"), CurSectionNumberInt, *CurSectionStr);
-			return;
+			continue;
 		}
 
-		UGameplayStatics::ApplyDamage(HitCharacter, Stat->GetBaseAttackPower(), GetController(), this, DamageTypes[CurSectionNumberInt - 1]);
+		if (HitCharacter->IsPlayerControlled() == true)
+		{
+			if (DamageTypes.IsValidIndex(CurSectionNumberInt - 1) == false)
+			{
+				LOG_FATAL(TEXT("CurSectionNumber is invalid : %d , %s"), CurSectionNumberInt, *CurSectionStr);
+				return;
+			}
+
+			UGameplayStatics::ApplyDamage(HitCharacter, Stat->GetBaseAttackPower(), GetController(), this, DamageTypes[CurSectionNumberInt - 1]);
+		}
 	}
 
-#if ENABLE_DRAW_DEBUG
-	
-	FColor DebugColor = FColor::Green;
 
-	if (HitController != nullptr && HitController->IsPlayerController() == true)
-	{
-		DebugColor = FColor::Red;
-	}
 
-	FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
-	float CapsuleHalfHeight = AttackRange * 0.5f;
-
-	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, SweepRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DebugColor, false, 2.5f);
-#endif
 }
 
 void ABMonsterBase::SetDamagedSectionNums()

@@ -45,7 +45,7 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 	}
 
 	FVector MyLocation = MyCharacter->GetActorLocation();
-	float AttackRange = MyStatInterface->GetAttackRadius();
+	float AttackRange = MyStatInterface->GetAttackRange();
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, MyPawn);
@@ -68,14 +68,24 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 			APawn* Pawn = Cast<APawn>(OverlapResult.GetActor());
 			if (Pawn && Pawn->GetController()->IsPlayerController())
 			{
-				DebugColor = FColor::Red;
-				bIsFind = true;
-				break;
+				FVector Forward = MyCharacter->GetActorForwardVector();
+				FVector MonsterToCharacter = Pawn->GetActorLocation() - MyLocation;
+				
+				Forward.Normalize();
+				MonsterToCharacter.Normalize();
+
+				float Dot = FVector::DotProduct(Forward, MonsterToCharacter);
+				if (Dot >= 0.8f)
+				{
+					DebugColor = FColor::Red;
+
+					OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, true);
+					break;
+				}
 			}
 		}
 	}
 
-	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, bIsFind);
 
 #if ENABLE_DRAW_DEBUG
 	DrawDebugSphere(CurWorld, MyLocation, AttackRange, 16, DebugColor, false, 0.2f);

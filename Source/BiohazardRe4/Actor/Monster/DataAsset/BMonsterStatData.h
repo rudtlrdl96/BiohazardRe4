@@ -25,12 +25,6 @@ public:
 	float DetectRadius = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Stat)
-	float AttackRadius = 0.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = Stat)
-	float AttackSweepRadius = 0.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = Stat)
 	float PatrolRadius = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Stat)
@@ -47,4 +41,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Stat)
 	float GroggyThreshold = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Stat)
+	float AttackRange = 0.0f;
 };

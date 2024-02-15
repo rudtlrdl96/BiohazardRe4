@@ -4,14 +4,15 @@
 #include "Actor/Monster/MonsterActor/ChainsawMan/BChainsawMan.h"
 
 #include "Engine/DamageEvents.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "BiohazardRe4.h"
 
 #include "DamageType/MonsterDamageType/BDMGMonsterSmallTop.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterLargeTop.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterSmallBottom.h"
 #include "DamageType/MonsterDamageType/BDMGMonsterLargeBottom.h"
 
+#include "BiohazardRe4.h"
 #include "Actor/Monster/DataAsset/BMonsterStatData.h"
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
 #include "Actor/Monster/AIController/BAIChainsawManController.h"
@@ -28,6 +29,8 @@ ABChainsawMan::ABChainsawMan()
 		Weapon->SetSkeletalMesh(ChainsawSkeletalMeshRef.Object);
 		Weapon->SetCollisionProfileName(TEXT("NoCollision"));
 	}
+
+	MyWeaponType = EWeaponType::TwoHands;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ChainsawAttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_ChainsawManAttack.AM_ChainsawManAttack'"));
 	
@@ -73,6 +76,9 @@ void ABChainsawMan::Attack()
 void ABChainsawMan::BeginPlay()
 {
 	Super::BeginPlay();
+
+	WeaponCollision->AttachToComponent(Weapon, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("CollisionSocket")));
+	WeaponCollision->SetCapsuleSize(25.0f, 50.0f);
 }
 
 void ABChainsawMan::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)

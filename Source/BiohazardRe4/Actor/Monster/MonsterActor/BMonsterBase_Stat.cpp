@@ -12,9 +12,6 @@ void ABMonsterBase::StatInit(const UBMonsterStatData* _DataAsset)
 	StatStruct.MaxHp = _DataAsset->MaxHp;
 	StatStruct.CurrentHp = _DataAsset->CurrentHp;
 
-	StatStruct.AttackRadius = _DataAsset->AttackRadius;
-	StatStruct.AttackSweepRadius = _DataAsset->AttackSweepRadius;
-
 	StatStruct.DetectRadius = _DataAsset->DetectRadius;
 	StatStruct.PatrolRadius = _DataAsset->PatrolRadius;
 
@@ -25,17 +22,9 @@ void ABMonsterBase::StatInit(const UBMonsterStatData* _DataAsset)
 	StatStruct.BaseAttackPower = _DataAsset->BaseAttackPower;
 	StatStruct.GroggyThreshold = _DataAsset->GroggyThreshold;
 
+	StatStruct.AttackRange = _DataAsset->AttackRange;
+
 	Stat->StatInit(StatStruct);
-}
-
-float ABMonsterBase::GetAttackRadius() const
-{
-	return Stat->GetAttackRadius();
-}
-
-float ABMonsterBase::GetAttackSweepRadius() const
-{
-	return Stat->GetAttackSweepRadius();
 }
 
 float ABMonsterBase::GetDetectRadius() const
@@ -61,6 +50,11 @@ float ABMonsterBase::GetRunSpeed() const
 float ABMonsterBase::GetWalkSpeed() const
 {
 	return Stat->GetWalkSpeed();
+}
+
+float ABMonsterBase::GetAttackRange() const
+{
+	return Stat->GetAttackRange();
 }
 
 float ABMonsterBase::GetWalkDistanceThreshold() const
