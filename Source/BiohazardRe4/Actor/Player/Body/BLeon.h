@@ -429,6 +429,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FTransform GetWeaponLeftSocketTransform() const;
 
+	UFUNCTION(BlueprintCallable)
+	void CutSceneDeleteWeapon();
 
 	virtual void WeaponPutOutStart() override;
 	virtual void WeaponPutOutEnd() override;

@@ -474,6 +474,17 @@ FTransform ABLeon::GetWeaponLeftSocketTransform() const
 	return CurrentWeapon->GetLeftHandSocketTransform();
 }
 
+void ABLeon::CutSceneDeleteWeapon()
+{
+	DeleteCurrentWeapon();
+	UseWeaponCode = EItemCode::Empty;
+
+	bIsGunReload = false;
+	bIsGunRecoil = false;
+
+	LeonWeaponSwap = ELeonWeaponSwap::None;
+}
+
 void ABLeon::WeaponPutOutStart()
 {
 	LOG_MSG(TEXT("Leon Weapon PutOutStart"));
