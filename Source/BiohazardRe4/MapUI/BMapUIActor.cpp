@@ -152,6 +152,12 @@ void ABMapUIActor::BeginPlay()
 
 	//플레이어 컴포넌트
 	MainPlayer = Cast<ABLeon>(UGameplayStatics::GetPlayerPawn(this, 0));
+
+	FVector PlayerLocation = MainPlayer->GetActorLocation() * MapScale;
+	PlayerSprite->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 2.f });
+
+	FRotator PlayerRotation = MainPlayer->GetActorRotation();
+	PlayerSprite->SetRelativeRotation({ 0.f, PlayerRotation.Yaw + 270.f, 90.f });
 }
 
 // Called every frame
