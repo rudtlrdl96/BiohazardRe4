@@ -16,7 +16,6 @@
 ABMonsterBase::ABMonsterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickInterval = 0.05f;
 
 	bUseControllerRotationYaw = false;
 	
