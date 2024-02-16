@@ -2171,16 +2171,18 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 	FName Path;
 	LerpSocketStart = TEXT("");
 
+	AActor* NewWeaponActor = nullptr;
+
 	// Todo : 런타임 로딩이 아닌 생성자에서 로딩하도록 변경
 	switch (_WeaponCode)
 	{
 	case EItemCode::Handgun_SR09R: // Pistol
-		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Pistol_SR09R.BP_Leon_Pistol_SR09R'");
+		NewWeaponActor = GetWorld()->SpawnActor<AActor>(PistolActor);
 		LerpSocketEnd = TEXT("R_PistolSocket");
 		bIsLerpWeaponChange = false;
 		break;
 	case EItemCode::Shotgun_W870: // Shotgun
-		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Shotgun_W870.BP_Leon_Shotgun_W870'");
+		NewWeaponActor = GetWorld()->SpawnActor<AActor>(ShotgunActor);
 		LerpSocketStart = TEXT("ShotgunSpineSocket");
 		LerpSocketEnd = TEXT("R_ShotgunSocket");
 		bIsLerpWeaponChange = true;
@@ -2202,7 +2204,7 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 		SocketRotationLerpTime = 0.0f;
 		break;
 	case EItemCode::Rifle_SRM1903: // Rifle
-		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Gun/BP_Leon_Rifle_SRM1903.BP_Leon_Rifle_SRM1903'");
+		NewWeaponActor = GetWorld()->SpawnActor<AActor>(RifleActor);
 		LerpSocketStart = TEXT("RifleSpineSocket");
 		LerpSocketEnd = TEXT("R_RifleSocket");
 		bIsLerpWeaponChange = true;
@@ -2224,17 +2226,17 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 		SocketRotationLerpTime = 0.0f;
 		break;
 	case EItemCode::CombatKnife: // Knife
-		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Knife/BP_Leon_Knife_CombatKnife.BP_Leon_Knife_CombatKnife'");
+		NewWeaponActor = GetWorld()->SpawnActor<AActor>(KnifeActor);
 		LerpSocketEnd = TEXT("R_KnifeSocket");
 		bIsLerpWeaponChange = false;
 		break;
 	case EItemCode::Grenade: // Grenade
-		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Grenade/BP_Leon_Grenade_HandGrenade.BP_Leon_Grenade_HandGrenade'");
+		NewWeaponActor = GetWorld()->SpawnActor<AActor>(GrenadeActor);
 		LerpSocketEnd = TEXT("R_GrenadeSocket");
 		bIsLerpWeaponChange = false;
 		break;
 	case EItemCode::Flashbang: // Flashbang
-		Path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Actor/Player/Weapon/Grenade/BP_Leon_Grenade_Flashbang.BP_Leon_Grenade_Flashbang'");
+		NewWeaponActor = GetWorld()->SpawnActor<AActor>(FlashbangActor);
 		LerpSocketEnd = TEXT("R_FlashbangSocket");
 		bIsLerpWeaponChange = false;
 		break;
@@ -2253,15 +2255,6 @@ ABLeonWeapon* ABLeon::CreateWeapon(EItemCode _WeaponCode)
 	}
 	break;
 	}
-
-	UBlueprint* ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), NULL, *Path.ToString()));
-
-	if (nullptr == ObjectToSpawn)
-	{
-		LOG_FATAL(TEXT("Failed Find Weapon Class"));
-	}
-
-	AActor* NewWeaponActor = GetWorld()->SpawnActor<AActor>(ObjectToSpawn->GeneratedClass);
 
 	if (nullptr == NewWeaponActor)
 	{

@@ -668,6 +668,19 @@ private:
 
 	FVector GateForward = FVector::ZeroVector;
 
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	TSubclassOf<ABLeonWeapon> KnifeActor = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	TSubclassOf<ABLeonWeapon> PistolActor = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	TSubclassOf<ABLeonWeapon> ShotgunActor = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	TSubclassOf<ABLeonWeapon> RifleActor = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	TSubclassOf<ABLeonWeapon> GrenadeActor = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	TSubclassOf<ABLeonWeapon> FlashbangActor = nullptr;
+
 	UPROPERTY(EditAnywhere, Category = Input)
 	ABCollisionObserverSphere* InteractionObserver = nullptr;
 
