@@ -47,7 +47,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Item")
 	uint32 bIsPickup : 1;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere)
