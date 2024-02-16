@@ -40,9 +40,9 @@
 #include "Generic/BCollisionObserverSphere.h"
 #include "Actor/Merchant/Merchant.h"
 
-const FVector ABLeon::StandSocketOffset = FVector(-20.0f, 35.0f, -12.0f);
-const FVector ABLeon::GunAimSocketOffset = FVector(-20.0f, 35.0f, -1.0f);
-const FVector ABLeon::GreanadeAimSocketOffset = FVector(-20.0f, 50.0f, -12.0f);
+const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
+const FVector ABLeon::GunAimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
+const FVector ABLeon::GreanadeAimSocketOffset = FVector(0.0f, 50.0f, -12.0f);
 
 const float ABLeon::StandSpringArmLength = 80.0f;
 const float ABLeon::GunAimSpringArmLength = 30.0f;
