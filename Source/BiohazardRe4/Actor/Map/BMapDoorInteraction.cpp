@@ -5,4 +5,7 @@
 
 ABMapDoorInteraction::ABMapDoorInteraction()
 {
+	bInValue = false;
+	bFront = false;
+	bBack = false;
 }

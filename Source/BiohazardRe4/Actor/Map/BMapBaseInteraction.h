@@ -31,6 +31,31 @@ public:
 	{
 		return bIsOpen;
 	}
+	UFUNCTION(BlueprintCallable)
+	bool IsFastOpen() const
+	{
+		return bIsFastOpen;
+	}
+	UFUNCTION(BlueprintCallable)
+	bool IsClose() const
+	{
+		return bIsClose;
+	}
+	UFUNCTION(BlueprintCallable)
+	void IsSetOpen(uint8 Value) 
+	{
+		bIsOpen = Value;
+	}
+	UFUNCTION(BlueprintCallable)
+	void IsSetFastOpen(uint8 Value) 
+	{
+		bIsFastOpen=Value;
+	}
+	UFUNCTION(BlueprintCallable)
+	void IsSetCloseValue(uint8 Value)
+	{
+		bIsClose = Value;
+	}
 	UPROPERTY(EditAnywhere, Category = "Open")
 	UBoxComponent* ATrigger = nullptr;
 	virtual bool AbleInteraction() const override;
@@ -41,9 +66,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void MapObjClose();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void MapObjFastOpen();
 protected:
 
 	uint8 bIsOpen : 1;
+	uint8 bIsClose : 1;
+	uint8 bIsFastOpen : 1;
 	UPROPERTY(BlueprintReadWrite, Category = "InterValue")
 	uint8 bInter : 1;
 };

@@ -11,6 +11,8 @@ ABMapBaseInteraction::ABMapBaseInteraction()
 	PrimaryActorTick.bCanEverTick = true;
 	bIsOpen = false;
 	bInter = false;
+	bIsFastOpen = false;
+	bIsClose = false;
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 	ATrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger A"));
@@ -52,5 +54,10 @@ void ABMapBaseInteraction::MapObjOpen()
 void ABMapBaseInteraction::MapObjClose()
 {
 	bIsOpen = false;
+}
+
+void ABMapBaseInteraction::MapObjFastOpen()
+{
+	bIsFastOpen = true;
 }
 
