@@ -14,15 +14,12 @@ void ABLeon::OpenDoorEnter()
 	bIsCrouch = false;
 	bIsPlayGetItem = false;
 
-	KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
-
-	bAbleComboInput = false;
-	bIsComboEnd = false;
+	bIsOpenEnd = false;
 }
 
 void ABLeon::OpenDoorUpdate(float _DeltaTime)
 {
-	if (true == bIsComboEnd)
+	if (true == bIsOpenEnd)
 	{
 		if (true == AbleAim() && true == bIsAim)
 		{
@@ -46,6 +43,4 @@ void ABLeon::OpenDoorUpdate(float _DeltaTime)
 
 void ABLeon::OpenDoorExit()
 {
-	bAbleComboInput = false;
-	bIsComboEnd = false;
 }

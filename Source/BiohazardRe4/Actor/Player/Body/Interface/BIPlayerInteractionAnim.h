@@ -29,4 +29,5 @@ public:
 	virtual void FallTraceActive() = 0;
 	virtual void FallLandingEnd() = 0;
 	virtual void GravityActive() = 0;
+	virtual void DoorOpenEnd() = 0;
 };

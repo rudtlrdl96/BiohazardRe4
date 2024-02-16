@@ -36,7 +36,7 @@ void ABMapBaseInteraction::Tick(float DeltaTime)
 
 bool ABMapBaseInteraction::AbleInteraction() const
 {
-	return bInter;
+	return !bIsOpen;
 }
 
 EInteraction ABMapBaseInteraction::GetInteractionType() const

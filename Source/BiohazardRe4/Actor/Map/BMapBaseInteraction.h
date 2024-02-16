@@ -35,13 +35,14 @@ public:
 	UBoxComponent* ATrigger = nullptr;
 	virtual bool AbleInteraction() const override;
 	virtual EInteraction GetInteractionType() const override;
-protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void MapObjOpen();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void MapObjClose();
+protected:
+
 	uint8 bIsOpen : 1;
 	UPROPERTY(BlueprintReadWrite, Category = "InterValue")
 	uint8 bInter : 1;

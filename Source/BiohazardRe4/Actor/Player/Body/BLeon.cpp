@@ -9,6 +9,7 @@
 #include "MathUtil.h"
 #include "Components/InputComponent.h"
 #include "Components/SceneComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
@@ -27,6 +28,7 @@
 #include "../Weapon/BDrawGrenadeAim.h"
 #include "../../Map/BJumpObstacleTrigger.h"
 #include "../../Map/BCliffLineTrigger.h"
+#include "Actor/Map/BMapBaseInteraction.h"
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
 #include "Item/BItem.h"
@@ -214,9 +216,12 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 	case ELeonState::Damage:
 	case ELeonState::Death:
 	case ELeonState::ObstacleJump:
+	case ELeonState::OpenGate:
+	case ELeonState::Parry:
+	case ELeonState::CutScene00:
 		return 0.0f;
 	}
-
+	
 	bool bIsSafeDamage = false;
 
 	FVector AttackerLocation = DamageCauser->GetActorLocation();
@@ -983,14 +988,10 @@ void ABLeon::TryInteraction()
 		FsmComp->ChangeState(TO_KEY(ELeonState::Fall));
 	}
 	return;
-	case EInteraction::OpenDoor:
-	{
-		int a = 0;
-	}
-	return;
-	case EInteraction::DropItem:
-	{
-		// Todo : GetItem
+	case EInteraction::OpenDrawer:	{
+		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
+
+		DoorInteraction->MapObjOpen();
 
 		switch (LeonFSMState)
 		{
@@ -1012,12 +1013,54 @@ void ABLeon::TryInteraction()
 			return;
 		}
 
+		bIsPlayGetItem = true;
+	}
+	return;
+	case EInteraction::OpenGate:
+	{
+		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
+		DoorInteraction->MapObjOpen();
+
+		GateForward = DoorInteraction->ATrigger->GetForwardVector();
+
+		FsmComp->ChangeState(TO_KEY(ELeonState::OpenGate));
+	}
+	return;
+	case EInteraction::OpenDoor:
+	{
+		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
+		DoorInteraction->MapObjOpen();
+		FsmComp->ChangeState(TO_KEY(ELeonState::OpenDoor));
+	}
+	return;
+	case EInteraction::DropItem:
+	{
 		ABItem* Item = Cast<ABItem>(InteractionObject);
 		if (nullptr == Item || false == Item->bCanPickup)
 		{
 			return;
 		}
 		Item->PickUp();
+
+		switch (LeonFSMState)
+		{
+		case ELeonState::Idle:
+		case ELeonState::Walk:
+		case ELeonState::Jog:
+			break;
+		default:
+			return;
+		}
+
+		if (true == bIsGunReload)
+		{
+			return;
+		}
+
+		if (true == bIsGunReload)
+		{
+			return;
+		}
 
 		bIsPlayGetItem = true;
 	}
@@ -1392,9 +1435,55 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			}
 		}
 		break;
+		case EInteraction::OpenDrawer:
+		{
+			switch (LeonFSMState)
+			{
+			case ELeonState::Jog:
+				continue;
+			}
+
+			ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(Overlaps[i]);
+
+			DoorInteraction->AbleInteraction();
+
+			FVector ActorForward = GetActorForwardVector();
+			ActorForward.Z = 0;
+			ActorForward.Normalize();
+
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, DoorInteraction->ATrigger->GetForwardVector())));
+
+			if (45 < Angle)
+			{
+				continue;
+			}
+		}
+		break;
+		case EInteraction::OpenGate:
+		{
+			ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(Overlaps[i]);
+
+			DoorInteraction->AbleInteraction();
+
+			FVector ActorForward = GetActorForwardVector();
+			ActorForward.Z = 0;
+			ActorForward.Normalize();
+
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, DoorInteraction->ATrigger->GetForwardVector())));
+
+			if (45 < Angle)
+			{
+				continue;
+			}
+		}
+		break;
 		case EInteraction::OpenDoor:
 		{
 			// Todo : OpenDoor
+			ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(Overlaps[i]);
+
+			DoorInteraction->AbleInteraction();
+
 
 			continue;
 		}
@@ -1809,6 +1898,11 @@ void ABLeon::GravityActive()
 	GetMesh()->SetCollisionProfileName("PlayerOverlap");
 }
 
+void ABLeon::DoorOpenEnd()
+{
+	bIsOpenEnd = true;
+}
+
 void ABLeon::ReloadActive()
 {
 	if (false == AbleReload())
@@ -1984,6 +2078,12 @@ void ABLeon::CreateFSM()
 	ParryFSMState.UpdateDel.BindUObject(this, &ABLeon::ParryUpdate);
 	ParryFSMState.ExitDel.BindUObject(this, &ABLeon::ParryExit);
 	FsmComp->CreateState(TO_KEY(ELeonState::Parry), ParryFSMState);
+
+	UBFsm::FStateCallback OpenGateFSMState;
+	OpenGateFSMState.EnterDel.BindUObject(this, &ABLeon::OpenGateEnter);
+	OpenGateFSMState.UpdateDel.BindUObject(this, &ABLeon::OpenGateUpdate);
+	OpenGateFSMState.ExitDel.BindUObject(this, &ABLeon::OpenGateExit);
+	FsmComp->CreateState(TO_KEY(ELeonState::OpenGate), OpenGateFSMState);
 
 	UBFsm::FStateCallback OpenDoorFSMState;
 	OpenDoorFSMState.EnterDel.BindUObject(this, &ABLeon::OpenDoorEnter);

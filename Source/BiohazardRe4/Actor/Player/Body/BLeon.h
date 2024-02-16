@@ -52,6 +52,7 @@ enum class ELeonState : uint8
 	Fall			UMETA(DisplayName = "Fall"),
 	Parry			UMETA(DisplayName = "Parry"),
 	OpenDoor		UMETA(DisplayName = "OpenDoor"),
+	OpenGate		UMETA(DisplayName = "OpenGate"),
 	BreakBox		UMETA(DisplayName = "BreakBox"),
 	CutScene00		UMETA(DisplayName = "CutScene00"),
 };
@@ -474,6 +475,7 @@ public:
 	virtual void FallTraceActive() override;
 	virtual void FallLandingEnd() override;
 	virtual void GravityActive() override;
+	virtual void DoorOpenEnd() override;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat)
 	FPlayerStat Stat;
@@ -551,6 +553,7 @@ private:
 	uint32 bIsDeathEnd : 1 = false;
 	uint32 bIsThrowingEnd : 1 = false;
 	uint32 bIsKickEnd : 1 = false;
+	uint32 bIsOpenEnd : 1 = false;
 
 	FVector InteractionStartLocation = FVector::ZeroVector;
 	FRotator InteractionStartRotation = FRotator::ZeroRotator;
@@ -662,6 +665,8 @@ private:
 	FVector FallStart = FVector::ZeroVector;
 	FVector FallEnd = FVector::ZeroVector;
 	FVector FallDir = FVector::ZeroVector;
+
+	FVector GateForward = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	ABCollisionObserverSphere* InteractionObserver = nullptr;
@@ -801,6 +806,10 @@ private:
 	void ParryEnter();
 	void ParryUpdate(float _DeltaTime);
 	void ParryExit();
+
+	void OpenGateEnter();
+	void OpenGateUpdate(float _DeltaTime);
+	void OpenGateExit();
 
 	void OpenDoorEnter();
 	void OpenDoorUpdate(float _DeltaTime);
