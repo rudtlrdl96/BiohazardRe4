@@ -23,9 +23,9 @@ public:
 
 private:
 
-	ConstructorHelpers::FObjectFinder<USoundWave> DirtSound = nullptr;
-	ConstructorHelpers::FObjectFinder<USoundWave> RockSound = nullptr;
-	ConstructorHelpers::FObjectFinder<USoundWave> WoodSound = nullptr;
-	ConstructorHelpers::FObjectFinder<USoundWave> WaterSound = nullptr;
-	ConstructorHelpers::FObjectFinder<USoundWave> GrassSound = nullptr;
+	USoundWave* DirtSound = nullptr;
+	USoundWave* RockSound = nullptr;
+	USoundWave* WoodSound = nullptr;
+	USoundWave* WaterSound = nullptr;
+	USoundWave* GrassSound = nullptr;
 };

@@ -8,15 +8,15 @@
 UBAnimNotifyPMFootStepSound::UBAnimNotifyPMFootStepSound()
 {
 	static ConstructorHelpers::FObjectFinder<USoundWave> StaticDirtSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Dirt/SW_Leon_58.SW_Leon_58'"));
-	DirtSound = StaticDirtSound;
+	DirtSound = StaticDirtSound.Object;
 	static ConstructorHelpers::FObjectFinder<USoundWave> StaticRockSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Rock/SW_Leon_87.SW_Leon_87'"));
-	RockSound = StaticRockSound;
+	RockSound = StaticRockSound.Object;
 	static ConstructorHelpers::FObjectFinder<USoundWave> StaticWoodSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Wood/SW_Leon_59.SW_Leon_59'"));
-	WoodSound = StaticWoodSound;
+	WoodSound = StaticWoodSound.Object;
 	static ConstructorHelpers::FObjectFinder<USoundWave> StaticWaterSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Water/SW_Leon_60.SW_Leon_60'"));
-	WaterSound = StaticWaterSound;
+	WaterSound = StaticWaterSound.Object;
 	static ConstructorHelpers::FObjectFinder<USoundWave> StaticGrassSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Grass/SW_Leon_49.SW_Leon_49'"));
-	GrassSound = StaticGrassSound;
+	GrassSound = StaticGrassSound.Object;
 }
 
 void UBAnimNotifyPMFootStepSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -41,27 +41,27 @@ void UBAnimNotifyPMFootStepSound::Notify(USkeletalMeshComponent* MeshComp, UAnim
 		{
 		case EPhysicalSurface::SurfaceType1:// Dirt
 		{
-			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), DirtSound.Object, HitResult.ImpactPoint);
+			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), DirtSound, HitResult.ImpactPoint);
 		}
 			break;
 		case EPhysicalSurface::SurfaceType2:// Rock
 		{
-			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), RockSound.Object, HitResult.ImpactPoint);
+			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), RockSound, HitResult.ImpactPoint);
 		}
 			break;
 		case EPhysicalSurface::SurfaceType3:// Wood
 		{
-			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), WoodSound.Object, HitResult.ImpactPoint);
+			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), WoodSound, HitResult.ImpactPoint);
 		}
 			break;
 		case EPhysicalSurface::SurfaceType4:// Water
 		{
-			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), WaterSound.Object, HitResult.ImpactPoint);
+			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), WaterSound, HitResult.ImpactPoint);
 		}
 			break;
 		case EPhysicalSurface::SurfaceType5:// Grass
 		{
-			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), GrassSound.Object, HitResult.ImpactPoint);
+			UGameplayStatics::PlaySoundAtLocation(OwnerActor->GetWorld(), GrassSound, HitResult.ImpactPoint);
 		}
 			break;
 		default:

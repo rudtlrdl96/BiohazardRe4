@@ -16,12 +16,6 @@ ABMonsterMale::ABMonsterMale()
 	InitAI();
 	InitValue();
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale'"));
-	if (AnimRef.Class != nullptr)
-	{
-		GetMesh()->SetAnimInstanceClass(AnimRef.Class);
-	}
-
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.5f;
 }
