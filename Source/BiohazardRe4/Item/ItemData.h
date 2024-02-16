@@ -46,60 +46,54 @@ struct FBItemData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	FBItemData()
-		: ItemName(""), ItemSize(1, 1), Scale(1, 1, 1), StoreScale(1, 1, 1)
-	{
-
-	}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EItemCode ItemCode = EItemCode::Empty;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EItemCode ItemCode;
+	FName ItemName = "";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName ItemName;
+	FString ItemInformation = "";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ItemInformation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntPoint ItemSize;
+	FIntPoint ItemSize = FIntPoint(0, 0);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Data")
-	int32 MaxCount;	// 최대 몇개까지 보유할 수 있는지
+	int32 MaxCount = 1;	// 최대 몇개까지 보유할 수 있는지
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
-	UStaticMesh* Mesh;
+	UStaticMesh* Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
-	FVector Location;
+	FVector Location = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
-	FRotator Rotation;
+	FRotator Rotation = FRotator::ZeroRotator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
-	FVector Scale;
+	FVector Scale = FVector::OneVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
-	FVector TurnLocation;
+	FVector TurnLocation = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
-	FRotator TurnRotation;
+	FRotator TurnRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
-	int32 MagazineCapacity;
+	int32 MagazineCapacity = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Resource")
-	class UPaperSprite* Icon;
+	class UPaperSprite* Icon = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
-	FVector StoreLocation;
+	FVector StoreLocation = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
-	FRotator StoreRotation;
+	FRotator StoreRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
-	FVector StoreScale;
+	FVector StoreScale = FVector::OneVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
-	int Price;
+	int Price = 0;
 };

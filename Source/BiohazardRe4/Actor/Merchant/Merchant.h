@@ -29,6 +29,12 @@ struct FSaleItem
 {
 	GENERATED_BODY()
 
+	FSaleItem()
+		: ItemCode(EItemCode::Empty), Price(0), Count(0), CurCount(0)
+	{
+
+	}
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EItemCode ItemCode;
 
