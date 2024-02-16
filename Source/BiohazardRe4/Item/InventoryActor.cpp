@@ -531,6 +531,7 @@ void ABInventoryActor::Cancel()
 	{
 		// 선택하는 상태일때는 기본상태로 돌아온다
 		FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+		UGameplayStatics::PlaySound2D(this, Sound_ItemCancel);
 		return;
 	}
 	if (Key == TO_KEY(EInventoryState::Default))
@@ -625,6 +626,10 @@ void ABInventoryActor::DefaultUpdate(float _DeltaTime)
 		UBInventorySlot* Slot = Cast<UBInventorySlot>(Res.Component);
 		if (Slot && Slot != SelectSlot)
 		{
+			// 새로운 슬롯
+
+			UGameplayStatics::PlaySound2D(this, Sound_CursorMove);
+
 			SelectSlot = Slot;
 			Cursor->SetCursorPosition(SelectSlot);
 
@@ -681,6 +686,9 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 		UBInventorySlot* Slot = Cast<UBInventorySlot>(Res.Component);
 		if (Slot && SelectSlot != Slot)
 		{
+			// 새로운 슬롯
+			UGameplayStatics::PlaySound2D(this, Sound_CursorMove);
+
 			SelectSlot = Slot;
 			// 일단 이동시켜놓고 있음.
 			// 다른 아이템을 덮어씌우는 문제 있음
@@ -713,6 +721,7 @@ void ABInventoryActor::SelectEnter()
 {
 	//BehaviorWidget->SetFocus();
 	BehaviorWidget->WidgetOn();
+	UGameplayStatics::PlaySound2D(this, Sound_ItemSelect);
 }
 
 void ABInventoryActor::SelectExit()

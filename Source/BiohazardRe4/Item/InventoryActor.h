@@ -210,6 +210,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
 
+	// _________Sound____________
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_CursorMove = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemSelect = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemCancel = nullptr;
+
 	// _________Inventory__________
 
 	UPROPERTY()

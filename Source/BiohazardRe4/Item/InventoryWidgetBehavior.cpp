@@ -3,7 +3,7 @@
 
 #include "InventoryWidgetBehavior.h"
 #include "Blueprint/WidgetTree.h"
-#include "Components/Button.h"
+#include "InventoryWidgetButton.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -20,10 +20,10 @@ void UBInventoryWidgetBehavior::NativeOnInitialized()
 	Panels[3] = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("CanvasPanel_3")));
 
 	Buttons.SetNum(4);
-	Buttons[0] = Cast<UButton>(GetWidgetFromName(TEXT("Button_0")));
-	Buttons[1] = Cast<UButton>(GetWidgetFromName(TEXT("Button_1")));
-	Buttons[2] = Cast<UButton>(GetWidgetFromName(TEXT("Button_2")));
-	Buttons[3] = Cast<UButton>(GetWidgetFromName(TEXT("Button_3")));
+	Buttons[0] = Cast<UBInventoryWidgetButton>(GetWidgetFromName(TEXT("Button_0")));
+	Buttons[1] = Cast<UBInventoryWidgetButton>(GetWidgetFromName(TEXT("Button_1")));
+	Buttons[2] = Cast<UBInventoryWidgetButton>(GetWidgetFromName(TEXT("Button_2")));
+	Buttons[3] = Cast<UBInventoryWidgetButton>(GetWidgetFromName(TEXT("Button_3")));
 	
 	Images.SetNum(4);
 	Images[0] = Cast<UImage>(GetWidgetFromName(TEXT("Image_0")));
@@ -106,91 +106,64 @@ void UBInventoryWidgetBehavior::SetButton(int Index, State_BehaviorButton State)
 		Images[Index]->SetBrushResourceObject(Icons[0]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Equip", "장비하기"));
 		{
-			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
-			Buttons[Index]->OnClicked.Clear();
-			Buttons[Index]->OnClicked.Add(Delegate);
-			Buttons[Index]->OnHovered.Clear();
-			Buttons[Index]->OnUnhovered.Clear();
+			Buttons[Index]->OnClickedEvent.BindUFunction(InventoryActor, FName("WeaponEquip"));
+			Buttons[Index]->OnHoveredEvent.Unbind();
+			Buttons[Index]->OnUnhoveredEvent.Unbind();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Unequip:
 		Images[Index]->SetBrushResourceObject(Icons[1]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Unequip", "해제하기"));
 		{
-			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("WeaponEquip"));
-			Buttons[Index]->OnClicked.Clear();
-			Buttons[Index]->OnClicked.Add(Delegate);
-			Buttons[Index]->OnHovered.Clear();
-			Buttons[Index]->OnUnhovered.Clear();
+			Buttons[Index]->OnClickedEvent.BindUFunction(InventoryActor, FName("WeaponEquip"));
+			Buttons[Index]->OnHoveredEvent.Unbind();
+			Buttons[Index]->OnUnhoveredEvent.Unbind();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Investigate:
 		Images[Index]->SetBrushResourceObject(Icons[2]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Investigate", "조사하기"));
 		{
-			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("StartInvestigate"));
-			Buttons[Index]->OnClicked.Clear();
-			Buttons[Index]->OnClicked.Add(Delegate);
-			Buttons[Index]->OnHovered.Clear();
-			Buttons[Index]->OnUnhovered.Clear();
+			Buttons[Index]->OnClickedEvent.BindUFunction(InventoryActor, FName("StartInvestigate"));
+			Buttons[Index]->OnHoveredEvent.Unbind();
+			Buttons[Index]->OnUnhoveredEvent.Unbind();
 		}
 		break;
 	case UBInventoryWidgetBehavior::QuickSlot:
 		Images[Index]->SetBrushResourceObject(Icons[3]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "QuickSlot", "단축키 등록"));
 		{
-			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("OpenQuickSlot"));
-			Buttons[Index]->OnClicked.Clear();
-			Buttons[Index]->OnClicked.Add(Delegate);
-			Buttons[Index]->OnHovered.Clear();
-			Buttons[Index]->OnUnhovered.Clear();
+			Buttons[Index]->OnClickedEvent.BindUFunction(InventoryActor, FName("OpenQuickSlot"));
+			Buttons[Index]->OnHoveredEvent.Unbind();
+			Buttons[Index]->OnUnhoveredEvent.Unbind();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Drop:
 		Images[Index]->SetBrushResourceObject(Icons[4]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Drop", "버리기"));
 		{
-			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("DropItem"));
-			Buttons[Index]->OnClicked.Clear();
-			Buttons[Index]->OnClicked.Add(Delegate);
-			Buttons[Index]->OnHovered.Clear();
-			Buttons[Index]->OnUnhovered.Clear();
+			Buttons[Index]->OnClickedEvent.BindUFunction(InventoryActor, FName("DropItem"));
+			Buttons[Index]->OnHoveredEvent.Unbind();
+			Buttons[Index]->OnUnhoveredEvent.Unbind();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Crafting:
 		Images[Index]->SetBrushResourceObject(Icons[5]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Crafting", "제조하기"));
 		{
-			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("OpenCraft"));
-			Buttons[Index]->OnClicked.Clear();
-			Buttons[Index]->OnClicked.Add(Delegate);
-			Buttons[Index]->OnHovered.Clear();
-			Buttons[Index]->OnUnhovered.Clear();
+			Buttons[Index]->OnClickedEvent.BindUFunction(InventoryActor, FName("OpenCraft"));
+			Buttons[Index]->OnHoveredEvent.Unbind();
+			Buttons[Index]->OnUnhoveredEvent.Unbind();
 		}
 		break;
 	case UBInventoryWidgetBehavior::Use:
 		Images[Index]->SetBrushResourceObject(Icons[6]);
 		Texts[Index]->SetText(NSLOCTEXT("UI", "Use", "사용하기"));
 		{
-			FScriptDelegate Delegate;
-			Delegate.BindUFunction(InventoryActor, FName("ItemUse"));
-			Buttons[Index]->OnClicked.Clear();
-			Buttons[Index]->OnClicked.Add(Delegate);
-			Buttons[Index]->OnHovered.Clear();
-			Buttons[Index]->OnUnhovered.Clear();
+			Buttons[Index]->OnClickedEvent.BindUFunction(InventoryActor, FName("ItemUse"));
 
-			FScriptDelegate Delegate1;
-			Delegate1.BindUFunction(InventoryActor, FName("SetHealPreview"));
-			Buttons[Index]->OnHovered.Add(Delegate1);
-			FScriptDelegate Delegate2;
-			Delegate2.BindUFunction(InventoryActor, FName("OffHealPreview"));
-			Buttons[Index]->OnUnhovered.Add(Delegate2);
+			Buttons[Index]->OnHoveredEvent.BindUFunction(InventoryActor, FName("SetHealPreview"));
+			Buttons[Index]->OnUnhoveredEvent.BindUFunction(InventoryActor, FName("OffHealPreview"));
 		}
 		break;
 	default:

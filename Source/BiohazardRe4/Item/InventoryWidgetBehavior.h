@@ -20,7 +20,7 @@ class BIOHAZARDRE4_API UBInventoryWidgetBehavior : public UUserWidget
 	UPROPERTY()
 	TArray<class UCanvasPanel*> Panels;
 	UPROPERTY()
-	TArray<class UButton*> Buttons;
+	TArray<class UBInventoryWidgetButton*> Buttons;
 	UPROPERTY()
 	TArray<class UImage*> Images;
 
