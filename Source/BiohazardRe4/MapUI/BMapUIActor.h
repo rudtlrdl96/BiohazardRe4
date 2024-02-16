@@ -60,7 +60,7 @@ public:
 
 	// __________________Base
 	UPROPERTY()
-	const APawn* MainPlayer;
+	class ABLeon* MainPlayer;
 
 	UPROPERTY()
 	FVector StartLocation = {-10000, -10000, -10000};

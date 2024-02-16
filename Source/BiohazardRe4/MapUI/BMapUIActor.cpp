@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "BMapUIWidgetMain.h"
 #include "BMapUIPlayerSprite.h"
+#include "Actor/Player/Body/BLeon.h"
+#include "Actor/Monster/MonsterActor/BMonsterBase.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -149,7 +151,7 @@ void ABMapUIActor::BeginPlay()
 	Widget->SetRangeOfFOV(CameraMinFOV, CameraMaxFOV);
 
 	//플레이어 컴포넌트
-	MainPlayer = UGameplayStatics::GetPlayerPawn(this, 0);
+	MainPlayer = Cast<ABLeon>(UGameplayStatics::GetPlayerPawn(this, 0));
 }
 
 // Called every frame
@@ -185,6 +187,15 @@ void ABMapUIActor::MapUIOn()
 
 	FVector PlayerLocation = MainPlayer->GetActorLocation() * MapScale;
 	Camera->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 300.f });
+
+	MainPlayer->DisableInput(Controller);
+	MainPlayer->CustomTimeDilation = 0;
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(this, ABMonsterBase::StaticClass(), Actors);
+	for (AActor* Actor : Actors)
+	{
+		Actor->CustomTimeDilation = 0;
+	}
 }
 
 void ABMapUIActor::MapUIOff()
@@ -207,6 +218,15 @@ void ABMapUIActor::MapUIOff()
 	SetCameraZoom(45.f);
 
 	Widget->SetVisibility(ESlateVisibility::Collapsed);
+
+	MainPlayer->EnableInput(Controller);
+	MainPlayer->CustomTimeDilation = 1;
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(this, ABMonsterBase::StaticClass(), Actors);
+	for (AActor* Actor : Actors)
+	{
+		Actor->CustomTimeDilation = 1;
+	}
 }
 
 void ABMapUIActor::CameraMoveFunc(const FInputActionValue& Value)
