@@ -40,7 +40,7 @@ public:
 	EItemCode ItemCode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int32 Count;
+	int32 Count = 1;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Item")
 	uint32 bCanPickup : 1;
