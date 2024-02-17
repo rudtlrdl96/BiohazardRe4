@@ -1494,9 +1494,19 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(Overlaps[i]);
 
 			DoorInteraction->AbleInteraction();
+			FVector DirectionVector = DoorInteraction->ATrigger->GetComponentLocation() - GetActorLocation();
+			DirectionVector.Z = 0;
+			DirectionVector.Normalize();
+			FVector ActorForward = GetActorForwardVector();
+			ActorForward.Z = 0;
+			ActorForward.Normalize();
 
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward,DirectionVector)));
 
-			continue;
+			if (45 < Angle)
+			{
+				continue;
+			}
 		}
 		break;
 		case EInteraction::StoreEnter:

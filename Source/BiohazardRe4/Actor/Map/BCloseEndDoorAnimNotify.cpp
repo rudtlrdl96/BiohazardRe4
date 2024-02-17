@@ -17,5 +17,6 @@ void UBCloseEndDoorAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 		Owner->IsSetOpen(false);
 		Owner->IsSetFastOpen(false);
 		Owner->IsSetCloseValue(true);
+		Owner->SetDoorState(EDoorState::None);
 	}
 }

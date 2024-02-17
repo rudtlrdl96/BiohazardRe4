@@ -2,7 +2,8 @@
 
 
 #include "Actor/Map/BMapDoorInteraction.h"
-
+#include "Components/BoxComponent.h"
+#include "BiohazardRe4.h"
 ABMapDoorInteraction::ABMapDoorInteraction()
 {
 	bInValue = false;
@@ -24,21 +25,21 @@ void ABMapDoorInteraction::MapObjFastOpen(const FVector& _Location)
 
 EDoorState ABMapDoorInteraction::GetDoorDirection(const FVector& _Location)
 {
-	FVector DoorFront = GetActorForwardVector();
+	FVector DoorFront = ATrigger->GetForwardVector();
 	DoorFront.Z = 0;
-
-	FVector Direction = _Location - GetActorLocation();
+	DoorFront.Normalize();
+	FVector Direction = _Location - ATrigger->GetComponentLocation();
 	Direction.Z = 0;
 	Direction.Normalize();
 
 	float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(DoorFront, Direction)));
-
+	LOG_MSG(TEXT("%f"),Angle);
 	if (90 < Angle)
 	{
-		return EDoorState::Back;
+		return EDoorState::Front;
 	}
 	else
 	{
-		return EDoorState::Front;
+		return EDoorState::Back;
 	}
 }
