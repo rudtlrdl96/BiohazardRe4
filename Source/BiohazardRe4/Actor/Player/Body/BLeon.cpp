@@ -92,6 +92,7 @@ void ABLeon::BeginPlay()
 void ABLeon::Tick(float _DeltaTime)
 {
 	Super::Tick(_DeltaTime);
+	
 	SpringArmUpdate(_DeltaTime);
 	UseWeaponUpdate(_DeltaTime);
 	WeaponSocketUpdate(_DeltaTime);
@@ -894,7 +895,7 @@ void ABLeon::TryInteraction()
 	switch (InteractionType)
 	{
 	case EInteraction::None:
-		return;
+		break;
 	case EInteraction::AttackMonster:
 	{
 		ABMonsterBase* MonsterActor = Cast<ABMonsterBase>(InteractionActor);
@@ -902,7 +903,7 @@ void ABLeon::TryInteraction()
 		if (nullptr == MonsterActor)
 		{
 			LOG_FATAL(TEXT("Only classes that inherit ABMonsterBase can have a AttackMonster Interaction Type"));
-			return;
+			break;
 		}
 
 		MonsterActor->Parry();
@@ -910,16 +911,15 @@ void ABLeon::TryInteraction()
 		UseWeaponCode = EItemCode::CombatKnife;
 		CurrentWeapon = CreateWeapon(UseWeaponCode);
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
-
 		FsmComp->ChangeState(TO_KEY(ELeonState::Parry));
 	}
-	return;
+	break;
 	case EInteraction::GroggyMonster:
 	{
 		KickLocation = InteractionActor->GetActorLocation();
 		FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
 	}
-	return;
+	break;
 	case EInteraction::JumpObstacle:
 	{
 		ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(InteractionActor);
@@ -927,14 +927,14 @@ void ABLeon::TryInteraction()
 		if (nullptr == TriggerActor)
 		{
 			LOG_FATAL(TEXT("Only classes that inherit ABJumpObstacleTrigger can have a JumpObstacle Interaction Type"));
-			return;
+			break;
 		}
 
 		FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
 
 		if (false == JumpData.bAbleJump)
 		{
-			return;
+			break;
 		}
 
 		FVector ActorForward = GetActorForwardVector();
@@ -945,7 +945,7 @@ void ABLeon::TryInteraction()
 
 		if (45 < Angle)
 		{
-			return;
+			break;
 		}
 
 		JumpStart = JumpData.Start;
@@ -954,7 +954,7 @@ void ABLeon::TryInteraction()
 
 		FsmComp->ChangeState(TO_KEY(ELeonState::ObstacleJump));
 	}
-	return;
+	break;
 	case EInteraction::FallCliff:
 	{
 		ABCliffLineTrigger* TriggerActor = Cast<ABCliffLineTrigger>(InteractionActor);
@@ -962,14 +962,14 @@ void ABLeon::TryInteraction()
 		if (nullptr == TriggerActor)
 		{
 			LOG_FATAL(TEXT("Only classes that inherit ABCliffLineTrigger can have a FallCliff Interaction Type"));
-			return;
+			break;
 		}
 
 		FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
 
 		if (false == JumpData.bAbleJump)
 		{
-			return;
+			break;
 		}
 
 		FVector ActorForward = GetActorForwardVector();
@@ -980,14 +980,14 @@ void ABLeon::TryInteraction()
 
 		if (45 < Angle)
 		{
-			return;
+			break;
 		}
 
 		JumpStart = JumpData.Start;
 		JumpEnd = JumpData.End;
 		JumpDir = JumpData.MoveVector;
 
-		if (300 < JumpStart.Z - JumpEnd.Z)
+		if (250 < JumpStart.Z - JumpEnd.Z)
 		{
 			FallAnimation = ELeonFallAnimation::HighHeight;
 		}
@@ -998,10 +998,9 @@ void ABLeon::TryInteraction()
 
 		FsmComp->ChangeState(TO_KEY(ELeonState::Fall));
 	}
-	return;
+	break;
 	case EInteraction::OpenDrawer:	{
 		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
-
 		DoorInteraction->MapObjOpen(GetActorLocation());
 
 		switch (LeonFSMState)
@@ -1009,48 +1008,38 @@ void ABLeon::TryInteraction()
 		case ELeonState::Idle:
 		case ELeonState::Walk:
 		case ELeonState::Jog:
+		{
+			bIsPlayGetItem = true;
+		}
 			break;
-		default:
-			return;
 		}
-
-		if (true == bIsGunReload)
-		{
-			return;
-		}
-
-		if (true == bIsGunReload)
-		{
-			return;
-		}
-
-		bIsPlayGetItem = true;
 	}
-	return;
+	break;
 	case EInteraction::OpenGate:
 	{
 		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
 		DoorInteraction->MapObjOpen(GetActorLocation());
 
 		GateForward = DoorInteraction->ATrigger->GetForwardVector();
-
 		FsmComp->ChangeState(TO_KEY(ELeonState::OpenGate));
 	}
-	return;
+	break;
 	case EInteraction::OpenDoor:
 	{
 		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
 		DoorInteraction->MapObjOpen(GetActorLocation());
 		FsmComp->ChangeState(TO_KEY(ELeonState::OpenDoor));
 	}
-	return;
+	break;
 	case EInteraction::DropItem:
 	{
 		ABItem* Item = Cast<ABItem>(InteractionObject);
+
 		if (nullptr == Item || false == Item->bCanPickup)
 		{
-			return;
+			break;
 		}
+
 		Item->PickUp();
 
 		switch (LeonFSMState)
@@ -1058,24 +1047,13 @@ void ABLeon::TryInteraction()
 		case ELeonState::Idle:
 		case ELeonState::Walk:
 		case ELeonState::Jog:
+		{
+			bIsPlayGetItem = true;
+		}
 			break;
-		default:
-			return;
 		}
-
-		if (true == bIsGunReload)
-		{
-			return;
-		}
-
-		if (true == bIsGunReload)
-		{
-			return;
-		}
-
-		bIsPlayGetItem = true;
 	}
-	return;
+	break;
 	case EInteraction::StoreEnter:
 	{
 		if (ABMerchant* Merchant = Cast<ABMerchant>(InteractionObject))
@@ -1083,14 +1061,16 @@ void ABLeon::TryInteraction()
 			Merchant->OpenStore();
 		}
 	}
-	return;
+	break;
 	default:
 	{
 		LOG_ERROR(TEXT("Wrong Type Interaction"));
-		return;
 	}
 	break;
 	}
+
+	InteractionObject = nullptr;
+	InteractionActor = nullptr;
 }
 
 bool ABLeon::AbleAim() const
@@ -1347,6 +1327,9 @@ void ABLeon::HealthStateUpdate(float _DeltaTime)
 
 void ABLeon::InteractionUpdate(float _DeltaTime)
 {
+	InteractionActor = nullptr;
+	InteractionObject = nullptr;
+
 	if (false == AbleInteraction())
 	{
 		return;
@@ -1355,7 +1338,7 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 	TArray<AActor*> Overlaps;
 	InteractionObserver->GetOverlappingActors(Overlaps);
 
-	FVector ActorLocation;
+	FVector ActorLocation = GetActorLocation();
 
 	Overlaps.Sort([ActorLocation](const AActor& _Lhs, const AActor& _Rhs)
 		{
@@ -1364,9 +1347,6 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 
 			return DistanceL > DistanceR;
 		});
-
-	InteractionActor = nullptr;
-	InteractionObject = nullptr;
 
 	for (size_t i = 0; i < Overlaps.Num(); i++)
 	{
@@ -1388,6 +1368,19 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 		{
 		case EInteraction::None:
 			continue;
+		case EInteraction::DropItem: 
+		{
+			if (true == bIsGunReload)
+			{
+				continue;
+			}
+
+			if (true == bIsGunReload)
+			{
+				continue;
+			}
+		}
+		break;
 		case EInteraction::JumpObstacle:
 		{
 			ABJumpObstacleTrigger* TriggerActor = Cast<ABJumpObstacleTrigger>(Overlaps[i]);
@@ -1401,6 +1394,13 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			FJumpData JumpData = TriggerActor->GetJumpMetaData(GetActorLocation());
 
 			if (false == JumpData.bAbleJump)
+			{
+				continue;
+			}
+
+			float Dis = FVector::Distance(JumpData.Start, GetActorLocation());
+
+			if (50 < Dis)
 			{
 				continue;
 			}
@@ -1434,6 +1434,13 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 				continue;
 			}
 
+			float Dis = FVector::Distance(JumpData.Start, GetActorLocation());
+
+			if (50 < Dis)
+			{
+				continue;
+			}
+
 			FVector ActorForward = GetActorForwardVector();
 			ActorForward.Z = 0;
 			ActorForward.Normalize();
@@ -1456,7 +1463,12 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 
 			ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(Overlaps[i]);
 
-			DoorInteraction->AbleInteraction();
+			float Dis = FVector::Distance(DoorInteraction->ATrigger->GetComponentLocation(), GetActorLocation());
+
+			if (50 < Dis)
+			{
+				continue;
+			}
 
 			FVector ActorForward = GetActorForwardVector();
 			ActorForward.Z = 0;
@@ -1474,7 +1486,12 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 		{
 			ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(Overlaps[i]);
 
-			DoorInteraction->AbleInteraction();
+			float Dis = FVector::Distance(DoorInteraction->ATrigger->GetComponentLocation(), GetActorLocation());
+
+			if (50 < Dis)
+			{
+				continue;
+			}
 
 			FVector ActorForward = GetActorForwardVector();
 			ActorForward.Z = 0;
@@ -1493,7 +1510,6 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			// Todo : OpenDoor
 			ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(Overlaps[i]);
 
-			DoorInteraction->AbleInteraction();
 			FVector DirectionVector = DoorInteraction->ATrigger->GetComponentLocation() - GetActorLocation();
 			DirectionVector.Z = 0;
 			DirectionVector.Normalize();
@@ -1504,6 +1520,13 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward,DirectionVector)));
 
 			if (45 < Angle)
+			{
+				continue;
+			}
+
+			float Dis = FVector::Distance(DoorInteraction->ATrigger->GetComponentLocation(), GetActorLocation());
+
+			if (50 < Dis)
 			{
 				continue;
 			}
