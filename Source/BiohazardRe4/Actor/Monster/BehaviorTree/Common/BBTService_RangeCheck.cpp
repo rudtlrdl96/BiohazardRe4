@@ -9,6 +9,7 @@
 #include "BiohazardRe4.h"
 #include "Actor/Monster/Define/MonsterDefine.h"
 #include "Actor/Monster/Interface/BMonsterStatInterface.h"
+#include "Actor/Monster/Interface/BMonsterStateInterface.h"
 
 
 void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -42,6 +43,18 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 	if (MyStatInterface == nullptr)
 	{
 		LOG_FATAL(TEXT("MyStatInterface == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
+	}
+
+	IBMonsterStateInterface* MyStateInterface = Cast<IBMonsterStateInterface>(MyCharacter);
+	if (MyStateInterface == nullptr)
+	{
+		LOG_FATAL(TEXT("MyStatInterface == nullptr : UBTService_CheckDistanceToTarget::TickNode"));
+	}
+
+	if (MyStateInterface->GetCurrentState() == EMonsterState::CrossWindowStart ||
+		MyStateInterface->GetCurrentState() == EMonsterState::CrossWindowEnd)
+	{
+		return;
 	}
 
 	FVector MyLocation = MyCharacter->GetActorLocation();

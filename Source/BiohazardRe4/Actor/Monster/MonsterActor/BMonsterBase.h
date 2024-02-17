@@ -32,6 +32,7 @@ enum class EDamagedPart
 };
 
 DECLARE_DELEGATE(FOnLandedByBurstJump)
+DECLARE_DELEGATE(FOnLandedByCrossWindowJump)
 
 UCLASS()
 class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface, public IBInteraction
@@ -47,18 +48,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual EMonsterState GetCurrentState() override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void CrossWindowStart() override;
+	virtual void CrossWindowJumpStart() override;
+
 	virtual void Attack() override;
 	virtual void AttackStart() override;
-	
 	virtual bool isDamaged() override;
 	virtual void DamagedEnd() override;
+	virtual void GroggyEnd() override;
 	
 	virtual void Parry() override;
 	virtual void ParryTimeOn() override;
 	virtual void ParryTimeOff() override;
 	virtual bool isAbleParring() override;
-
-	virtual void GroggyEnd() override;
 
 	virtual void SetCurrentState(EMonsterState _InState) override;
 
@@ -116,6 +119,7 @@ protected:
 protected:
 	FMonsterAttackEnd OnAttackEnd;
 	FOnLandedByBurstJump OnLandedByBurstJump;
+	FOnLandedByCrossWindowJump OnLandedByCrossWindowJump;
 
 	//Variable
 protected:
@@ -163,6 +167,10 @@ protected:
 
 	virtual void DamagedByFlashed();
 	void BurstJumpUpdate();
+
+	void CrossWindow();
+	void CrossWindowJumpUpdate();
+	void CrossWindowJumpEnd();
 
 	//State Variable
 private:

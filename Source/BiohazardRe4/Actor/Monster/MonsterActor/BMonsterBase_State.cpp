@@ -78,3 +78,8 @@ void ABMonsterBase::GroggyEnd()
 	AnimInstance->StopAllMontages(1.0f);
 	AnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
 }
+
+void ABMonsterBase::CrossWindowStart()
+{
+	CrossWindow();
+}

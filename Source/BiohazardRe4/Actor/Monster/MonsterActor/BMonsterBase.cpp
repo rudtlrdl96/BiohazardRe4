@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "BiohazardRe4.h"
 #include "Actor/Monster/Define/MonsterDefine.h"
@@ -34,6 +35,7 @@ void ABMonsterBase::Tick(float _DeltaTime)
 {
 	Super::Tick(_DeltaTime);
 	BurstJumpUpdate();
+	CrossWindowJumpUpdate();
 }
 
 void ABMonsterBase::AttackStart()
@@ -103,9 +105,47 @@ void ABMonsterBase::Attack()
 			UGameplayStatics::ApplyDamage(HitCharacter, Stat->GetBaseAttackPower(), GetController(), this, DamageTypes[CurSectionNumberInt - 1]);
 		}
 	}
+}
 
+void ABMonsterBase::CrossWindow()
+{
+	GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("NoCollision")));
+	GetMesh()->SetCollisionProfileName(FName(TEXT("NoCollision")));
 
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 
+	SetCurrentState(EMonsterState::CrossWindowStart);
+}
+
+void ABMonsterBase::CrossWindowJumpStart()
+{
+	GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("MonsterCapsuleProfile")));
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+
+	OnLandedByCrossWindowJump.BindLambda(
+		[this]() 
+		{
+			SetCurrentState(EMonsterState::CrossWindowEnd);
+			GetMesh()->SetCollisionProfileName(FName(TEXT("MonsterCollision")));
+		}
+	);
+}
+
+void ABMonsterBase::CrossWindowJumpUpdate()
+{
+	if (GetCurrentState() == EMonsterState::CrossWindowStart && OnLandedByCrossWindowJump.IsBound() == true)
+	{
+		if (GetCharacterMovement()->IsFalling() == false)
+		{
+			CrossWindowJumpEnd();
+		}
+	}
+}
+
+void ABMonsterBase::CrossWindowJumpEnd()
+{
+	OnLandedByCrossWindowJump.ExecuteIfBound();
+	OnLandedByCrossWindowJump.Unbind();
 }
 
 void ABMonsterBase::SetDamagedSectionNums()

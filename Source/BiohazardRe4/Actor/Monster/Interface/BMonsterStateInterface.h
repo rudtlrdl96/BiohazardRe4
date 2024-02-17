@@ -23,6 +23,8 @@ enum class EMonsterState : uint8
 	Patrol UMETA(DisplayName = "Patrol"),
 	Walk UMETA(DisplayName = "Walk"),
 	Run UMETA(DisplayName = "Run"),
+	CrossWindowStart UMETA(DisplayName = "CrossWindowStart"),
+	CrossWindowEnd UMETA(DisplayName = "CrossWindowEnd"),
 	Attack UMETA(DisplayName = "Attack"),
 	Flashed UMETA(DisplayName = "Flashed"),
 	Damaged UMETA(DisplayName = "Damaged"),
@@ -47,6 +49,8 @@ public:
 	virtual void ParryTimeOff() = 0;
 	virtual bool isAbleParring() = 0;
 	
+	virtual void CrossWindowStart() = 0;
+	virtual void CrossWindowJumpStart() = 0;
 	virtual void GroggyEnd() = 0;
 
 	virtual EMonsterState GetCurrentState() = 0;
