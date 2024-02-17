@@ -36,24 +36,14 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	bool IsBack() const
-	{
-		return bBack;
-	}
-	UFUNCTION(BlueprintCallable)
-	bool IsFront() const
-	{
-		return bFront;
-	}
-	UFUNCTION(BlueprintCallable)
 	bool IsInOutValue() const
 	{
 		return bInValue;
 	}
 
-	virtual void MapObjOpen() override;
+	virtual void MapObjOpen(const FVector& _Location) override;
 
-	virtual void MapObjFastOpen() override;
+	virtual void MapObjFastOpen(const FVector& _Location) override;
 
 	UFUNCTION(BlueprintCallable)
 	EDoorSpeed GetDoorSpeed() const
@@ -78,13 +68,10 @@ public:
 	EDoorState DoorState = EDoorState::None;	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
 	EDoorSpeed DoorSpeed = EDoorSpeed::Slow;
-
+ 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
-	uint8 bInValue : 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
-	uint8 bFront : 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
-	uint8 bBack : 1;
-
+	uint8 bInValue : 1; 
+private:
+	EDoorState GetDoorDirection(const FVector& _Location);
 
 };

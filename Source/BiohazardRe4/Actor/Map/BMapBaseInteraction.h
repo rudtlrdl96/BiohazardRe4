@@ -46,6 +46,7 @@ public:
 	{
 		bIsOpen = Value;
 	}
+
 	UFUNCTION(BlueprintCallable)
 	void IsSetFastOpen(uint8 Value) 
 	{
@@ -62,13 +63,13 @@ public:
 	virtual EInteraction GetInteractionType() const override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void MapObjOpen();
+	virtual void MapObjOpen(const FVector& _Location);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void MapObjClose();
+	virtual void MapObjClose(const FVector& _Location);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void MapObjFastOpen();
+	virtual void MapObjFastOpen(const FVector& _Location);
 protected:
 
 	uint8 bIsOpen : 1;
@@ -78,4 +79,6 @@ protected:
 	uint8 bIsFastOpen : 1;
 	UPROPERTY(BlueprintReadWrite, Category = "InterValue")
 	uint8 bInter : 1;
+
+
 };

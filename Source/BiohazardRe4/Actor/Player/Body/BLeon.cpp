@@ -1002,7 +1002,7 @@ void ABLeon::TryInteraction()
 	case EInteraction::OpenDrawer:	{
 		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
 
-		DoorInteraction->MapObjOpen();
+		DoorInteraction->MapObjOpen(GetActorLocation());
 
 		switch (LeonFSMState)
 		{
@@ -1030,7 +1030,7 @@ void ABLeon::TryInteraction()
 	case EInteraction::OpenGate:
 	{
 		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
-		DoorInteraction->MapObjOpen();
+		DoorInteraction->MapObjOpen(GetActorLocation());
 
 		GateForward = DoorInteraction->ATrigger->GetForwardVector();
 
@@ -1040,7 +1040,7 @@ void ABLeon::TryInteraction()
 	case EInteraction::OpenDoor:
 	{
 		ABMapBaseInteraction* DoorInteraction = Cast<ABMapBaseInteraction>(InteractionActor);
-		DoorInteraction->MapObjOpen();
+		DoorInteraction->MapObjOpen(GetActorLocation());
 		FsmComp->ChangeState(TO_KEY(ELeonState::OpenDoor));
 	}
 	return;

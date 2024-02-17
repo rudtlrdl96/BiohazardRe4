@@ -46,17 +46,17 @@ EInteraction ABMapBaseInteraction::GetInteractionType() const
 	return EInteraction::OpenDoor;
 }
 
-void ABMapBaseInteraction::MapObjOpen()
+void ABMapBaseInteraction::MapObjOpen(const FVector& _Location)
 {
 	bIsOpen = true;
 }
 
-void ABMapBaseInteraction::MapObjClose()
+void ABMapBaseInteraction::MapObjClose(const FVector& _Location)
 {
 	bIsOpen = false;
 }
 
-void ABMapBaseInteraction::MapObjFastOpen()
+void ABMapBaseInteraction::MapObjFastOpen(const FVector& _Location)
 {
 	bIsFastOpen = true;
 }
