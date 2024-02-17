@@ -9,3 +9,15 @@ ABMapDoorInteraction::ABMapDoorInteraction()
 	bFront = false;
 	bBack = false;
 }
+
+void ABMapDoorInteraction::MapObjOpen()
+{
+	DoorSpeed = EDoorSpeed::Slow;
+	Super::MapObjOpen();
+}
+
+void ABMapDoorInteraction::MapObjFastOpen()
+{
+	DoorSpeed = EDoorSpeed::Fast;
+	Super::MapObjFastOpen();
+}

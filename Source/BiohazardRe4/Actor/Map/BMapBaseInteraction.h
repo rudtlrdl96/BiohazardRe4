@@ -72,6 +72,8 @@ public:
 protected:
 
 	uint8 bIsOpen : 1;
+
+
 	uint8 bIsClose : 1;
 	uint8 bIsFastOpen : 1;
 	UPROPERTY(BlueprintReadWrite, Category = "InterValue")
