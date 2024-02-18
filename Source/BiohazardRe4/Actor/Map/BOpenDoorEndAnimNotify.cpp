@@ -3,20 +3,22 @@
 
 #include "Actor/Map/BOpenDoorEndAnimNotify.h"
 #include "Actor/Map/BMapDoorInteraction.h"
+
 void UBOpenDoorEndAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
 	if (MeshComp != nullptr)
 	{
-		ABMapDoorInteraction* Owner = Cast<ABMapDoorInteraction>(MeshComp->GetOwner());
-		if (Owner == nullptr)
+		ABMapDoorInteraction* Door = Cast<ABMapDoorInteraction>(MeshComp->GetOwner());
+
+		if (Door == nullptr)
 		{
 			return;
 		}
 
-		Owner->IsSetOpen(false);
-		Owner->IsSetFastOpen(false);
-		Owner->IsSetCloseValue(false);
+		//Owner->IsSetOpen(false);
+		Door->IsSetFastOpen(false);
+		Door->IsSetCloseValue(false);
 	}
 }

@@ -90,4 +90,5 @@ void ABLeon::FallExit()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
 	SpringArm->ProbeChannel = ECollisionChannel::ECC_GameTraceChannel5;
+	InteractionCoolTime = -0.2f;
 }

@@ -75,4 +75,5 @@ void ABLeon::JumpObstacleExit()
 {
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	SpringArm->ProbeChannel = ECollisionChannel::ECC_GameTraceChannel5;
+	InteractionCoolTime = -0.2f;
 }

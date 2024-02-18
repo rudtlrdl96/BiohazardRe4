@@ -2,27 +2,36 @@
 
 
 #include "Actor/Player/Body/BLeon.h"
-#include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BiohazardRe4.h"
+#include "Generic/BFsm.h"
+#include "Generic/BCollisionObserverCapsule.h"
 
 void ABLeon::BreakBoxEnter()
 {
 	bIsJog = false;
 	bIsMove = false;
 	bIsCrouch = false;
+	bIsKickEnd = false;
+	bIsKickAttackActive = false;
 	bIsPlayGetItem = false;
 
-	KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
-
-	bAbleComboInput = false;
-	bIsComboEnd = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	KickOverlapObserver->SetCollisionProfileName("Interaction");
+	KickOverlapObserver->SetVisibilityCollision(false);
 }
 
 void ABLeon::BreakBoxUpdate(float _DeltaTime)
 {
-	if (true == bIsComboEnd)
+	FVector KickVector = KickLocation - GetActorLocation();
+	KickVector.Z = 0;
+	KickVector.Normalize();
+	FRotator Rotator = KickVector.Rotation();
+
+	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), Rotator, _DeltaTime, 360.0f));
+
+	if (true == bIsKickEnd)
 	{
 		if (true == AbleAim() && true == bIsAim)
 		{
@@ -46,6 +55,9 @@ void ABLeon::BreakBoxUpdate(float _DeltaTime)
 
 void ABLeon::BreakBoxExit()
 {
-	bAbleComboInput = false;
-	bIsComboEnd = false;
+	bIsKickEnd = false;
+	bIsKickAttackActive = false;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	KickOverlapObserver->SetVisibilityCollision(false);
+	InteractionCoolTime = -0.2f;
 }

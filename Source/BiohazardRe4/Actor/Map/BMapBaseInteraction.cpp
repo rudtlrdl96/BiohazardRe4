@@ -4,6 +4,8 @@
 #include "Actor/Map/BMapBaseInteraction.h"
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
+#include "BiohazardRe4.h"
+
 // Sets default values
 ABMapBaseInteraction::ABMapBaseInteraction()
 {
@@ -14,6 +16,7 @@ ABMapBaseInteraction::ABMapBaseInteraction()
 	bIsFastOpen = false;
 	bIsClose = false;
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent->SetMobility(EComponentMobility::Type::Movable);
 
 	ATrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger A"));
 	ATrigger->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -38,7 +41,16 @@ void ABMapBaseInteraction::Tick(float DeltaTime)
 
 bool ABMapBaseInteraction::AbleInteraction() const
 {
-	return !bIsOpen;
+	if (true == bIsOpen)
+	{
+		LOG_MSG(TEXT("true"));
+	}
+	else
+	{
+		LOG_MSG(TEXT("false"));
+	}
+
+	return false == bIsOpen;
 }
 
 EInteraction ABMapBaseInteraction::GetInteractionType() const
@@ -58,6 +70,6 @@ void ABMapBaseInteraction::MapObjClose(const FVector& _Location)
 
 void ABMapBaseInteraction::MapObjFastOpen(const FVector& _Location)
 {
-	bIsFastOpen = true;
+	bIsOpen = true;
 }
 

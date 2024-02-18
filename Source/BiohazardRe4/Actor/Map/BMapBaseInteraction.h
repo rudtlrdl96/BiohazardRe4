@@ -57,7 +57,7 @@ public:
 	{
 		bIsClose = Value;
 	}
-	UPROPERTY(EditAnywhere, Category = "Open")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Open")
 	UBoxComponent* ATrigger = nullptr;
 	virtual bool AbleInteraction() const override;
 	virtual EInteraction GetInteractionType() const override;
@@ -71,12 +71,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void MapObjFastOpen(const FVector& _Location);
 protected:
+	uint8 bIsOpen : 1 = false;
 
-	uint8 bIsOpen : 1;
-
-
-	uint8 bIsClose : 1;
-	uint8 bIsFastOpen : 1;
+	uint8 bIsClose : 1 = false;
+	uint8 bIsFastOpen : 1 = false;
 	UPROPERTY(BlueprintReadWrite, Category = "InterValue")
 	uint8 bInter : 1;
 

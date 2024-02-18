@@ -42,4 +42,5 @@ void ABLeon::ParryUpdate(float _DeltaTime)
 
 void ABLeon::ParryExit()
 {
+	InteractionCoolTime = -0.2f;
 }

@@ -18,6 +18,7 @@ void ABLeon::KickAttackEnter()
 	bIsPlayGetItem = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	KickOverlapObserver->SetCollisionProfileName("Interaction");
 	KickOverlapObserver->SetVisibilityCollision(false);
 }
 
@@ -58,4 +59,6 @@ void ABLeon::KickAttackExit()
 	bIsKickAttackActive = false;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	KickOverlapObserver->SetVisibilityCollision(false);
+
+	InteractionCoolTime = -0.2f;
 }

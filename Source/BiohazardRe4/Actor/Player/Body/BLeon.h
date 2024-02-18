@@ -186,6 +186,13 @@ enum class EGunRecoilType : uint8
 	Rifle	UMETA(DisplayName = "Rifle"),
 };
 
+UENUM(BlueprintType)
+enum class EBreakBoxState : uint8
+{
+	Low		UMETA(DisplayName = "Low"),
+	Middle  UMETA(DisplayName = "Middle"),
+};
+
 USTRUCT()
 struct FPlayerStat
 {
@@ -414,6 +421,12 @@ public:
 	inline ELeonFallAnimation GetFallAnim() const
 	{
 		return FallAnimation;
+	}	
+	
+	UFUNCTION(BlueprintCallable)
+	inline EBreakBoxState GetBreakBoxState() const
+	{
+		return BreakAnim;
 	}
 	
 	UFUNCTION(BlueprintCallable)
@@ -569,6 +582,8 @@ private:
 	ELeonKnifeAttackState KnifeAttackState = ELeonKnifeAttackState::EnterAttack;
 	ELeonThrowingAnim ThrowingAnim = ELeonThrowingAnim::Top;
 
+	EBreakBoxState BreakAnim = EBreakBoxState::Low;
+
 	FVector KickLocation = FVector::ZeroVector;
 
 	//*****************************************************//
@@ -656,6 +671,8 @@ private:
 	uint32 bIsThrowingWeapon : 1 = false;
 
 	uint32 bIsKickAttackActive : 1 = false;
+
+	float InteractionCoolTime = 0.0f;
 
 	FVector ThrowLocation = FVector::ZeroVector;
 	FVector ThrowVelocity = FVector::ZeroVector;
