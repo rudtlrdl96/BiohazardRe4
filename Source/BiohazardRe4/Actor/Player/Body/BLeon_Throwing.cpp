@@ -87,4 +87,6 @@ void ABLeon::ThrowingExit()
 
 	CurrentWeapon->SetActorLocation(EndLocation);
 	CurrentWeapon->SetActorRotation(EndRotation);
+
+	InteractionCoolTime = -0.2f;
 }

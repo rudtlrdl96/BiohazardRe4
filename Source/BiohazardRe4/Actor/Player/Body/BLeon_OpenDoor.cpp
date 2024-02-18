@@ -43,4 +43,5 @@ void ABLeon::OpenDoorUpdate(float _DeltaTime)
 
 void ABLeon::OpenDoorExit()
 {
+	InteractionCoolTime = -0.2f;
 }

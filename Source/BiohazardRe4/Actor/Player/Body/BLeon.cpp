@@ -101,6 +101,7 @@ void ABLeon::Tick(float _DeltaTime)
 	InteractionUpdate(_DeltaTime);
 	GunRecoilUpdate(_DeltaTime);
 
+	InteractionCoolTime += _DeltaTime;
 	LeonFSMState = GetCurrentFSMState();
 }
 
@@ -859,6 +860,11 @@ void ABLeon::PlayIdle(const FInputActionInstance& _MoveAction)
 
 bool ABLeon::AbleInteraction() const
 {
+	if (0.0f > InteractionCoolTime)
+	{
+		return false;
+	}
+
 	switch (LeonFSMState)
 	{
 	case ELeonState::Aim:
@@ -918,6 +924,33 @@ void ABLeon::TryInteraction()
 	{
 		KickLocation = InteractionActor->GetActorLocation();
 		FsmComp->ChangeState(TO_KEY(ELeonState::KickAttack));
+	}
+	break;
+	case EInteraction::BreakBox:
+	{
+		FVector ActorLocation = GetActorLocation();
+		KickLocation = InteractionActor->GetActorLocation();
+
+		FVector ToDirection = KickLocation - ActorLocation;
+		ToDirection.Normalize();
+
+		float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ToDirection, GetActorForwardVector())));
+
+		if (ActorLocation.Z > KickLocation.Z)
+		{
+			Angle *= -1;
+		}
+
+		if (-15 > Angle)
+		{
+			BreakAnim = EBreakBoxState::Low;
+		}
+		else
+		{
+			BreakAnim = EBreakBoxState::Middle;
+		}
+
+		FsmComp->ChangeState(TO_KEY(ELeonState::BreakBox));
 	}
 	break;
 	case EInteraction::JumpObstacle:
@@ -1376,6 +1409,33 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			}
 
 			if (true == bIsGunReload)
+			{
+				continue;
+			}
+		}
+		break;
+		case EInteraction::BreakBox:
+		{
+			KickLocation = Overlaps[i]->GetActorLocation();
+
+			float Dis = FVector::Distance(KickLocation, GetActorLocation());
+
+			if (125 < Dis)
+			{
+				continue;
+			}
+
+			FVector ToDirection = KickLocation - ActorLocation;
+			ToDirection.Normalize();
+
+			float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ToDirection, GetActorForwardVector())));
+
+			if (ActorLocation.Z > KickLocation.Z)
+			{
+				Angle *= -1;
+			}
+
+			if (20 < Angle)
 			{
 				continue;
 			}
@@ -2160,7 +2220,6 @@ void ABLeon::CreateCollision()
 
 	KickOverlapObserver = GetWorld()->SpawnActor<ABCollisionObserverCapsule>(SpawnParams);
 	KickOverlapObserver->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, "R_ShinSocket");
-	KickOverlapObserver->SetCollisionProfileName("Interaction");
 	KickOverlapObserver->SetActorRelativeLocation(FVector(1.3, 6.45, 0));
 	KickOverlapObserver->SetActorRelativeRotation(FRotator(0.0, -9.5, 81.5));
 	KickOverlapObserver->SetRadius(10.0f);
