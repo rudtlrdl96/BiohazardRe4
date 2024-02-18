@@ -62,17 +62,6 @@ ABChainsawMan::ABChainsawMan()
 	InitDamageTypes();
 }
 
-void ABChainsawMan::Attack()
-{
-	if (Weapon == nullptr)
-	{
-		LOG_WARNING(TEXT("Monster Weapon - Nullptr : ABMonsterBase::Attack()"));
-		return;
-	}
-
-	Super::Attack();
-}
-
 void ABChainsawMan::BeginPlay()
 {
 	Super::BeginPlay();

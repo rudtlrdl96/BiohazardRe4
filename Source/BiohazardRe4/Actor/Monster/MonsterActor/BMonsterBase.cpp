@@ -34,6 +34,8 @@ void ABMonsterBase::BeginPlay()
 void ABMonsterBase::Tick(float _DeltaTime)
 {
 	Super::Tick(_DeltaTime);
+	
+	AttackUpdate();
 	BurstJumpUpdate();
 	CrossWindowJumpUpdate();
 }
@@ -50,9 +52,20 @@ void ABMonsterBase::AttackStart()
 
 	int SectionNumber = FMath::RandRange(1, DamageTypes.Num());
 	FName SectionName = *FString::Printf(TEXT("Attack%d"), SectionNumber);
+		
+	if (MyWeaponType == EWeaponType::None)
+	{
+		if (SectionNumber == 2)
+		{
+			WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("L_Palm")));
+		}
+		else
+		{
+			WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("R_Palm")));
+		}
+	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		
 	if (AnimInstance == nullptr)
 	{
 		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
@@ -63,24 +76,21 @@ void ABMonsterBase::AttackStart()
 	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 }
 
-void ABMonsterBase::Attack()
+void ABMonsterBase::AttackOn()
 {
-	FName CurSection = GetMesh()->GetAnimInstance()->Montage_GetCurrentSection();
-	FString CurSectionStr = CurSection.ToString();
+	bIsAttacking = true;
+}
 
-	FString CurSectionNumberStr = CurSectionStr.Mid(CurSectionStr.Len() - 1, 1);
-	int CurSectionNumberInt = FCString::Atoi(*CurSectionNumberStr);
+void ABMonsterBase::AttackOff()
+{
+	bIsAttacking = false;
+}
 
-	if (MyWeaponType == EWeaponType::None)
+void ABMonsterBase::AttackUpdate()
+{
+	if (bIsAttacking == false)
 	{
-		if (CurSectionNumberInt == 2)
-		{
-			WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("L_Palm")));
-		}
-		else
-		{
-			WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(TEXT("R_Palm")));
-		}
+		return;
 	}
 
 	TArray<AActor*> HitActors;
@@ -96,6 +106,12 @@ void ABMonsterBase::Attack()
 
 		if (HitCharacter->IsPlayerControlled() == true)
 		{
+			FName CurSection = GetMesh()->GetAnimInstance()->Montage_GetCurrentSection();
+			FString CurSectionStr = CurSection.ToString();
+
+			FString CurSectionNumberStr = CurSectionStr.Mid(CurSectionStr.Len() - 1, 1);
+			int CurSectionNumberInt = FCString::Atoi(*CurSectionNumberStr);
+
 			if (DamageTypes.IsValidIndex(CurSectionNumberInt - 1) == false)
 			{
 				LOG_FATAL(TEXT("CurSectionNumber is invalid : %d , %s"), CurSectionNumberInt, *CurSectionStr);
@@ -103,6 +119,8 @@ void ABMonsterBase::Attack()
 			}
 
 			UGameplayStatics::ApplyDamage(HitCharacter, Stat->GetBaseAttackPower(), GetController(), this, DamageTypes[CurSectionNumberInt - 1]);
+			
+			bIsAttacking = false;
 		}
 	}
 }

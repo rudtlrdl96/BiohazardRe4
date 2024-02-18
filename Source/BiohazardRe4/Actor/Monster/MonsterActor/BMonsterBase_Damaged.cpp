@@ -767,7 +767,19 @@ void ABMonsterBase::Parry()
 		return;
 	}
 
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
+	{
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return;
+	}
+
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
+
 	ParryTimeOff();
+	AttackOff();
+
 	SetCurrentState(EMonsterState::Groggy);
 	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

@@ -52,8 +52,10 @@ public:
 	virtual void CrossWindowStart() override;
 	virtual void CrossWindowJumpStart() override;
 
-	virtual void Attack() override;
 	virtual void AttackStart() override;
+	virtual void AttackOn() override;
+	virtual void AttackOff() override;
+
 	virtual bool isDamaged() override;
 	virtual void DamagedEnd() override;
 	virtual void GroggyEnd() override;
@@ -165,8 +167,9 @@ protected:
 
 	//virtual void MonsterDeathByRadial(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 
-	virtual void DamagedByFlashed();
+	void DamagedByFlashed();
 	void BurstJumpUpdate();
+	void AttackUpdate();
 
 	void CrossWindow();
 	void CrossWindowJumpUpdate();
@@ -186,6 +189,7 @@ private:
 private:
 	uint8 bIsDamaged : 1;
 	uint8 bIsDamagedCooltime : 1;
+	uint8 bIsAttacking : 1;
 
 	FTimerHandle TimerHandle;
 	float GroggyAmount = 0.0f;

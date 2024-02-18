@@ -38,8 +38,9 @@ class BIOHAZARDRE4_API IBMonsterStateInterface
 	GENERATED_BODY()
 
 public:
-	virtual void Attack() = 0;
 	virtual void AttackStart() = 0;
+	virtual void AttackOn() = 0;
+	virtual void AttackOff() = 0;
 	
 	virtual bool isDamaged() = 0;
 	virtual void DamagedEnd() = 0;

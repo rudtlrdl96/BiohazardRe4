@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "BAnimNotify_MonsterAttackEnd.generated.h"
+#include "BAnimNotify_MonsterAttackOff.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BIOHAZARDRE4_API UBAnimNotify_MonsterAttackEnd : public UAnimNotify
+class BIOHAZARDRE4_API UBAnimNotify_MonsterAttackOff : public UAnimNotify
 {
 	GENERATED_BODY()
 
