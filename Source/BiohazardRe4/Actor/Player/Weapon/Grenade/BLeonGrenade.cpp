@@ -12,7 +12,7 @@
 ABLeonGrenade::ABLeonGrenade()
 {
 	DamageType = UBDMGPlayerGranade::StaticClass();
-	WeaponDamage = 100.f;
+	WeaponDamage = 1000.f;
 }
 
 void ABLeonGrenade::Tick(float DeltaTime)

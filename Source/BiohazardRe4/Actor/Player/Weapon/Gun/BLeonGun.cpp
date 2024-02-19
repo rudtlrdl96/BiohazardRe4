@@ -130,7 +130,6 @@ void ABLeonGun::Shoot()
 	if (bIsTarget)
 	{
 		LOG_MSG(TEXT("There Is Target"))
-			DrawDebugLine(GetWorld(), CamLineTraceStart, CamLineTraceEnd, FColor::Blue, true, 0.1, (uint8)0U, 1.f);
 
 		GunLineTraceEnd = (CamHitInfo.ImpactPoint - GunLineTraceStart);
 		GunLineTraceEnd.Normalize();
@@ -147,7 +146,6 @@ void ABLeonGun::Shoot()
 	if (bIsHit)
 	{
 		LOG_MSG(TEXT("AttackSuccess"))
-			DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
 
 		AActor* DamagedActor = GunHitInfo.GetActor();
 		GunDamageEvent.HitInfo = GunHitInfo;
@@ -170,7 +168,6 @@ void ABLeonGun::Shoot()
 	else
 	{
 		LOG_MSG(TEXT("AttackFail"))
-			DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
 	}
 
 	int32 CurAmmo = CurGun->GetLoadedAmmo();
