@@ -32,6 +32,7 @@
 #include "Item/InventoryActor.h"
 #include "Item/InventoryWeapon.h"
 #include "Item/BItem.h"
+#include "MapUI/BMapUIActor.h"
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "DamageType/BDMGMonsterDamage.h"
 #include "DamageType/PlayerDamageType/BDMGPlayerGranade.h"
@@ -192,6 +193,7 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 	Input->BindAction(InteractionAction, ETriggerEvent::Completed, this, &ABLeon::TryInteraction);
 
 	Input->BindAction(InventoryAction, ETriggerEvent::Completed, this, &ABLeon::OpenInventory);
+	Input->BindAction(MapUIAction, ETriggerEvent::Completed, this, &ABLeon::MapUISwitch);
 
 	for (uint32 i = 0; i < 8; ++i)
 	{
@@ -1135,6 +1137,17 @@ void ABLeon::OpenInventory()
 {
 	SceneCapture->CaptureScene();
 	ABInventoryActor::Instance->OpenInventory();
+}
+
+void ABLeon::MapUISwitch()
+{
+	if (ABMapUIActor::MapUIInst == nullptr)
+	{
+		LOG_ERROR(TEXT("MapUIInst == nullptr"))
+		return;
+	}
+
+	ABMapUIActor::MapUIInst->MapUISwitch();
 }
 
 void ABLeon::DrawGrenadeAim(float _DeltaTime)

@@ -634,6 +634,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* InventoryAction = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UInputAction* MapUIAction = nullptr;
+
 	FVector MoveInput = FVector::ZeroVector;
 	FVector LookInput = FVector::ZeroVector;
 
@@ -773,6 +776,7 @@ private:
 	void TryInteraction();
 	bool AbleAim() const;
 	void OpenInventory();
+	void MapUISwitch();
 
 	void DrawGrenadeAim(float _DeltaTime);
 

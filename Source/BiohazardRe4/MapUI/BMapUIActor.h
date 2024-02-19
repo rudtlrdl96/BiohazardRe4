@@ -25,6 +25,8 @@ public:
 	// Sets default values for this actor's properties
 	ABMapUIActor();
 
+	static ABMapUIActor* MapUIInst;
+
 	UFUNCTION(BlueprintCallable)
 	void SetFloor(EFloor Floor);
 

@@ -12,11 +12,16 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+ABMapUIActor* ABMapUIActor::MapUIInst = nullptr;
+
 // Sets default values
 ABMapUIActor::ABMapUIActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	//인스턴스
+	MapUIInst = this;
 
 	//루트 컴포넌트
 	RootPivotComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMapRootComponent"));
@@ -93,6 +98,7 @@ ABMapUIActor::ABMapUIActor()
 	PlayerSprite->SetRelativeLocation({ 0.f,0.f,2.f });
 	PlayerSprite->SetRelativeScale3D({ 0.2f,0.2f,0.2f });
 	PlayerSprite->SetVisibility(false);
+
 }
 
 void ABMapUIActor::SetFloor(EFloor Floor)
