@@ -12,7 +12,8 @@
 				"Engine",
 				"AIModule",
 				"UMG",
-				"Paper2D"
+				"Paper2D",
+				"GeometryCollectionEngine"
 			]
 		}
 	],

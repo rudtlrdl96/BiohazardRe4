@@ -2474,7 +2474,7 @@ double ABLeon::GetAxisZAngle(const FVector& _Location) const
 
 void ABLeon::KickAttack(AActor* _OverlapActor)
 {
-	if (ELeonState::KickAttack != LeonFSMState)
+	if (ELeonState::KickAttack != LeonFSMState && ELeonState::BreakBox != LeonFSMState)
 	{
 		return;
 	}
