@@ -54,12 +54,22 @@ ABChainsawMan::ABChainsawMan()
 	}
 
 	AIControllerClass = ABAIChainsawManController::StaticClass();
-	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
+	AutoPossessAI = EAutoPossessAI::Disabled;
 
 	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	InitDamageTypes();
+}
+
+void ABChainsawMan::AIStart()
+{
+	ABAIChainsawManController* MyController = GetWorld()->SpawnActor<ABAIChainsawManController>(AIControllerClass, FVector::ZeroVector, FRotator::ZeroRotator);
+	
+	if (MyController)
+	{
+		MyController->Possess(this);
+	}
 }
 
 void ABChainsawMan::BeginPlay()

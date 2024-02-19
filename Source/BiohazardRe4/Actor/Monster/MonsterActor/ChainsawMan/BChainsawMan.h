@@ -16,6 +16,8 @@ class BIOHAZARDRE4_API ABChainsawMan : public ABMonsterBase
 public:
 	ABChainsawMan();
 
+	UFUNCTION(BlueprintCallable)
+	void AIStart();
 protected:
 	virtual void BeginPlay() override;
 
