@@ -142,7 +142,7 @@ void ABLeonGun::Shoot()
 			GunLineTraceEnd = CamLineTraceEnd;
 	}
 
-	bool bIsHit = GetWorld()->LineTraceSingleByChannel(GunHitInfo, GunLineTraceStart, GunLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel4, LineTraceParams);
+	bool bIsHit = GetWorld()->LineTraceSingleByChannel(GunHitInfo, GunLineTraceStart, GunLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel6, LineTraceParams);
 	if (bIsHit)
 	{
 		LOG_MSG(TEXT("AttackSuccess"))
