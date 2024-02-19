@@ -125,10 +125,11 @@ void ABLeonGun::Shoot()
 	LineTraceParams.AddIgnoredActor(this);
 	LineTraceParams.AddIgnoredActor(Player);
 
-	bool bIsTarget = GetWorld()->LineTraceSingleByChannel(CamHitInfo, CamLineTraceStart, CamLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel6, LineTraceParams);
+	bool bIsTarget = GetWorld()->LineTraceSingleByChannel(CamHitInfo, CamLineTraceStart, CamLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel10, LineTraceParams);
 	GunLineTraceStart = GetActorLocation();
 	if (bIsTarget)
 	{
+		DrawDebugLine(GetWorld(), CamLineTraceStart, CamLineTraceEnd, FColor::Blue, true, 0.1, (uint8)0U, 1.f);
 		LOG_MSG(TEXT("There Is Target"))
 
 		GunLineTraceEnd = (CamHitInfo.ImpactPoint - GunLineTraceStart);
@@ -142,9 +143,10 @@ void ABLeonGun::Shoot()
 			GunLineTraceEnd = CamLineTraceEnd;
 	}
 
-	bool bIsHit = GetWorld()->LineTraceSingleByChannel(GunHitInfo, GunLineTraceStart, GunLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel6, LineTraceParams);
+	bool bIsHit = GetWorld()->LineTraceSingleByChannel(GunHitInfo, GunLineTraceStart, GunLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel4, LineTraceParams);
 	if (bIsHit)
 	{
+		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
 		LOG_MSG(TEXT("AttackSuccess"))
 
 		AActor* DamagedActor = GunHitInfo.GetActor();
@@ -167,6 +169,7 @@ void ABLeonGun::Shoot()
 	}
 	else
 	{
+		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
 		LOG_MSG(TEXT("AttackFail"))
 	}
 
