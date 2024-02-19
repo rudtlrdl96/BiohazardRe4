@@ -18,7 +18,8 @@ bool ABMonsterBase::isAblePlay(ESoundType _PlaySoundType)
 {
 	if (_PlaySoundType == ESoundType::Yell)
 	{
-		if (isSetTargetInBlackBoard() == false)
+		if(isSetTargetInBlackBoard() == false ||
+		  (GetCurrentState() != EMonsterState::Walk && GetCurrentState() != EMonsterState::Run))
 		{
 			return false;
 		}

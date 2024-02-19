@@ -93,6 +93,7 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, float _Da
 			bIsDamagedCooltime = true;
 			bIsDamaged = true;
 
+			PlaySound(ESoundType::Damaged);
 			GetWorldTimerManager().SetTimer(TimerHandle, [this] {bIsDamagedCooltime = false; }, 1.5f, false);
 		}
 
@@ -103,6 +104,15 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, float _Da
 	}
 
 	SetCurrentState(EMonsterState::Groggy);
+	
+	if (DamagedPart.Compare(TEXT("HEAD")) != 0)
+	{
+		PlaySound(ESoundType::GeneralGroggy);
+	}
+	else
+	{
+		PlaySound(ESoundType::HeadShotGroggy);
+	}
 
 	//데미지 크기
 	if (DamagedType == EPlayerDamageType::Gun)

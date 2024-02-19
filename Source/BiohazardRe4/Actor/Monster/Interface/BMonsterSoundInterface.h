@@ -19,6 +19,9 @@ enum class ESoundType
 	Idle,
 	Yell,
 	Detect,
+	Damaged,
+	GeneralGroggy,
+	HeadShotGroggy,
 };
 
 class BIOHAZARDRE4_API IBMonsterSoundInterface

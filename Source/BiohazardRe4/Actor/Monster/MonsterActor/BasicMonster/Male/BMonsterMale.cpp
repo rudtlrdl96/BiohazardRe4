@@ -119,6 +119,27 @@ void ABMonsterMale::InitSoundCues()
 		USoundCue* DetectSoundCue = DetectSoundRef.Object;
 		SoundCues.Add(ESoundType::Detect, DetectSoundCue);
 	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> DamagedSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_DamagedCue.SC_DamagedCue'"));
+	if (DamagedSoundRef.Object != nullptr)
+	{
+		USoundCue* DamagedSoundCue = DamagedSoundRef.Object;
+		SoundCues.Add(ESoundType::Damaged, DamagedSoundCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> GeneralGroggySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_GenaralGroggyCue.SC_GenaralGroggyCue'"));
+	if (GeneralGroggySoundRef.Object != nullptr)
+	{
+		USoundCue* GenaralGroggyCue = GeneralGroggySoundRef.Object;
+		SoundCues.Add(ESoundType::GeneralGroggy, GenaralGroggyCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> HeadShotGroggySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_HeadShotGroggyCue.SC_HeadShotGroggyCue'"));
+	if (HeadShotGroggySoundRef.Object != nullptr)
+	{
+		USoundCue* HeadShotGroggyCue = HeadShotGroggySoundRef.Object;
+		SoundCues.Add(ESoundType::HeadShotGroggy, HeadShotGroggyCue);
+	}
 }
 
 void ABMonsterMale::Tick(float _DeltaTIme)
