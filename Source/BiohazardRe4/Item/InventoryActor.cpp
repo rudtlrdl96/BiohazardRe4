@@ -122,12 +122,13 @@ ABInventoryActor::ABInventoryActor()
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
 		Cursor->CursorMesh->SetStaticMesh(Mesh.Object);
 
-		static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Engine/EditorResources/FieldNodes/_Resources/M_FieldRadiusPreview.M_FieldRadiusPreview'"));
+		static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Game/Assets/UI/Inventory/M_FieldRadiusPreview.M_FieldRadiusPreview'"));
 		Cursor->CursorMesh->SetMaterial(0, Material.Object);
 	}
 	Cursor->CursorMesh->SetupAttachment(Cursor);
 	Cursor->CursorMesh->SetRelativeLocation({ 2.5, 2.5, 2 });
 	Cursor->CursorMesh->SetRelativeScale3D({ 0.05, 0.05, 0.05 });
+	Cursor->SetCursorRaise(false);
 
 	// ______ FSM
 	FSMComp = CreateDefaultSubobject<UBFsm>(TEXT("FSM"));
@@ -303,6 +304,7 @@ void ABInventoryActor::OpenInventory()
 	{
 		Actor->CustomTimeDilation = 0;
 	}
+	UGameplayStatics::PlaySound2D(this, Sound_InventoryOpen);
 }
 
 void ABInventoryActor::CloseInventory()
@@ -327,6 +329,7 @@ void ABInventoryActor::CloseInventory()
 	{
 		Actor->CustomTimeDilation = 1;
 	}
+	UGameplayStatics::PlaySound2D(this, Sound_InventoryClose);
 }
 
 void ABInventoryActor::OpenSub()
@@ -361,6 +364,7 @@ void ABInventoryActor::CompleteCraft()
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	UGameplayStatics::PlaySound2D(this, Sound_ItemCraft);
 }
 
 void ABInventoryActor::ItemUse()
@@ -387,6 +391,7 @@ void ABInventoryActor::ItemUse()
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	UGameplayStatics::PlaySound2D(this, Sound_ItemUse);
 }
 
 void ABInventoryActor::DropItem()
@@ -397,6 +402,7 @@ void ABInventoryActor::DropItem()
 	Widget->DropItem();
 	// State를 변경
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Drop));
+	UGameplayStatics::PlaySound2D(this, Sound_ItemDropCheck);
 }
 
 void ABInventoryActor::WeaponEquip()
@@ -410,6 +416,7 @@ void ABInventoryActor::WeaponEquip()
 	Player->ChangeUseWeapon(Weapon->GetItemCode());
 	HUD->SetWeapon(Weapon);
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	UGameplayStatics::PlaySound2D(this, Sound_ItemEquip);
 }
 
 void ABInventoryActor::CompleteDrop()
@@ -420,6 +427,7 @@ void ABInventoryActor::CompleteDrop()
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
+	UGameplayStatics::PlaySound2D(this, Sound_ItemDrop);
 }
 
 void ABInventoryActor::DropCancel()
@@ -687,7 +695,7 @@ void ABInventoryActor::DragUpdate(float _DeltaTime)
 		if (Slot && SelectSlot != Slot)
 		{
 			// 새로운 슬롯
-			UGameplayStatics::PlaySound2D(this, Sound_CursorMove);
+			UGameplayStatics::PlaySound2D(this, Sound_ItemDrag);
 
 			SelectSlot = Slot;
 			// 일단 이동시켜놓고 있음.
@@ -745,7 +753,8 @@ void ABInventoryActor::InvestigateEnter()
 	EndRot = SelectItem->GetData().Rotation;
 	Timer = 0;
 	Inventory->Close();
-}	
+	UGameplayStatics::PlaySound2D(this, Sound_ItemInvestigate);
+}
 
 
 void ABInventoryActor::InvestigateUpdate(float DeltaTime)
@@ -761,6 +770,7 @@ void ABInventoryActor::InvestigateExit()
 	SelectItem->Mesh->SetWorldLocation(StartLocation);
 	SelectItem->Mesh->SetWorldRotation(StartRot);
 	Inventory->Open();
+	UGameplayStatics::PlaySound2D(this, Sound_ItemCancel);
 }
 
 void ABInventoryActor::InvestigateRotate(const FInputActionInstance& _MoveAction)
@@ -784,12 +794,14 @@ void ABInventoryActor::CraftEnter()
 	CraftWidget->SetItemData(SelectItem->GetData());
 	//CraftWidget->SetFocus();
 	CraftWidget->WidgetOn();
+	UGameplayStatics::PlaySound2D(this, Sound_ItemCraftOpen);
 }
 
 void ABInventoryActor::CraftExit()
 {
 	CraftWidget->WidgetOff();
 	Widget->SetFocus();
+	UGameplayStatics::PlaySound2D(this, Sound_ItemCancel);
 }
 
 void ABInventoryActor::QuickSlotEnter()
@@ -805,11 +817,13 @@ void ABInventoryActor::QuickSlotEnter()
 	QuickSlotWidget->AddWeaponPtr = Weapon;
 	//QuickSlotWidget->SetFocus();
 	QuickSlotWidget->WidgetOn();
+	UGameplayStatics::PlaySound2D(this, Sound_ItemQuickSlot);
 }
 
 void ABInventoryActor::QuickSlotExit()
 {
 	QuickSlotWidget->WidgetOff();
+	UGameplayStatics::PlaySound2D(this, Sound_ItemCancel);
 }
 
 void ABInventoryActor::DropEnter()

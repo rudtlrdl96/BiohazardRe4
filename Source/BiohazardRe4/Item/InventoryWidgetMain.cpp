@@ -11,8 +11,6 @@ void UBInventoryWidgetMain::NativeOnInitialized()
 {
 	WarningPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("Panel")));
 	WarningText = Cast<UTextBlock>(GetWidgetFromName(TEXT("WarningText")));
-	OkButton = Cast<UButton>(GetWidgetFromName(TEXT("OkButton")));
-	NoButton = Cast<UButton>(GetWidgetFromName(TEXT("NoButton")));
 }
 
 void UBInventoryWidgetMain::SetItemData(const FBItemData& Data)
@@ -27,20 +25,26 @@ void UBInventoryWidgetMain::ClearItemData()
 	ItemInformation = "";
 }
 
+void UBInventoryWidgetMain::OkButtonEvent()
+{
+	OkEvent.Execute();
+}
+
+void UBInventoryWidgetMain::NoButtonEvent()
+{
+	NoEvent.Execute();
+}
+
 void UBInventoryWidgetMain::DropItem()
 {
 	WarningText->SetText(NSLOCTEXT("UI", "DropCheck", "한번 버린 아이템은 다시 주울 수 없습니다.\n\n이 아이템을 버리시겠습니까?"));
 	{
-		FScriptDelegate Delegate;
-		Delegate.BindUFunction(ABInventoryActor::Instance, TEXT("CompleteDrop"));
-		OkButton->OnClicked.Clear();
-		OkButton->OnClicked.Add(Delegate);
+		OkEvent.Unbind();
+		OkEvent.BindUFunction(ABInventoryActor::Instance, TEXT("CompleteDrop"));
 	}
 	{
-		FScriptDelegate Delegate;
-		Delegate.BindUFunction(ABInventoryActor::Instance, TEXT("DropCancel"));
-		NoButton->OnClicked.Clear();
-		NoButton->OnClicked.Add(Delegate);
+		NoEvent.Unbind();
+		NoEvent.BindUFunction(ABInventoryActor::Instance, TEXT("DropCancel"));
 	}
 }
 
@@ -48,15 +52,11 @@ void UBInventoryWidgetMain::CloseCheck()
 {
 	WarningText->SetText(NSLOCTEXT("UI", "CloseCheck", "아타셰케이스 밖의 아이템을 모두 버리시겠습니까?"));
 	{
-		FScriptDelegate Delegate;
-		Delegate.BindUFunction(ABInventoryActor::Instance, TEXT("CloseInventory"));
-		OkButton->OnClicked.Clear();
-		OkButton->OnClicked.Add(Delegate);
+		OkEvent.Unbind();
+		OkEvent.BindUFunction(ABInventoryActor::Instance, TEXT("CloseInventory"));
 	}
 	{
-		FScriptDelegate Delegate;
-		Delegate.BindUFunction(ABInventoryActor::Instance, TEXT("CloseCancel"));
-		NoButton->OnClicked.Clear();
-		NoButton->OnClicked.Add(Delegate);
+		NoEvent.Unbind();
+		OkEvent.BindUFunction(ABInventoryActor::Instance, TEXT("CloseCancel"));
 	}
 }

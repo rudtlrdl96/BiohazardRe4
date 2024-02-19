@@ -212,11 +212,33 @@ public:
 
 	// _________Sound____________
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_InventoryOpen = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_InventoryClose = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundBase* Sound_CursorMove = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemDrag = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundBase* Sound_ItemSelect = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundBase* Sound_ItemCancel = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemEquip = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemUse = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemCraftOpen = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemCraft = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemDropCheck = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemDrop = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemInvestigate = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_ItemQuickSlot = nullptr;
 
 	// _________Inventory__________
 

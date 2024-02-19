@@ -62,11 +62,11 @@ void UBInventoryCursor::SetCursorRaise(bool Raise)
 	FVector Location = CursorMesh->GetRelativeLocation();
 	if (Raise)
 	{
-		Location.Z = 5;
+		Location.Z = 15;
 	}
 	else
 	{
-		Location.Z = 0;
+		Location.Z = 5;
 	}
 	CursorMesh->SetRelativeLocation(Location);
 }

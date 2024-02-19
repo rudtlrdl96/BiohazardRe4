@@ -13,6 +13,8 @@ class UCanvasPanel;
 class UTextBlock;
 class UButton;
 
+DECLARE_DELEGATE(ButtonEvent);
+
 UCLASS()
 class BIOHAZARDRE4_API UBInventoryWidgetMain : public UUserWidget
 {
@@ -26,16 +28,18 @@ class BIOHAZARDRE4_API UBInventoryWidgetMain : public UUserWidget
 	UPROPERTY()
 	UTextBlock* WarningText;
 
-	UPROPERTY()
-	UButton* OkButton;
-
-	UPROPERTY()
-	UButton* NoButton;
-
+	ButtonEvent OkEvent;
+	ButtonEvent NoEvent;
 public:
 
 	void SetItemData(const FBItemData& Data);
 	void ClearItemData();
+
+	UFUNCTION(BlueprintCallable)
+	void OkButtonEvent();
+
+	UFUNCTION(BlueprintCallable)
+	void NoButtonEvent();
 
 	UFUNCTION()
 	void DropItem();
@@ -69,4 +73,5 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString ItemInformation;
+
 };
