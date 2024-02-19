@@ -72,7 +72,7 @@ void ABChainsawMan::AIStart()
 	}
 }
 
-void ABChainsawMan::BeginPlay()
+ void ABChainsawMan::BeginPlay()
 {
 	Super::BeginPlay();
 
