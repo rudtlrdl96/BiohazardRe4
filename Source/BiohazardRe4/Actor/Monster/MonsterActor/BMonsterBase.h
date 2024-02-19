@@ -9,6 +9,7 @@
 #include "Actor/Generic/Interface/BInteraction.h"
 #include "Actor/Monster/Interface/BMonsterStatInterface.h"
 #include "Actor/Monster/Interface/BMonsterStateInterface.h"
+#include "Actor/Monster/Interface/BMonsterSoundInterface.h"
 #include "BMonsterBase.generated.h"
 
 UENUM(BlueprintType)
@@ -35,7 +36,7 @@ DECLARE_DELEGATE(FOnLandedByBurstJump)
 DECLARE_DELEGATE(FOnLandedByCrossWindowJump)
 
 UCLASS()
-class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterStatInterface, public IBInteraction
+class BIOHAZARDRE4_API ABMonsterBase : public ACharacter, public IBMonsterStateInterface, public IBMonsterSoundInterface, public IBMonsterStatInterface, public IBInteraction
 {
 	GENERATED_BODY()
 
@@ -83,6 +84,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual float GetWalkDistanceThreshold() const override;
 
+	//IBMonsterSoundInteface
+public:
+	virtual void PlaySound(ESoundType _PlaySoundType) override;
+	virtual bool isAblePlay(ESoundType _PlaySoundType) override;
 	//IBInteraction
 public:
 	virtual bool AbleInteraction() const override;
@@ -105,7 +110,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCapsuleComponent> WeaponCollision = nullptr;
-	
+
 	//Montage
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
@@ -127,6 +132,7 @@ protected:
 protected:
 	TArray<class UClass*> DamageTypes;
 	TMap<FString, TMap<FString, int>> DamagedMontageSectionNums;
+	TMap<ESoundType, TObjectPtr<class USoundCue>> SoundCues;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	EWeaponType MyWeaponType;
@@ -135,6 +141,7 @@ protected:
 protected:
 	virtual void InitDamageTypes();
 	virtual void SetDamagedSectionNums();
+	virtual void InitSoundCues();
 
 	//Damaged
 protected:
@@ -175,6 +182,7 @@ protected:
 	void CrossWindowJumpUpdate();
 	void CrossWindowJumpEnd();
 
+	bool isSetTargetInBlackBoard();
 	//State Variable
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))

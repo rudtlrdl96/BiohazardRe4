@@ -43,7 +43,7 @@ private:
 	void InitValue();
 
 	void SetSkeletalMeshInConstructor();
-
+	void InitSoundCues();
 private:
 
 	virtual void Tick(float _DeltaTIme) override;

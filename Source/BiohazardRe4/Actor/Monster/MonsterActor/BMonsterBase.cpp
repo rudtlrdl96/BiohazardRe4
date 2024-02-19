@@ -166,11 +166,23 @@ void ABMonsterBase::CrossWindowJumpEnd()
 	OnLandedByCrossWindowJump.Unbind();
 }
 
-void ABMonsterBase::SetDamagedSectionNums()
+bool ABMonsterBase::isSetTargetInBlackBoard()
 {
-}
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
+	{
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return 0.0f;
+	}
 
-void ABMonsterBase::InitDamageTypes()
-{
-	//override
+	UObject* Target = AIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET);
+
+	if (Target != nullptr)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

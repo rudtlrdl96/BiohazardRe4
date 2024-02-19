@@ -2,6 +2,10 @@
 
 
 #include "BMonsterBase.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
+
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
 #include "Actor/Monster/DataAsset/BMonsterStatData.h"
 

@@ -44,4 +44,6 @@ private:
 
 	void InitPerceptionSystem(class UBMonsterStatData* _InData);
 	void SetPerceptionSystem();
+
+	void PlayDetectSound();
 };

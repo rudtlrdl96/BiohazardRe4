@@ -12,7 +12,7 @@
 void UBAnimNotify_MonsterAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
-
+	
 	if (MeshComp != nullptr)
 	{
 		ACharacter* Owner = Cast<ACharacter>(MeshComp->GetOwner());

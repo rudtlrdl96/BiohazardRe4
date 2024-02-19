@@ -9,7 +9,6 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "BiohazardRe4.h"
@@ -17,6 +16,7 @@
 #include "Actor/Monster/DataAsset/BMonsterStatData.h"
 #include "Actor/Monster/Interface/BMonsterStatInterface.h"
 #include "Actor/Monster/Interface/BMonsterAnimInterface.h"
+#include "Actor/Monster/Interface/BMonsterSoundInterface.h"
 
 ABAIBasicMonsterController::ABAIBasicMonsterController()
 {
@@ -78,11 +78,13 @@ void ABAIBasicMonsterController::StopAI()
 void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAIStimulus const _Stimulus)
 {
 	APawn* UpdatedPawn = Cast<APawn>(_Actor);
-		
+	
 	if (UpdatedPawn != nullptr && UpdatedPawn->GetController()->IsPlayerController() == true)
 	{
 		if (_Stimulus.WasSuccessfullySensed() == true)
 		{
+			PlayDetectSound();
+
 			GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, _Stimulus.WasSuccessfullySensed());
 			GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, UpdatedPawn);
 			
@@ -109,6 +111,8 @@ void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAISt
 
 			AnimInterface->SetTarget(UpdatedPawn);
 			OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
+
+			AIPerceptionComponent->Activate(false);
 		}
 	}
 }
@@ -178,4 +182,28 @@ void ABAIBasicMonsterController::SetPerceptionSystem()
 		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ABAIBasicMonsterController::OnTargetPerceptionUpdated);
 		AIPerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &ABAIBasicMonsterController::OnTargetPerceptionForgotten);
 	}
+}
+
+void ABAIBasicMonsterController::PlayDetectSound()
+{
+	if (GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET) != nullptr)
+	{
+		return;
+	}
+
+	APawn* ControlledPawn = GetPawn();
+	if (ControlledPawn == nullptr)
+	{
+		LOG_FATAL(TEXT("ControlledPawn is nullptr"));
+		return;
+	}
+
+	IBMonsterSoundInterface* SoundInterface = Cast<IBMonsterSoundInterface>(ControlledPawn);
+	if (SoundInterface == nullptr)
+	{
+		LOG_WARNING(TEXT("Interface Casting failed"));
+		return;
+	}
+
+	SoundInterface->PlaySound(ESoundType::Detect);
 }

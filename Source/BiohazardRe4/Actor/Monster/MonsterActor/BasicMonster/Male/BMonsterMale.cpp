@@ -5,6 +5,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "BiohazardRe4.h"
+#include "Sound/SoundCue.h"
+
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
 #include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 
@@ -15,6 +17,7 @@ ABMonsterMale::ABMonsterMale()
 
 	InitAI();
 	InitValue();
+	InitSoundCues();
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.5f;
@@ -52,15 +55,6 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 {
 	if (MyWeaponType == EWeaponType::None)
 	{
-		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale'");
-		UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
-
-		if (AnimBlueprint == nullptr)
-		{
-			LOG_MSG(TEXT("AnimBlueprint is nullptr"));
-			return;
-		}
-
 		IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
 		if (AnimInterface == nullptr)
 		{
@@ -81,15 +75,6 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 	}
 	else if (MyWeaponType == EWeaponType::OneHand)
 	{
-		FString AnimInstancePath = TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale'");
-		UAnimBlueprint* AnimBlueprint = LoadObject<UAnimBlueprint>(nullptr, *AnimInstancePath);
-
-		if (AnimBlueprint == nullptr)
-		{
-			LOG_MSG(TEXT("AnimBlueprint is nullptr"));
-			return;
-		}
-
 		IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
 		if (AnimInterface == nullptr)
 		{
@@ -110,6 +95,30 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 void ABMonsterMale::SetSkeletalMeshInConstructor()
 {
 
+}
+
+void ABMonsterMale::InitSoundCues()
+{
+	static ConstructorHelpers::FObjectFinder<USoundCue> YellSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_ChaseSoundCue.SC_ChaseSoundCue'"));
+	if (YellSoundRef.Object != nullptr)
+	{
+		USoundCue* YellSoundCue = YellSoundRef.Object;
+		SoundCues.Add(ESoundType::Yell, YellSoundCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> IdleSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_IdleSoundCue.SC_IdleSoundCue'"));
+	if (IdleSoundRef.Object != nullptr)
+	{
+		USoundCue* IdleSoundCue = IdleSoundRef.Object;
+		SoundCues.Add(ESoundType::Idle, IdleSoundCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> DetectSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_DetectPlayer.SC_DetectPlayer'"));
+	if (DetectSoundRef.Object != nullptr)
+	{
+		USoundCue* DetectSoundCue = DetectSoundRef.Object;
+		SoundCues.Add(ESoundType::Detect, DetectSoundCue);
+	}
 }
 
 void ABMonsterMale::Tick(float _DeltaTIme)
