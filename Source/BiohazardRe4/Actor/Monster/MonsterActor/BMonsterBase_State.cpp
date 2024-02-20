@@ -27,11 +27,13 @@ bool ABMonsterBase::isAbleParring()
 void ABMonsterBase::ParryTimeOn()
 {
 	bIsAbleParry = true;
+	OnParryInteraction();
 }
 
 void ABMonsterBase::ParryTimeOff()
 {
 	bIsAbleParry = false;
+	OffParryInteraction();
 }
 
 void ABMonsterBase::SetCurrentState(EMonsterState _InState)

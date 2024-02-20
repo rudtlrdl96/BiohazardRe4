@@ -71,6 +71,11 @@ public:
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnParryInteraction();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OffParryInteraction();
+
 	//IBMonsterStatInterface
 public:
 	virtual float GetRunSpeed() const override;
