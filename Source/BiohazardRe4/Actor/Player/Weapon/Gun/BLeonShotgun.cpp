@@ -65,11 +65,6 @@ void ABLeonShotgun::Reload()
 	{
 		ReloadEnd();
 	}
-	else
-	{
-		LOG_MSG(TEXT("ABLeonShotgun::Reload_Loop"))
-		CurState = EGunState::EReload_Loop;
-	}
 }
 
 void ABLeonShotgun::ReloadLoopStart()
