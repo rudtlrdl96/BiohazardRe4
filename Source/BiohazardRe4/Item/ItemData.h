@@ -96,4 +96,13 @@ struct FBItemData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Store")
 	int Price = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drop")
+	float DropRate = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drop")
+	int MinDropCount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drop")
+	int MaxDropCount = 0;
 };
