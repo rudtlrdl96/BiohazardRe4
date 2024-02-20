@@ -4,6 +4,7 @@
 #include "Actor/Player/Body/BLeon.h"
 #include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "..\Weapon\BLeonWeapon.h"
 #include "BiohazardRe4.h"
@@ -22,6 +23,31 @@ void ABLeon::AimEnter()
 	bDrawGrenadeAim = false;
 	bIsPlayGetItem = false;
 	HUD->SetCrosshair(true);
+
+	switch (UseWeaponCode)
+	{
+	case EItemCode::Handgun_SR09R: // Pistol
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), PistolAimActiveSound, GetActorLocation());
+	}
+		break;
+	case EItemCode::Shotgun_W870: // Shotgun
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShotgunAimActiveSound, GetActorLocation());
+	}
+		break;
+	case EItemCode::Rifle_SRM1903: // Rifle
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RifleAimActiveSound, GetActorLocation());
+	}
+		break;
+	case EItemCode::Grenade: // Grenade
+	case EItemCode::Flashbang: // FlashBang
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrenadeAimActiveSound, GetActorLocation());
+	}
+		break;
+	}
 }
 
 void ABLeon::AimUpdate(float _DeltaTime)
@@ -153,6 +179,20 @@ void ABLeon::AimUpdate(float _DeltaTime)
 
 void ABLeon::AimExit()
 {
+	switch (UseWeaponCode)
+	{
+	case EItemCode::Handgun_SR09R: // Pistol
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), PistolAimDisableSound, GetActorLocation());
+	}
+	break;
+	case EItemCode::Rifle_SRM1903: // Rifle
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RifleAimDisableSound, GetActorLocation());
+	}
+	break;
+	}
+
 	LeonAim = ELeonAim::Start;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bDrawGrenadeAim = false;

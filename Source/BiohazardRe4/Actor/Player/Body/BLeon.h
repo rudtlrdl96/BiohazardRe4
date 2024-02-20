@@ -14,6 +14,7 @@
 #include "Interface/BIKnifeAttack.h"
 #include "Interface/BIDamage.h"
 #include "Interface/BIPlayerInteractionAnim.h"
+#include "Sound/SoundCue.h"
 #include "Actor/Generic/Interface/BInteraction.h"
 #include "BLeon.generated.h"
 
@@ -663,7 +664,30 @@ private:
 	//*****************************************************//
 
 
-	//************** Actor, Component 변수 **************//
+	//************** Actor, Component 변수 **************//	
+	
+	//*****************************************************//
+
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* PistolAimActiveSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* ShotgunAimActiveSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* RifleAimActiveSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* GrenadeAimActiveSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* PistolAimDisableSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* RifleAimDisableSound = nullptr;
+
+	//************** Sound **************//
 
 	UBFsm* FsmComp = nullptr;
 	ABLeonWeapon* CurrentWeapon = nullptr;
