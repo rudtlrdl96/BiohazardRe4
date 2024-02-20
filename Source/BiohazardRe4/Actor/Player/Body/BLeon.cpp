@@ -917,6 +917,9 @@ void ABLeon::TryInteraction()
 		MonsterActor->Parry();
 
 		DeleteCurrentWeapon();
+		
+		// Todo : UI 변경
+		// HUD->SetWeapon();
 
 		UseWeaponCode = EItemCode::CombatKnife;
 		CurrentWeapon = CreateWeapon(UseWeaponCode);
