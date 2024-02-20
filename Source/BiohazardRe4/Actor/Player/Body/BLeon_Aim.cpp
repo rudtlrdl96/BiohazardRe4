@@ -24,6 +24,8 @@ void ABLeon::AimEnter()
 	bIsPlayGetItem = false;
 	HUD->SetCrosshair(true);
 
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), AimActiveVoiceSound, GetActorLocation());
+
 	switch (UseWeaponCode)
 	{
 	case EItemCode::Handgun_SR09R: // Pistol

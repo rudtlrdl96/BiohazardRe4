@@ -498,6 +498,37 @@ void ABLeon::WeaponPutOutStart()
 		DeleteCurrentWeapon();
 	}
 
+	switch (UseWeaponCode)
+	{
+	case EItemCode::Handgun_SR09R: // Pistol
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), PistolPutOutSound, GetActorLocation());
+	}
+	break;
+	case EItemCode::Shotgun_W870: // Shotgun
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShotgunPutOutSound, GetActorLocation());
+	}
+	break;
+	case EItemCode::Rifle_SRM1903: // Rifle
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), RiflePutOutSound, GetActorLocation());
+	}
+	break;
+	
+	case EItemCode::CombatKnife: // CombatKnife
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), KnifePutOutSound, GetActorLocation());
+	}
+	break;
+	case EItemCode::Grenade: // Grenade
+	case EItemCode::Flashbang: // FlashBang
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrenadePutOutSound, GetActorLocation());
+	}
+	break;
+	}
+
 	if (nullptr == CurrentWeapon)
 	{
 		CurrentWeapon = CreateWeapon(UseWeaponCode);
@@ -540,6 +571,37 @@ void ABLeon::WeaponPutAwayStart()
 
 	if (nullptr != CurrentWeapon)
 	{
+		switch (UseWeaponCode)
+		{
+		case EItemCode::Handgun_SR09R: // Pistol
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), PistolPutAwaySound, GetActorLocation());
+		}
+		break;
+		case EItemCode::Shotgun_W870: // Shotgun
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShotgunPutAwaySound, GetActorLocation());
+		}
+		break;
+		case EItemCode::Rifle_SRM1903: // Rifle
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RiflePutAwaySound, GetActorLocation());
+		}
+		break;
+
+		case EItemCode::CombatKnife: // CombatKnife
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), KnifePutAwaySound, GetActorLocation());
+		}
+		break;
+		case EItemCode::Grenade: // Grenade
+		case EItemCode::Flashbang: // FlashBang
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrenadePutAwaySound, GetActorLocation());
+		}
+		break;
+		}
+
 		ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
 
 		SocketLocationLerpTime = 0.0f;

@@ -687,6 +687,34 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	USoundCue* RifleAimDisableSound = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* AimActiveVoiceSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* PistolPutOutSound = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* PistolPutAwaySound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* ShotgunPutOutSound = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* ShotgunPutAwaySound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* RiflePutOutSound = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* RiflePutAwaySound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* GrenadePutOutSound = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* GrenadePutAwaySound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* KnifePutOutSound = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* KnifePutAwaySound = nullptr;
+
 	//************** Sound **************//
 
 	UBFsm* FsmComp = nullptr;
