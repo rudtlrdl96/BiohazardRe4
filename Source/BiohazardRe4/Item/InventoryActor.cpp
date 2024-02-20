@@ -236,9 +236,25 @@ void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 		AddMoney(Num);
 		return;
 	}
-	Inventory->AddItem(ItemCode, Num);
+	ABInventoryItem* Item = Inventory->AddItem(ItemCode, Num);
 	Widget->AddItem(ItemCode, Num);
 	HUD->UpdateStoredAmmo();
+
+	if (ItemCode == EItemCode::Handgun_SR09R || ItemCode == EItemCode::Shotgun_W870 || ItemCode == EItemCode::Rifle_SRM1903 || ItemCode == EItemCode::Grenade || ItemCode == EItemCode::Flashbang)
+	{
+		if (ABInventoryWeapon* Weapon = Cast<ABInventoryWeapon>(Item))
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				if (QuickSlot[i] == nullptr)
+				{
+					QuickSlot[i] = Weapon;
+					HUD->QuickSlotUpdate(QuickSlot);
+					break;
+				}
+			}
+		}
+	}
 }
 
 void ABInventoryActor::AddItemRowName(FName ItemRowName, int Num)

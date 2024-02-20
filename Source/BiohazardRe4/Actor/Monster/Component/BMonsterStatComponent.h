@@ -35,21 +35,22 @@ class BIOHAZARDRE4_API UBMonsterStatComponent : public UActorComponent
 public:	
 	UBMonsterStatComponent();
 
-	float GetRunSpeed() { return RunSpeed; };
-	float GetWalkSpeed() { return WalkSPeed; };
-	float GetCurrentHp() { return CurrentHp; };
-	float GetAttackRange() { return AttackRange; };
-	float GetDetectRadius() { return DetectRadius; };
-	float GetPatrolRadius() { return PatrolRadius; };
-	float GetBaseAttackPower() { return BaseAttackPower; };
-	float GetGroggyThreshold() { return GroggyThreshold; };
-	float GetWalkDistanceThreshold() { return WalkDistanceThreshold; };
+	float GetRunSpeed() const { return RunSpeed; };
+	float GetWalkSpeed() const { return WalkSPeed; };
+	float GetCurrentHp() const { return CurrentHp; };
+	float GetAttackRange() const { return AttackRange; };
+	float GetDetectRadius() const { return DetectRadius; };
+	float GetPatrolRadius() const { return PatrolRadius; };
+	float GetBaseAttackPower() const { return BaseAttackPower; };
+	float GetGroggyThreshold() const { return GroggyThreshold; };
+	float GetWalkDistanceThreshold() const { return WalkDistanceThreshold; };
 	void StatInit(const FStatStruct& _StatData);
 
 	void SetHp(float _Hp) { CurrentHp = _Hp; };
 	void DecreaseHp(float _Hp);
 	
-	bool isDeath() { return CurrentHp <= 0; };
+	UFUNCTION(BlueprintCallable)
+	bool isDeath() const { return CurrentHp <= 0; };
 
 protected:
 	virtual void BeginPlay() override;

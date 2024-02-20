@@ -62,7 +62,7 @@ const FBItemData& UBInventoryManager::FindItemData(EItemCode Code)
 	return *ItemDataTable->FindRow<FBItemData>(TEXT("HandgunAmmo"), TEXT(""));
 }
 
-void UBInventoryManager::AddItem(EItemCode ItemCode, int Num)
+ABInventoryItem* UBInventoryManager::AddItem(EItemCode ItemCode, int Num)
 {
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
 	FBItemData* FindItem = nullptr;
@@ -80,19 +80,19 @@ void UBInventoryManager::AddItem(EItemCode ItemCode, int Num)
 	if (nullptr == FindItem)
 	{
 		LOG_ERROR(TEXT("Can't Find ItemCode in ItemData"));
-		return;
+		return nullptr;
 	}
 
-	CreateItem(*FindItem, Num);
+	return CreateItem(*FindItem, Num);
 }
 
-void UBInventoryManager::AddItem(FName ItemRowName, int Num)
+ABInventoryItem* UBInventoryManager::AddItem(FName ItemRowName, int Num)
 {
 	FBItemData* ItemData = ItemDataTable->FindRow<FBItemData>(ItemRowName, TEXT("Can't Find"));
-	CreateItem(*ItemData, Num);
+	return CreateItem(*ItemData, Num);
 }
 
-void UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos, int Num)
+ABInventoryItem* UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos, int Num)
 {
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
 	FBItemData* FindItem = nullptr;
@@ -110,10 +110,10 @@ void UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint& Pos, int N
 	if (nullptr == FindItem)
 	{
 		LOG_ERROR(TEXT("Can't Find ItemCode in ItemData"));
-		return;
+		return nullptr;
 	}
 
-	CreateItem(*FindItem, Pos, Num);
+	return CreateItem(*FindItem, Pos, Num);
 }
 
 void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
@@ -205,7 +205,7 @@ void UBInventoryManager::CraftItem(const FBCraftRecipe& Recipe)
 }
 
 static int32 count = 0;
-void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
+ABInventoryItem* UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 {
 	// 기존 아이템에 합칠 수 있는지 체크
 	if (1 < Data.MaxCount)
@@ -213,7 +213,7 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 		Num = ItemMerge(Data, Num);
 		if (Num <= 0)
 		{
-			return;
+			return nullptr;
 		}
 	}
 	// 아이템이 들어갈 공간 찾기
@@ -222,7 +222,7 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 	{
 		// 못 찾은 경우
 		LOG_WARNING(TEXT("Inventory Is Full. Check Please"));
-		return;
+		return nullptr;
 	}
 
 	ABInventoryItem* NewItem;
@@ -278,10 +278,12 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, int Num)
 		{
 			NewItem->OffItemNumText();
 		}
+		return NewItem;
 	}
+	return nullptr;
 }
 
-void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos, int Num)
+ABInventoryItem* UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos, int Num)
 {
 	// 기존 아이템에 합칠 수 있는지 체크
 	if (1 < Data.MaxCount)
@@ -289,7 +291,7 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 		Num = ItemMerge(Data, Num);
 		if (Num <= 0)
 		{
-			return;
+			return nullptr;
 		}
 	}
 
@@ -297,7 +299,7 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 	if (false == IsEmptySlot(Pos, Data.ItemSize))
 	{
 		LOG_ERROR(TEXT("CreateItem Faild"));
-		return;
+		return nullptr;
 	}
 
 	// 기존 아이템에 개수를 추가하는 경우는 아직 미구현
@@ -355,7 +357,9 @@ void UBInventoryManager::CreateItem(const FBItemData& Data, const FIntPoint& Pos
 		{
 			NewItem->OffItemNumText();
 		}
+		return NewItem;
 	}
+	return nullptr;
 }
 
 bool UBInventoryManager::IsEmptySlot(const FIntPoint& Scale)
