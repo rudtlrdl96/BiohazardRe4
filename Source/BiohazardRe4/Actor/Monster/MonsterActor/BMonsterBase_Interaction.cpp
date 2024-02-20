@@ -13,9 +13,12 @@ bool ABMonsterBase::AbleInteraction() const
 			return bIsAbleParry;
 		}
 		case EMonsterState::Flashed:
-		case EMonsterState::Damaged:
 		{
 			return true;
+		}
+		case EMonsterState::Damaged:
+		{
+			return false;
 		}
 		case EMonsterState::Burst:
 		{
@@ -64,7 +67,7 @@ EInteraction ABMonsterBase::GetInteractionType() const
 	}
 	case EMonsterState::Damaged:
 	{
-		return EInteraction::GroggyMonster;
+		return EInteraction::None;
 	}
 	case EMonsterState::Death:
 	{
