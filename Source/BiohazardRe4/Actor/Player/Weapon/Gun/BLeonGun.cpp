@@ -325,3 +325,43 @@ void ABLeonGun::SpawnMagazine_Implementation()
 {
 	LOG_MSG(TEXT("SpawnMagazine"))
 }
+
+void ABLeonGun::PlayReload1Sound()
+{
+	if (Sound_Reload1 == nullptr)
+	{
+		LOG_WARNING(TEXT("Sound_Reload1 == nullptr"))
+			return;
+	}
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload1, GetActorLocation(), GetActorRotation());
+}
+
+void ABLeonGun::PlayReload2Sound()
+{
+	if (Sound_Reload2 == nullptr)
+	{
+		LOG_WARNING(TEXT("Sound_Reload2 == nullptr"))
+			return;
+	}
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload2, GetActorLocation(), GetActorRotation());
+}
+
+void ABLeonGun::PlayMagazine1Sound()
+{
+	if (Sound_Reload_Magazine1 == nullptr)
+	{
+		LOG_WARNING(TEXT("Sound_Reload_Magazine1 == nullptr"))
+			return;
+	}
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload_Magazine1, GetActorLocation(), GetActorRotation());
+}
+
+void ABLeonGun::PlayMagazine2Sound()
+{
+	if (Sound_Reload_Magazine2 == nullptr)
+	{
+		LOG_WARNING(TEXT("Sound_Reload4_Magazine2 == nullptr"))
+			return;
+	}
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload_Magazine2, GetActorLocation(), GetActorRotation());
+}

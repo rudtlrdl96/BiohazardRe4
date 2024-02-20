@@ -67,6 +67,12 @@ public:
 	void SpawnMagazine();
 	virtual void SpawnMagazine_Implementation();
 
+	void PlayShootingSound();
+	void PlayReload1Sound();
+	void PlayReload2Sound();
+	void PlayMagazine1Sound();
+	void PlayMagazine2Sound();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -123,9 +129,20 @@ protected:
 	class ABInventoryWeapon* CurGun = nullptr;
 
 	void SetCurLoopState();
+	
 	// _______________________Sound
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundBase* Sound_Shoot = nullptr;
 
-	void PlayShootingSound();
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_Reload1 = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_Reload2 = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_Reload_Magazine1 = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_Reload_Magazine2 = nullptr;
 };
