@@ -6,6 +6,6 @@
 
 ABMapDrawerInteraction::ABMapDrawerInteraction()
 {
-
+	bOpen = false;
 }
 

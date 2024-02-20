@@ -21,7 +21,12 @@ public:
 	{
 		return EInteraction::OpenDrawer;
 	}
-
+	void SetDrawerValue(uint8 _Value)
+	{
+		bOpen = _Value;
+	}
 protected:
+	UPROPERTY(BlueprintReadWrite)
+	uint8 bOpen : 1;
 };
 
