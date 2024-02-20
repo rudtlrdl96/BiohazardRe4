@@ -500,15 +500,13 @@ void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor
 
 	FVector CauserLocation = DamageCauser->GetActorLocation();
 	FVector MyLocation = GetActorLocation();
-
+	
 	FString SectionStr = GetBurstJumpSectionName(MyLocation, CauserLocation);
 
 	//날아가는 각도
-	FVector LaunchDirXY = MyLocation - CauserLocation;
-	LaunchDirXY.Normalize();
-	float LaunchZ = 1.0f;
+	MyLocation.Z += 88.0f;
 
-	FVector LaunchDir = FVector(LaunchDirXY.X, LaunchDirXY.Y, LaunchZ);
+	FVector LaunchDir = MyLocation - CauserLocation;
 	LaunchDir.Normalize();
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -539,6 +537,8 @@ void ABMonsterBase::DamagedByGrenade(const FDamageEvent& _DamageEvent, float _Da
 	}
 
 	FVector MyPos = GetActorLocation();
+	MyPos.Z += 88.0f;
+
 	FVector RadialPos = RadialDamage->Origin;
 	float DamageRatio = _DamagedAmount / RadialDamage->Params.BaseDamage;
 

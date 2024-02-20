@@ -141,6 +141,13 @@ void ABMonsterMale::InitSoundCues()
 		SoundCues.Add(ESoundType::Damaged, DamagedSoundCue);
 	}
 	
+	static ConstructorHelpers::FObjectFinder<USoundCue> AttackSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_AttackCue.SC_AttackCue'"));
+	if (AttackSoundRef.Object != nullptr)
+	{
+		USoundCue* AttackCue = AttackSoundRef.Object;
+		SoundCues.Add(ESoundType::Attack, AttackCue);
+	}
+
 	static ConstructorHelpers::FObjectFinder<USoundCue> GeneralGroggySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_GenaralGroggyCue.SC_GenaralGroggyCue'"));
 	if (GeneralGroggySoundRef.Object != nullptr)
 	{

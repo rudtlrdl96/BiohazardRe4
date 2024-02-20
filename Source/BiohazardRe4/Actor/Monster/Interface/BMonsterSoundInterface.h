@@ -20,6 +20,7 @@ enum class ESoundType
 	Yell,
 	Detect,
 	Damaged,
+	Attack,
 	GeneralGroggy,
 	HeadShotGroggy,
 	PointDeath,
