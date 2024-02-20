@@ -523,6 +523,7 @@ void ABLeon::WeaponPutOutStart()
 			SocketLocationLerpTime = 0.0f;
 			SocketRotationLerpTime = 0.0f;
 		}
+		HUD->SetWeaponCode(UseWeaponCode);
 	}
 }
 
@@ -917,9 +918,6 @@ void ABLeon::TryInteraction()
 		MonsterActor->Parry();
 
 		DeleteCurrentWeapon();
-		
-		// Todo : UI 변경
-		// HUD->SetWeapon();
 
 		UseWeaponCode = EItemCode::CombatKnife;
 		CurrentWeapon = CreateWeapon(UseWeaponCode);
@@ -2281,7 +2279,6 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 		return;
 	}
 
-	HUD->SetWeapon(QuickSlotWeaponClass);
 	ChangeUseWeapon(QuickSlotItemCode);
 }
 
@@ -2409,6 +2406,7 @@ void ABLeon::DeleteCurrentWeapon()
 			CurrentWeapon = nullptr;
 		}
 	}
+	HUD->ClearWeapon();
 }
 
 ELeonWeaponAnim ABLeon::GetUseWeaponAnimation(EItemCode _WeaponCode) const

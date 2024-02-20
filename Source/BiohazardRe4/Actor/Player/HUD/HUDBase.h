@@ -44,10 +44,20 @@ public :
 
 	// ________________Gun____________________________
 	
-	// HUD의 무기를 지정합니다. Empty는 무장해제 상태입니다. 총 및 Empty 외의 아이템코드는 Warning 로그를 표시합니다.
+	// HUD의 무기를 지정합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetWeapon(class ABInventoryWeapon* Weapon);
 
+	// HUD의 무기를 지정합니다.
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void SetWeaponCode(EItemCode Code);
+
+	UFUNCTION(BlueprintCallable)
+	ABInventoryWeapon* GetWeapon(EItemCode Code);
+
+	// HUD의 무기를 무장해제 상태로 지정합니다.
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void ClearWeapon();
 	// 무기의 현재 장전된 탄 수를 지정합니다.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetLoadAmmo(int32 Ammo);

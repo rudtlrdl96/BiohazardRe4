@@ -10,3 +10,8 @@ ABHUDBase::ABHUDBase()
 {
 	Instance = this;
 }
+
+ABInventoryWeapon* ABHUDBase::GetWeapon(EItemCode Code)
+{
+	return ABInventoryActor::Instance->FindWeapon(Code);
+}
