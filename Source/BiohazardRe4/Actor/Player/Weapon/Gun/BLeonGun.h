@@ -123,5 +123,9 @@ protected:
 	class ABInventoryWeapon* CurGun = nullptr;
 
 	void SetCurLoopState();
+	// _______________________Sound
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_Shoot = nullptr;
 
+	void PlayShootingSound();
 };

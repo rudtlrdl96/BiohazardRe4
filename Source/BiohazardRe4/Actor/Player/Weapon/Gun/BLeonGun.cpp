@@ -179,6 +179,8 @@ void ABLeonGun::Shoot()
 	ABHUDBase::Instance->UpdateLoadedAmmo();
 
 	FireStart();
+
+	PlayShootingSound();
 }
 
 void ABLeonGun::DropShell()
@@ -208,6 +210,17 @@ void ABLeonGun::SetCurLoopState()
 	{
 		CurState = EGunState::ENoAmmo_Loop;
 	}
+}
+
+void ABLeonGun::PlayShootingSound()
+{
+	if (Sound_Shoot == nullptr)
+	{
+		LOG_WARNING(TEXT("Sound_Shoot == nullptr"))
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Shoot, GetActorLocation(), GetActorRotation());
 }
 
 void ABLeonGun::FireStart()
