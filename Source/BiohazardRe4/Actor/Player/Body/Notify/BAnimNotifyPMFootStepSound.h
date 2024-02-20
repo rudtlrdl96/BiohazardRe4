@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Sound/SoundCue.h"
 #include "BAnimNotifyPMFootStepSound.generated.h"
 
 class USoundWave;
@@ -23,9 +24,9 @@ public:
 
 private:
 
-	USoundWave* DirtSound = nullptr;
-	USoundWave* RockSound = nullptr;
-	USoundWave* WoodSound = nullptr;
-	USoundWave* WaterSound = nullptr;
-	USoundWave* GrassSound = nullptr;
+	USoundCue* DirtSound = nullptr;
+	USoundCue* RockSound = nullptr;
+	USoundCue* WoodSound = nullptr;
+	USoundCue* WaterSound = nullptr;
+	USoundCue* GrassSound = nullptr;
 };

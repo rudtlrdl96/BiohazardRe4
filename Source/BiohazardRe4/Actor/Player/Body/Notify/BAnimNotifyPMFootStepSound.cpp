@@ -7,15 +7,15 @@
 
 UBAnimNotifyPMFootStepSound::UBAnimNotifyPMFootStepSound()
 {
-	static ConstructorHelpers::FObjectFinder<USoundWave> StaticDirtSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Dirt/SW_Leon_58.SW_Leon_58'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> StaticDirtSound(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Player/Sound/FootSound/SC_Dirt.SC_Dirt'"));
 	DirtSound = StaticDirtSound.Object;
-	static ConstructorHelpers::FObjectFinder<USoundWave> StaticRockSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Rock/SW_Leon_87.SW_Leon_87'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> StaticRockSound(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Player/Sound/FootSound/SC_Rock.SC_Rock'"));
 	RockSound = StaticRockSound.Object;
-	static ConstructorHelpers::FObjectFinder<USoundWave> StaticWoodSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Wood/SW_Leon_59.SW_Leon_59'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> StaticWoodSound(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Player/Sound/FootSound/SC_Wood.SC_Wood'"));
 	WoodSound = StaticWoodSound.Object;
-	static ConstructorHelpers::FObjectFinder<USoundWave> StaticWaterSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Water/SW_Leon_60.SW_Leon_60'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> StaticWaterSound(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Player/Sound/FootSound/SC_Water.SC_Water'"));
 	WaterSound = StaticWaterSound.Object;
-	static ConstructorHelpers::FObjectFinder<USoundWave> StaticGrassSound(TEXT("/Script/Engine.SoundWave'/Game/Assets/Player/Sound/FootStep/Grass/SW_Leon_49.SW_Leon_49'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> StaticGrassSound(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Player/Sound/FootSound/SC_Grass.SC_Grass'"));
 	GrassSound = StaticGrassSound.Object;
 }
 

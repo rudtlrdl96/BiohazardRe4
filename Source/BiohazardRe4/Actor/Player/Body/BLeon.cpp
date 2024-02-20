@@ -916,6 +916,8 @@ void ABLeon::TryInteraction()
 
 		MonsterActor->Parry();
 
+		DeleteCurrentWeapon();
+
 		UseWeaponCode = EItemCode::CombatKnife;
 		CurrentWeapon = CreateWeapon(UseWeaponCode);
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
