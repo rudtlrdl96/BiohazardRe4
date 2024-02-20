@@ -27,4 +27,6 @@ private:
 
 	virtual void InitDamageTypes() override;
 	virtual void SetDamagedSectionNums() override;
+
+	virtual void AllCollisionOff() override;
 };

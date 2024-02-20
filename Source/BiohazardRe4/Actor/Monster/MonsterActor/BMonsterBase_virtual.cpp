@@ -13,5 +13,8 @@ void ABMonsterBase::InitDamageTypes()
 
 void ABMonsterBase::InitSoundCues()
 {
+}
 
+void ABMonsterBase::AllCollisionOff()
+{
 }

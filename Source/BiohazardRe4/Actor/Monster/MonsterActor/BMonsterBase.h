@@ -32,6 +32,15 @@ enum class EDamagedPart
 	Body,
 };
 
+UENUM()
+enum class EDeathType
+{
+	Point,
+	Kick,
+	Knife,
+	Grenade,
+};
+
 DECLARE_DELEGATE(FOnLandedByBurstJump)
 DECLARE_DELEGATE(FOnLandedByCrossWindowJump)
 
@@ -116,6 +125,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCapsuleComponent> WeaponCollision = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAudioComponent> SoundComponent = nullptr;
+	
 	//Montage
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
@@ -137,6 +149,7 @@ protected:
 protected:
 	TArray<class UClass*> DamageTypes;
 	TMap<FString, TMap<FString, int>> DamagedMontageSectionNums;
+
 	TMap<ESoundType, TObjectPtr<class USoundCue>> SoundCues;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
@@ -150,7 +163,7 @@ protected:
 
 	//Damaged
 protected:
-	float TakePointDamage(const FDamageEvent& _DamageEvent, float _DamagedAmount);
+	float TakePointDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	float TakeNormalDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	float TakeRadialDamage(const FDamageEvent& _DamageEvent, const AActor* DamageCauser, float _DamagedAmount);
 	
@@ -172,11 +185,14 @@ protected:
 	
 	const FString GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent);
 
+
+	virtual void MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	virtual void MonsterDeathByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	virtual void MonsterDeathByPoint(const FDamageEvent& _DamageEvent);
 	virtual void MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 	virtual void MonsterDeathByGrenade(const FDamageEvent& _DamageEvent, const AActor* DamageCauser);
 
+	virtual void AllCollisionOff();
 	//virtual void MonsterDeathByRadial(EDeathType _DeathType, const FDamageEvent& _DamageEvent);
 
 	void DamagedByFlashed();

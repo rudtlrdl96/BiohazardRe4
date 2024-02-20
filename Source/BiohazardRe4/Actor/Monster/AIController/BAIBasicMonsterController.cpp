@@ -78,7 +78,16 @@ void ABAIBasicMonsterController::StopAI()
 void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAIStimulus const _Stimulus)
 {
 	APawn* UpdatedPawn = Cast<APawn>(_Actor);
-	
+	if (UpdatedPawn == nullptr)
+	{
+		return;
+	}
+
+	if (UpdatedPawn->GetController() == nullptr)
+	{
+		return;
+	}
+
 	if (UpdatedPawn != nullptr && UpdatedPawn->GetController()->IsPlayerController() == true)
 	{
 		if (_Stimulus.WasSuccessfullySensed() == true)
@@ -134,6 +143,7 @@ void ABAIBasicMonsterController::OnPossess(APawn* _InPawn)
 {
 	Super::OnPossess(_InPawn);
 	RunAI();
+	SetValue();
 }
 
 void ABAIBasicMonsterController::OnUnPossess()
@@ -141,7 +151,6 @@ void ABAIBasicMonsterController::OnUnPossess()
 	Super::OnUnPossess();
 	StopAI();
 }
-
 
 void ABAIBasicMonsterController::InitPerceptionSystem(UBMonsterStatData* _InData)
 {
@@ -207,3 +216,16 @@ void ABAIBasicMonsterController::PlayDetectSound()
 
 	SoundInterface->PlaySound(ESoundType::Detect);
 }
+
+void ABAIBasicMonsterController::SetValue()
+{
+	ACharacter* MyCharacter = GetCharacter();
+	if (MyCharacter == nullptr)
+	{
+		LOG_FATAL(TEXT("Character is nullptr"));
+		return;
+	}
+
+	MyCharacter->GetCharacterMovement()->RotationRate.Yaw = 360.0f;
+}
+

@@ -5,24 +5,53 @@
 
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 void ABMonsterBase::PlaySound(ESoundType _PlaySoundType)
 {
-	if (SoundCues.Contains(_PlaySoundType) == true)
+	if (isAblePlay(_PlaySoundType) == true)
 	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCues[_PlaySoundType], GetActorLocation());
+		SoundComponent->SetSound(SoundCues[_PlaySoundType]);
+		SoundComponent->Play();
 	}
 }
 
 bool ABMonsterBase::isAblePlay(ESoundType _PlaySoundType)
 {
-	if (_PlaySoundType == ESoundType::Yell)
+	if (SoundCues.Contains(_PlaySoundType) == false)
 	{
-		if(isSetTargetInBlackBoard() == false ||
-		  (GetCurrentState() != EMonsterState::Walk && GetCurrentState() != EMonsterState::Run))
+		return false;
+	}
+
+	switch (_PlaySoundType)
+	{
+	case ESoundType::Idle:
+		break;
+
+	case ESoundType::Yell:
+		if (isSetTargetInBlackBoard() == false ||
+			(GetCurrentState() != EMonsterState::Walk && GetCurrentState() != EMonsterState::Run))
 		{
 			return false;
 		}
+		break;
+	case ESoundType::Detect:
+		break;
+
+	case ESoundType::Damaged:
+		break;
+
+	case ESoundType::GeneralGroggy:
+		break;
+
+	case ESoundType::HeadShotGroggy:
+		break;
+
+	case ESoundType::PointDeath:
+		break;
+	default:
+
+		break;
 	}
 
 	return true;

@@ -179,4 +179,10 @@ void ABChainsawMan::SetDamagedSectionNums()
 	}
 }
 
+void ABChainsawMan::AllCollisionOff()
+{
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
 

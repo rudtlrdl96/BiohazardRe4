@@ -37,6 +37,7 @@ protected:
 protected:
 	virtual void SetClothesSkeletalMeshByRandomInBeginPlay() override;
 	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay() override;
+	virtual void AllCollisionOff() override;
 
 private:
 	void CreateComponent();
@@ -44,6 +45,7 @@ private:
 
 	void SetSkeletalMeshInConstructor();
 	void InitSoundCues();
+
 private:
 
 	virtual void Tick(float _DeltaTIme) override;

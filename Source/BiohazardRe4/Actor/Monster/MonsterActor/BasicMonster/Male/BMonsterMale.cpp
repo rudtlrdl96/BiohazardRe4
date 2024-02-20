@@ -3,6 +3,7 @@
 
 #include "BMonsterMale.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "BiohazardRe4.h"
 #include "Sound/SoundCue.h"
@@ -92,6 +93,19 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 	}
 }
 
+void ABMonsterMale::AllCollisionOff()
+{
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+
+	Jacket->SetCollisionProfileName(TEXT("NoCollision"));
+	Hat->SetCollisionProfileName(TEXT("NoCollision"));
+	BodyBase->SetCollisionProfileName(TEXT("NoCollision"));
+	Pants->SetCollisionProfileName(TEXT("NoCollision"));
+	Weapon->SetCollisionProfileName(TEXT("NoCollision"));
+	Head->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
 void ABMonsterMale::SetSkeletalMeshInConstructor()
 {
 
@@ -105,41 +119,49 @@ void ABMonsterMale::InitSoundCues()
 		USoundCue* YellSoundCue = YellSoundRef.Object;
 		SoundCues.Add(ESoundType::Yell, YellSoundCue);
 	}
-
+	
 	static ConstructorHelpers::FObjectFinder<USoundCue> IdleSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_IdleSoundCue.SC_IdleSoundCue'"));
 	if (IdleSoundRef.Object != nullptr)
 	{
 		USoundCue* IdleSoundCue = IdleSoundRef.Object;
 		SoundCues.Add(ESoundType::Idle, IdleSoundCue);
 	}
-
+	
 	static ConstructorHelpers::FObjectFinder<USoundCue> DetectSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_DetectPlayer.SC_DetectPlayer'"));
 	if (DetectSoundRef.Object != nullptr)
 	{
 		USoundCue* DetectSoundCue = DetectSoundRef.Object;
 		SoundCues.Add(ESoundType::Detect, DetectSoundCue);
 	}
-
+	
 	static ConstructorHelpers::FObjectFinder<USoundCue> DamagedSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_DamagedCue.SC_DamagedCue'"));
 	if (DamagedSoundRef.Object != nullptr)
 	{
 		USoundCue* DamagedSoundCue = DamagedSoundRef.Object;
 		SoundCues.Add(ESoundType::Damaged, DamagedSoundCue);
 	}
-
+	
 	static ConstructorHelpers::FObjectFinder<USoundCue> GeneralGroggySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_GenaralGroggyCue.SC_GenaralGroggyCue'"));
 	if (GeneralGroggySoundRef.Object != nullptr)
 	{
 		USoundCue* GenaralGroggyCue = GeneralGroggySoundRef.Object;
 		SoundCues.Add(ESoundType::GeneralGroggy, GenaralGroggyCue);
 	}
-
+	
 	static ConstructorHelpers::FObjectFinder<USoundCue> HeadShotGroggySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_HeadShotGroggyCue.SC_HeadShotGroggyCue'"));
 	if (HeadShotGroggySoundRef.Object != nullptr)
 	{
 		USoundCue* HeadShotGroggyCue = HeadShotGroggySoundRef.Object;
 		SoundCues.Add(ESoundType::HeadShotGroggy, HeadShotGroggyCue);
 	}
+	
+	static ConstructorHelpers::FObjectFinder<USoundCue> PointDeathSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_PointDeathCue.SC_PointDeathCue'"));
+	if (PointDeathSoundRef.Object != nullptr)
+	{
+		USoundCue* PointDeathGroggyCue = PointDeathSoundRef.Object;
+		SoundCues.Add(ESoundType::PointDeath, PointDeathGroggyCue);
+	}
+
 }
 
 void ABMonsterMale::Tick(float _DeltaTIme)

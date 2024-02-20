@@ -22,6 +22,7 @@ enum class ESoundType
 	Damaged,
 	GeneralGroggy,
 	HeadShotGroggy,
+	PointDeath,
 };
 
 class BIOHAZARDRE4_API IBMonsterSoundInterface

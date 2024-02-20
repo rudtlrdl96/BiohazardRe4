@@ -4,6 +4,7 @@
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "AIController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -17,11 +18,12 @@
 ABMonsterBase::ABMonsterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 	bUseControllerRotationYaw = false;
 	
 	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCollision"));
 	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
+
+	SoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Sound"));
 }
 
 void ABMonsterBase::BeginPlay()
@@ -177,12 +179,5 @@ bool ABMonsterBase::isSetTargetInBlackBoard()
 
 	UObject* Target = AIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET);
 
-	if (Target != nullptr)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return (Target != nullptr);
 }

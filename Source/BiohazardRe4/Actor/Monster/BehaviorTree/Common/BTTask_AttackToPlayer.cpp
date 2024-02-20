@@ -54,7 +54,6 @@ EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& 
 		{
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
-			
 			Anim->StopAllMontages(1.0f);
 		}
 	);

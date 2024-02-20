@@ -79,6 +79,16 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 		for (auto const& OverlapResult : OverlapResults)
 		{
 			APawn* Pawn = Cast<APawn>(OverlapResult.GetActor());
+			if (Pawn == nullptr)
+			{
+				continue;
+			}
+
+			if (Pawn->GetController() == nullptr)
+			{
+				continue;
+			}
+
 			if (Pawn && Pawn->GetController()->IsPlayerController())
 			{
 				FVector Forward = MyCharacter->GetActorForwardVector();

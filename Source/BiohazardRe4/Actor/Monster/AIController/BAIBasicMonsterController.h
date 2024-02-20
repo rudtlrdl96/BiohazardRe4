@@ -46,4 +46,5 @@ private:
 	void SetPerceptionSystem();
 
 	void PlayDetectSound();
+	void SetValue();
 };
