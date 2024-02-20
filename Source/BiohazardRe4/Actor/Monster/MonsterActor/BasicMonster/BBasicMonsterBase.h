@@ -38,6 +38,7 @@ protected:
 	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay();
 
 	virtual void SetWeaponCollision(EWeaponName _WeaponName);
+	void LoadWeaponMesh();
 protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -49,4 +50,5 @@ private:
 	virtual void InitDamageTypes() override;
 	virtual void SetDamagedSectionNums() override;
 
+	static TArray<TPair<FString, TObjectPtr<class USkeletalMesh>>> LoadedWeaponMesh;
 };

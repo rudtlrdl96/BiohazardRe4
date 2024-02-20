@@ -6,9 +6,44 @@
 #include "Actor/Monster/MonsterActor/BasicMonster/BBasicMonsterBase.h"
 #include "BMonsterMale.generated.h"
 
-/**
- * 
- */
+UENUM()
+enum class EMeshType
+{
+	Weapon,
+	Hat,
+	Head,
+	Jacket,
+	Pants,
+};
+
+UENUM()
+enum class EMeshAnimType
+{
+	Base,
+	Copy,
+};
+
+USTRUCT()
+struct FMontageStruct
+{
+	GENERATED_BODY()
+
+	FMontageStruct()
+	{
+
+	}
+
+	FMontageStruct(TObjectPtr<class UAnimMontage> _AttackMontage, TObjectPtr<class UAnimMontage> _DamagedMontage, TObjectPtr<class UAnimMontage> _ParriedMontage)
+		:AttackMontage(_AttackMontage), DamagedMontage(_DamagedMontage), ParriedMontage(_ParriedMontage)
+	{
+
+	}
+
+	TObjectPtr<class UAnimMontage> AttackMontage;
+	TObjectPtr<class UAnimMontage> DamagedMontage;
+	TObjectPtr<class UAnimMontage> ParriedMontage;
+};
+
 UCLASS()
 class BIOHAZARDRE4_API ABMonsterMale : public ABBasicMonsterBase
 {
@@ -46,7 +81,14 @@ private:
 	void SetSkeletalMeshInConstructor();
 	void InitSoundCues();
 
-private:
+	void MeshLoad();
+	void MontageLoad();
+	void AnimInstanceLoad();
 
+private:
+	static TMap<EMeshType, TArray<TObjectPtr<class USkeletalMesh>>> LoadedMesh;
+	static TMap<EMeshAnimType, TSubclassOf<class UAnimInstance>> LoadedAnimInstance;
+	static TMap<EWeaponType, FMontageStruct> LoadedMontage;
+	
 	virtual void Tick(float _DeltaTIme) override;
 };

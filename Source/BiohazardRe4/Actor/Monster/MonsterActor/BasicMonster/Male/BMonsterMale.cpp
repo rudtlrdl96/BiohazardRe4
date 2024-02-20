@@ -11,17 +11,22 @@
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
 #include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 
+TMap<EMeshType, TArray<TObjectPtr<USkeletalMesh>>> ABMonsterMale::LoadedMesh;
+TMap<EMeshAnimType, TSubclassOf<UAnimInstance>> ABMonsterMale::LoadedAnimInstance;
+TMap<EWeaponType, FMontageStruct> ABMonsterMale::LoadedMontage;
+
 ABMonsterMale::ABMonsterMale()
 {
 	CreateComponent();
-	SetSkeletalMeshInConstructor();
+	MeshLoad();
+	AnimInstanceLoad();
+	MontageLoad();
 
-	InitAI();
 	InitValue();
+	InitAI();
 	InitSoundCues();
 
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickInterval = 0.5f;
 }
 
 void ABMonsterMale::BeginPlay()
@@ -54,6 +59,13 @@ void ABMonsterMale::InitValue()
 
 void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 {
+	GetMesh()->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Base]);
+
+	Head->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
+	Hat->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
+	Jacket->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
+	Pants->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
+
 	if (MyWeaponType == EWeaponType::None)
 	{
 		IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
@@ -65,14 +77,9 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 		
 		AnimInterface->SetAnimationType(EMonsterAnimType::BareHands);
 
-		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_BareHands.AM_MonsterMale_Attack_BareHands'");
-		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
-		
-		FString DamagedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_BareHands.AM_MonsterMale_Damaged_BareHands'");
-		DamagedMontage = LoadObject<UAnimMontage>(nullptr, *DamagedMontagePath);
-
-		FString ParriedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_Bare_Hands.AM_MonsterMale_Parry_Bare_Hands'");
-		ParriedMontage = LoadObject<UAnimMontage>(nullptr, *ParriedMontagePath);
+		AttackMontage = LoadedMontage[EWeaponType::None].AttackMontage;
+		DamagedMontage = LoadedMontage[EWeaponType::None].DamagedMontage;
+		ParriedMontage = LoadedMontage[EWeaponType::None].ParriedMontage;
 	}
 	else if (MyWeaponType == EWeaponType::OneHand)
 	{
@@ -85,11 +92,9 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 		
 		AnimInterface->SetAnimationType(EMonsterAnimType::OneHand);
 		
-		FString AttackMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_OneHand.AM_MonsterMale_Attack_OneHand'");
-		AttackMontage = LoadObject<UAnimMontage>(nullptr, *AttackMontagePath);
-
-		FString DamagedMontagePath = TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_OneHand.AM_MonsterMale_Damaged_OneHand'");
-		DamagedMontage = LoadObject<UAnimMontage>(nullptr, *DamagedMontagePath);
+		AttackMontage = LoadedMontage[EWeaponType::OneHand].AttackMontage;
+		DamagedMontage = LoadedMontage[EWeaponType::OneHand].DamagedMontage;
+		ParriedMontage = LoadedMontage[EWeaponType::OneHand].ParriedMontage;
 	}
 }
 
@@ -171,6 +176,80 @@ void ABMonsterMale::InitSoundCues()
 
 }
 
+void ABMonsterMale::MeshLoad()
+{
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'"));
+	if (BodyRef.Object != nullptr)
+	{
+		GetMesh()->SetSkeletalMesh(BodyRef.Object);
+		BodyBase = GetMesh();
+	}
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Head1Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/1/SK_MonsterMaleHead_1.SK_MonsterMaleHead_1'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Head2Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/2/SK_MonsterMaleHead_2.SK_MonsterMaleHead_2'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Head3Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/3/SK_MonsterMaleHead_3.SK_MonsterMaleHead_3'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Head4Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/4/SK_MonsterMaleHead_4.SK_MonsterMaleHead_4'"));
+	
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Hat1Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/1/SK_MonsterMaleHat_1.SK_MonsterMaleHat_1'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>	Hat2Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/2/SK_MonsterMaleHat_2.SK_MonsterMaleHat_2'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>	Hat3Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/3/SK_MonsterMaleHat_3.SK_MonsterMaleHat_3'"));
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Jacket1Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/1/SK_MonsterMaleJacket_1.SK_MonsterMaleJacket_1'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Jacket2Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/2/SK_MonsterMaleJacket_2.SK_MonsterMaleJacket_2'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Jacket3Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/3/SK_MonsterMaleJacket_3.SK_MonsterMaleJacket_3'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Jacket4Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/4/SK_MonsterMaleJacket_4.SK_MonsterMaleJacket_4'"));
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Pants1Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/1/SK_MonsterMalePants_1.SK_MonsterMalePants_1'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Pants2Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/2/SK_MonsterMalePants_2.SK_MonsterMalePants_2'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Pants3Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/3/SK_MonsterMalePants_3.SK_MonsterMalePants_3'"));
+
+	LoadedMesh.Add(EMeshType::Hat, TArray<TObjectPtr<class USkeletalMesh>>());
+	LoadedMesh.Add(EMeshType::Head, TArray<TObjectPtr<class USkeletalMesh>>());
+	LoadedMesh.Add(EMeshType::Jacket, TArray<TObjectPtr<class USkeletalMesh>>());
+	LoadedMesh.Add(EMeshType::Pants, TArray<TObjectPtr<class USkeletalMesh>>());
+
+	LoadedMesh[EMeshType::Hat].Add(Head1Ref.Object);
+	LoadedMesh[EMeshType::Hat].Add(Head2Ref.Object);
+	LoadedMesh[EMeshType::Hat].Add(Head3Ref.Object);
+	LoadedMesh[EMeshType::Hat].Add(Head4Ref.Object);
+
+	LoadedMesh[EMeshType::Head].Add(Hat1Ref.Object);
+	LoadedMesh[EMeshType::Head].Add(Hat2Ref.Object);
+	LoadedMesh[EMeshType::Head].Add(Hat3Ref.Object);
+
+	LoadedMesh[EMeshType::Jacket].Add(Jacket1Ref.Object);
+	LoadedMesh[EMeshType::Jacket].Add(Jacket2Ref.Object);
+	LoadedMesh[EMeshType::Jacket].Add(Jacket3Ref.Object);
+	LoadedMesh[EMeshType::Jacket].Add(Jacket4Ref.Object);
+
+	LoadedMesh[EMeshType::Pants].Add(Pants1Ref.Object);
+	LoadedMesh[EMeshType::Pants].Add(Pants2Ref.Object);
+	LoadedMesh[EMeshType::Pants].Add(Pants3Ref.Object);
+}
+
+void ABMonsterMale::MontageLoad()
+{
+		static ConstructorHelpers::FObjectFinder<UAnimMontage> None_AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_BareHands.AM_MonsterMale_Attack_BareHands'"));
+		static ConstructorHelpers::FObjectFinder<UAnimMontage> None_DamagedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_BareHands.AM_MonsterMale_Damaged_BareHands'"));
+		static ConstructorHelpers::FObjectFinder<UAnimMontage> None_ParriedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_Bare_Hands.AM_MonsterMale_Parry_Bare_Hands'"));
+	
+		static ConstructorHelpers::FObjectFinder<UAnimMontage> One_AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_OneHand.AM_MonsterMale_Attack_OneHand'"));
+		static ConstructorHelpers::FObjectFinder<UAnimMontage> One_DamagedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_OneHand.AM_MonsterMale_Damaged_OneHand'"));
+		static ConstructorHelpers::FObjectFinder<UAnimMontage> One_ParriedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_One_Hand.AM_MonsterMale_Parry_One_Hand'"));
+
+		LoadedMontage.Add(EWeaponType::None, { None_AttackMontageRef.Object, None_DamagedMontageRef.Object, None_ParriedMontageRef.Object });
+		LoadedMontage.Add(EWeaponType::OneHand, { One_AttackMontageRef.Object, One_DamagedMontageRef.Object, One_ParriedMontageRef.Object });
+}
+
+void ABMonsterMale::AnimInstanceLoad()
+{
+	static ConstructorHelpers::FClassFinder<UAnimInstance> BaseAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> CopyAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMaleCopy.ABP_BasicMonsterMaleCopy"));
+
+	LoadedAnimInstance.Add(EMeshAnimType::Base, BaseAnimRef.Class);
+	LoadedAnimInstance.Add(EMeshAnimType::Copy, CopyAnimRef.Class);
+}
+
 void ABMonsterMale::Tick(float _DeltaTIme)
 {
 	Super::Tick(_DeltaTIme);
@@ -195,110 +274,60 @@ void ABMonsterMale::Tick(float _DeltaTIme)
 
 void ABMonsterMale::SetClothesSkeletalMeshByRandomInBeginPlay()
 {
-	//Body
-	FString BodyPath = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'");
-	USkeletalMesh* LoadedBodyMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *BodyPath));
-
-	GetMesh()->SetSkeletalMesh(LoadedBodyMesh);
-	BodyBase = GetMesh();
-
-	//Head, Hat
-	FString HeadPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/1/SK_MonsterMaleHead_1.SK_MonsterMaleHead_1'");
-	FString HeadPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/2/SK_MonsterMaleHead_2.SK_MonsterMaleHead_2'");
-	FString HeadPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/3/SK_MonsterMaleHead_3.SK_MonsterMaleHead_3'");
-	FString HeadPath_4 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Head/4/SK_MonsterMaleHead_4.SK_MonsterMaleHead_4'");
-
-	FString HatPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/1/SK_MonsterMaleHat_1.SK_MonsterMaleHat_1'");
-	FString HatPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/2/SK_MonsterMaleHat_2.SK_MonsterMaleHat_2'");
-	FString HatPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Hat/3/SK_MonsterMaleHat_3.SK_MonsterMaleHat_3'");
-
 	//¸Ó¸®, ¸ðÀÚ ½Ö
-	TArray<TPair<FString, FString>> HeadHatPaths;
-	HeadHatPaths.Reserve(4);
-
-	HeadHatPaths.Add({ HeadPath_1, HatPath_1 });
-	HeadHatPaths.Add({ HeadPath_2, HatPath_2 });
-	HeadHatPaths.Add({ HeadPath_3, HatPath_3 });
-	HeadHatPaths.Add({ HeadPath_4, FString(TEXT(""))});
-
 	int HeadHatIndex = FMath::RandRange(0, 3);
 
-	USkeletalMesh* LoadedHeadMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *HeadHatPaths[HeadHatIndex].Key));
-	if (LoadedHeadMesh == nullptr)
+	if (LoadedMesh[EMeshType::Head][HeadHatIndex] == nullptr)
 	{
-		LOG_WARNING(TEXT("Head Mesh is failed to load"));
+		LOG_FATAL(TEXT("Head Mesh is failed to load"));
+		return;
 	}
 	else
 	{
-		Head->SetSkeletalMesh(LoadedHeadMesh);
+		Head->SetSkeletalMesh(LoadedMesh[EMeshType::Head][HeadHatIndex]);
 	}
 
-	if (*HeadHatPaths[HeadHatIndex].Value == FString(TEXT("")))
+	if (HeadHatIndex == 3)
 	{
 		Hat->SetVisibility(false);
 	}
 	else
 	{
-		USkeletalMesh* LoadedHatMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *HeadHatPaths[HeadHatIndex].Value));
-		if (LoadedHatMesh == nullptr)
+		if (LoadedMesh[EMeshType::Hat][HeadHatIndex] == nullptr)
 		{
-			LOG_WARNING(TEXT("Hat Mesh is failed to load"));
+			LOG_FATAL(TEXT("Hat Mesh is failed to load"));
+			return;
 		}
 		else
 		{
-			Hat->SetSkeletalMesh(LoadedHatMesh);
+			Hat->SetSkeletalMesh(LoadedMesh[EMeshType::Hat][HeadHatIndex]);
 		}
 	}
 
 	//Jacket
-	FString JacketPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/1/SK_MonsterMaleJacket_1.SK_MonsterMaleJacket_1'");
-	FString JacketPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/2/SK_MonsterMaleJacket_2.SK_MonsterMaleJacket_2'");
-	FString JacketPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/3/SK_MonsterMaleJacket_3.SK_MonsterMaleJacket_3'");
-	FString JacketPath_4 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Jacket/4/SK_MonsterMaleJacket_4.SK_MonsterMaleJacket_4'");
-
-	TArray<FString> JacketPaths;
-	JacketPaths.Reserve(4);
-	
-	JacketPaths.Add(JacketPath_1);
-	JacketPaths.Add(JacketPath_2);
-	JacketPaths.Add(JacketPath_3);
-	JacketPaths.Add(JacketPath_4);
-	
 	int JacketIndex = FMath::RandRange(0, 3);
-	USkeletalMesh* LoadedJacketMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *JacketPaths[JacketIndex]));
 
-	if (LoadedJacketMesh != nullptr)
+	if (LoadedMesh[EMeshType::Jacket][JacketIndex] == nullptr)
 	{
-		Jacket->SetSkeletalMesh(LoadedJacketMesh);
+		LOG_FATAL(TEXT("Jacket Mesh is failed to load"));
+		return;
 	}
 	else
 	{
-		LOG_MSG(TEXT("Jacket Mesh is Nullptr : Index = %d"), JacketIndex);
+		Jacket->SetSkeletalMesh(LoadedMesh[EMeshType::Jacket][JacketIndex]);
 	}
 	 
 	//Pants
-	FString PantsPath_1 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/1/SK_MonsterMalePants_1.SK_MonsterMalePants_1'");
-	FString PantsPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/2/SK_MonsterMalePants_2.SK_MonsterMalePants_2'");
-	FString PantsPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/3/SK_MonsterMalePants_3.SK_MonsterMalePants_3'");
-
-	TArray<FString> PantsRefs;
-	PantsRefs.Reserve(3);
-
-	PantsRefs.Add(PantsPath_1);
-	PantsRefs.Add(PantsPath_2);
-	PantsRefs.Add(PantsPath_3);
-
 	int PantsIndex = FMath::RandRange(0, 2);
 
-	USkeletalMesh* LoadedPantsMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *PantsRefs[PantsIndex]));
-
-	if (LoadedPantsMesh != nullptr)
+	if (LoadedMesh[EMeshType::Pants][PantsIndex] == nullptr)
 	{
-		Pants->SetSkeletalMesh(LoadedPantsMesh);
+		LOG_FATAL(TEXT("Pants Mesh is failed to load"));
+		return;
 	}
 	else
 	{
-		LOG_MSG(TEXT("Pants Mesh is Nullptr : Index = %d"), PantsIndex);
+		Pants->SetSkeletalMesh(LoadedMesh[EMeshType::Pants][PantsIndex]);
 	}
 }
 

@@ -17,10 +17,13 @@
 #include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 #include "Actor/Monster/AIController/BAIBasicMonsterController.h"
 
+TArray<TPair<FString, TObjectPtr<USkeletalMesh>>> ABBasicMonsterBase::LoadedWeaponMesh;
 ABBasicMonsterBase::ABBasicMonsterBase()
 {
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	
+	LoadWeaponMesh();
+
 	static ConstructorHelpers::FObjectFinder<UBMonsterStatData> BasicMonsterStatDataRef(TEXT("/Script/BiohazardRe4.BMonsterStatData'/Game/Blueprints/Actor/Monster/DataAsset/DA_BasicMonsterStat.DA_BasicMonsterStat'"));
 
 	if (BasicMonsterStatDataRef.Object != nullptr)
@@ -64,42 +67,16 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 	}
 	
 	//이름, 경로
-	FString Weapon_1 = TEXT("HandAxe");
-	FString WeaponPath_1 = TEXT("/ Script / Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/HandAxe/SK_HandAxe.SK_HandAxe'");
-
-	FString Weapon_2 = TEXT("KitchenKnife");
-	FString WeaponPath_2 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/KitchenKnife/SK_KitchenKnife.SK_KitchenKnife'");
-
-	FString Weapon_3 = TEXT("Sickle");
-	FString WeaponPath_3 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/Sickle/SK_Sickle.SK_Sickle'");
-
-	FString Weapon_4 = TEXT("Torch");
-	FString WeaponPath_4 = TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/Torch/SK_Torch.SK_Torch'");
-
-	TArray<TPair<FString, FString>> WeaponNameArray;
-	WeaponNameArray.Reserve(5);
-
-	WeaponNameArray.Add({ Weapon_1, WeaponPath_1 });
-	WeaponNameArray.Add({ Weapon_2, WeaponPath_2 });
-	WeaponNameArray.Add({ Weapon_3, WeaponPath_3 });
-	WeaponNameArray.Add({ Weapon_4, WeaponPath_4 });
-
-	USkeletalMesh* LoadedWeaponMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, *WeaponNameArray[WeaponIndex].Value));
 	
-	FString SocketString = WeaponNameArray[WeaponIndex].Key + "Socket";
+	FString SocketString = LoadedWeaponMesh[WeaponIndex].Key + "Socket";
 	FName SocketName = FName(SocketString);
 	
-	if (LoadedWeaponMesh == nullptr)
+	if (LoadedWeaponMesh[WeaponIndex].Value == nullptr)
 	{
 		LOG_WARNING(TEXT("WeaponMesh is nullptr"));
 	}
 
-	if (BodyBase == nullptr)
-	{
-		LOG_WARNING(TEXT("BodyBase is nullptr"));
-	}
-
-	Weapon->SetSkeletalMesh(LoadedWeaponMesh);
+	Weapon->SetSkeletalMesh(LoadedWeaponMesh[WeaponIndex].Value);
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), SocketName);
 	
 	SetWeaponCollision(StaticCast<EWeaponName>(WeaponIndex));
@@ -147,6 +124,26 @@ void ABBasicMonsterBase::SetWeaponCollision(EWeaponName _WeaponName)
 	default:
 		break;
 	}
+}
+
+void ABBasicMonsterBase::LoadWeaponMesh()
+{
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Weapon1Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/HandAxe/SK_HandAxe.SK_HandAxe'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Weapon2Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/KitchenKnife/SK_KitchenKnife.SK_KitchenKnife'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Weapon3Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/Sickle/SK_Sickle.SK_Sickle'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Weapon4Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/Torch/SK_Torch.SK_Torch'"));
+	
+	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon1(TEXT("HandAxe"), Weapon1Ref.Object);
+	LoadedWeaponMesh.Add(Weapon1);
+
+	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon2(TEXT("KitchenKnife"), Weapon2Ref.Object);
+	LoadedWeaponMesh.Add(Weapon2);
+
+	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon3(TEXT("Sickle"), Weapon3Ref.Object);
+	LoadedWeaponMesh.Add(Weapon3);
+
+	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon4(TEXT("Torch"), Weapon4Ref.Object);
+	LoadedWeaponMesh.Add(Weapon4);
 }
 
 void ABBasicMonsterBase::InitDamageTypes()

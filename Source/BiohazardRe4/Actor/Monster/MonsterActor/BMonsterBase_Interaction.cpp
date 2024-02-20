@@ -72,7 +72,7 @@ EInteraction ABMonsterBase::GetInteractionType() const
 	}
 	case EMonsterState::Burst:
 	{
-		return EInteraction::None;
+		return EInteraction::GroggyMonster;
 	}
 	case EMonsterState::Groggy:
 	{
