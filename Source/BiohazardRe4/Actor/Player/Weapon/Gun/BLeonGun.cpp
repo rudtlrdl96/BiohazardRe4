@@ -13,6 +13,11 @@ ABLeonGun::ABLeonGun()
 
 }
 
+void ABLeonGun::PlayShootEffect_Implementation()
+{
+	LOG_MSG(TEXT("ABLeonGun PlayShootEffect"))
+}
+
 void ABLeonGun::BeginPlay()
 {
 	Super::BeginPlay();
@@ -181,6 +186,8 @@ void ABLeonGun::Shoot()
 	FireStart();
 
 	PlayShootingSound();
+
+	PlayShootEffect();
 }
 
 void ABLeonGun::DropShell()

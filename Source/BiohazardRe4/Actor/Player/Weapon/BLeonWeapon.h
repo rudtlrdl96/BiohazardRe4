@@ -63,7 +63,7 @@ public:
 	virtual void ActiveCollision(bool _IsActive) {}
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Mesh")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
 	USkeletalMeshComponent* WeaponMesh = nullptr;
 
 	ABLeon* Player = nullptr;

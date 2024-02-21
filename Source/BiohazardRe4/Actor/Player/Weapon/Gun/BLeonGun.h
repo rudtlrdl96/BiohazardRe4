@@ -73,6 +73,12 @@ public:
 	void PlayMagazine1Sound();
 	void PlayMagazine2Sound();
 
+	//Effect
+
+	UFUNCTION(BlueprintNativeEvent)
+	void PlayShootEffect();
+	virtual void PlayShootEffect_Implementation();
+
 protected:
 	virtual void BeginPlay() override;
 

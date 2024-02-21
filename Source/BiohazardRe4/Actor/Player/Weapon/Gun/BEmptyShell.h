@@ -25,4 +25,13 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Option")
 	float Time = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* Sound_HitGround = nullptr;
+	
+	UFUNCTION(BlueprintCallable)
+	void PlayHitGroundSound();
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
