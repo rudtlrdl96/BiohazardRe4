@@ -3,6 +3,7 @@
 
 #include "Actor/Player/Body/BLeon.h"
 #include "Generic/BFsm.h"
+#include "Actor/Player/HUD/HUDBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStaticsTypes.h"
@@ -37,6 +38,7 @@ void ABLeon::ThrowingUpdate(float _DeltaTime)
 		if (nullptr == UBInventoryManager::Instance || 0 >= UBInventoryManager::Instance->GetItemCount(UseWeaponCode))
 		{
 			UseWeaponCode = EItemCode::Empty;
+			HUD->ClearWeapon();
 		}
 	}
 
