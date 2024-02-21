@@ -930,6 +930,11 @@ bool ABLeon::AbleInteraction() const
 		return false;
 	}
 
+	if (true == bIsGunReload)
+	{
+		return false;
+	}
+
 	switch (LeonFSMState)
 	{
 	case ELeonState::Aim:
