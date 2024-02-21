@@ -47,6 +47,7 @@ void ABLeonGrenade::Explosion()
 		ECollisionChannel::ECC_GameTraceChannel17
 	);
 	ExplosionEffect();
+	PlayExplosionSound();
 	Destroy();
 }
 
@@ -66,4 +67,15 @@ void ABLeonGrenade::SetFlashbang()
 void ABLeonGrenade::ExplosionEffect_Implementation()
 {
 	LOG_MSG(TEXT("ExplosionEffect_Implementation"))
+}
+
+void ABLeonGrenade::PlayExplosionSound()
+{
+	if (ExplosionSound == nullptr)
+	{
+		LOG_WARNING(TEXT("ExplosionSound == nullptr"))
+			return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 }

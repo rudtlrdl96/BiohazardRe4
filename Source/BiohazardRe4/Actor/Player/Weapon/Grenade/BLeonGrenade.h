@@ -46,4 +46,9 @@ protected:
 
 	EItemCode WeaponType = EItemCode::Grenade;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* ExplosionSound = nullptr;
+
+	void PlayExplosionSound();
+
 };
