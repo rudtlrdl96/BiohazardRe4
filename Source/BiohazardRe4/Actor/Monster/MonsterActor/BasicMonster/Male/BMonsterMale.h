@@ -51,7 +51,6 @@ class BIOHAZARDRE4_API ABMonsterMale : public ABBasicMonsterBase
 	
 public:
 	ABMonsterMale();
-	
 protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")

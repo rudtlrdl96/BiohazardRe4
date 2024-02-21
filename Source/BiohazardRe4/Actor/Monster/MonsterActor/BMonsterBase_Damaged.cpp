@@ -851,6 +851,7 @@ void ABMonsterBase::Parry()
 	ParryTimeOff();
 	AttackOff();
 
+	PlaySound(ESoundType::Parry);
 	SetCurrentState(EMonsterState::Groggy);
 	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

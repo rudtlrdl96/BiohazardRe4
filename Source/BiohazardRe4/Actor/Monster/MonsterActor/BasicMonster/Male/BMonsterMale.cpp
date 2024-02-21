@@ -174,6 +174,12 @@ void ABMonsterMale::InitSoundCues()
 		SoundCues.Add(ESoundType::PointDeath, PointDeathGroggyCue);
 	}
 
+	static ConstructorHelpers::FObjectFinder<USoundCue> ParrySoundRef(TEXT("//Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_ParryCue.SC_ParryCue'"));
+	if (ParrySoundRef.Object != nullptr)
+	{
+		USoundCue* ParryCue = ParrySoundRef.Object;
+		SoundCues.Add(ESoundType::Parry, ParryCue);
+	}
 }
 
 void ABMonsterMale::MeshLoad()
@@ -208,14 +214,14 @@ void ABMonsterMale::MeshLoad()
 	LoadedMesh.Add(EMeshType::Jacket, TArray<TObjectPtr<class USkeletalMesh>>());
 	LoadedMesh.Add(EMeshType::Pants, TArray<TObjectPtr<class USkeletalMesh>>());
 
-	LoadedMesh[EMeshType::Hat].Add(Head1Ref.Object);
-	LoadedMesh[EMeshType::Hat].Add(Head2Ref.Object);
-	LoadedMesh[EMeshType::Hat].Add(Head3Ref.Object);
-	LoadedMesh[EMeshType::Hat].Add(Head4Ref.Object);
+	LoadedMesh[EMeshType::Head].Add(Head1Ref.Object);
+	LoadedMesh[EMeshType::Head].Add(Head2Ref.Object);
+	LoadedMesh[EMeshType::Head].Add(Head3Ref.Object);
+	LoadedMesh[EMeshType::Head].Add(Head4Ref.Object);
 
-	LoadedMesh[EMeshType::Head].Add(Hat1Ref.Object);
-	LoadedMesh[EMeshType::Head].Add(Hat2Ref.Object);
-	LoadedMesh[EMeshType::Head].Add(Hat3Ref.Object);
+	LoadedMesh[EMeshType::Hat].Add(Hat1Ref.Object);
+	LoadedMesh[EMeshType::Hat].Add(Hat2Ref.Object);
+	LoadedMesh[EMeshType::Hat].Add(Hat3Ref.Object);
 
 	LoadedMesh[EMeshType::Jacket].Add(Jacket1Ref.Object);
 	LoadedMesh[EMeshType::Jacket].Add(Jacket2Ref.Object);
