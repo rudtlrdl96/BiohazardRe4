@@ -160,4 +160,11 @@ private:
 	void CameraZoomFunc(const struct FInputActionValue& Value);
 	void ViewUpperFloorFunc();
 	void ViewLowerFloorFunc();
+
+	// __________________Sound
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* UIControlSound = nullptr;
+
+	void PlayUIControlSound();
 };

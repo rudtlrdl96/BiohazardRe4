@@ -8,6 +8,7 @@
 #include "BMapUIPlayerSprite.h"
 #include "Actor/Player/Body/BLeon.h"
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
+#include "BiohazardRe4/BiohazardRe4.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -111,6 +112,7 @@ void ABMapUIActor::SetFloor(EFloor Floor)
 	StageMapMesh[CurrentFloor]->SetVisibility(true);
 
 	Widget->UpdateMapLayerWidget();
+	PlayUIControlSound();
 }
 
 
@@ -152,7 +154,16 @@ void ABMapUIActor::BeginPlay()
 	Widget->AddToViewport();
 	Widget->SetVisibility(ESlateVisibility::Collapsed);
 
-	SetFloor(EFloor::E_1F); // 보여지는 층 초기화
+	// 보여지는 층 초기화
+	Widget->SetCurrentFloor(EFloor::E_1F);
+	Widget->SetPrevFloor(static_cast<EFloor>(CurrentFloor));
+
+	StageMapMesh[CurrentFloor]->SetVisibility(false);
+	CurrentFloor = static_cast<uint8>(EFloor::E_1F);
+	StageMapMesh[CurrentFloor]->SetVisibility(true);
+
+	Widget->UpdateMapLayerWidget();
+
 	SetCameraZoom(45.f);
 	Widget->SetRangeOfFOV(CameraMinFOV, CameraMaxFOV);
 
@@ -306,6 +317,17 @@ void ABMapUIActor::ViewLowerFloorFunc()
 	SetFloor(static_cast<EFloor>(LowerFloor));
 }
 
+void ABMapUIActor::PlayUIControlSound()
+{
+	if (UIControlSound == nullptr)
+	{
+		LOG_WARNING(TEXT("UIControlSound == nullptr"))
+		return;
+	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), UIControlSound);
+}
+
 void ABMapUIActor::CameraZoomFunc(const struct FInputActionValue& Value)
 {
 	float MovementVector = Value.Get<float>() * 5 + Camera->FieldOfView;
@@ -314,6 +336,7 @@ void ABMapUIActor::CameraZoomFunc(const struct FInputActionValue& Value)
 		return;
 	}
 	SetCameraZoom(MovementVector);
+	PlayUIControlSound();
 }
 
 
