@@ -38,5 +38,7 @@ void ABEmptyShell::PlayHitGroundSound()
 void ABEmptyShell::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	LOG_WARNING(TEXT("Call OnHit"))
+	PlayHitGroundSound();
+	GetStaticMeshComponent()->SetNotifyRigidBodyCollision(false);
 }
 
