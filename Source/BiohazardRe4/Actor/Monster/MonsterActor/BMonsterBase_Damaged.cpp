@@ -483,7 +483,7 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 		return;
 	}
 
-	GroggyAmount += 0.5f;
+	GroggyAmount += 0.25f;
 
 	if (bIsDamaged == false && bIsDamagedCooltime == false)
 	{
@@ -502,6 +502,16 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 
 	GroggyAmount = 0.0f;
 
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
+	{
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return;
+	}
+
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
+
 	SetCurrentState(EMonsterState::Groggy);
 	MediumDamaged(FString(TEXT("Body")));
 }
@@ -511,16 +521,24 @@ void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor
 	PlaySound(ESoundType::Kicked);
 	SetCurrentState(EMonsterState::Burst);
 
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController == nullptr)
+	{
+		LOG_WARNING(TEXT("AIController is nullptr"));
+		return;
+	}
+
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
+	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
+
 	FVector CauserLocation = DamageCauser->GetActorLocation();
 	FVector MyLocation = GetActorLocation();
-	
-	FString SectionStr = GetBurstJumpSectionName(MyLocation, CauserLocation);
-
-	//날아가는 각도
 	MyLocation.Z += 88.0f;
 
 	FVector LaunchDir = MyLocation - CauserLocation;
 	LaunchDir.Normalize();
+
+	FString SectionStr = GetBurstJumpSectionName(MyLocation, CauserLocation);
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	
