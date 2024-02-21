@@ -1560,6 +1560,8 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			{
 				continue;
 			}
+
+			HUD->SetInteraction(EInteraction::JumpObstacle);
 		}
 		break;
 		case EInteraction::FallCliff:
@@ -1596,6 +1598,8 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			{
 				continue;
 			}
+
+			HUD->SetInteraction(EInteraction::FallCliff);
 		}
 		break;
 		case EInteraction::OpenDrawer:
@@ -1689,6 +1693,7 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 		InteractionActor = Overlaps[i];
 		InteractionObject = Interface;
 		InteractionObject->Execute_EnableInteractionUI(Cast<UObject>(Interface));
+
 		return;
 	}
 }
