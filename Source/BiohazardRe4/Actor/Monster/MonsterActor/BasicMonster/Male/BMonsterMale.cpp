@@ -243,8 +243,8 @@ void ABMonsterMale::MontageLoad()
 
 void ABMonsterMale::AnimInstanceLoad()
 {
-	static ConstructorHelpers::FClassFinder<UAnimInstance> BaseAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale"));
-	static ConstructorHelpers::FClassFinder<UAnimInstance> CopyAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMaleCopy.ABP_BasicMonsterMaleCopy"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> BaseAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale_C"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> CopyAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMaleCopy.ABP_BasicMonsterMaleCopy_C"));
 
 	LoadedAnimInstance.Add(EMeshAnimType::Base, BaseAnimRef.Class);
 	LoadedAnimInstance.Add(EMeshAnimType::Copy, CopyAnimRef.Class);
