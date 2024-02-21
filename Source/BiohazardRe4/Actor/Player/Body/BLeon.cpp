@@ -405,7 +405,6 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 				Stat.CurrentHp = 0;
 				FsmComp->ChangeState(TO_KEY(ELeonState::Death));
 			}
-
 			return DamageValue;
 		}		
 	}
