@@ -31,9 +31,7 @@ enum class EInteraction : uint8
 	StoreEnter		UMETA(DisplayName = "StoreEnter"),
 };
 
-/**
- * 
- */
+
 class BIOHAZARDRE4_API IBInteraction
 {
 	GENERATED_BODY()

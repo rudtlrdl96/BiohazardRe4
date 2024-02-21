@@ -56,6 +56,7 @@ EBTNodeResult::Type UBBTTask_SetPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROLPOS, NextPatrolPos.Location);
 
+		LOG_MSG(TEXT("StateChanged - Walk"));
 		StateInterface->SetCurrentState(EMonsterState::Walk);
 		return EBTNodeResult::Succeeded;
 	}

@@ -23,4 +23,5 @@ void UBAnimNotify_GeneralEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	}
 
 	StateInterface->SetCurrentState(EMonsterState::Walk);
+	LOG_MSG(TEXT("StateChanged - Walk"));
 }

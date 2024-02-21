@@ -50,6 +50,9 @@ void UBBTTask_MonsterWait::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uin
 	{
 		return;
 	}
-
-	MyInterface->SetCurrentState(EMonsterState::Walk);
+	
+	if (MyInterface->GetCurrentState() == EMonsterState::Idle)
+	{
+		MyInterface->SetCurrentState(EMonsterState::Walk);
+	}
 }

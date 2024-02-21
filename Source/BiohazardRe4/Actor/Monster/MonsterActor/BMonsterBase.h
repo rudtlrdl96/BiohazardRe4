@@ -204,6 +204,9 @@ protected:
 	void CrossWindowJumpEnd();
 
 	bool isSetTargetInBlackBoard();
+
+	UFUNCTION(BlueprintCallable)
+	void SetTeleport(class ANavLinkProxy* _Proxy);
 	//State Variable
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))

@@ -66,6 +66,8 @@ void ABMonsterBase::GroggyEnd()
 	}
 
 	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, false);
+
+	LOG_MSG(TEXT("StateChanged - Walk"));
 	SetCurrentState(EMonsterState::Walk);
 	bIsDamaged = false;
 

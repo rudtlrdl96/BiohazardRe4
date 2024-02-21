@@ -347,15 +347,10 @@ void ABMonsterBase::MonsterDeathByKick(const FDamageEvent& _DamageEvent, const A
 
 	FVector CauserLocation = DamageCauser->GetActorLocation();
 	FVector MyLocation = GetActorLocation();
+	MyLocation.Z += 88.0f;
 
-	//날아가는 각도
-	FVector LaunchDirXY = MyLocation - CauserLocation;
-	LaunchDirXY.Normalize();
-	float LaunchZ = 1.0f;
-
-	FVector LaunchDir = FVector(LaunchDirXY.X, LaunchDirXY.Y, LaunchZ);
+	FVector LaunchDir = MyLocation - CauserLocation;
 	LaunchDir.Normalize();
-
 	//피격 각도
 	FString SectionStr = GetBurstJumpSectionName(MyLocation, CauserLocation);
 
@@ -389,6 +384,8 @@ void ABMonsterBase::MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const 
 		LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
+
+	PlaySound(ESoundType::PointDeath);
 
 	AIController->UnPossess();
 
@@ -437,6 +434,7 @@ void ABMonsterBase::MonsterDeathByGrenade(const FDamageEvent& _DamageEvent, cons
 
 	FVector MyPos = GetActorLocation();
 	FVector RadialPos = RadialDamage->Origin;
+	MyPos.Z += 88.0f;
 
 	FVector LaunchDir = MyPos - RadialPos;
 	LaunchDir.Normalize();
@@ -490,8 +488,9 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 		bIsDamagedCooltime = true;
 		bIsDamaged = true;
 
-		GetWorldTimerManager().SetTimer(TimerHandle, [this] {bIsDamagedCooltime = false; }, 1.5f, false);
-	}
+		PlaySound(ESoundType::Damaged);
+		GetWorldTimerManager().SetTimer(TimerHandle, [this] {bIsDamagedCooltime = false; }, 1.0f, false);
+	} 
 
 	LOG_MSG(TEXT("Groggy %f"), GroggyAmount);
 
@@ -499,6 +498,8 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 	{
 		return;
 	}
+
+	PlaySound(ESoundType::GeneralGroggy);
 
 	GroggyAmount = 0.0f;
 
@@ -537,6 +538,10 @@ void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor
 
 	FVector LaunchDir = MyLocation - CauserLocation;
 	LaunchDir.Normalize();
+
+	LOG_MSG(TEXT("CauserLocation X: %f, Y: %f, Z: %f"), CauserLocation.X, CauserLocation.Y, CauserLocation.Z);
+	LOG_MSG(TEXT("MyLocation X: %f, Y: %f, Z: %f"), MyLocation.X, MyLocation.Y, MyLocation.Z);
+	LOG_MSG(TEXT("Kick Launch Dir X: %f, Y: %f, Z: %f"), LaunchDir.X, LaunchDir.Y, LaunchDir.Z);
 
 	FString SectionStr = GetBurstJumpSectionName(MyLocation, CauserLocation);
 
@@ -884,7 +889,7 @@ void ABMonsterBase::Parry()
 
 	PlaySound(ESoundType::Parry);
 	SetCurrentState(EMonsterState::Groggy);
-	
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (AnimInstance == nullptr)

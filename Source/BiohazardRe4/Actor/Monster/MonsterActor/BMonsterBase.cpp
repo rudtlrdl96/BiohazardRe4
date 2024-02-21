@@ -8,6 +8,9 @@
 #include "Components/CapsuleComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Navigation/NavLinkProxy.h"
+#include "NavLinkCustomComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "BiohazardRe4.h"
 #include "Actor/Monster/Define/MonsterDefine.h"
@@ -180,4 +183,23 @@ bool ABMonsterBase::isSetTargetInBlackBoard()
 	UObject* Target = AIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_TARGET);
 
 	return (Target != nullptr);
+}
+
+void ABMonsterBase::SetTeleport(ANavLinkProxy* _Proxy)
+{
+	UNavLinkCustomComponent* SmartLink = _Proxy->GetSmartLinkComp();
+
+	if (SmartLink != nullptr)
+	{
+		FVector StartPos = SmartLink->GetStartPoint();
+		FVector EndPos = SmartLink->GetEndPoint();
+		FVector TeleportPos = StartPos + FVector(0.0f, 0.0f, 88.0f);
+
+		StartPos.Z = 0;
+		EndPos.Z = 0;
+
+		FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(StartPos, EndPos);
+
+		TeleportTo(TeleportPos, LookRot);
+	}
 }

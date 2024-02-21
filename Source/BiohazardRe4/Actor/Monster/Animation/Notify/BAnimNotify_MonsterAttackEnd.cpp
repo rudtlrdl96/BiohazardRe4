@@ -27,7 +27,7 @@ void UBAnimNotify_MonsterAttackEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 		if (StateInterface != nullptr)
 		{
 			StateInterface->SetCurrentState(EMonsterState::Walk);
-
+			LOG_MSG(TEXT("StateChanged - Walk"));
 			UWorld* CurWorld = MeshComp->GetWorld();
 			StateInterface->GetMonsterAttackEndDelegate().ExecuteIfBound();
 		}

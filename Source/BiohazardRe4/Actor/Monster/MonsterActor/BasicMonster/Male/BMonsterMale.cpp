@@ -214,7 +214,7 @@ void ABMonsterMale::InitSoundCues()
 		SoundCues.Add(ESoundType::PointDeath, PointDeathGroggyCue);
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundCue> ParrySoundRef(TEXT("//Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_ParryCue.SC_ParryCue'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> ParrySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_ParryCue.SC_ParryCue'"));
 	if (ParrySoundRef.Object != nullptr)
 	{
 		USoundCue* ParryCue = ParrySoundRef.Object;
