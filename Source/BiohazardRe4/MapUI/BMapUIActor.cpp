@@ -5,7 +5,6 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BMapUIWidgetMain.h"
-#include "BMapUIPlayerSprite.h"
 #include "BMapUIPlayerWidget.h"
 #include "Actor/Player/Body/BLeon.h"
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
