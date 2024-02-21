@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BBasicMonsterBase.h"
@@ -38,6 +37,8 @@ void ABBasicMonsterBase::BeginPlay()
 
 	SetlMeshAndAnimationByRandomInBeginPlay();
 	InitDamageTypes();
+
+	SetAIMode(AIMode);
 }
 
 void ABBasicMonsterBase::SetlMeshAndAnimationByRandomInBeginPlay()
@@ -86,6 +87,14 @@ void ABBasicMonsterBase::InitAI()
 {
 	AIControllerClass = ABAIBasicMonsterController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+}
+
+void ABBasicMonsterBase::SetAIMode(EAIMode _AIMode)
+{
+	AController* MyController = GetController();
+	AAIController* MyAIController = Cast<AAIController>(MyController);
+
+	MyAIController->GetBlackboardComponent()->SetValueAsEnum(BBKEY_AIMODE, StaticCast<uint8>(_AIMode));
 }
 
 void ABBasicMonsterBase::SetClothesSkeletalMeshByRandomInBeginPlay()

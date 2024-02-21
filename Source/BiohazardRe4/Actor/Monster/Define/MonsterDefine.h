@@ -12,3 +12,4 @@
 #define BBKEY_PATROLPOS TEXT("PatrolPos")
 #define BBKEY_HOMEPOS TEXT("HomePos")
 #define BBKEY_ISDAMAGED TEXT("IsDamaged")
+#define BBKEY_AIMODE TEXT("AIMode")
