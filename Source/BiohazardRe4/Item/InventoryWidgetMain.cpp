@@ -57,6 +57,6 @@ void UBInventoryWidgetMain::CloseCheck()
 	}
 	{
 		NoEvent.Unbind();
-		OkEvent.BindUFunction(ABInventoryActor::Instance, TEXT("CloseCancel"));
+		NoEvent.BindUFunction(ABInventoryActor::Instance, TEXT("CloseCancel"));
 	}
 }
