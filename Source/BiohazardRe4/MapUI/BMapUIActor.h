@@ -83,8 +83,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	//class UBMapUIPlayerSprite* PlayerSprite;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
-	class UBMapUIPlayerSprite* PlayerSprite;
+	class UBMapUIPlayerWidget* PlayerWidget;
 
 	UPROPERTY()
 	float MapScale = 0.01;

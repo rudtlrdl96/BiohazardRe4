@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BMapUIWidgetMain.h"
 #include "BMapUIPlayerSprite.h"
+#include "BMapUIPlayerWidget.h"
 #include "Actor/Player/Body/BLeon.h"
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "BiohazardRe4/BiohazardRe4.h"
@@ -89,16 +90,11 @@ ABMapUIActor::ABMapUIActor()
 	BoundMax = BoundMax * InitScale + InitLocation;
 	CameraMovableRange = FVector4f(BoundMin.X, BoundMin.Y, BoundMax.X, BoundMax.Y);
 
-	//플레이어 스프라이트
-	PlayerSprite = CreateDefaultSubobject<UBMapUIPlayerSprite>(TEXT("MapUIPlayer"));
-	{
-		//static ConstructorHelpers::FObjectFinder<UPaperSprite> Sprite(TEXT("/Script/Paper2D.PaperSprite'/Game/Assets/UI/MapUI/Sprite/S_cs_ui3100_IAM_texout_Sprite_25.S_cs_ui3100_IAM_texout_Sprite_25'"));
-		//Player->SetSprite(Sprite.Object);
-	}
-	PlayerSprite->SetupAttachment(RootComponent);
-	PlayerSprite->SetRelativeLocation({ 0.f,0.f,2.f });
-	PlayerSprite->SetRelativeScale3D({ 0.2f,0.2f,0.2f });
-	PlayerSprite->SetVisibility(false);
+	//플레이어 위젯
+	PlayerWidget = CreateDefaultSubobject<UBMapUIPlayerWidget>(TEXT("MapUIPlayerWidget"));
+	PlayerWidget->SetupAttachment(RootComponent);
+	PlayerWidget->SetRelativeLocation({ 0.f,0.f,2.f });
+	PlayerWidget->SetVisibility(false);
 
 }
 
@@ -171,10 +167,7 @@ void ABMapUIActor::BeginPlay()
 	MainPlayer = Cast<ABLeon>(UGameplayStatics::GetPlayerPawn(this, 0));
 
 	FVector PlayerLocation = MainPlayer->GetActorLocation() * MapScale;
-	PlayerSprite->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 2.f });
-
-	FRotator PlayerRotation = MainPlayer->GetActorRotation();
-	PlayerSprite->SetRelativeRotation({ 0.f, PlayerRotation.Yaw + 270.f, 90.f });
+	PlayerWidget->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 2.f });
 }
 
 // Called every frame
@@ -182,10 +175,7 @@ void ABMapUIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	FVector PlayerLocation = MainPlayer->GetActorLocation() * MapScale;
-	PlayerSprite->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 2.f });
-	
-	FRotator PlayerRotation = MainPlayer->GetActorRotation();
-	PlayerSprite->SetRelativeRotation({ 0.f, PlayerRotation.Yaw + 270.f, 90.f});
+	PlayerWidget->SetRelativeLocation({ PlayerLocation.X, PlayerLocation.Y, 2.f });
 }
 
 void ABMapUIActor::MapUIOn()
@@ -201,7 +191,7 @@ void ABMapUIActor::MapUIOn()
 
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
-	PlayerSprite->SetVisibility(bMapUIOnOffSwitch);
+	PlayerWidget->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	//SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
@@ -234,7 +224,7 @@ void ABMapUIActor::MapUIOff()
 
 	StageMapMesh[CurrentFloor]->SetHiddenInGame(!bMapUIOnOffSwitch);
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
-	PlayerSprite->SetVisibility(bMapUIOnOffSwitch);
+	PlayerWidget->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
 	//SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
