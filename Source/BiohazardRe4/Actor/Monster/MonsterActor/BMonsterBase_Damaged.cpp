@@ -19,8 +19,6 @@ float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	//0 -> Normal, 1->Point, 2-> Radial
 	int TypeID = DamageEvent.GetTypeID();
 	
-	LOG_MSG(TEXT("Damaged TypeID is %d"), TypeID);
-
 	float ResultDamage = 0.0f;
 	
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID) == true)
@@ -206,6 +204,8 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 			ResultDamage = CaculateNormalDamage(_DamagedAmount, DamagedType);
 			Stat->DecreaseHp(ResultDamage);
 
+			LOG_MSG(TEXT("Monster Damaged By Kick"));
+
 			if (Stat->isDeath() == true)
 			{
 				MonsterDeath(EDeathType::Kick, _DamageEvent, DamageCauser);
@@ -217,16 +217,24 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 	}
 	else if (DamagedType == EPlayerDamageType::Knife)
 	{
-		ResultDamage = CaculateNormalDamage(_DamagedAmount, DamagedType);
-		Stat->DecreaseHp(ResultDamage);
-
-		if (Stat->isDeath() == true)
+		if(bIsKnifeDamaged == false)
 		{
-			MonsterDeath(EDeathType::Knife, _DamageEvent, DamageCauser);
-			return ResultDamage;
-		}
+			bIsKnifeDamaged = true;
+			GetWorldTimerManager().SetTimer(KnifeDamagedTimerHandle, [this] {bIsKnifeDamaged = false; }, 0.4f, false);
 
-		DamagedByKnife(_DamageEvent);
+			LOG_MSG(TEXT("Monster Damaged By Knife"));
+
+			ResultDamage = CaculateNormalDamage(_DamagedAmount, DamagedType);
+			Stat->DecreaseHp(ResultDamage);
+
+			if (Stat->isDeath() == true)
+			{
+				MonsterDeath(EDeathType::Knife, _DamageEvent, DamageCauser);
+				return ResultDamage;
+			}
+
+			DamagedByKnife(_DamageEvent);
+		}
 	}
 	else
 	{
@@ -485,10 +493,14 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 		GetWorldTimerManager().SetTimer(TimerHandle, [this] {bIsDamagedCooltime = false; }, 1.5f, false);
 	}
 
+	LOG_MSG(TEXT("Groggy %f"), GroggyAmount);
+
 	if (GroggyAmount <= GetGroggyThreshold())
 	{
 		return;
 	}
+
+	GroggyAmount = 0.0f;
 
 	SetCurrentState(EMonsterState::Groggy);
 	MediumDamaged(FString(TEXT("Body")));
@@ -496,6 +508,7 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 
 void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
 {
+	PlaySound(ESoundType::Kicked);
 	SetCurrentState(EMonsterState::Burst);
 
 	FVector CauserLocation = DamageCauser->GetActorLocation();

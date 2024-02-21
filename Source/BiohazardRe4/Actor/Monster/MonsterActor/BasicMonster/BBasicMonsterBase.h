@@ -29,7 +29,6 @@ class BIOHAZARDRE4_API ABBasicMonsterBase : public ABMonsterBase
 
 public:
 	ABBasicMonsterBase();
-
 	void SetAIMode(EAIMode _AIMode);
 
 protected:

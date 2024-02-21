@@ -219,7 +219,9 @@ private:
 	uint8 bIsDamaged : 1;
 	uint8 bIsDamagedCooltime : 1;
 	uint8 bIsAttacking : 1;
+	uint8 bIsKnifeDamaged : 1;
 
 	FTimerHandle TimerHandle;
+	FTimerHandle KnifeDamagedTimerHandle;
 	float GroggyAmount = 0.0f;
 };

@@ -110,15 +110,45 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 
 void ABMonsterMale::AllCollisionOff()
 {
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
-	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+	if (GetCapsuleComponent() != nullptr)
+	{
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+	}
 
-	Jacket->SetCollisionProfileName(TEXT("NoCollision"));
-	Hat->SetCollisionProfileName(TEXT("NoCollision"));
-	BodyBase->SetCollisionProfileName(TEXT("NoCollision"));
-	Pants->SetCollisionProfileName(TEXT("NoCollision"));
-	Weapon->SetCollisionProfileName(TEXT("NoCollision"));
-	Head->SetCollisionProfileName(TEXT("NoCollision"));
+	if (GetMesh() != nullptr)
+	{
+		GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+	}
+
+	if (Jacket != nullptr)
+	{
+		Jacket->SetCollisionProfileName(TEXT("NoCollision"));
+	}
+
+	if (Hat != nullptr)
+	{
+		Hat->SetCollisionProfileName(TEXT("NoCollision"));
+	}
+
+	if (BodyBase != nullptr)
+	{
+		BodyBase->SetCollisionProfileName(TEXT("NoCollision"));
+	}
+
+	if (Pants != nullptr)
+	{
+		Pants->SetCollisionProfileName(TEXT("NoCollision"));
+	}
+
+	if (Weapon != nullptr)
+	{
+		Weapon->SetCollisionProfileName(TEXT("NoCollision"));
+	}
+
+	if (Head != nullptr)
+	{
+		Head->SetCollisionProfileName(TEXT("NoCollision"));
+	}
 }
 
 void ABMonsterMale::SetSkeletalMeshInConstructor()
@@ -189,6 +219,13 @@ void ABMonsterMale::InitSoundCues()
 	{
 		USoundCue* ParryCue = ParrySoundRef.Object;
 		SoundCues.Add(ESoundType::Parry, ParryCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> KickedSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_KickedCue.SC_KickedCue'"));
+	if (KickedSoundRef.Object != nullptr)
+	{
+		USoundCue* KickedCue = KickedSoundRef.Object;
+		SoundCues.Add(ESoundType::Kicked, KickedCue);
 	}
 }
 

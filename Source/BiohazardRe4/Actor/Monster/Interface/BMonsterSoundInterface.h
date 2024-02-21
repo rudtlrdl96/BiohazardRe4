@@ -22,6 +22,7 @@ enum class ESoundType
 	Damaged,
 	Attack,
 	Parry,
+	Kicked,
 	GeneralGroggy,
 	HeadShotGroggy,
 	PointDeath,
