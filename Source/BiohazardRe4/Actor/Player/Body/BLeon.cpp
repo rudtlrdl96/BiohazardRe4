@@ -40,6 +40,7 @@
 #include "Generic/BCollisionObserverCapsule.h"
 #include "Generic/BCollisionObserverSphere.h"
 #include "Actor/Merchant/Merchant.h"
+#include "Components/PostProcessComponent.h"
 
 const FVector ABLeon::StandSocketOffset = FVector(0.0f, 35.0f, -12.0f);
 const FVector ABLeon::GunAimSocketOffset = FVector(0.0f, 35.0f, -1.0f);
@@ -59,6 +60,7 @@ ABLeon::ABLeon()
 	CreateFSM();
 	GravityActive();
 	GetCharacterMovement()->bCanWalkOffLedges = true;
+	CreatePostProcess();
 
 	GrenadeThrowingLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Grenade Start"));
 	GrenadeThrowingLocation->SetupAttachment(GetMesh(), TEXT("R_GrenadeSocket"));
@@ -1436,10 +1438,19 @@ void ABLeon::HealthStateUpdate(float _DeltaTime)
 	if (0.15f <= Stat.CurrentHp / Stat.MaxHp)
 	{
 		LeonHealth = ELeonHealth::Normal;
+		LowHPPostEffectOff();
 	}
 	else
 	{
 		LeonHealth = ELeonHealth::Danger;
+		if (CustomTimeDilation == 0)
+		{
+			LowHPPostEffectOff();
+		}
+		else
+		{
+			LowHPPostEffectOn();
+		}
 	}
 }
 
@@ -2318,6 +2329,14 @@ void ABLeon::CreateCollision()
 	KickOverlapObserver->SetVisibilityCollision(false);
 }
 
+void ABLeon::CreatePostProcess()
+{
+	PostProcessVolume_LowHP = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessVolume_LowHP"));
+	PostProcessVolume_LowHP->SetupAttachment(PlayerCamera);
+	PostProcessVolume_LowHP->bUnbound = false;
+	LowHPPostEffectOff();
+}
+
 bool ABLeon::AbleWeaponSwap() const
 {
 	return true;
@@ -2581,4 +2600,14 @@ void ABLeon::CutsceenExit()
 	bIsMove = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+}
+
+void ABLeon::LowHPPostEffectOn()
+{
+	PostProcessVolume_LowHP->BlendWeight = 1.0f;
+}
+
+void ABLeon::LowHPPostEffectOff()
+{
+	PostProcessVolume_LowHP->BlendWeight = 0.0f;
 }

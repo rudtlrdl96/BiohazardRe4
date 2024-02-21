@@ -34,6 +34,7 @@ class ABInventoryActor;
 class IBInteraction;
 class UDamageType;
 class USceneCaptureComponent2D;
+class UPostProcessComponent;
 
 #define TO_KEY(EnumValue) static_cast<int32>(EnumValue)
 
@@ -661,6 +662,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	USceneCaptureComponent2D* SceneCapture = nullptr;
 
+	UPROPERTY(EditAnywhere)
+	UPostProcessComponent* PostProcessVolume_LowHP = nullptr;
+
 	//*****************************************************//
 
 
@@ -837,6 +841,7 @@ private:
 	void CreateSprintArm();
 	void CreateFSM();
 	void CreateCollision();
+	void CreatePostProcess();
 
 	ABLeonWeapon* CreateWeapon(EItemCode _WeaponCode);
 	void DeleteCurrentWeapon();
@@ -909,4 +914,7 @@ private:
 
 	void CutsceenEnter();
 	void CutsceenExit();
+
+	void LowHPPostEffectOn();
+	void LowHPPostEffectOff();
 };
