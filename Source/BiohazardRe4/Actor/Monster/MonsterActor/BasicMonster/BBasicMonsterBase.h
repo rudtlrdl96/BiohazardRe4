@@ -15,6 +15,13 @@ enum class EWeaponName : uint8
 	Hands,
 };
 
+UENUM(BlueprintType)
+enum class EAIMode : uint8
+{
+	Idle UMETA(DisplayName = "Idle"),
+	Patrol UMETA(DisplayName = "Patrol"),
+};
+
 UCLASS()
 class BIOHAZARDRE4_API ABBasicMonsterBase : public ABMonsterBase
 {
@@ -22,6 +29,8 @@ class BIOHAZARDRE4_API ABBasicMonsterBase : public ABMonsterBase
 
 public:
 	ABBasicMonsterBase();
+
+	void SetAIMode(EAIMode _AIMode);
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,6 +55,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	TObjectPtr<class USkeletalMeshComponent> BodyBase = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIMode")
+	EAIMode AIMode;
 
 private:
 	virtual void InitDamageTypes() override;
