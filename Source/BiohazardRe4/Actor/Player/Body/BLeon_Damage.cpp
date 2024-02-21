@@ -16,6 +16,8 @@ void ABLeon::DamageEnter()
 
 	if (nullptr != CurrentWeapon)
 	{
+		CurrentWeapon->SetCurLoopState();
+
 		switch (UseWeaponCode)
 		{
 		case EItemCode::Handgun_SR09R: // Pistol
