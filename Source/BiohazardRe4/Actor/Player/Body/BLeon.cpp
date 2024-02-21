@@ -87,6 +87,12 @@ void ABLeon::BeginPlay()
 	InventoryActor = GetWorld()->SpawnActor<ABInventoryActor>(InventoryClass, InventoryTransform);
 
 	FsmComp->ChangeState(TO_KEY(ELeonState::Idle));
+
+	HUD = Cast<ABHUDBase>(Cast<APlayerController>(Controller)->GetHUD());
+	if (HUD == nullptr)
+	{
+		LOG_ERROR(TEXT("Failed Get ABHUDBase."));
+	}
 }
 
 // Called every frame
@@ -120,13 +126,9 @@ void ABLeon::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 		LOG_FATAL(TEXT("Failed Find APlayerController"));
 	}
 
-	HUD = Cast<ABHUDBase>(PlayerController->GetHUD());
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 
-	if (HUD == nullptr)
-	{
-		LOG_ERROR(TEXT("Failed Get ABHUDBase."));
-	}
+
 	if (Subsystem == nullptr)
 	{
 		LOG_FATAL(TEXT("Failed Get GetSubsystem<UEnhancedInputLocalPlayerSubsystem>"));
