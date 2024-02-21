@@ -62,6 +62,9 @@ public:
 
 	virtual void ActiveCollision(bool _IsActive) {}
 
+	//총의 스테이트를 Idle상태로 바꿔주는 함수
+	virtual void SetCurLoopState() {};
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Mesh")
 	USkeletalMeshComponent* WeaponMesh = nullptr;

@@ -55,9 +55,7 @@ public:
 	virtual void ReloadEndAfter() {}
 	virtual void PutoutEnd();
 
-	
-	UFUNCTION(BlueprintCallable)
-	void SetCurLoopState();
+	virtual void SetCurLoopState() override;
 
 	//Drop
 	virtual void DropShell();
