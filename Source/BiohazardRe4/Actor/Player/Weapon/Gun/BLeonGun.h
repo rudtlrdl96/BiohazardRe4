@@ -55,6 +55,10 @@ public:
 	virtual void ReloadEndAfter() {}
 	virtual void PutoutEnd();
 
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCurLoopState();
+
 	//Drop
 	virtual void DropShell();
 	virtual void DropMagazine();
@@ -134,7 +138,6 @@ protected:
 
 	class ABInventoryWeapon* CurGun = nullptr;
 
-	void SetCurLoopState();
 	
 	// _______________________Sound
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
