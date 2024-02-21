@@ -17,7 +17,10 @@ ABLeonWeapon::ABLeonWeapon()
 	ProjectileComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
 	ProjectileComp->bSimulationEnabled = false;
 	ProjectileComp->bShouldBounce = true;	
-	ProjectileComp->Bounciness = 0.2;
+	ProjectileComp->bRotationFollowsVelocity = false;
+	ProjectileComp->Bounciness = 0.05;
+	ProjectileComp->bIsSliding = false;
+	ProjectileComp->MaxSimulationIterations = 2;
 	ProjectileComp->Activate(false);
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
