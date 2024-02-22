@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MathUtil.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Components/InputComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
@@ -16,6 +17,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "TimerManager.h"
 #include "Engine/DamageEvents.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -985,6 +987,8 @@ void ABLeon::TryInteraction()
 		CurrentWeapon = CreateWeapon(UseWeaponCode);
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
 		FsmComp->ChangeState(TO_KEY(ELeonState::Parry));
+
+		ParryEffectUpdate();
 	}
 	break;
 	case EInteraction::GroggyMonster:
@@ -1426,6 +1430,8 @@ void ABLeon::SocketSwapUpdate(float _DeltaTime)
 
 void ABLeon::HealthStateUpdate(float _DeltaTime)
 {
+
+
 	if (0.15f <= Stat.CurrentHp / Stat.MaxHp)
 	{
 		LeonHealth = ELeonHealth::Normal;
@@ -1434,7 +1440,8 @@ void ABLeon::HealthStateUpdate(float _DeltaTime)
 	else
 	{
 		LeonHealth = ELeonHealth::Danger;
-		if (CustomTimeDilation == 0)
+
+		if (CustomTimeDilation == 0 || LeonFSMState == ELeonState::Death)
 		{
 			LowHPPostEffectOff();
 		}
@@ -1446,7 +1453,16 @@ void ABLeon::HealthStateUpdate(float _DeltaTime)
 	
 	if (true == bIsDeathEnd)
 	{
-		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraFade(0, 1, 3, FColor::Black, false, true);
+
+		FTimerHandle Handle;
+
+		GetWorldTimerManager().SetTimer(Handle, [this]()
+			{
+				UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+			}, 4.0f, false, 4.0f);
+
+		bIsDeathEnd = false;
 	}
 }
 

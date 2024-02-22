@@ -54,7 +54,6 @@ void UBInventoryWidgetBehavior::SetItemData(const FBItemData& Data)
 		SetButton(2, State_BehaviorButton::QuickSlot);
 		SetButton(3, State_BehaviorButton::Drop);
 		break;
-	case EItemCode::CombatKnife:
 	case EItemCode::HandgunAmmo:
 	case EItemCode::ShotgunShells:
 	case EItemCode::RifleAmmo:
@@ -89,6 +88,12 @@ void UBInventoryWidgetBehavior::SetItemData(const FBItemData& Data)
 		SetButton(2, State_BehaviorButton::Drop);
 		SetButton(3, State_BehaviorButton::None);
 		// 제조하기
+		break;
+	case EItemCode::CombatKnife:
+		SetButton(0, State_BehaviorButton::Investigate);
+		SetButton(1, State_BehaviorButton::None);
+		SetButton(2, State_BehaviorButton::None);
+		SetButton(3, State_BehaviorButton::None);
 		break;
 	default:
 		break;
