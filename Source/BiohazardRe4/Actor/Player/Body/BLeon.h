@@ -448,6 +448,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CutSceneDeleteWeapon();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ParryEffectUpdate();
+
 	virtual void WeaponPutOutStart() override;
 	virtual void WeaponPutOutEnd() override;
 	virtual void WeaponPutAwayStart() override;

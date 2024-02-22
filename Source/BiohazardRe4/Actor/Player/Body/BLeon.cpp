@@ -985,6 +985,8 @@ void ABLeon::TryInteraction()
 		CurrentWeapon = CreateWeapon(UseWeaponCode);
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, LerpSocketEnd);
 		FsmComp->ChangeState(TO_KEY(ELeonState::Parry));
+
+		ParryEffectUpdate();
 	}
 	break;
 	case EInteraction::GroggyMonster:
