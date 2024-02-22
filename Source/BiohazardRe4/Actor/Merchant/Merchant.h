@@ -44,7 +44,7 @@ struct FSaleItem
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int Count;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int CurCount;
 };
 
