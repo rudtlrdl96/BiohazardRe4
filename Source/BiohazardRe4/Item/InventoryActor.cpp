@@ -518,6 +518,7 @@ void ABInventoryActor::StartItem()
 	QuickSlot[0] = Cast<ABInventoryWeapon>(Item);
 	Inventory->AddItem(EItemCode::HandgunAmmo, 15);
 	Inventory->AddItem(EItemCode::CombatKnife, 1);
+	HUD->QuickSlotUpdate(QuickSlot);
 }
 
 void ABInventoryActor::Click()
