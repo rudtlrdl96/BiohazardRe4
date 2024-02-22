@@ -899,9 +899,17 @@ void UBInventoryManager::RemoveAllItemInSubSlot()
 		{
 			if (ABInventoryItem* Item = SubSlot[y * SubCaseSize.X + x]->GetItem())
 			{
+				if (Item->GetItemCode() == EItemCode::CombatKnife)
+				{
+					FIntPoint Pos = FindEmptySlot(Item->GetItemSize());
+					PlaceItemSlot(Item, MainSlot[Pos.Y * CaseSize.X + Pos.X]);
+					Item->GetRootComponent()->SetRelativeLocation(CaseLocation(Pos));
+					ClearSlot(FIntPoint(x, y), Item->GetItemSize(), true);
+					continue;
+				}
 				ItemMap.Remove(Item->GetData().ItemCode, Item);
-				SubSlot[y * SubCaseSize.X + x]->SetItem(nullptr);
 				ABInventoryActor::Instance->RemoveQuickSlot(Item);
+				ClearSlot(FIntPoint(x, y), Item->GetItemSize(), true);
 				Item->Destroy();
 			}
 		}

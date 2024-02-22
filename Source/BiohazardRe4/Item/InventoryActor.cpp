@@ -219,6 +219,8 @@ void ABInventoryActor::BeginPlay()
 		SubCaseMesh->SetRelativeLocation(FMath::Lerp(FVector(100, 7.4, -2), FVector(45, 7.4, -2), Value));
 		});
 	Timeline.AddInterpFloat(CurveFloat, F);
+
+	StartItem();
 }
 
 // Called every frame
@@ -508,6 +510,14 @@ void ABInventoryActor::SetHealPreview()
 void ABInventoryActor::OffHealPreview()
 {
 	HUD->OffHealPreview();
+}
+
+void ABInventoryActor::StartItem()
+{
+	ABInventoryItem* Item = Inventory->AddItem(EItemCode::Handgun_SR09R, 1);
+	QuickSlot[0] = Cast<ABInventoryWeapon>(Item);
+	Inventory->AddItem(EItemCode::HandgunAmmo, 15);
+	Inventory->AddItem(EItemCode::CombatKnife, 1);
 }
 
 void ABInventoryActor::Click()

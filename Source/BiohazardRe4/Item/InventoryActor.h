@@ -268,6 +268,8 @@ public:
 
 private:
 
+	// 아이템을 추가한다
+	void StartItem();
 
 	void Click();
 	void Cancel();
