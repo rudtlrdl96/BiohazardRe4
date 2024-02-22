@@ -78,13 +78,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	TArray<UStaticMeshComponent*> StageMapMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	TArray<UStaticMeshComponent*> StageMapMeshOpacity;
+
 	uint8 CurrentFloor = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UCameraComponent* Camera;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
-	//class UBMapUIPlayerSprite* PlayerSprite;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UBMapUIPlayerWidget* PlayerWidget;

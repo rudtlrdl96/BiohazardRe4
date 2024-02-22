@@ -37,7 +37,7 @@ ABMapUIActor::ABMapUIActor()
 		StageMapMesh[1]->SetStaticMesh(Mesh.Object);
 	}
 	StageMapMesh[1]->SetupAttachment(RootComponent);
-	StageMapMesh[1]->SetVisibility(false);
+	StageMapMesh[1]->SetRelativeLocation({ 0.f, 0.f, 2.f });
 
 	StageMapMesh[2] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMap_2F"));
 	{
@@ -45,15 +45,15 @@ ABMapUIActor::ABMapUIActor()
 		StageMapMesh[2]->SetStaticMesh(Mesh.Object);
 	}
 	StageMapMesh[2]->SetupAttachment(RootComponent);
-	StageMapMesh[2]->SetVisibility(false);
+	StageMapMesh[2]->SetRelativeLocation({ 0.f, 0.f, 4.f });
 
 	StageMapMesh[3] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMap_3F"));
 	{
-		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/ui_village_3F_MeshMerge.ui_village_3F_MeshMerge'"));
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/ui_village_3F_MeshMerg.ui_village_3F_MeshMerg'"));
 		StageMapMesh[3]->SetStaticMesh(Mesh.Object);
 	}
 	StageMapMesh[3]->SetupAttachment(RootComponent);
-	StageMapMesh[3]->SetVisibility(false);
+	StageMapMesh[3]->SetRelativeLocation({ 0.f, 0.f, 6.f });
 
 	StageMapMesh[0] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMap_B1"));
 	{
@@ -61,8 +61,39 @@ ABMapUIActor::ABMapUIActor()
 		StageMapMesh[0]->SetStaticMesh(Mesh.Object);
 	}	
 	StageMapMesh[0]->SetupAttachment(RootComponent);
-	StageMapMesh[0]->SetVisibility(false);
 
+	// 맵 메쉬_반투명
+	StageMapMeshOpacity.SetNum(4);
+	StageMapMeshOpacity[1] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMap_1F_Opacity"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/ui_village_1F_MeshMerge_Opacity.ui_village_1F_MeshMerge_Opacity'"));
+		StageMapMeshOpacity[1]->SetStaticMesh(Mesh.Object);
+	}
+	StageMapMeshOpacity[1]->SetupAttachment(RootComponent);
+	StageMapMeshOpacity[1]->SetRelativeLocation({ 0.f, 0.f, 2.f });
+
+	StageMapMeshOpacity[2] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMap_2F_Opacity"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/ui_village_2F_MeshMerge_Opacity.ui_village_2F_MeshMerge_Opacity'"));
+		StageMapMeshOpacity[2]->SetStaticMesh(Mesh.Object);
+	}
+	StageMapMeshOpacity[2]->SetupAttachment(RootComponent);
+	StageMapMeshOpacity[2]->SetRelativeLocation({ 0.f, 0.f, 4.f });
+
+	StageMapMeshOpacity[3] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMap_3F_Opacity"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/ui_village_3F_MeshMerge_Opacity.ui_village_3F_MeshMerge_Opacity'"));
+		StageMapMeshOpacity[3]->SetStaticMesh(Mesh.Object);
+	}
+	StageMapMeshOpacity[3]->SetupAttachment(RootComponent);
+	StageMapMeshOpacity[3]->SetRelativeLocation({ 0.f, 0.f, 6.f });
+
+	StageMapMeshOpacity[0] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StageMap_B1_Opacity"));
+	{
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Assets/UI/MapUI/Mesh/ui_village_B1_MeshMerge_Opacity.ui_village_B1_MeshMerge_Opacity'"));
+		StageMapMeshOpacity[0]->SetStaticMesh(Mesh.Object);
+	}
+	StageMapMeshOpacity[0]->SetupAttachment(RootComponent);
 
 	// 카메라
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -101,10 +132,27 @@ void ABMapUIActor::SetFloor(EFloor Floor)
 {
 	Widget->SetCurrentFloor(Floor);
 	Widget->SetPrevFloor(static_cast<EFloor>(CurrentFloor));
-	
-	StageMapMesh[CurrentFloor]->SetVisibility(false);
+
 	CurrentFloor = static_cast<uint8>(Floor);
-	StageMapMesh[CurrentFloor]->SetVisibility(true);
+	
+	for (uint8 i = 0; i < static_cast<uint8>(EFloor::E_MAX) ; i++)
+	{
+		if (i < CurrentFloor)
+		{
+			StageMapMesh[i]->SetVisibility(false);
+			StageMapMeshOpacity[i]->SetVisibility(true);
+		}
+		else if (i == CurrentFloor)
+		{
+			StageMapMesh[i]->SetVisibility(true);
+			StageMapMeshOpacity[i]->SetVisibility(false);
+		}
+		else
+		{
+			StageMapMesh[i]->SetVisibility(false);
+			StageMapMeshOpacity[i]->SetVisibility(false);
+		}
+	}
 
 	Widget->UpdateMapLayerWidget();
 	PlayUIControlSound();
@@ -153,9 +201,25 @@ void ABMapUIActor::BeginPlay()
 	Widget->SetCurrentFloor(EFloor::E_1F);
 	Widget->SetPrevFloor(static_cast<EFloor>(CurrentFloor));
 
-	StageMapMesh[CurrentFloor]->SetVisibility(false);
 	CurrentFloor = static_cast<uint8>(EFloor::E_1F);
-	StageMapMesh[CurrentFloor]->SetVisibility(true);
+	for (uint8 i = 0; i < static_cast<uint8>(EFloor::E_MAX); i++)
+	{
+		if (i < CurrentFloor)
+		{
+			StageMapMesh[i]->SetVisibility(false);
+			StageMapMeshOpacity[i]->SetVisibility(true);
+		}
+		else if (i == CurrentFloor)
+		{
+			StageMapMesh[i]->SetVisibility(true);
+			StageMapMeshOpacity[i]->SetVisibility(false);
+		}
+		else
+		{
+			StageMapMesh[i]->SetVisibility(false);
+			StageMapMeshOpacity[i]->SetVisibility(false);
+		}
+	}
 
 	Widget->UpdateMapLayerWidget();
 
@@ -192,7 +256,6 @@ void ABMapUIActor::MapUIOn()
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	PlayerWidget->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
-	//SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 
 	Widget->SetVisibility(ESlateVisibility::Visible);
@@ -225,7 +288,6 @@ void ABMapUIActor::MapUIOff()
 	BackgroundMesh->SetHiddenInGame(!bMapUIOnOffSwitch);
 	PlayerWidget->SetVisibility(bMapUIOnOffSwitch);
 	SetHidden(!bMapUIOnOffSwitch);
-	//SetActorTickEnabled(bMapUIOnOffSwitch);
 	Controller->SetShowMouseCursor(bMapUIOnOffSwitch);
 	SetCameraZoom(45.f);
 
