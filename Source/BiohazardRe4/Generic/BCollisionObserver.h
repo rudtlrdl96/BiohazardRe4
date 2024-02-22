@@ -36,6 +36,8 @@ public:
 
 	void SetVisibilityCollision(bool _IsActive);
 
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	UShapeComponent* CollisionComp = nullptr;

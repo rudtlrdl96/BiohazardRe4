@@ -58,3 +58,10 @@ void ABCollisionObserver::SetVisibilityCollision(bool _IsActive)
 		CollisionComp->SetCollisionProfileName("NoCollision");
 	}
 }
+
+float ABCollisionObserver::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float dmg = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	return 0.0f;
+}

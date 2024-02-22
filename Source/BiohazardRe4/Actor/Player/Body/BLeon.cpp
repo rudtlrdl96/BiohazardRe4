@@ -436,8 +436,7 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 	}
 
 	LOG_ERROR(TEXT("Undefined DamageType"));
-
-	return DamageValue;
+	return 0.0f;
 }
 
 void ABLeon::TakeHeal(float Heal)
