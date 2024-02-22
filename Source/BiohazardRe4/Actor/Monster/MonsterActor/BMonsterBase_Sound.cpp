@@ -7,12 +7,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
 
+#include "BiohazardRe4.h"
+
 void ABMonsterBase::PlaySound(ESoundType _PlaySoundType)
 {
 	if (isAblePlay(_PlaySoundType) == true)
 	{
 		SoundComponent->SetSound(SoundCues[_PlaySoundType]);
 		SoundComponent->Play();
+
+		LOG_MSG(TEXT("SoundPlay"));
 	}
 }
 

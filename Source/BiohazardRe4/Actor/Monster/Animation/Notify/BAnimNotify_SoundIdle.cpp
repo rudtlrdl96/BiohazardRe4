@@ -3,6 +3,7 @@
 
 #include "Actor/Monster/Animation/Notify/BAnimNotify_SoundIdle.h"
 #include "Actor/Monster/Interface/BMonsterSoundInterface.h"
+#include "BiohazardRe4.h"
 
 void UBAnimNotify_SoundIdle::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
@@ -26,5 +27,6 @@ void UBAnimNotify_SoundIdle::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 	if (SoundInterface->isAblePlay(ESoundType::Idle) == true)
 	{
 		SoundInterface->PlaySound(ESoundType::Idle);
+		LOG_MSG(TEXT("IDLE SOUND"));
 	}
 }
