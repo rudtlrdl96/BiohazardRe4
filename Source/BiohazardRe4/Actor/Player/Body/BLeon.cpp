@@ -73,6 +73,8 @@ ABLeon::~ABLeon()
 		CurrentWeapon->Destroy();
 		CurrentWeapon = nullptr;
 	}
+
+	LowHPPostEffectOff();
 }
 
 // Called when the game starts or when spawned
@@ -257,12 +259,10 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			if (EMonsterDamageDirection::Top == MonsterDamageClass->DamageDirection)
 			{
 				DamageDirection = ELeonDamageDirection::FT;
-				LOG_MSG(TEXT("FT"));
 			}
 			else
 			{
 				DamageDirection = ELeonDamageDirection::FU;
-				LOG_MSG(TEXT("FU"));
 			}
 		}
 		else if (Angle > 45.0 && Angle <= 135.0)
@@ -271,12 +271,10 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			if (EMonsterDamageDirection::Top == MonsterDamageClass->DamageDirection)
 			{
 				DamageDirection = ELeonDamageDirection::RT;
-				LOG_MSG(TEXT("RT"));
 			}
 			else
 			{
 				DamageDirection = ELeonDamageDirection::RU;
-				LOG_MSG(TEXT("RU"));
 			}
 		}
 		else if (Angle > -135.0 && Angle <= -45.0)
@@ -285,19 +283,16 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			if (EMonsterDamageDirection::Top == MonsterDamageClass->DamageDirection)
 			{
 				DamageDirection = ELeonDamageDirection::LT;
-				LOG_MSG(TEXT("LT"));
 			}
 			else
 			{
 				DamageDirection = ELeonDamageDirection::LU;
-				LOG_MSG(TEXT("LU"));
 			}
 		}
 		else
 		{
 			// Back
 			DamageDirection = ELeonDamageDirection::B;
-			LOG_MSG(TEXT("B"));
 		}
 
 		switch (MonsterDamageClass->DamagePower)
@@ -343,12 +338,10 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			if (GetActorLocation().Z < AttackerLocation.Z)
 			{
 				DamageDirection = ELeonDamageDirection::FT;
-				LOG_MSG(TEXT("FT"));
 			}
 			else
 			{
 				DamageDirection = ELeonDamageDirection::FU;
-				LOG_MSG(TEXT("FU"));
 			}
 		}
 		else if (Angle > 45.0 && Angle <= 135.0)
@@ -357,12 +350,10 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			if (GetActorLocation().Z < AttackerLocation.Z)
 			{
 				DamageDirection = ELeonDamageDirection::RT;
-				LOG_MSG(TEXT("RT"));
 			}
 			else
 			{
 				DamageDirection = ELeonDamageDirection::RU;
-				LOG_MSG(TEXT("RU"));
 			}
 		}
 		else if (Angle > -135.0 && Angle <= -45.0)
@@ -371,19 +362,16 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			if (GetActorLocation().Z < AttackerLocation.Z)
 			{
 				DamageDirection = ELeonDamageDirection::LT;
-				LOG_MSG(TEXT("LT"));
 			}
 			else
 			{
 				DamageDirection = ELeonDamageDirection::LU;
-				LOG_MSG(TEXT("LU"));
 			}
 		}
 		else
 		{
 			// Back
 			DamageDirection = ELeonDamageDirection::B;
-			LOG_MSG(TEXT("B"));
 		}
 
 		FVector PlayerLocation = GetActorLocation();
@@ -518,8 +506,6 @@ void ABLeon::CutSceneDeleteWeapon()
 
 void ABLeon::WeaponPutOutStart()
 {
-	LOG_MSG(TEXT("Leon Weapon PutOutStart"));
-
 	if (nullptr != CurrentWeapon)
 	{
 		DeleteCurrentWeapon();
@@ -588,14 +574,10 @@ void ABLeon::WeaponPutOutStart()
 void ABLeon::WeaponPutOutEnd()
 {
 	LeonWeaponSwap = ELeonWeaponSwap::None;
-
-	LOG_MSG(TEXT("Leon Weapon PutOutEnd"));
 }
 
 void ABLeon::WeaponPutAwayStart()
 {
-	LOG_MSG(TEXT("Leon Weapon PutAwayStart"));
-
 	if (nullptr != CurrentWeapon)
 	{
 		switch (UseWeaponCode)
@@ -638,8 +620,6 @@ void ABLeon::WeaponPutAwayStart()
 		{
 		case ELeonWeaponAnim::Shotgun:
 		{
-			LOG_MSG(TEXT("Leon Weapon DetachFromActor"));
-
 			CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 			LerpSocketStart = TEXT("R_ShotgunSocket");
@@ -662,8 +642,6 @@ void ABLeon::WeaponPutAwayStart()
 		break;
 		case ELeonWeaponAnim::Rifle:
 		{
-			LOG_MSG(TEXT("Leon Weapon DetachFromActor"));
-
 			CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 			LerpSocketStart = TEXT("R_RifleSocket");
@@ -719,8 +697,6 @@ void ABLeon::WeaponPutAwayEnd()
 	{
 		DeleteCurrentWeapon();
 	}
-
-	LOG_MSG(TEXT("Leon Weapon PutAwayEnd"));
 }
 
 void ABLeon::WeaponShootStart()
@@ -1467,6 +1443,11 @@ void ABLeon::HealthStateUpdate(float _DeltaTime)
 			LowHPPostEffectOn();
 		}
 	}
+	
+	if (true == bIsDeathEnd)
+	{
+
+	}
 }
 
 void ABLeon::InteractionUpdate(float _DeltaTime)
@@ -1935,8 +1916,6 @@ void ABLeon::KnifeComboCheck()
 
 void ABLeon::Attack()
 {
-	LOG_MSG(TEXT("Try Player Weapon Shoot"));
-
 	if (true == AbleShoot())
 	{
 		bIsWeaponShootTrigger = true;
@@ -2080,6 +2059,11 @@ void ABLeon::KnifeCollisionDisable()
 void ABLeon::DamageEnd()
 {
 	bIsHitEnd = true;
+}
+
+void ABLeon::DeathEnd()
+{
+	bIsDeathEnd = true;
 }
 
 EInteraction ABLeon::GetInteractionType() const
@@ -2387,7 +2371,6 @@ void ABLeon::UseQuickSlot(const uint32 _Index)
 		return;
 	}
 
-	LOG_MSG(TEXT("Swap Slot : %d"), _Index);
 	HUD->SetQuickSlotNumber(_Index);
 
 	ABInventoryWeapon* QuickSlotWeaponClass = InventoryActor->GetQuickSlot(_Index);
@@ -2575,27 +2558,17 @@ double ABLeon::GetAxisZAngle(const FVector& _Location) const
 	ActorForward.Z = 0.0f;
 	ActorForward.Normalize();
 
-	LOG_MSG(TEXT("Forward X : %f, Y : %f, Z : %f"), ActorForward.X, ActorForward.Y, ActorForward.Z);
-
 	FVector ToDirection = _Location - GetActorLocation();
 	ToDirection.Z = 0.0f;
 	ToDirection.Normalize();
 
-	LOG_MSG(TEXT("ToDirection X : %f, Y : %f, Z : %f"), ToDirection.X, ToDirection.Y, ToDirection.Z);
-
 	double Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ActorForward, ToDirection)));
-
-
 	FVector Cross = FVector::CrossProduct(ActorForward, ToDirection);
-
-	LOG_MSG(TEXT("Cross : %f, Y : %f, Z : %f"), Cross.X, Cross.Y, Cross.Z);
 
 	if (0 >= Cross.Z)
 	{
 		Angle *= -1.0f;
 	}
-
-	LOG_MSG(TEXT("Angle : %f"), Angle);
 
 	return Angle;
 }
@@ -2619,8 +2592,6 @@ void ABLeon::KickAttack(AActor* _OverlapActor)
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), KickHitSound, GetMesh()->GetBoneLocation("R_Foot"));
 		bIsKickAttackSoundPlay = false;
 	}
-
-	LOG_MSG(TEXT("Kick Damage : %f"), Damage);
 }
 
 void ABLeon::CutsceenEnter()
@@ -2644,10 +2615,20 @@ void ABLeon::CutsceenExit()
 
 void ABLeon::LowHPPostEffectOn()
 {
+	if (nullptr == PostProcessVolume_LowHP)
+	{
+		return;
+	}
+
 	PostProcessVolume_LowHP->BlendWeight = 1.0f;
 }
 
 void ABLeon::LowHPPostEffectOff()
 {
+	if (nullptr == PostProcessVolume_LowHP)
+	{
+		return;
+	}
+
 	PostProcessVolume_LowHP->BlendWeight = 0.0f;
 }

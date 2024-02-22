@@ -221,6 +221,7 @@ private:
 	static const FVector GreanadeAimSocketOffset;
 
 	static const float StandSpringArmLength;
+	static const float StandSpringArmLength;
 	static const float GunAimSpringArmLength;
 	static const float GreanadeAimSpringArmLength;
 
@@ -481,6 +482,7 @@ public:
 	virtual void KnifeCollisionDisable() override;
 
 	virtual void DamageEnd() override;
+	virtual void DeathEnd() override;
 
 	virtual bool AbleInteraction() const override;
 	virtual EInteraction GetInteractionType() const override;
