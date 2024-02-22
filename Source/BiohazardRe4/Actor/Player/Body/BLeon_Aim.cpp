@@ -22,7 +22,13 @@ void ABLeon::AimEnter()
 	LeonAim = ELeonAim::Start;
 	bDrawGrenadeAim = false;
 	bIsPlayGetItem = false;
-	HUD->SetCrosshair(true);
+
+	ELeonWeaponAnim WeaponAnim = GetUseWeaponAnimation(UseWeaponCode);
+
+	if (ELeonWeaponAnim::Grenade != WeaponAnim)
+	{
+		HUD->SetCrosshair(true);
+	}
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), AimActiveVoiceSound, GetActorLocation());
 

@@ -382,9 +382,29 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			LOG_MSG(TEXT("B"));
 		}
 
-		float Distance = FVector::Distance(AttackerLocation, GetActorLocation());
+		FVector PlayerLocation = GetActorLocation();
+		FVector GrenadeLocation;
 
-		if (100 > Distance)
+		float Distance = 0.0f;
+
+		if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+		{
+			const FRadialDamageEvent* RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+			GrenadeLocation = RadialDamageEvent->Origin;
+
+			if (0 < RadialDamageEvent->ComponentHits.Num())
+			{
+				PlayerLocation = RadialDamageEvent->ComponentHits[0].ImpactPoint;
+			}
+		}
+		else
+		{
+			GrenadeLocation = AttackerLocation;
+		}
+
+		Distance = FVector::Distance(GrenadeLocation, PlayerLocation);
+
+		if (150 < Distance)
 		{
 			DamageType = ELeonDamageType::Guard;
 			return 0.0f;
@@ -765,8 +785,8 @@ void ABLeon::AttachLeftHandSocket()
 		break;
 	case EItemCode::Rifle_SRM1903:
 		Socket = "L_RifleSocket";
-		SocketSwapLocationSpeed = 50.0f;
-		SocketSwapRotationSpeed = 50.0f;
+		SocketSwapLocationSpeed = 1000.0f;
+		SocketSwapRotationSpeed = 1000.0f;
 		break;
 	case EItemCode::CombatKnife:
 		Socket = "L_KnifeSocket";
@@ -812,17 +832,8 @@ void ABLeon::AttachRightHandSocket()
 		break;
 	case EItemCode::Rifle_SRM1903:
 		Socket = "R_RifleSocket";
-
-		if (true == bIsCrouch)
-		{
-			SocketSwapLocationSpeed = 100.0f;
-			SocketSwapRotationSpeed = 360.0f;
-		}
-		else
-		{
-			SocketSwapRotationSpeed = 180.0f;
-			SocketSwapLocationSpeed = 50.0f;
-		}
+		SocketSwapLocationSpeed = 1000.0f;
+		SocketSwapRotationSpeed = 1000.0f;
 		break;
 	case EItemCode::CombatKnife:
 		Socket = "R_KnifeSocket";
@@ -1499,7 +1510,7 @@ void ABLeon::InteractionUpdate(float _DeltaTime)
 			continue;
 		case EInteraction::DropItem: 
 		{
-			if (true == bIsGunReload)
+			if (true == bIsGunRecoil)
 			{
 				continue;
 			}
@@ -1971,6 +1982,23 @@ bool ABLeon::AbleReload() const
 
 	if (true == bIsGunRecoil)
 	{
+		return false;
+	}
+
+	switch (LeonFSMState)
+	{
+	case ELeonState::KnifeAttack:
+	case ELeonState::KickAttack:
+	case ELeonState::Throwing:
+	case ELeonState::Damage:
+	case ELeonState::Death:
+	case ELeonState::ObstacleJump:
+	case ELeonState::Fall:
+	case ELeonState::Parry:
+	case ELeonState::OpenDoor:
+	case ELeonState::OpenGate:
+	case ELeonState::BreakBox:
+	case ELeonState::CutScene00:
 		return false;
 	}
 
