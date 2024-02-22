@@ -244,13 +244,6 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 		Stat.CurrentHp -= DamageValue;
 		HUD->SetHP(Stat.CurrentHp / Stat.MaxHp);
 
-		if (0 >= Stat.CurrentHp)
-		{
-			Stat.CurrentHp = 0;
-			FsmComp->ChangeState(TO_KEY(ELeonState::Death));
-			return DamageValue;
-		}
-
 		double Angle = GetAxisZAngle(AttackerLocation);
 
 		if (Angle > -45.0 && Angle <= 45.0)
@@ -321,6 +314,13 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), LargeHitSound, GetActorLocation());
 		}
 		break;
+		}
+
+		if (0 >= Stat.CurrentHp)
+		{
+			Stat.CurrentHp = 0;
+			FsmComp->ChangeState(TO_KEY(ELeonState::Death));
+			return DamageValue;
 		}
 
 		return DamageValue;
@@ -1446,7 +1446,7 @@ void ABLeon::HealthStateUpdate(float _DeltaTime)
 	
 	if (true == bIsDeathEnd)
 	{
-
+		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 	}
 }
 
