@@ -13,14 +13,14 @@ void ABMonsterBase::PlaySound(ESoundType _PlaySoundType)
 {
 	if (isAblePlay(_PlaySoundType) == true)
 	{
-		SoundComponent->SetSound(SoundCues[_PlaySoundType]);
-		SoundComponent->Play();
+		GeneralSoundComp->SetSound(GeneralSoundCues[_PlaySoundType]);
+		GeneralSoundComp->Play();
 	}
 }
 
 bool ABMonsterBase::isAblePlay(ESoundType _PlaySoundType)
 {
-	if (SoundCues.Contains(_PlaySoundType) == false)
+	if (GeneralSoundCues.Contains(_PlaySoundType) == false)
 	{
 		return false;
 	}
@@ -63,4 +63,56 @@ bool ABMonsterBase::isAblePlay(ESoundType _PlaySoundType)
 	}
 
 	return true;
+}
+
+void ABMonsterBase::PlayFootSound(EFootSoundType _PlaySoundType, bool _isLeft)
+{
+	if (_isLeft == true)
+	{
+		LeftFootSoundComp->SetSound(FootSoundCues[_PlaySoundType]);
+		LeftFootSoundComp->Play();
+	}
+	else
+	{
+		RightFootSoundComp->SetSound(FootSoundCues[_PlaySoundType]);
+		RightFootSoundComp->Play();
+	}
+}
+
+void ABMonsterBase::LoadFootSoundCue()
+{
+	static ConstructorHelpers::FObjectFinder<USoundCue> FootDirtRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/FootSoundCue/SC_FootDirtCue.SC_FootDirtCue'"));
+	if (FootDirtRef.Object != nullptr)
+	{
+		USoundCue* FootDirtCue = FootDirtRef.Object;
+		FootSoundCues.Add(EFootSoundType::Dirt, FootDirtCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> FootRockRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/FootSoundCue/SC_FootRockCue.SC_FootRockCue'"));
+	if (FootRockRef.Object != nullptr)
+	{
+		USoundCue* FootRockCue = FootRockRef.Object;
+		FootSoundCues.Add(EFootSoundType::Rock, FootRockCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> FootWaterRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/FootSoundCue/SC_FootWaterCue.SC_FootWaterCue'"));
+	if (FootWaterRef.Object != nullptr)
+	{
+		USoundCue* FootWaterCue = FootWaterRef.Object;
+		FootSoundCues.Add(EFootSoundType::Water, FootWaterCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> FootGrassRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/FootSoundCue/SC_FootGrassCue.SC_FootGrassCue'"));
+	if (FootGrassRef.Object != nullptr)
+	{
+		USoundCue* FootGrassCue = FootGrassRef.Object;
+		FootSoundCues.Add(EFootSoundType::Grass, FootGrassCue);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> FootWoodRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/FootSoundCue/SC_FootWoodCue.SC_FootWoodCue'"));
+	if (FootWoodRef.Object != nullptr)
+	{
+		USoundCue* FootWoodCue = FootWoodRef.Object;
+		FootSoundCues.Add(EFootSoundType::Wood, FootWoodCue);
+	}
 }

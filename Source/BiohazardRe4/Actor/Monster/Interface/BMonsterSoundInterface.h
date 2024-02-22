@@ -29,6 +29,16 @@ enum class ESoundType
 	PointDeath,
 };
 
+UENUM()
+enum class EFootSoundType
+{
+	Dirt,
+	Water,
+	Grass,
+	Wood,
+	Rock,
+};
+
 class BIOHAZARDRE4_API IBMonsterSoundInterface
 {
 	GENERATED_BODY()
@@ -38,4 +48,6 @@ public:
 
 	virtual void PlaySound(ESoundType _PlaySoundType) = 0;
 	virtual bool isAblePlay(ESoundType _PlaySoundType) = 0;
+
+	virtual void PlayFootSound(EFootSoundType _PlaySoundType, bool _isLeft) = 0;
 };

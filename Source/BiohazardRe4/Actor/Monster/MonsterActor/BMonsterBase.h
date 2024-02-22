@@ -80,11 +80,6 @@ public:
 	virtual const FMonsterAttackEnd& GetMonsterAttackEndDelegate() override;
 	virtual void SetMonsterAttackEndDelegate(FMonsterAttackEnd& _InAttackEnd) override;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnParryInteraction();
-	UFUNCTION(BlueprintImplementableEvent)
-	void OffParryInteraction();
-
 	//IBMonsterStatInterface
 public:
 	virtual float GetRunSpeed() const override;
@@ -102,11 +97,18 @@ public:
 public:
 	virtual void PlaySound(ESoundType _PlaySoundType) override;
 	virtual bool isAblePlay(ESoundType _PlaySoundType) override;
+	virtual void PlayFootSound(EFootSoundType _PlaySoundType, bool _isLeft) override;
+
 	//IBInteraction
 public:
 	virtual bool AbleInteraction() const override;
 	virtual EInteraction GetInteractionType() const override;
 	virtual FVector GetUIPivot() const override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnParryInteraction();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OffParryInteraction();
 
 	//Actor Function
 public:
@@ -125,9 +127,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCapsuleComponent> WeaponCollision = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UAudioComponent> SoundComponent = nullptr;
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Audio, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAudioComponent> GeneralSoundComp = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Audio, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAudioComponent> LeftFootSoundComp = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Audio, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAudioComponent> RightFootSoundComp = nullptr;
+
 	//Montage
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
@@ -150,7 +158,8 @@ protected:
 	TArray<class UClass*> DamageTypes;
 	TMap<FString, TMap<FString, int>> DamagedMontageSectionNums;
 
-	TMap<ESoundType, TObjectPtr<class USoundCue>> SoundCues;
+	TMap<ESoundType, TObjectPtr<class USoundCue>> GeneralSoundCues;
+	TMap<EFootSoundType, TObjectPtr<class USoundCue>> FootSoundCues;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	EWeaponType MyWeaponType;
@@ -160,6 +169,7 @@ protected:
 	virtual void InitDamageTypes();
 	virtual void SetDamagedSectionNums();
 	virtual void InitSoundCues();
+	void LoadFootSoundCue();
 
 	//Damaged
 protected:

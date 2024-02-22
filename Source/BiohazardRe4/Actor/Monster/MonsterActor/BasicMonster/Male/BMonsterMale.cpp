@@ -162,77 +162,77 @@ void ABMonsterMale::InitSoundCues()
 	if (YellSoundRef.Object != nullptr)
 	{
 		USoundCue* YellSoundCue = YellSoundRef.Object;
-		SoundCues.Add(ESoundType::Yell, YellSoundCue);
+		GeneralSoundCues.Add(ESoundType::Yell, YellSoundCue);
 	}
 	
 	static ConstructorHelpers::FObjectFinder<USoundCue> IdleSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_IdleSoundCue.SC_IdleSoundCue'"));
 	if (IdleSoundRef.Object != nullptr)
 	{
 		USoundCue* IdleSoundCue = IdleSoundRef.Object;
-		SoundCues.Add(ESoundType::Idle, IdleSoundCue);
+		GeneralSoundCues.Add(ESoundType::Idle, IdleSoundCue);
 	}
 	
 	static ConstructorHelpers::FObjectFinder<USoundCue> DetectSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_DetectPlayer.SC_DetectPlayer'"));
 	if (DetectSoundRef.Object != nullptr)
 	{
 		USoundCue* DetectSoundCue = DetectSoundRef.Object;
-		SoundCues.Add(ESoundType::Detect, DetectSoundCue);
+		GeneralSoundCues.Add(ESoundType::Detect, DetectSoundCue);
 	}
 	
 	static ConstructorHelpers::FObjectFinder<USoundCue> DamagedSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_DamagedCue.SC_DamagedCue'"));
 	if (DamagedSoundRef.Object != nullptr)
 	{
 		USoundCue* DamagedSoundCue = DamagedSoundRef.Object;
-		SoundCues.Add(ESoundType::Damaged, DamagedSoundCue);
+		GeneralSoundCues.Add(ESoundType::Damaged, DamagedSoundCue);
 	}
 	
 	static ConstructorHelpers::FObjectFinder<USoundCue> AttackSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_AttackCue.SC_AttackCue'"));
 	if (AttackSoundRef.Object != nullptr)
 	{
 		USoundCue* AttackCue = AttackSoundRef.Object;
-		SoundCues.Add(ESoundType::Attack, AttackCue);
+		GeneralSoundCues.Add(ESoundType::Attack, AttackCue);
 	}
 
 	static ConstructorHelpers::FObjectFinder<USoundCue> GeneralGroggySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_GenaralGroggyCue.SC_GenaralGroggyCue'"));
 	if (GeneralGroggySoundRef.Object != nullptr)
 	{
 		USoundCue* GenaralGroggyCue = GeneralGroggySoundRef.Object;
-		SoundCues.Add(ESoundType::GeneralGroggy, GenaralGroggyCue);
+		GeneralSoundCues.Add(ESoundType::GeneralGroggy, GenaralGroggyCue);
 	}
 	
 	static ConstructorHelpers::FObjectFinder<USoundCue> HeadShotGroggySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_HeadShotGroggyCue.SC_HeadShotGroggyCue'"));
 	if (HeadShotGroggySoundRef.Object != nullptr)
 	{
 		USoundCue* HeadShotGroggyCue = HeadShotGroggySoundRef.Object;
-		SoundCues.Add(ESoundType::HeadShotGroggy, HeadShotGroggyCue);
+		GeneralSoundCues.Add(ESoundType::HeadShotGroggy, HeadShotGroggyCue);
 	}
 	
 	static ConstructorHelpers::FObjectFinder<USoundCue> PointDeathSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_PointDeathCue.SC_PointDeathCue'"));
 	if (PointDeathSoundRef.Object != nullptr)
 	{
 		USoundCue* PointDeathGroggyCue = PointDeathSoundRef.Object;
-		SoundCues.Add(ESoundType::PointDeath, PointDeathGroggyCue);
+		GeneralSoundCues.Add(ESoundType::PointDeath, PointDeathGroggyCue);
 	}
 
 	static ConstructorHelpers::FObjectFinder<USoundCue> ParrySoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_ParryCue.SC_ParryCue'"));
 	if (ParrySoundRef.Object != nullptr)
 	{
 		USoundCue* ParryCue = ParrySoundRef.Object;
-		SoundCues.Add(ESoundType::Parry, ParryCue);
+		GeneralSoundCues.Add(ESoundType::Parry, ParryCue);
 	}
 
 	static ConstructorHelpers::FObjectFinder<USoundCue> KickedSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_KickedCue.SC_KickedCue'"));
 	if (KickedSoundRef.Object != nullptr)
 	{
 		USoundCue* KickedCue = KickedSoundRef.Object;
-		SoundCues.Add(ESoundType::Kicked, KickedCue);
+		GeneralSoundCues.Add(ESoundType::Kicked, KickedCue);
 	}
 
 	static ConstructorHelpers::FObjectFinder<USoundCue> MutterSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_MutterCue.SC_MutterCue'"));
 	if (MutterSoundRef.Object != nullptr)
 	{
 		USoundCue* MutterCue = MutterSoundRef.Object;
-		SoundCues.Add(ESoundType::Mutter, MutterCue);
+		GeneralSoundCues.Add(ESoundType::Mutter, MutterCue);
 	}
 }
 

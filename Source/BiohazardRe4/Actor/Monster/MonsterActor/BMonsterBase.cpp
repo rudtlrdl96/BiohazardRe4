@@ -26,15 +26,21 @@ ABMonsterBase::ABMonsterBase()
 	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCollision"));
 	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
 
-	SoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Sound"));
+	GeneralSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("GeneralSound"));
+	LeftFootSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("LeftFootSound"));
+	RightFootSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("RightFootSound"));
 
+	LoadFootSoundCue();
 }
 
 void ABMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	SoundComponent->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 	SetDamagedSectionNums();
+
+	GeneralSoundComp->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
+	LeftFootSoundComp->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
+	RightFootSoundComp->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 }
 
 void ABMonsterBase::Tick(float _DeltaTime)
