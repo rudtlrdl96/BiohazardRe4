@@ -226,6 +226,6 @@ void ABAIBasicMonsterController::SetValue()
 		return;
 	}
 
-	MyCharacter->GetCharacterMovement()->RotationRate.Yaw = 360.0f;
+	MyCharacter->GetCharacterMovement()->RotationRate.Yaw = 180.0f;
 }
 
