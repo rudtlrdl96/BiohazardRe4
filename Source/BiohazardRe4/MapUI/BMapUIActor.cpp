@@ -291,7 +291,7 @@ void ABMapUIActor::ViewUpperFloorFunc()
 	uint8 UpperFloor = CurrentFloor + 1;
 	if (UpperFloor == static_cast<uint8>(EFloor::E_MAX))
 	{
-		UpperFloor = 0;
+		return;
 	}
 	SetFloor(static_cast<EFloor>(UpperFloor));
 }
@@ -301,7 +301,7 @@ void ABMapUIActor::ViewLowerFloorFunc()
 	uint8 LowerFloor = CurrentFloor - 1;
 	if (LowerFloor == UINT8_MAX)
 	{
-		LowerFloor = static_cast<uint8>(EFloor::E_3F);
+		return;
 	}
 	SetFloor(static_cast<EFloor>(LowerFloor));
 }
