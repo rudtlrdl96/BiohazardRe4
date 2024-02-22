@@ -306,16 +306,6 @@ void ABMapUIActor::ViewLowerFloorFunc()
 	SetFloor(static_cast<EFloor>(LowerFloor));
 }
 
-void ABMapUIActor::PlayUIControlSound()
-{
-	if (UIControlSound == nullptr)
-	{
-		LOG_WARNING(TEXT("UIControlSound == nullptr"))
-		return;
-	}
-
-	UGameplayStatics::PlaySound2D(GetWorld(), UIControlSound);
-}
 
 void ABMapUIActor::CameraZoomFunc(const struct FInputActionValue& Value)
 {
@@ -326,6 +316,17 @@ void ABMapUIActor::CameraZoomFunc(const struct FInputActionValue& Value)
 	}
 	SetCameraZoom(MovementVector);
 	PlayUIControlSound();
+}
+
+void ABMapUIActor::PlayUIControlSound()
+{
+	if (UIControlSound == nullptr)
+	{
+		LOG_WARNING(TEXT("UIControlSound == nullptr"))
+			return;
+	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), UIControlSound);
 }
 
 
