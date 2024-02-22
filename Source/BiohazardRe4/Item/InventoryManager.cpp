@@ -116,7 +116,7 @@ ABInventoryItem* UBInventoryManager::AddItem(EItemCode ItemCode, const FIntPoint
 	return CreateItem(*FindItem, Pos, Num);
 }
 
-void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
+ABInventoryItem* UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 {
 	int RemoveNum = Num;
 	TArray<ABInventoryItem*> Items;
@@ -131,6 +131,7 @@ void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 			ItemMap.Remove(ItemCode, Item);
 			ABInventoryActor::Instance->RemoveQuickSlot(Item);
 			Item->Destroy();
+			return Item;
 		}
 		else
 		{
@@ -148,6 +149,7 @@ void UBInventoryManager::RemoveItem(EItemCode ItemCode, int Num)
 	{
 		LOG_ERROR(TEXT("RemoveItem Error. Item Lack"))
 	}
+	return nullptr;
 }
 
 void UBInventoryManager::RemoveItem(ABInventoryItem* Item, int Num)

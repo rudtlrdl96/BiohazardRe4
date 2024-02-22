@@ -54,7 +54,7 @@ public:
 	// 아이템을 해당 위치에 추가한다
 	ABInventoryItem* AddItem(EItemCode ItemCode, const FIntPoint& Pos, int Num = 1);
 	// 아이템을 제거한다. Num개 만큼 제거합니다
-	void RemoveItem(EItemCode ItemCode, int Num = 1);
+	ABInventoryItem* RemoveItem(EItemCode ItemCode, int Num = 1);
 	// Item을 Num만큼 제거합니다. Item의 수가 부족하면 같은 종류의 다른 아이템을 제거합니다
 	void RemoveItem(ABInventoryItem* Item, int Num = 1);
 	// 아이템을 제작한다

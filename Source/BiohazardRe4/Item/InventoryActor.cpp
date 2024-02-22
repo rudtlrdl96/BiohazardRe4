@@ -277,7 +277,7 @@ int ABInventoryActor::GetItemCount(EItemCode ItemCode) const
 
 void ABInventoryActor::RemoveItem(EItemCode ItemCode, int Num)
 {
-	Inventory->RemoveItem(ItemCode, Num);
+	ABInventoryItem* Item = Inventory->RemoveItem(ItemCode, Num);
 }
 
 ABInventoryWeapon* ABInventoryActor::GetQuickSlot(int SlotNum)
@@ -440,6 +440,11 @@ void ABInventoryActor::CompleteDrop()
 	// 아이템 버리기 확인을 하여 SelectItem을 버림
 	// Default 상태로 돌아감
 	Inventory->RemoveItem(SelectItem);
+	RemoveQuickSlot(SelectItem);
+	if (SelectItem->GetItemCode() == Player->GetUseWeaponCode())
+	{
+		Player->ChangeUseWeapon(EItemCode::Empty);
+	}
 	SelectItem = nullptr;
 	SelectSlot = nullptr;
 	FSMComp->ChangeState(TO_KEY(EInventoryState::Default));
@@ -897,6 +902,7 @@ void ABInventoryActor::RemoveQuickSlot(ABInventoryItem* Item)
 			if (QuickSlot[i] == Weapon)
 			{
 				QuickSlot[i] = nullptr;
+				HUD->QuickSlotUpdate(QuickSlot);
 				return;
 			}
 		}
