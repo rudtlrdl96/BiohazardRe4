@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Actor/Player/Weapon/BLeonWeapon.h"
+#include "Sound/SoundCue.h"
 #include "BLeonKnife.generated.h"
 
 class ABCollisionObserverCapsule;
@@ -23,9 +24,14 @@ public:
 
 private:
 	uint32 bCollisionActive : 1 = false;
+	uint32 bIsKnifeAttackSoundPlay : 1 = false;
 
 	ABCollisionObserverCapsule* AttackCollision = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* KnifeHitSound = nullptr;
+
 	void KnifeAttack(AActor* _OverlapActor);
+
 
 };

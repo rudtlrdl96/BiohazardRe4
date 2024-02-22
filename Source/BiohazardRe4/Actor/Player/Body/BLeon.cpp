@@ -742,6 +742,7 @@ void ABLeon::ThrowingEnd()
 
 void ABLeon::KickAttackStart()
 {
+	bIsKickAttackSoundPlay = true;
 	bIsKickAttackActive = true;
 	KickOverlapObserver->SetVisibilityCollision(true);
 }
@@ -2608,7 +2609,15 @@ void ABLeon::KickAttack(AActor* _OverlapActor)
 		return;
 	}
 
-	UGameplayStatics::ApplyDamage(_OverlapActor, 180, GetController(), this, KickDamageType);
+	float Damage = UGameplayStatics::ApplyDamage(_OverlapActor, 180, GetController(), this, KickDamageType);
+
+	if (true == bIsKickAttackSoundPlay)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), KickHitSound, GetMesh()->GetBoneLocation("R_Foot"));
+		bIsKickAttackSoundPlay = false;
+	}
+
+	LOG_MSG(TEXT("Kick Damage : %f"), Damage);
 }
 
 void ABLeon::CutsceenEnter()

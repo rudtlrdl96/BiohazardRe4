@@ -719,6 +719,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	USoundCue* KnifePutAwaySound = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	USoundCue* KickHitSound = nullptr;
+
 	//************** Sound **************//
 
 	UBFsm* FsmComp = nullptr;
@@ -730,6 +733,8 @@ private:
 	uint32 bIsThrowingWeapon : 1 = false;
 
 	uint32 bIsKickAttackActive : 1 = false;
+
+	uint32 bIsKickAttackSoundPlay : 1 = false;
 
 	float InteractionCoolTime = 0.0f;
 

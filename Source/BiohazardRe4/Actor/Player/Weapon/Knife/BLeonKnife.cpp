@@ -27,6 +27,7 @@ void ABLeonKnife::BeginPlay()
 void ABLeonKnife::ActiveCollision(bool _IsActive)
 {
 	bCollisionActive = _IsActive;
+	bIsKnifeAttackSoundPlay = true;
 	AttackCollision->SetVisibilityCollision(_IsActive);
 }
 
@@ -37,5 +38,11 @@ void ABLeonKnife::KnifeAttack(AActor* _OverlapActor)
 		return;
 	}
 
-	UGameplayStatics::ApplyDamage(_OverlapActor, 100, nullptr, this, DamageType);
+	float Damage = UGameplayStatics::ApplyDamage(_OverlapActor, 100, nullptr, this, DamageType);
+
+	if (0.0f < Damage && true == bIsKnifeAttackSoundPlay)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), KnifeHitSound, GetActorLocation());
+		bIsKnifeAttackSoundPlay = false;
+	}
 }
