@@ -27,13 +27,13 @@ ABMonsterBase::ABMonsterBase()
 	Stat = CreateDefaultSubobject<UBMonsterStatComponent>(TEXT("Stat"));
 
 	SoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Sound"));
-	SoundComponent->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
+
 }
 
 void ABMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	SoundComponent->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 	SetDamagedSectionNums();
 }
 
