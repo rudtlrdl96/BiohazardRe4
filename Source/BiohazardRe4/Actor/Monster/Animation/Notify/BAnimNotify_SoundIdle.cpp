@@ -27,6 +27,5 @@ void UBAnimNotify_SoundIdle::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 	if (SoundInterface->isAblePlay(ESoundType::Idle) == true)
 	{
 		SoundInterface->PlaySound(ESoundType::Idle);
-		LOG_MSG(TEXT("IDLE SOUND"));
 	}
 }

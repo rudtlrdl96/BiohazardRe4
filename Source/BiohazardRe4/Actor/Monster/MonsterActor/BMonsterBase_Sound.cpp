@@ -15,8 +15,6 @@ void ABMonsterBase::PlaySound(ESoundType _PlaySoundType)
 	{
 		SoundComponent->SetSound(SoundCues[_PlaySoundType]);
 		SoundComponent->Play();
-
-		LOG_MSG(TEXT("SoundPlay"));
 	}
 }
 
