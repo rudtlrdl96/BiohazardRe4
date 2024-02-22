@@ -40,16 +40,16 @@ void ABMapBGMBase::PlayIdleBGM()
 
 	Sound_IdleBGM->Play();
 	Sound_SubIdleBGM->Play();
-	Sound_ChainsawBGM->Stop();
-	Sound_HeightenBGM->Stop();
+	Sound_ChainsawBGM->FadeOut(1.0f,0.0f);
+	Sound_HeightenBGM->FadeOut(1.0f, 0.0f);
 }
 
 void ABMapBGMBase::PlayHeightenSound()
 {
 	
-	Sound_IdleBGM->Stop();
-	Sound_SubIdleBGM->Stop();
-	Sound_ChainsawBGM->Stop();
+	Sound_IdleBGM->FadeOut(1.0f, 0.0f);
+	Sound_SubIdleBGM->FadeOut(1.0f, 0.0f);
+	Sound_ChainsawBGM->FadeOut(1.0f, 0.0f);
 	Sound_HeightenBGM->Play();
 
 
@@ -57,18 +57,18 @@ void ABMapBGMBase::PlayHeightenSound()
 
 void ABMapBGMBase::PlayChainsawBGM()
 {
-	Sound_IdleBGM->Stop();
-	Sound_SubIdleBGM->Stop();
+	Sound_IdleBGM->FadeOut(1.0f, 0.0f);
+	Sound_SubIdleBGM->FadeOut(1.0f, 0.0f);
 	Sound_ChainsawBGM->Play();
-	Sound_HeightenBGM->Stop();
+	Sound_HeightenBGM->FadeOut(1.0f, 0.0f);
 }
 
 void ABMapBGMBase::BGMStop()
 {
-	Sound_IdleBGM->Stop();
-	Sound_SubIdleBGM->Stop();
-	Sound_ChainsawBGM->Stop();
-	Sound_HeightenBGM->Stop();
+	Sound_IdleBGM->FadeOut(1.0f, 0.0f);
+	Sound_SubIdleBGM->FadeOut(1.0f, 0.0f);
+	Sound_ChainsawBGM->FadeOut(1.0f, 0.0f);
+	Sound_HeightenBGM->FadeOut(1.0f, 0.0f);
 }
 
 void ABMapBGMBase::SetSoundCue()
