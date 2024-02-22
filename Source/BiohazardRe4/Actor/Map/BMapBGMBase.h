@@ -39,6 +39,12 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayHeightenSound();
+	
+	UFUNCTION(BlueprintCallable)
+	void BGMStop();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayChainsawBGM();
 
 	void SetSoundCue();
 };

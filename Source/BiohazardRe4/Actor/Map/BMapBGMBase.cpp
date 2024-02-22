@@ -55,6 +55,22 @@ void ABMapBGMBase::PlayHeightenSound()
 
 }
 
+void ABMapBGMBase::PlayChainsawBGM()
+{
+	Sound_IdleBGM->Stop();
+	Sound_SubIdleBGM->Stop();
+	Sound_ChainsawBGM->Play();
+	Sound_HeightenBGM->Stop();
+}
+
+void ABMapBGMBase::BGMStop()
+{
+	Sound_IdleBGM->Stop();
+	Sound_SubIdleBGM->Stop();
+	Sound_ChainsawBGM->Stop();
+	Sound_HeightenBGM->Stop();
+}
+
 void ABMapBGMBase::SetSoundCue()
 {
 	static ConstructorHelpers::FObjectFinder<USoundCue> IDLEBGMREF(TEXT("/Script/Engine.SoundCue'/Game/Assets/Map/Location01/Sound/SC_LevelIDLEBGM.SC_LevelIDLEBGM'"));
