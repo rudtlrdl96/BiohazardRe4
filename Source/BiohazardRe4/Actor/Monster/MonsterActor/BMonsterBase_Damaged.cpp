@@ -194,6 +194,11 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 		return _DamagedAmount;
 	}
 
+	if (GetCurrentState() == EMonsterState::Death)
+	{
+		return 0.0f;
+	}
+
 	EPlayerDamageType DamagedType = CastedDamageType->DamageType;
 	float ResultDamage = 0.0f;
 
@@ -255,8 +260,6 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 
 void ABMonsterBase::MonsterDeath(EDeathType _DeathType, const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
 {
-	AllCollisionOff();
-
 	switch (_DeathType)
 	{
 	case EDeathType::Point:
@@ -326,7 +329,7 @@ void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 	AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
 
 	SetCurrentState(EMonsterState::Death);
-	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+	AllCollisionOff();
 
 	DamagedMontage->bEnableAutoBlendOut = false;
 }
@@ -342,12 +345,11 @@ void ABMonsterBase::MonsterDeathByKick(const FDamageEvent& _DamageEvent, const A
 	}
 
 	AIController->UnPossess();
-
 	SetCurrentState(EMonsterState::Burst);
 
 	FVector CauserLocation = DamageCauser->GetActorLocation();
 	FVector MyLocation = GetActorLocation();
-	MyLocation.Z += 88.0f;
+	MyLocation.Z += 176.0f;
 
 	FVector LaunchDir = MyLocation - CauserLocation;
 	LaunchDir.Normalize();
@@ -361,18 +363,18 @@ void ABMonsterBase::MonsterDeathByKick(const FDamageEvent& _DamageEvent, const A
 	AnimInstance->Montage_JumpToSection(FName(SectionStr + TEXT("Start")), DamagedMontage);
 	AnimInstance->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 
-	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
-
 	TWeakObjectPtr<UAnimInstance> WeakAnimInstance = AnimInstance;
 
 	TFunction<void()> Lambda = [this, WeakAnimInstance, SectionStr]()
 		{
 			SetCurrentState(EMonsterState::Death);
 			WeakAnimInstance.Get()->Montage_JumpToSection(FName(SectionStr + TEXT("End")), DamagedMontage);
-			WeakAnimInstance.Get()->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
+			WeakAnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
+
+			GetWorldTimerManager().SetTimer(CollisionOffTimer, [this] {AllCollisionOff(); }, 1.0f, false);
 		};
 
-	BurstJumpStart(LaunchDir, 500.0f, Lambda, false, false);
+	BurstJumpStart(LaunchDir, 600.0f, Lambda, false, false);
 }
 
 void ABMonsterBase::MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const AActor* DamageCauser)
@@ -386,7 +388,6 @@ void ABMonsterBase::MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const 
 	}
 
 	PlaySound(ESoundType::PointDeath);
-
 	AIController->UnPossess();
 
 	FVector ShotDir = DamageCauser->GetActorLocation() - GetActorLocation();
@@ -418,7 +419,7 @@ void ABMonsterBase::MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const 
 	AnimInstance->Montage_JumpToSection(SectionName, DamagedMontage);
 
 	SetCurrentState(EMonsterState::Death);
-	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+	AllCollisionOff();
 
 	DamagedMontage->bEnableAutoBlendOut = false;
 }
@@ -459,6 +460,9 @@ void ABMonsterBase::MonsterDeathByGrenade(const FDamageEvent& _DamageEvent, cons
 		{
 			SetCurrentState(EMonsterState::Death);
 			WeakAnimInstance.Get()->Montage_JumpToSection(FName(SectionStr + TEXT("End")), DamagedMontage);
+			WeakAnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
+
+			GetWorldTimerManager().SetTimer(CollisionOffTimer, [this] {AllCollisionOff(); }, 1.0f, false);
 		};
 
 	BurstJumpStart(LaunchDir, LaunchPower, Lambda, false, false);
@@ -534,14 +538,10 @@ void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor
 
 	FVector CauserLocation = DamageCauser->GetActorLocation();
 	FVector MyLocation = GetActorLocation();
-	MyLocation.Z += 88.0f;
+	MyLocation.Z += 176.0f;
 
 	FVector LaunchDir = MyLocation - CauserLocation;
 	LaunchDir.Normalize();
-
-	LOG_MSG(TEXT("CauserLocation X: %f, Y: %f, Z: %f"), CauserLocation.X, CauserLocation.Y, CauserLocation.Z);
-	LOG_MSG(TEXT("MyLocation X: %f, Y: %f, Z: %f"), MyLocation.X, MyLocation.Y, MyLocation.Z);
-	LOG_MSG(TEXT("Kick Launch Dir X: %f, Y: %f, Z: %f"), LaunchDir.X, LaunchDir.Y, LaunchDir.Z);
 
 	FString SectionStr = GetBurstJumpSectionName(MyLocation, CauserLocation);
 
@@ -558,6 +558,7 @@ void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor
 	TFunction<void()> Lambda = [this, WeakAnimInstance, SectionStr]()
 		{
 			WeakAnimInstance.Get()->Montage_JumpToSection(FName(SectionStr + TEXT("End")), DamagedMontage);
+			WeakAnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
 		};
 	
 	BurstJumpStart(LaunchDir, 600.0f, Lambda, true, true);
@@ -603,6 +604,7 @@ void ABMonsterBase::DamagedByGrenade(const FDamageEvent& _DamageEvent, float _Da
 	TFunction<void()> Lambda = [this, WeakAnimInstance, SectionStr]()
 		{
 			WeakAnimInstance.Get()->Montage_JumpToSection(FName(SectionStr + TEXT("End")), DamagedMontage);
+			WeakAnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
 		};
 
 	BurstJumpStart(LaunchDir, LaunchPower, Lambda, false, false);

@@ -226,5 +226,7 @@ private:
 
 	FTimerHandle TimerHandle;
 	FTimerHandle KnifeDamagedTimerHandle;
+	FTimerHandle CollisionOffTimer;
+
 	float GroggyAmount = 0.0f;
 };

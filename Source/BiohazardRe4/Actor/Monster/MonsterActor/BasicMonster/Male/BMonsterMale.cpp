@@ -227,6 +227,13 @@ void ABMonsterMale::InitSoundCues()
 		USoundCue* KickedCue = KickedSoundRef.Object;
 		SoundCues.Add(ESoundType::Kicked, KickedCue);
 	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> MutterSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/SC_MutterCue.SC_MutterCue'"));
+	if (MutterSoundRef.Object != nullptr)
+	{
+		USoundCue* MutterCue = MutterSoundRef.Object;
+		SoundCues.Add(ESoundType::Mutter, MutterCue);
+	}
 }
 
 void ABMonsterMale::MeshLoad()

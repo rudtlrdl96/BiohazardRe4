@@ -17,6 +17,7 @@ UENUM()
 enum class ESoundType
 {
 	Idle,
+	Mutter,
 	Yell,
 	Detect,
 	Damaged,
