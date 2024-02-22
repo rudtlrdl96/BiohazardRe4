@@ -305,21 +305,25 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 		case EMonsterDamagePower::Small:
 		{
 			DamageType = ELeonDamageType::Small;
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SmallHitSound, GetActorLocation());
 		}
 		break;
 		case EMonsterDamagePower::Medium:
 		{
 			DamageType = ELeonDamageType::Medium;
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), MediumHitSound, GetActorLocation());
 		}
 		break;
 		case EMonsterDamagePower::Large:
 		{
 			DamageType = ELeonDamageType::Large;
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), LargeHitSound, GetActorLocation());
 		}
 		break;
 		case EMonsterDamagePower::ExLarge:
 		{
 			DamageType = ELeonDamageType::ExLarge;
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), LargeHitSound, GetActorLocation());
 		}
 		break;
 		}

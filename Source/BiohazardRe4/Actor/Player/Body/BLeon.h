@@ -673,54 +673,61 @@ private:
 	//*****************************************************//
 
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* PistolAimActiveSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* ShotgunAimActiveSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* RifleAimActiveSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* GrenadeAimActiveSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* PistolAimDisableSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* RifleAimDisableSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* AimActiveVoiceSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* PistolPutOutSound = nullptr;
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* PistolPutAwaySound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* ShotgunPutOutSound = nullptr;
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* ShotgunPutAwaySound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* RiflePutOutSound = nullptr;
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* RiflePutAwaySound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* GrenadePutOutSound = nullptr;
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* GrenadePutAwaySound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* KnifePutOutSound = nullptr;
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* KnifePutAwaySound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundCue* KickHitSound = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundCue* SmallHitSound = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundCue* MediumHitSound = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundCue* LargeHitSound = nullptr;
 
 	//************** Sound **************//
 
