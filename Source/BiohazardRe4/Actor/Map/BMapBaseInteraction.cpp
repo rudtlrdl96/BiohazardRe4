@@ -43,11 +43,11 @@ bool ABMapBaseInteraction::AbleInteraction() const
 {
 	if (true == bIsOpen)
 	{
-		LOG_MSG(TEXT("true"));
+		//LOG_MSG(TEXT("true"));
 	}
 	else
 	{
-		LOG_MSG(TEXT("false"));
+		//LOG_MSG(TEXT("false"));
 	}
 
 	return false == bIsOpen;

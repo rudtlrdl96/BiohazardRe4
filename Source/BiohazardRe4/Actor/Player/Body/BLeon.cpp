@@ -1244,7 +1244,7 @@ void ABLeon::DrawGrenadeAim(float _DeltaTime)
 	FPredictProjectilePathResult Result;
 	UGameplayStatics::PredictProjectilePath(this, PredictParams, Result);
 
-	DrawDebugSphere(GetWorld(), Result.HitResult.Location, 10, 30, FColor::Red);
+	//DrawDebugSphere(GetWorld(), Result.HitResult.Location, 10, 30, FColor::Red);
 
 	if (0 < Angle)
 	{

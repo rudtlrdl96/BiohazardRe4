@@ -61,13 +61,13 @@ void ABMonsterBase::GroggyEnd()
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
 	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, false);
 
-	LOG_MSG(TEXT("StateChanged - Walk"));
+	//LOG_MSG(TEXT("StateChanged - Walk"));
 	SetCurrentState(EMonsterState::Walk);
 	bIsDamaged = false;
 
@@ -75,7 +75,7 @@ void ABMonsterBase::GroggyEnd()
 
 	if (AnimInstance == nullptr)
 	{
-		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
+		//LOG_WARNING(TEXT("AnimInstance is Nullptr"));
 		return;
 	}
 

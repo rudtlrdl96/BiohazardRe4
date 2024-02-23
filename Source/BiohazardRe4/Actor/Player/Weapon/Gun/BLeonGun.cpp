@@ -15,20 +15,20 @@ ABLeonGun::ABLeonGun()
 
 void ABLeonGun::PlayShootEffect_Implementation()
 {
-	LOG_MSG(TEXT("ABLeonGun PlayShootEffect"))
+	//LOG_MSG(TEXT("ABLeonGun PlayShootEffect"))
 }
 
 void ABLeonGun::BeginPlay()
 {
 	Super::BeginPlay();
-	LOG_MSG(TEXT("ABLeonGun Constructor"))
+	//LOG_MSG(TEXT("ABLeonGun Constructor"))
 	PlayerCamManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 }
 
 
 bool ABLeonGun::AbleAttack() const
 {
-	LOG_MSG(TEXT("AbleAttack"))
+	//LOG_MSG(TEXT("AbleAttack"))
 	if (CurGun == nullptr)
 	{
 		return true;
@@ -45,17 +45,17 @@ void ABLeonGun::Attack()
 
 bool ABLeonGun::AbleReload() const
 {
-	LOG_MSG(TEXT("AbleReload"))
+	//LOG_MSG(TEXT("AbleReload"))
 
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return false;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_WARNING(TEXT("CurGun == nullptr"))
+		//LOG_WARNING(TEXT("CurGun == nullptr"))
 			return false;
 	}
 
@@ -69,13 +69,13 @@ void ABLeonGun::Reload()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_WARNING(TEXT("CurGun == nullptr"))
+		//LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -94,7 +94,7 @@ void ABLeonGun::Reload()
 	ABHUDBase::Instance->UpdateLoadedAmmo();
 	ABHUDBase::Instance->UpdateStoredAmmo();
 
-	LOG_MSG(TEXT("Reload"))
+	//LOG_MSG(TEXT("Reload"))
 }
 
 uint32 ABLeonGun::GetAmmo() const
@@ -109,17 +109,17 @@ uint32 ABLeonGun::GetAmmo() const
 
 void ABLeonGun::Shoot()
 {
-	LOG_MSG(TEXT("Shoot"))
+	//LOG_MSG(TEXT("Shoot"))
 
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_WARNING(TEXT("CurGun == nullptr"))
+		//LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -134,8 +134,8 @@ void ABLeonGun::Shoot()
 	GunLineTraceStart = GetActorLocation();
 	if (bIsTarget)
 	{
-		DrawDebugLine(GetWorld(), CamLineTraceStart, CamLineTraceEnd, FColor::Blue, true, 0.1, (uint8)0U, 1.f);
-		LOG_MSG(TEXT("There Is Target"))
+		//DrawDebugLine(GetWorld(), CamLineTraceStart, CamLineTraceEnd, FColor::Blue, true, 0.1, (uint8)0U, 1.f);
+		////LOG_MSG(TEXT("There Is Target"))
 
 		GunLineTraceEnd = (CamHitInfo.ImpactPoint - GunLineTraceStart);
 		GunLineTraceEnd.Normalize();
@@ -144,22 +144,22 @@ void ABLeonGun::Shoot()
 	}
 	else
 	{
-		LOG_MSG(TEXT("There Is No Target"))
-			GunLineTraceEnd = CamLineTraceEnd;
+		////LOG_MSG(TEXT("There Is No Target"));
+		GunLineTraceEnd = CamLineTraceEnd;
 	}
 
 	bool bIsHit = GetWorld()->LineTraceSingleByChannel(GunHitInfo, GunLineTraceStart, GunLineTraceEnd, ECollisionChannel::ECC_GameTraceChannel4, LineTraceParams);
 	if (bIsHit)
 	{
-		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
-		LOG_MSG(TEXT("AttackSuccess"))
+		//DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Green, true);
+		////LOG_MSG(TEXT("AttackSuccess"))
 
 		AActor* DamagedActor = GunHitInfo.GetActor();
 		GunDamageEvent.HitInfo = GunHitInfo;
 		GunDamageEvent.ShotDirection = Player->GetActorForwardVector();
 
 		float CalDamage = DefaultDamage * DamageUnit;
-		LOG_MSG(TEXT("Damage : %f"), CalDamage);
+		////LOG_MSG(TEXT("Damage : %f"), CalDamage);
 
 		if (DamageType != nullptr)
 		{
@@ -168,19 +168,19 @@ void ABLeonGun::Shoot()
 		else
 		{
 			UGameplayStatics::ApplyPointDamage(DamagedActor, CalDamage, Player->GetActorForwardVector(), GunDamageEvent.HitInfo, Player->GetController(), this, UBDMGPlayerDamage::StaticClass());
-			LOG_WARNING(TEXT("CurDamageType == nullptr"));
+			////LOG_WARNING(TEXT("CurDamageType == nullptr"));
 		}
 
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
-		LOG_MSG(TEXT("AttackFail"))
+		//DrawDebugLine(GetWorld(), GunLineTraceStart, GunLineTraceEnd, FColor::Red, true);
+		////LOG_MSG(TEXT("AttackFail"))
 	}
 
 	int32 CurAmmo = CurGun->GetLoadedAmmo();
 	CurGun->SetLoadedAmmo(--CurAmmo);
-	LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
+	////LOG_MSG(TEXT("CurAmmo : %d"), CurAmmo)
 	ABHUDBase::Instance->UpdateLoadedAmmo();
 
 	FireStart();
@@ -193,13 +193,13 @@ void ABLeonGun::Shoot()
 void ABLeonGun::DropShell()
 {
 	SpawnShell();
-	LOG_MSG(TEXT("DropShell"))
+	////LOG_MSG(TEXT("DropShell"))
 }
 
 void ABLeonGun::DropMagazine()
 {
 	SpawnMagazine();
-	LOG_MSG(TEXT("DropMagazine"))
+	////LOG_MSG(TEXT("DropMagazine"))
 }
 
 void ABLeonGun::SetCurLoopState()
@@ -223,7 +223,7 @@ void ABLeonGun::PlayShootingSound()
 {
 	if (Sound_Shoot == nullptr)
 	{
-		LOG_WARNING(TEXT("Sound_Shoot == nullptr"))
+		//LOG_WARNING(TEXT("Sound_Shoot == nullptr"))
 		return;
 	}
 
@@ -234,13 +234,13 @@ void ABLeonGun::FireStart()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		////LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_WARNING(TEXT("CurGun == nullptr"))
+		////LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -248,12 +248,12 @@ void ABLeonGun::FireStart()
 	if (CurAmmo != 0)
 	{
 		CurState = EGunState::EAmmo_Fire_Ammo;
-		LOG_MSG(TEXT("CurState : EAmmo_Fire_Ammo"))
+		////LOG_MSG(TEXT("CurState : EAmmo_Fire_Ammo"))
 	}
 	else
 	{
 		CurState = EGunState::EAmmo_Fire_NoAmmo;
-		LOG_MSG(TEXT("CurState : EAmmo_Fire_NoAmmo"))
+		////LOG_MSG(TEXT("CurState : EAmmo_Fire_NoAmmo"))
 	}
 }
 
@@ -261,13 +261,13 @@ void ABLeonGun::FireEnd()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_WARNING(TEXT("CurGun == nullptr"))
+		//LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -275,12 +275,12 @@ void ABLeonGun::FireEnd()
 	if (CurAmmo == 0)
 	{
 		CurState = EGunState::ENoAmmo_Loop;
-		LOG_MSG(TEXT("CurState : ENoAmmo_Loop"))
+		//LOG_MSG(TEXT("CurState : ENoAmmo_Loop"))
 	}
 	else
 	{
 		CurState = EGunState::EIdle_Loop;
-		LOG_MSG(TEXT("CurState : EIdle_Loop"))
+		//LOG_MSG(TEXT("CurState : EIdle_Loop"))
 	}
 }
 
@@ -288,13 +288,13 @@ void ABLeonGun::ReloadStart()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_WARNING(TEXT("CurGun == nullptr"))
+		//LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -302,42 +302,42 @@ void ABLeonGun::ReloadStart()
 	if (CurAmmo == 0)
 	{
 		CurState = EGunState::ENoAmmo_Reload;
-		LOG_MSG(TEXT("CurState : ENoAmmo_Reload"))
+		//LOG_MSG(TEXT("CurState : ENoAmmo_Reload"))
 	}
 	else
 	{
 		CurState = EGunState::EAmmo_Reload;
-		LOG_MSG(TEXT("CurState : EAmmo_Reload"))
+		//LOG_MSG(TEXT("CurState : EAmmo_Reload"))
 	}
 }
 
 void ABLeonGun::ReloadEnd()
 {
 	CurState = EGunState::EPutout;
-	LOG_MSG(TEXT("CurState : EPutout"))
+	//LOG_MSG(TEXT("CurState : EPutout"))
 }
 
 void ABLeonGun::PutoutEnd()
 {
 	CurState = EGunState::EIdle_Loop;
-	LOG_MSG(TEXT("CurState : EIdle_Loop"))
+	//LOG_MSG(TEXT("CurState : EIdle_Loop"))
 }
 
 void ABLeonGun::SpawnShell_Implementation()
 {
-	LOG_MSG(TEXT("SpawnShell"))
+	//LOG_MSG(TEXT("SpawnShell"))
 }
 
 void ABLeonGun::SpawnMagazine_Implementation()
 {
-	LOG_MSG(TEXT("SpawnMagazine"))
+	//LOG_MSG(TEXT("SpawnMagazine"))
 }
 
 void ABLeonGun::PlayReload1Sound()
 {
 	if (Sound_Reload1 == nullptr)
 	{
-		LOG_WARNING(TEXT("Sound_Reload1 == nullptr"))
+		//LOG_WARNING(TEXT("Sound_Reload1 == nullptr"))
 			return;
 	}
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload1, GetActorLocation(), GetActorRotation());
@@ -347,7 +347,7 @@ void ABLeonGun::PlayReload2Sound()
 {
 	if (Sound_Reload2 == nullptr)
 	{
-		LOG_WARNING(TEXT("Sound_Reload2 == nullptr"))
+		//LOG_WARNING(TEXT("Sound_Reload2 == nullptr"))
 			return;
 	}
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload2, GetActorLocation(), GetActorRotation());
@@ -357,7 +357,7 @@ void ABLeonGun::PlayMagazine1Sound()
 {
 	if (Sound_Reload_Magazine1 == nullptr)
 	{
-		LOG_WARNING(TEXT("Sound_Reload_Magazine1 == nullptr"))
+		//LOG_WARNING(TEXT("Sound_Reload_Magazine1 == nullptr"))
 			return;
 	}
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload_Magazine1, GetActorLocation(), GetActorRotation());
@@ -367,7 +367,7 @@ void ABLeonGun::PlayMagazine2Sound()
 {
 	if (Sound_Reload_Magazine2 == nullptr)
 	{
-		LOG_WARNING(TEXT("Sound_Reload4_Magazine2 == nullptr"))
+		//LOG_WARNING(TEXT("Sound_Reload4_Magazine2 == nullptr"))
 			return;
 	}
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Reload_Magazine2, GetActorLocation(), GetActorRotation());

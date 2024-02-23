@@ -12,35 +12,35 @@ void UBAnimNotify_MonsterFlashEnd::Notify(USkeletalMeshComponent* MeshComp, UAni
 	AActor* MyActor = MeshComp->GetOwner();
 	if (MyActor == nullptr)
 	{
-		LOG_WARNING(TEXT("MyActor is nullptr"));
+		//LOG_WARNING(TEXT("MyActor is nullptr"));
 		return;
 	}
 
 	ACharacter* MyCharacter = Cast<ACharacter>(MyActor);
 	if (MyCharacter == nullptr)
 	{
-		LOG_WARNING(TEXT("MyCharacter is nullptr"));
+		//LOG_WARNING(TEXT("MyCharacter is nullptr"));
 		return;
 	}
 
 	USkeletalMeshComponent* MyMesh = MyCharacter->GetMesh();
 	if (MyMesh == nullptr)
 	{
-		LOG_WARNING(TEXT("MyMesh is nullptr"));
+		//LOG_WARNING(TEXT("MyMesh is nullptr"));
 		return;
 	}
 
 	UAnimInstance* MyAnimInstance = MyMesh->GetAnimInstance();
 	if (MyAnimInstance == nullptr)
 	{
-		LOG_WARNING(TEXT("MyAnimInstance is nullptr"));
+		//LOG_WARNING(TEXT("MyAnimInstance is nullptr"));
 		return;
 	}
 
 	FName CurSection = MyAnimInstance->Montage_GetCurrentSection();
 	FString CurSectionStr = CurSection.ToString();
 
-	LOG_MSG(TEXT("CurSection : %s"), *CurSectionStr);
+	//LOG_MSG(TEXT("CurSection : %s"), *CurSectionStr);
 
 	FString CurSectionNumberStr = CurSectionStr.Mid(CurSectionStr.Len() - 1, 1);
 	int CurSectionNumberInt = FCString::Atoi(*CurSectionNumberStr);
@@ -51,7 +51,7 @@ void UBAnimNotify_MonsterFlashEnd::Notify(USkeletalMeshComponent* MeshComp, UAni
 
 	if (CurMontage->IsValidSectionName(NextSection) == false)
 	{
-		LOG_WARNING(TEXT("SectionName is Invalid : %s"), *NextSectionStr);
+		//LOG_WARNING(TEXT("SectionName is Invalid : %s"), *NextSectionStr);
 		return;
 	}
 

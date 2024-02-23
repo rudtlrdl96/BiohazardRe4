@@ -384,7 +384,7 @@ void ABMapUIActor::PlayUIControlSound()
 {
 	if (UIControlSound == nullptr)
 	{
-		LOG_WARNING(TEXT("UIControlSound == nullptr"))
+		//LOG_WARNING(TEXT("UIControlSound == nullptr"))
 			return;
 	}
 

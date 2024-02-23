@@ -28,7 +28,7 @@ void ABEmptyShell::PlayHitGroundSound()
 {
 	if (Sound_HitGround == nullptr)
 	{
-		LOG_WARNING(TEXT("Sound_HitGround == nullptr"))
+		//LOG_WARNING(TEXT("Sound_HitGround == nullptr"))
 			return;
 	}
 
@@ -37,7 +37,7 @@ void ABEmptyShell::PlayHitGroundSound()
 
 void ABEmptyShell::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	LOG_WARNING(TEXT("Call OnHit"))
+	//LOG_WARNING(TEXT("Call OnHit"))
 	PlayHitGroundSound();
 	GetStaticMeshComponent()->SetNotifyRigidBodyCollision(false);
 }

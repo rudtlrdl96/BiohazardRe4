@@ -22,21 +22,21 @@ EBTNodeResult::Type UBTTask_SetTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 	ACharacter* OwnerCharacter = OwnerComp.GetAIOwner()->GetCharacter();
 	if (OwnerCharacter == nullptr)
 	{
-		LOG_WARNING(TEXT("OwnerCharacter is nullptr"));
+		//LOG_WARNING(TEXT("OwnerCharacter is nullptr"));
 		return EBTNodeResult::Failed;
 	}
 
 	UAnimInstance* OwnerAnim = OwnerCharacter->GetMesh()->GetAnimInstance();
 	if (OwnerAnim == nullptr)
 	{
-		LOG_WARNING(TEXT("OwnerAnim is nullptr"));
+		//LOG_WARNING(TEXT("OwnerAnim is nullptr"));
 		return EBTNodeResult::Failed;
 	}
 
 	IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(OwnerAnim);
 	if (AnimInterface == nullptr)
 	{
-		LOG_WARNING(TEXT("AnimInterface is nullptr"));
+		//LOG_WARNING(TEXT("AnimInterface is nullptr"));
 		return EBTNodeResult::Failed;
 	}
 

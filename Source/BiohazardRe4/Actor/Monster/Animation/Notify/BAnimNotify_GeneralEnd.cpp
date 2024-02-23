@@ -18,10 +18,10 @@ void UBAnimNotify_GeneralEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(OwnerActor);
 	if (StateInterface == nullptr)
 	{
-		LOG_WARNING(TEXT("Interface Casting failed"));
+		//LOG_WARNING(TEXT("Interface Casting failed"));
 		return;
 	}
 
 	StateInterface->SetCurrentState(EMonsterState::Walk);
-	LOG_MSG(TEXT("StateChanged - Walk"));
+	//LOG_MSG(TEXT("StateChanged - Walk"));
 }

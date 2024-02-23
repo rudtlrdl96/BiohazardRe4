@@ -22,11 +22,11 @@ void ABLeonPistol::BeginPlay()
 	Super::BeginPlay();
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	CurGun = InventoryInst->FindWeapon(EItemCode::Handgun_SR09R);
 	SetCurLoopState();
-	LOG_MSG(TEXT("ABLeonPistol::BeginPlay()"))
+	//LOG_MSG(TEXT("ABLeonPistol::BeginPlay()"))
 }

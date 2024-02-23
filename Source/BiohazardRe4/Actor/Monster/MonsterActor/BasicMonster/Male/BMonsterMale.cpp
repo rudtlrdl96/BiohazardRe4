@@ -61,27 +61,27 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 {
 	if (LoadedAnimInstance[EMeshAnimType::Base] == nullptr)
 	{
-		LOG_MSG(TEXT("Anim Instance is NullPtr"));
+		//LOG_MSG(TEXT("Anim Instance is NullPtr"));
 	}
 
 	if (LoadedAnimInstance[EMeshAnimType::Copy] == nullptr)
 	{
-		LOG_MSG(TEXT("Copy Anim Instance is NullPtr"));
+		//LOG_MSG(TEXT("Copy Anim Instance is NullPtr"));
 	}
 
 	GetMesh()->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Base]);
 
-	Head->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
-	Hat->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
-	Jacket->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
-	Pants->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Copy]);
+	Head->SetMasterPoseComponent(GetMesh());
+	Hat->SetMasterPoseComponent(GetMesh());
+	Jacket->SetMasterPoseComponent(GetMesh());
+	Pants->SetMasterPoseComponent(GetMesh());
 
 	if (MyWeaponType == EWeaponType::None)
 	{
 		IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
 		if (AnimInterface == nullptr)
 		{
-			LOG_MSG(TEXT("AnimInterface casting failed"));
+			//LOG_MSG(TEXT("AnimInterface casting failed"));
 			return;
 		}
 		
@@ -96,7 +96,7 @@ void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 		IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
 		if (AnimInterface == nullptr)
 		{
-			LOG_MSG(TEXT("AnimInterface casting failed"));
+			//LOG_MSG(TEXT("AnimInterface casting failed"));
 			return;
 		}
 		
@@ -263,28 +263,31 @@ void ABMonsterMale::MeshLoad()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Pants2Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/2/SK_MonsterMalePants_2.SK_MonsterMalePants_2'"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Pants3Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Pants/3/SK_MonsterMalePants_3.SK_MonsterMalePants_3'"));
 
-	LoadedMesh.Add(EMeshType::Hat, TArray<TObjectPtr<class USkeletalMesh>>());
-	LoadedMesh.Add(EMeshType::Head, TArray<TObjectPtr<class USkeletalMesh>>());
-	LoadedMesh.Add(EMeshType::Jacket, TArray<TObjectPtr<class USkeletalMesh>>());
-	LoadedMesh.Add(EMeshType::Pants, TArray<TObjectPtr<class USkeletalMesh>>());
+	if (0 == LoadedMesh.Num())
+	{
+		LoadedMesh.Add(EMeshType::Hat, TArray<TObjectPtr<class USkeletalMesh>>());
+		LoadedMesh.Add(EMeshType::Head, TArray<TObjectPtr<class USkeletalMesh>>());
+		LoadedMesh.Add(EMeshType::Jacket, TArray<TObjectPtr<class USkeletalMesh>>());
+		LoadedMesh.Add(EMeshType::Pants, TArray<TObjectPtr<class USkeletalMesh>>());
 
-	LoadedMesh[EMeshType::Head].Add(Head1Ref.Object);
-	LoadedMesh[EMeshType::Head].Add(Head2Ref.Object);
-	LoadedMesh[EMeshType::Head].Add(Head3Ref.Object);
-	LoadedMesh[EMeshType::Head].Add(Head4Ref.Object);
+		LoadedMesh[EMeshType::Head].Add(Head1Ref.Object);
+		LoadedMesh[EMeshType::Head].Add(Head2Ref.Object);
+		LoadedMesh[EMeshType::Head].Add(Head3Ref.Object);
+		LoadedMesh[EMeshType::Head].Add(Head4Ref.Object);
 
-	LoadedMesh[EMeshType::Hat].Add(Hat1Ref.Object);
-	LoadedMesh[EMeshType::Hat].Add(Hat2Ref.Object);
-	LoadedMesh[EMeshType::Hat].Add(Hat3Ref.Object);
+		LoadedMesh[EMeshType::Hat].Add(Hat1Ref.Object);
+		LoadedMesh[EMeshType::Hat].Add(Hat2Ref.Object);
+		LoadedMesh[EMeshType::Hat].Add(Hat3Ref.Object);
 
-	LoadedMesh[EMeshType::Jacket].Add(Jacket1Ref.Object);
-	LoadedMesh[EMeshType::Jacket].Add(Jacket2Ref.Object);
-	LoadedMesh[EMeshType::Jacket].Add(Jacket3Ref.Object);
-	LoadedMesh[EMeshType::Jacket].Add(Jacket4Ref.Object);
+		LoadedMesh[EMeshType::Jacket].Add(Jacket1Ref.Object);
+		LoadedMesh[EMeshType::Jacket].Add(Jacket2Ref.Object);
+		LoadedMesh[EMeshType::Jacket].Add(Jacket3Ref.Object);
+		LoadedMesh[EMeshType::Jacket].Add(Jacket4Ref.Object);
 
-	LoadedMesh[EMeshType::Pants].Add(Pants1Ref.Object);
-	LoadedMesh[EMeshType::Pants].Add(Pants2Ref.Object);
-	LoadedMesh[EMeshType::Pants].Add(Pants3Ref.Object);
+		LoadedMesh[EMeshType::Pants].Add(Pants1Ref.Object);
+		LoadedMesh[EMeshType::Pants].Add(Pants2Ref.Object);
+		LoadedMesh[EMeshType::Pants].Add(Pants3Ref.Object);
+	}
 }
 
 void ABMonsterMale::MontageLoad()
@@ -317,7 +320,7 @@ void ABMonsterMale::Tick(float _DeltaTIme)
 	IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(GetMesh()->GetAnimInstance());
 	if (AnimInterface == nullptr)
 	{
-		LOG_MSG(TEXT("AnimInterface casting failed"));
+		//LOG_MSG(TEXT("AnimInterface casting failed"));
 		return;
 	}
 

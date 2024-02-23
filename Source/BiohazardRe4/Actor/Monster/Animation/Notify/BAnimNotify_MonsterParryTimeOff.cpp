@@ -18,7 +18,7 @@ void UBAnimNotify_MonsterParryTimeOff::Notify(USkeletalMeshComponent* MeshComp, 
 	IBMonsterStateInterface* StateInterface = Cast<IBMonsterStateInterface>(OwnerActor);
 	if (StateInterface == nullptr)
 	{
-		LOG_WARNING(TEXT("Interface Casting failed"));
+		//LOG_WARNING(TEXT("Interface Casting failed"));
 		return;
 	}
 

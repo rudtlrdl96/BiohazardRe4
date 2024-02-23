@@ -21,7 +21,7 @@ void ABLeonShotgun::BeginPlay()
 	Super::BeginPlay();
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
@@ -33,13 +33,13 @@ void ABLeonShotgun::Reload()
 {
 	if (InventoryInst == nullptr)
 	{
-		LOG_WARNING(TEXT("InventoryInst == nullptr"))
+		//LOG_WARNING(TEXT("InventoryInst == nullptr"))
 			return;
 	}
 
 	if (CurGun == nullptr)
 	{
-		LOG_WARNING(TEXT("CurGun == nullptr"))
+		//LOG_WARNING(TEXT("CurGun == nullptr"))
 			return;
 	}
 
@@ -59,7 +59,7 @@ void ABLeonShotgun::Reload()
 	ABHUDBase::Instance->UpdateLoadedAmmo();
 	ABHUDBase::Instance->UpdateStoredAmmo();
 
-	LOG_MSG(TEXT("ABLeonShotgun::Reload"))
+	//LOG_MSG(TEXT("ABLeonShotgun::Reload"))
 
 	if (CurAmmo == MaxAmmo)
 	{
@@ -69,18 +69,18 @@ void ABLeonShotgun::Reload()
 
 void ABLeonShotgun::ReloadLoopStart()
 {
-	LOG_MSG(TEXT("ABLeonShotgun::ReloadLoopStart"))
+	//LOG_MSG(TEXT("ABLeonShotgun::ReloadLoopStart"))
 		CurState = EGunState::EReload_Loop;
 }
 
 void ABLeonShotgun::ReloadEnd()
 {
-	LOG_MSG(TEXT("ABLeonShotgun::ReloadEnd"))
+	//LOG_MSG(TEXT("ABLeonShotgun::ReloadEnd"))
 		CurState = EGunState::EReload_End;
 }
 
 void ABLeonShotgun::ReloadEndAfter()
 {
-	LOG_MSG(TEXT("ABLeonShotgun::ReloadEndAfter"))
+	//LOG_MSG(TEXT("ABLeonShotgun::ReloadEndAfter"))
 		CurState = EGunState::EIdle_Loop;
 }

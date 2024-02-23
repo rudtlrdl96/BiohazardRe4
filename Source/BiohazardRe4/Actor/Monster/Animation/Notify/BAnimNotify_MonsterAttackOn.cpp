@@ -16,14 +16,14 @@ void UBAnimNotify_MonsterAttackOn::Notify(USkeletalMeshComponent* MeshComp, UAni
 		ACharacter* Owner = Cast<ACharacter>(MeshComp->GetOwner());
 		if (Owner == nullptr)
 		{
-			LOG_WARNING(TEXT("Owner == nullptr : UBAnimNotify_MonsterAttack::Notify"));
+			//LOG_WARNING(TEXT("Owner == nullptr : UBAnimNotify_MonsterAttack::Notify"));
 			return;
 		}
 
 		IBMonsterStateInterface* Interface = Cast<IBMonsterStateInterface>(Owner);
 		if (Interface == nullptr)
 		{
-			LOG_WARNING(TEXT("Interface == nullptr : UBAnimNotify_MonsterAttack::Notify"));
+			//LOG_WARNING(TEXT("Interface == nullptr : UBAnimNotify_MonsterAttack::Notify"));
 			return;
 		}
 

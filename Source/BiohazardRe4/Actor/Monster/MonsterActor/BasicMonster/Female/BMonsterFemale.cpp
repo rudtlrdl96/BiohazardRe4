@@ -63,7 +63,7 @@ void ABMonsterFemale::SetSkeletalMeshInConstructor()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Body Mesh is Nullptr"));
+		//LOG_MSG(TEXT("Body Mesh is Nullptr"));
 	}
 }
 
@@ -91,7 +91,7 @@ void ABMonsterFemale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Head Mesh is Nullptr : Index = %d"), HeadIndex);
+		//LOG_MSG(TEXT("Head Mesh is Nullptr : Index = %d"), HeadIndex);
 	}
 
 	//Shirt
@@ -117,7 +117,7 @@ void ABMonsterFemale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Shirt Mesh is Nullptr : Index = %d"), ShirtIndex);
+		//LOG_MSG(TEXT("Shirt Mesh is Nullptr : Index = %d"), ShirtIndex);
 	}
 
 	//Pants
@@ -140,7 +140,7 @@ void ABMonsterFemale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Pants Mesh is Nullptr : Index = %d"), PantsIndex);
+		//LOG_MSG(TEXT("Pants Mesh is Nullptr : Index = %d"), PantsIndex);
 	}
 
 	//Hat
@@ -160,6 +160,6 @@ void ABMonsterFemale::SetSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Hat Mesh is Nullptr : Index = %d"), HatIndex);
+		//LOG_MSG(TEXT("Hat Mesh is Nullptr : Index = %d"), HatIndex);
 	}
 }

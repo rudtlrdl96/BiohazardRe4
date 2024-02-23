@@ -79,7 +79,7 @@ bool ABLeonWeapon::AbleAttack() const
 
 void ABLeonWeapon::Attack()
 {
-	LOG_MSG(TEXT("Weapon Attack"));
+	//LOG_MSG(TEXT("Weapon Attack"));
 }
 
 

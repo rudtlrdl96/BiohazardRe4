@@ -54,7 +54,7 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 	int WeaponIndex = FMath::RandRange(0, 4);
 	if (WeaponIndex == 4)
 	{
-		LOG_MSG(TEXT("Monster Bare Hand"));
+		//LOG_MSG(TEXT("Monster Bare Hand"));
 		Weapon->SetVisibility(false);
 		MyWeaponType = EWeaponType::None;
 
@@ -63,7 +63,7 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 	}
 	else
 	{
-		LOG_MSG(TEXT("Monster One Hand"));
+		//LOG_MSG(TEXT("Monster One Hand"));
 		MyWeaponType = EWeaponType::OneHand;
 	}
 	
@@ -74,7 +74,7 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 	
 	if (LoadedWeaponMesh[WeaponIndex].Value == nullptr)
 	{
-		LOG_WARNING(TEXT("WeaponMesh is nullptr"));
+		//LOG_WARNING(TEXT("WeaponMesh is nullptr"));
 	}
 
 	Weapon->SetSkeletalMesh(LoadedWeaponMesh[WeaponIndex].Value);
@@ -142,17 +142,20 @@ void ABBasicMonsterBase::LoadWeaponMesh()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Weapon3Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/Sickle/SK_Sickle.SK_Sickle'"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Weapon4Ref(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Weapon/Torch/SK_Torch.SK_Torch'"));
 	
-	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon1(TEXT("HandAxe"), Weapon1Ref.Object);
-	LoadedWeaponMesh.Add(Weapon1);
+	if (0 == LoadedWeaponMesh.Num())
+	{
+		TPair<FString, TObjectPtr<USkeletalMesh>> Weapon1(TEXT("HandAxe"), Weapon1Ref.Object);
+		LoadedWeaponMesh.Add(Weapon1);
 
-	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon2(TEXT("KitchenKnife"), Weapon2Ref.Object);
-	LoadedWeaponMesh.Add(Weapon2);
+		TPair<FString, TObjectPtr<USkeletalMesh>> Weapon2(TEXT("KitchenKnife"), Weapon2Ref.Object);
+		LoadedWeaponMesh.Add(Weapon2);
 
-	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon3(TEXT("Sickle"), Weapon3Ref.Object);
-	LoadedWeaponMesh.Add(Weapon3);
+		TPair<FString, TObjectPtr<USkeletalMesh>> Weapon3(TEXT("Sickle"), Weapon3Ref.Object);
+		LoadedWeaponMesh.Add(Weapon3);
 
-	TPair<FString, TObjectPtr<USkeletalMesh>> Weapon4(TEXT("Torch"), Weapon4Ref.Object);
-	LoadedWeaponMesh.Add(Weapon4);
+		TPair<FString, TObjectPtr<USkeletalMesh>> Weapon4(TEXT("Torch"), Weapon4Ref.Object);
+		LoadedWeaponMesh.Add(Weapon4);
+	}
 }
 
 void ABBasicMonsterBase::InitDamageTypes()
@@ -291,21 +294,21 @@ float ABBasicMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	ABAIBasicMonsterController* AIController = Cast<ABAIBasicMonsterController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return 0.0f;
 	}
 
 	AController* TargetController = GetWorld()->GetFirstPlayerController();
 	if (TargetController == nullptr)
 	{
-		LOG_WARNING(TEXT("PlayerController is nullptr"));
+		//LOG_WARNING(TEXT("PlayerController is nullptr"));
 		return 0.0f;
 	}
 
 	APawn* TargetPawn = TargetController->GetPawn();
 	if (TargetPawn == nullptr)
 	{
-		LOG_WARNING(TEXT("PlayerPawn is nullptr"));
+		//LOG_WARNING(TEXT("PlayerPawn is nullptr"));
 		return 0.0f;
 	}
 
@@ -316,14 +319,14 @@ float ABBasicMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance == nullptr)
 	{
-		LOG_WARNING(TEXT("AnimInstance is nullptr"));
+		//LOG_WARNING(TEXT("AnimInstance is nullptr"));
 		return 0.0f;
 	}
 
 	IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(AnimInstance);
 	if (AnimInterface == nullptr)
 	{
-		LOG_WARNING(TEXT("AnimInterface is nullptr"));
+		//LOG_WARNING(TEXT("AnimInterface is nullptr"));
 		return 0.0f;
 	}
 

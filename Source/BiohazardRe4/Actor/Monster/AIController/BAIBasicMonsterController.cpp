@@ -100,21 +100,21 @@ void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAISt
 			ACharacter* OwnerCharacter = GetCharacter();
 			if (OwnerCharacter == nullptr)
 			{
-				LOG_WARNING(TEXT("OwnerCharacter is nullptr"));
+				//LOG_WARNING(TEXT("OwnerCharacter is nullptr"));
 				return;
 			}
 
 			UAnimInstance* OwnerAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 			if (OwnerAnimInstance == nullptr)
 			{
-				LOG_WARNING(TEXT("OwnerAnimInstance is nullptr"));
+				//LOG_WARNING(TEXT("OwnerAnimInstance is nullptr"));
 				return;
 			}
 
 			IBMonsterAnimInterface* AnimInterface = Cast<IBMonsterAnimInterface>(OwnerAnimInstance);
 			if (AnimInterface == nullptr)
 			{
-				LOG_WARNING(TEXT("AnimInterface is nullptr"));
+				//LOG_WARNING(TEXT("AnimInterface is nullptr"));
 				return;
 			}
 
@@ -211,7 +211,7 @@ void ABAIBasicMonsterController::InitPerceptionSystem(UBMonsterStatData* _InData
 		return;
 	}
 	
-	LOG_MSG(TEXT("PerceptionSystem is initted"));
+	//LOG_MSG(TEXT("PerceptionSystem is initted"));
 
 	SightConfig->SightRadius = _InData->DetectRadius;
 	SightConfig->PeripheralVisionAngleDegrees = 40.0f;
@@ -229,7 +229,7 @@ void ABAIBasicMonsterController::SetPerceptionSystem()
 {
 	if (AIPerceptionComponent != nullptr)
 	{
-		LOG_MSG(TEXT("AI PerCeption Linked"));
+		//LOG_MSG(TEXT("AI PerCeption Linked"));
 
 		//펄셉션 컴포넌트가 어떤 감각에 통제될 것인가.
 		AIPerceptionComponent->ConfigureSense(*SightConfig);
@@ -261,7 +261,7 @@ void ABAIBasicMonsterController::PlayDetectSound()
 	IBMonsterSoundInterface* SoundInterface = Cast<IBMonsterSoundInterface>(ControlledPawn);
 	if (SoundInterface == nullptr)
 	{
-		LOG_WARNING(TEXT("Interface Casting failed"));
+		//LOG_WARNING(TEXT("Interface Casting failed"));
 		return;
 	}
 

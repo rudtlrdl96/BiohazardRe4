@@ -63,7 +63,7 @@ void ABMonsterBase::AttackStart()
 {
 	if (AttackMontage == nullptr)
 	{
-		LOG_WARNING(TEXT("AttackMontage is Nullptr"));
+		//LOG_WARNING(TEXT("AttackMontage is Nullptr"));
 		return;
 	}
 
@@ -87,7 +87,7 @@ void ABMonsterBase::AttackStart()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance == nullptr)
 	{
-		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
+		//LOG_WARNING(TEXT("AnimInstance is Nullptr"));
 		return;
 	}
 
@@ -190,7 +190,7 @@ bool ABMonsterBase::isSetTargetInBlackBoard()
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return 0.0f;
 	}
 

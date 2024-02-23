@@ -33,7 +33,7 @@ EDoorState ABMapDoorInteraction::GetDoorDirection(const FVector& _Location)
 	Direction.Normalize();
 
 	float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(DoorFront, Direction)));
-	LOG_MSG(TEXT("%f"),Angle);
+	//LOG_MSG(TEXT("%f"),Angle);
 	if (90 < Angle)
 	{
 		return EDoorState::Front;

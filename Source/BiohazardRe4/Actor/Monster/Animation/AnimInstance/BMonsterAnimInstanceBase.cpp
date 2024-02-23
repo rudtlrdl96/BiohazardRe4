@@ -30,11 +30,11 @@ void UBMonsterAnimInstanceBase::SetAnimationType(EMonsterAnimType _AnimType)
 
 	if (AnimType == EMonsterAnimType::BareHands)
 	{
-		//LOG_MSG(TEXT("Monster Bare Hands Update"));
+		////LOG_MSG(TEXT("Monster Bare Hands Update"));
 	}
 	else if (AnimType == EMonsterAnimType::OneHand)
 	{
-		//LOG_MSG(TEXT("Monster One Hand Update"));
+		////LOG_MSG(TEXT("Monster One Hand Update"));
 	}
 }
 
@@ -69,7 +69,7 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 	
 	if (StateInterface == nullptr)
 	{
-		LOG_MSG(TEXT("StateInterface casting failed"));
+		//LOG_MSG(TEXT("StateInterface casting failed"));
 		return;
 	}
 
@@ -80,7 +80,7 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 
 	if (StatInterface == nullptr)
 	{
-		LOG_MSG(TEXT("StatInterface casting failed"));
+		//LOG_MSG(TEXT("StatInterface casting failed"));
 		return;
 	}
 
@@ -91,7 +91,7 @@ void UBMonsterAnimInstanceBase::NativeUpdateAnimation(float _DeltaSeconds)
 		ACharacter* Character = Cast<ACharacter>(TraceTarget);
 		if (Character == nullptr)
 		{
-			LOG_WARNING(TEXT("Character is nullptr"));
+			//LOG_WARNING(TEXT("Character is nullptr"));
 			return;
 		}
 

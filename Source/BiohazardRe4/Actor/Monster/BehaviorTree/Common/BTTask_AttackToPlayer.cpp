@@ -37,14 +37,14 @@ EBTNodeResult::Type UBTTask_AttackToPlayer::ExecuteTask(UBehaviorTreeComponent& 
 	USkeletalMeshComponent* MyMesh = MyCharacter->GetMesh();
 	if (MyMesh == nullptr)
 	{
-		LOG_MSG(TEXT("MyMesh is nullptr"));
+		//LOG_MSG(TEXT("MyMesh is nullptr"));
 		return EBTNodeResult::Failed;
 	}
 
 	UAnimInstance* Anim = MyMesh->GetAnimInstance();
 	if (Anim == nullptr)
 	{
-		LOG_MSG(TEXT("Anim is nullptr"));
+		//LOG_MSG(TEXT("Anim is nullptr"));
 		return EBTNodeResult::Failed;
 	}
 

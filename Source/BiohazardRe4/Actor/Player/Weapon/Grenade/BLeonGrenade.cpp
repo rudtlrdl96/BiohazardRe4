@@ -30,8 +30,8 @@ void ABLeonGrenade::Tick(float DeltaTime)
 
 void ABLeonGrenade::Explosion()
 {
-	LOG_MSG(TEXT("Explosion"))
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 30, FColor::Green, false, 2.f);
+	////LOG_MSG(TEXT("Explosion"))
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 30, FColor::Green, false, 2.f);
 
 	UGameplayStatics::ApplyRadialDamage
 	(
@@ -66,14 +66,14 @@ void ABLeonGrenade::SetFlashbang()
 
 void ABLeonGrenade::ExplosionEffect_Implementation()
 {
-	LOG_MSG(TEXT("ExplosionEffect_Implementation"))
+	////LOG_MSG(TEXT("ExplosionEffect_Implementation"))
 }
 
 void ABLeonGrenade::PlayExplosionSound()
 {
 	if (ExplosionSound == nullptr)
 	{
-		LOG_WARNING(TEXT("ExplosionSound == nullptr"))
+		//LOG_WARNING(TEXT("ExplosionSound == nullptr"))
 			return;
 	}
 

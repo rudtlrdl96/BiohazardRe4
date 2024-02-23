@@ -45,7 +45,7 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, const AAc
 	const FPointDamageEvent* const PointDamage = (FPointDamageEvent*)&_DamageEvent;
 	if (PointDamage == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
 		return _DamagedAmount;
 	}
 
@@ -53,7 +53,7 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, const AAc
 
 	if (CastedDamageType == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageType Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageType Casting is Failed"));
 		return _DamagedAmount;
 	}
 
@@ -64,7 +64,7 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, const AAc
 
 	if (DamagedMontageSectionNums.Contains(DamagedPart) == false)
 	{
-		LOG_WARNING(TEXT("DamagedMontageSectionNums Index Over : %s"), *DamagedPart);
+		//LOG_WARNING(TEXT("DamagedMontageSectionNums Index Over : %s"), *DamagedPart);
 		return _DamagedAmount;
 	}
 
@@ -132,7 +132,7 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, const AAc
 		if (CharStateEnum)
 		{
 			EnumToString = CharStateEnum->GetNameStringByValue((int64)PlayerDamageType);
-			LOG_MSG(TEXT("ApplyPointDamage is Only Able by Gun. This DamageType is %s"), *EnumToString);
+			//LOG_MSG(TEXT("ApplyPointDamage is Only Able by Gun. This DamageType is %s"), *EnumToString);
 		}
 	}
 
@@ -144,14 +144,14 @@ float ABMonsterBase::TakeRadialDamage(const FDamageEvent& _DamageEvent, const AA
 	const FRadialDamageEvent* const RadialDamage = (FRadialDamageEvent*)&_DamageEvent;
 	if (RadialDamage == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
 		return _DamagedAmount;
 	}
 
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return 0.0f;
 	}
 
@@ -162,7 +162,7 @@ float ABMonsterBase::TakeRadialDamage(const FDamageEvent& _DamageEvent, const AA
 	
 	if (CastedDamageType == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageType Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageType Casting is Failed"));
 		return _DamagedAmount;
 	}
 
@@ -195,7 +195,7 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 
 	if (CastedDamageType == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
 		return _DamagedAmount;
 	}
 
@@ -214,7 +214,7 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 			ResultDamage = CaculateNormalDamage(_DamagedAmount, DamagedType);
 			Stat->DecreaseHp(ResultDamage);
 
-			LOG_MSG(TEXT("Monster Damaged By Kick"));
+			//LOG_MSG(TEXT("Monster Damaged By Kick"));
 
 			if (Stat->isDeath() == true)
 			{
@@ -232,7 +232,7 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 			bIsKnifeDamaged = true;
 			GetWorldTimerManager().SetTimer(KnifeDamagedTimerHandle, [this] {bIsKnifeDamaged = false; }, 0.4f, false);
 
-			LOG_MSG(TEXT("Monster Damaged By Knife"));
+			//LOG_MSG(TEXT("Monster Damaged By Knife"));
 
 			ResultDamage = CaculateNormalDamage(_DamagedAmount, DamagedType);
 			Stat->DecreaseHp(ResultDamage);
@@ -256,7 +256,7 @@ float ABMonsterBase::TakeNormalDamage(const FDamageEvent& _DamageEvent, const AA
 		if (CharStateEnum)
 		{
 			EnumToString = CharStateEnum->GetNameStringByValue((int64)PlayerDamageType);
-			LOG_MSG(TEXT("ApplyPointDamage is Only Able by Kick. This DamageType is %s"), *EnumToString);
+			//LOG_MSG(TEXT("ApplyPointDamage is Only Able by Kick. This DamageType is %s"), *EnumToString);
 		}
 	}
 
@@ -290,7 +290,7 @@ void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
@@ -300,7 +300,7 @@ void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 	const FPointDamageEvent* const PointDamage = (FPointDamageEvent*)&_DamageEvent;
 	if (PointDamage == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
 		return;
 	}
 
@@ -313,7 +313,7 @@ void ABMonsterBase::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 
 	double Dot = FVector::DotProduct(ShotDir, MonsterForward);
 
-	LOG_MSG(TEXT("Monster Dead Dot is %f"), Dot);
+	//LOG_MSG(TEXT("Monster Dead Dot is %f"), Dot);
 
 	FName SectionName;
 	if (Dot >= 0.0f && Dot <= 1.0f)
@@ -345,7 +345,7 @@ void ABMonsterBase::MonsterDeathByKick(const FDamageEvent& _DamageEvent, const A
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
@@ -388,7 +388,7 @@ void ABMonsterBase::MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const 
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
@@ -403,7 +403,7 @@ void ABMonsterBase::MonsterDeathByKnife(const FDamageEvent& _DamageEvent, const 
 
 	double Dot = FVector::DotProduct(ShotDir, MonsterForward);
 
-	LOG_MSG(TEXT("Monster Dead Dot is %f"), Dot);
+	//LOG_MSG(TEXT("Monster Dead Dot is %f"), Dot);
 
 	FName SectionName;
 	if (Dot >= 0.0f && Dot <= 1.0f)
@@ -434,7 +434,7 @@ void ABMonsterBase::MonsterDeathByGrenade(const FDamageEvent& _DamageEvent, cons
 	const FRadialDamageEvent* const RadialDamage = (FRadialDamageEvent*)&_DamageEvent;
 	if (RadialDamage == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
 		return;
 	}
 
@@ -501,7 +501,7 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 		GetWorldTimerManager().SetTimer(TimerHandle, [this] {bIsDamagedCooltime = false; }, 1.0f, false);
 	} 
 
-	LOG_MSG(TEXT("Groggy %f"), GroggyAmount);
+	//LOG_MSG(TEXT("Groggy %f"), GroggyAmount);
 
 	if (GroggyAmount <= GetGroggyThreshold())
 	{
@@ -515,7 +515,7 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 	ABAIBasicMonsterController* AIController = Cast<ABAIBasicMonsterController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
@@ -535,7 +535,7 @@ void ABMonsterBase::DamagedByKick(const FDamageEvent& _DamageEvent, const AActor
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
@@ -575,7 +575,7 @@ void ABMonsterBase::DamagedByGrenade(const FDamageEvent& _DamageEvent, float _Da
 	const FRadialDamageEvent* const RadialDamage = (FRadialDamageEvent*)&_DamageEvent;
 	if (RadialDamage == nullptr)
 	{
-		LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
+		//LOG_WARNING(TEXT("DamageEvent Casting is Failed"));
 		return;
 	}
 
@@ -591,7 +591,7 @@ void ABMonsterBase::DamagedByGrenade(const FDamageEvent& _DamageEvent, float _Da
 	float LaunchPower = 1200.0f;
 	LaunchPower = FMath::Clamp(LaunchPower * DamageRatio, 700.0f, 1200.0f);
 
-	LOG_MSG(TEXT("LaunchPower : %f"), LaunchPower);
+	//LOG_MSG(TEXT("LaunchPower : %f"), LaunchPower);
 
 	FString SectionStr = GetBurstJumpSectionName(MyPos, RadialPos);
 
@@ -630,7 +630,7 @@ void ABMonsterBase::SmallDamaged(const FString& _DamagedPart)
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
@@ -645,7 +645,7 @@ void ABMonsterBase::SmallDamaged(const FString& _DamagedPart)
 	FName SectionName(SectionNameStr);
 	if (DamagedMontage->IsValidSectionName(SectionName) == false)
 	{
-		LOG_WARNING(TEXT("Damaged Montage Section Name is isvalid : %s"), *SectionNameStr);
+		//LOG_WARNING(TEXT("Damaged Montage Section Name is isvalid : %s"), *SectionNameStr);
 	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -717,7 +717,7 @@ void ABMonsterBase::MediumDamaged(const FString& _DamagedPart)
 
 	if (DamagedMontage->IsValidSectionName(SectionName) == false)
 	{
-		LOG_WARNING(TEXT("Damaged Montage Section Name is isvalid : %s"), *SectionNameStr);
+		//LOG_WARNING(TEXT("Damaged Montage Section Name is isvalid : %s"), *SectionNameStr);
 	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -775,7 +775,7 @@ float ABMonsterBase::CaculatePointDamage(float _OriginDamage, const FString& _Da
 
 	FString CriticalStr = "";
 	CriticalStr = (isCritical) ? TEXT("[Critical]") : TEXT(" ");
-	LOG_MSG(TEXT("Monster is Damaged : %f %s, RemainHp = %f"), _OriginDamage, *CriticalStr, Stat->GetCurrentHp() - _OriginDamage);
+	//LOG_MSG(TEXT("Monster is Damaged : %f %s, RemainHp = %f"), _OriginDamage, *CriticalStr, Stat->GetCurrentHp() - _OriginDamage);
 
 	return _OriginDamage;
 }
@@ -830,44 +830,44 @@ const FString ABMonsterBase::GetDamagedPartToString(const FPointDamageEvent* con
 
 	if (SkeletalMeshComponent == nullptr)
 	{
-		LOG_WARNING(TEXT("SkeletalMesh is nullptr"));
+		//LOG_WARNING(TEXT("SkeletalMesh is nullptr"));
 		return TEXT("");
 	}
 
-	LOG_MSG(TEXT("Damaged Bone Name is %s"), *(DamagedBoneName.ToString()));
+	//LOG_MSG(TEXT("Damaged Bone Name is %s"), *(DamagedBoneName.ToString()));
 
 	bool bisHead = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("NECK_0")));
 	if (bisHead == true || DamagedBoneName == FName(TEXT("NECK_0")))
 	{
-		LOG_MSG(TEXT("Head Shot"));
+		//LOG_MSG(TEXT("Head Shot"));
 		return TEXT("HEAD");
 	}
 
 	bool bisLArm = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("L_SHOULDER")));
 	if (bisLArm == true || DamagedBoneName == FName(TEXT("L_SHOULDER")))
 	{
-		LOG_MSG(TEXT("LArm Shot"));
+		//LOG_MSG(TEXT("LArm Shot"));
 		return TEXT("LARM");
 	}
 
 	bool bisRArm = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("R_SHOULDER")));
 	if (bisRArm == true || DamagedBoneName == FName(TEXT("R_SHOULDER")))
 	{
-		LOG_MSG(TEXT("RArm Shot"));
+		//LOG_MSG(TEXT("RArm Shot"));
 		return TEXT("RARM");
 	}
 
 	bool bisLLeg = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("L_THIGH")));
 	if (bisLLeg == true || DamagedBoneName == FName(TEXT("L_THIGH")))
 	{
-		LOG_MSG(TEXT("LLeg Shot"));
+		//LOG_MSG(TEXT("LLeg Shot"));
 		return TEXT("LLEG");
 	}
 
 	bool bisRLeg = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("R_THIGH")));
 	if (bisRLeg == true || DamagedBoneName == FName(TEXT("R_THIGH")))
 	{
-		LOG_MSG(TEXT("RLeg Shot"));
+		//LOG_MSG(TEXT("RLeg Shot"));
 		return TEXT("RLEG");
 	}
 
@@ -878,14 +878,14 @@ void ABMonsterBase::Parry()
 {
 	if (isAbleParring() == false)
 	{
-		LOG_MSG(TEXT("OnParry in Not ParryTime"));
+		//LOG_MSG(TEXT("OnParry in Not ParryTime"));
 		return;
 	}
 
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 
@@ -902,7 +902,7 @@ void ABMonsterBase::Parry()
 
 	if (AnimInstance == nullptr)
 	{
-		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
+		//LOG_WARNING(TEXT("AnimInstance is Nullptr"));
 		return;
 	}
 
@@ -913,7 +913,7 @@ void ABMonsterBase::DamagedByFlashed()
 {
 	if (DamagedMontage == nullptr)
 	{
-		LOG_WARNING(TEXT("DamagedMontage is Nullptr"));
+		//LOG_WARNING(TEXT("DamagedMontage is Nullptr"));
 		return;
 	}
 
@@ -926,7 +926,7 @@ void ABMonsterBase::DamagedByFlashed()
 
 	if (AnimInstance == nullptr)
 	{
-		LOG_WARNING(TEXT("AnimInstance is Nullptr"));
+		//LOG_WARNING(TEXT("AnimInstance is Nullptr"));
 		return;
 	}
 

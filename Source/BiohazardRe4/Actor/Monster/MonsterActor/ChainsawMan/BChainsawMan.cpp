@@ -86,7 +86,7 @@ void ABChainsawMan::MonsterDeathByPoint(const FDamageEvent& _DamageEvent)
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController == nullptr)
 	{
-		LOG_WARNING(TEXT("AIController is nullptr"));
+		//LOG_WARNING(TEXT("AIController is nullptr"));
 		return;
 	}
 

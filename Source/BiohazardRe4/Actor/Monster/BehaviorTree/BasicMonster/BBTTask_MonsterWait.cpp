@@ -41,7 +41,7 @@ void UBBTTask_MonsterWait::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uin
 	ACharacter* MyCharacter = OwnerComp.GetAIOwner()->GetCharacter();
 	if (MyCharacter == nullptr)
 	{
-		LOG_WARNING(TEXT("MyCharacter == nullptr : UBBTTask_SetPatrolPos::ExecuteTask"));
+		//LOG_WARNING(TEXT("MyCharacter == nullptr : UBBTTask_SetPatrolPos::ExecuteTask"));
 		return;
 	}
 

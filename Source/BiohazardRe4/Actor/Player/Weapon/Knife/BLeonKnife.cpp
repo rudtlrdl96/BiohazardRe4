@@ -45,7 +45,7 @@ void ABLeonKnife::KnifeAttack(AActor* _OverlapActor)
 
 	float Damage = UGameplayStatics::ApplyDamage(_OverlapActor, 100, nullptr, this, DamageType);
 
-	LOG_MSG(TEXT("Damage : %f"), Damage);
+	//LOG_MSG(TEXT("Damage : %f"), Damage);
 
 	if (0.0f < Damage && true == bIsKnifeAttackSoundPlay)
 	{

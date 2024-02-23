@@ -111,7 +111,7 @@ void UBBTService_RangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 
 #if ENABLE_DRAW_DEBUG
-	DrawDebugSphere(CurWorld, MyLocation, AttackRange, 16, DebugColor, false, 0.2f);
+	//DrawDebugSphere(CurWorld, MyLocation, AttackRange, 16, DebugColor, false, 0.2f);
 #endif
 
 }
