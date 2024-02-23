@@ -238,7 +238,7 @@ void ABMonsterMale::InitSoundCues()
 
 void ABMonsterMale::MeshLoad()
 {
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMaleBase.SK_MonsterMaleBase'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Monster/Mesh/BasicMonster/Male/Base/SK_MonsterMale.SK_MonsterMale'"));
 	if (BodyRef.Object != nullptr)
 	{
 		GetMesh()->SetSkeletalMesh(BodyRef.Object);

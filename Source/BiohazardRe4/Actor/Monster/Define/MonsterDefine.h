@@ -13,3 +13,4 @@
 #define BBKEY_HOMEPOS TEXT("HomePos")
 #define BBKEY_ISDAMAGED TEXT("IsDamaged")
 #define BBKEY_AIMODE TEXT("AIMode")
+#define BBKEY_ISFACING TEXT("IsFacing")
