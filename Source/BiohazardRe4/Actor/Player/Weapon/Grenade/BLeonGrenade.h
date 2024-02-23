@@ -33,10 +33,10 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Option")
-	float LifeTime = 3.f;
+	float LifeTime = 2.f;
 
 	UPROPERTY(EditAnywhere, Category = "Option")
-	float Radius = 300.f;
+	float Radius = 450.f;
 
 	float Time = 0.f;
 
