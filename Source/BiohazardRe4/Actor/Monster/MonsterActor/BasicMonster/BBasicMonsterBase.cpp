@@ -288,7 +288,7 @@ float ABBasicMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	float ResultDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
 	//행동트리
-	AAIController* AIController = Cast<AAIController>(GetController());
+	ABAIBasicMonsterController* AIController = Cast<ABAIBasicMonsterController>(GetController());
 	if (AIController == nullptr)
 	{
 		LOG_WARNING(TEXT("AIController is nullptr"));
@@ -311,6 +311,7 @@ float ABBasicMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, true);
 	AIController->GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, TargetPawn);
+	AIController->Announce(TargetPawn);
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance == nullptr)

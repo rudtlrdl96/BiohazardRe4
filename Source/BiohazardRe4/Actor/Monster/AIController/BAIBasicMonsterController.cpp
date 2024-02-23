@@ -121,48 +121,9 @@ void ABAIBasicMonsterController::OnTargetPerceptionUpdated(AActor* _Actor, FAISt
 			AnimInterface->SetTarget(UpdatedPawn);
 			OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 
-			//
-			TArray<FOverlapResult> OverlapResults;
-			FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, GetPawn());
-
-			bool bResult = GetPawn()->GetWorld()->OverlapMultiByChannel(
-				OverlapResults,
-				GetPawn()->GetActorLocation(),
-				FQuat::Identity,
-				ECC_EngineTraceChannel2,
-				FCollisionShape::MakeSphere(300.0f),
-				CollisionQueryParam);
-
-			for (FOverlapResult& Result : OverlapResults)
-			{
-				ACharacter* HitCharacter = Cast<ACharacter>(Result.GetActor());
-				if (HitCharacter == nullptr)
-				{
-					continue;
-				}
-				HitCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
-
-				ABAIBasicMonsterController* HitController = Cast<ABAIBasicMonsterController>(HitCharacter->GetController());
-				if (HitController == nullptr)
-				{
-					continue;
-				}
-
-				HitController->PerceptionOff();
-				HitController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, _Stimulus.WasSuccessfullySensed());
-				HitController->GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, UpdatedPawn);
-
-				IBMonsterAnimInterface* HitPawnAnimInterface = Cast<IBMonsterAnimInterface>(HitCharacter->GetMesh()->GetAnimInstance());
-				if (HitPawnAnimInterface == nullptr)
-				{
-					continue;
-				}
-
-				HitPawnAnimInterface->SetTarget(UpdatedPawn);
-				PlayDetectSound();
-			}
-
 			AIPerceptionComponent->Activate(false);
+
+			Announce(UpdatedPawn);
 		}
 	}
 }
@@ -177,6 +138,50 @@ void ABAIBasicMonsterController::OnTargetPerceptionForgotten(AActor* _Actor)
 		GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 
 		return;
+	}
+}
+
+void ABAIBasicMonsterController::Announce(UObject* _Target)
+{
+	//
+	TArray<FOverlapResult> OverlapResults;
+	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, GetPawn());
+
+	bool bResult = GetPawn()->GetWorld()->OverlapMultiByChannel(
+		OverlapResults,
+		GetPawn()->GetActorLocation(),
+		FQuat::Identity,
+		ECC_EngineTraceChannel2,
+		FCollisionShape::MakeSphere(300.0f),
+		CollisionQueryParam);
+
+	for (FOverlapResult& Result : OverlapResults)
+	{
+		ACharacter* HitCharacter = Cast<ACharacter>(Result.GetActor());
+		if (HitCharacter == nullptr)
+		{
+			continue;
+		}
+		HitCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
+
+		ABAIBasicMonsterController* HitController = Cast<ABAIBasicMonsterController>(HitCharacter->GetController());
+		if (HitController == nullptr)
+		{
+			continue;
+		}
+
+		HitController->PerceptionOff();
+		HitController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, true);
+		HitController->GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, _Target);
+
+		IBMonsterAnimInterface* HitPawnAnimInterface = Cast<IBMonsterAnimInterface>(HitCharacter->GetMesh()->GetAnimInstance());
+		if (HitPawnAnimInterface == nullptr)
+		{
+			continue;
+		}
+
+		HitPawnAnimInterface->SetTarget(_Target);
+		PlayDetectSound();
 	}
 }
 

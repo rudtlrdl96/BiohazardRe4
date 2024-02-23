@@ -13,6 +13,7 @@
 #include "Actor/Monster/Define/MonsterDefine.h"
 #include "Actor/Monster/Component/BMonsterStatComponent.h"
 #include "Actor/Monster/Interface/BMonsterAnimInterface.h"
+#include "Actor/Monster/AIController/BAIBasicMonsterController.h"
 
 float ABMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -511,7 +512,7 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 
 	GroggyAmount = 0.0f;
 
-	AAIController* AIController = Cast<AAIController>(GetController());
+	ABAIBasicMonsterController* AIController = Cast<ABAIBasicMonsterController>(GetController());
 	if (AIController == nullptr)
 	{
 		LOG_WARNING(TEXT("AIController is nullptr"));
@@ -520,6 +521,7 @@ void ABMonsterBase::DamagedByKnife(const FDamageEvent& _DamageEvent)
 
 	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISNEAR, false);
 	AIController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDAMAGED, true);
+	//AIController->Announce();
 
 	SetCurrentState(EMonsterState::Groggy);
 	MediumDamaged(FString(TEXT("Body")));

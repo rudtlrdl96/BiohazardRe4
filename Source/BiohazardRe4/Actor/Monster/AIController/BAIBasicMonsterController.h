@@ -25,6 +25,7 @@ public:
 	UFUNCTION()
 	void OnTargetPerceptionForgotten(AActor* _Actor);
 
+	void Announce(UObject* _Target);
 	void PerceptionOff();
 protected:
 	virtual void OnPossess(APawn* _InPawn) override;
