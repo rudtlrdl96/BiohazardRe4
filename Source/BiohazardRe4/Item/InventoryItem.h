@@ -24,6 +24,8 @@ public:
 	void SetRaise();
 	// 지정 Locataion으로 아이템을 이동시킨다
 	void SetMove(const FVector& _Location);
+	// 지정 Locataion으로 아이템을 정렬 이동시킨다
+	void SetSortMove(const FVector& _Location);
 	// 아이템 이동이 끝나 제자리에 놓는다
 	void SetPut(const FVector& _Location);
 	// 아이템의 개수를 지정한다
@@ -82,7 +84,8 @@ private:
 	{
 		Wait,
 		Move,
-		Put
+		Put,
+		Sort,
 	};
 
 	class UBFsm* FSMComp;
@@ -97,6 +100,7 @@ private:
 	float MoveAlpha = 0;
 	float RaiseAlpha = 0;
 	float TurnAlpha = 0;
+	float SortTimer = 0;
 
 	UPROPERTY()
 	FIntPoint ItemPosition;	// 아이템의 위치 (인벤토리상 위치)
@@ -112,5 +116,8 @@ private:
 
 	void PutEnter();
 	void PutUpdate(float DeltaTime);
+
+	void SortUpdate(float DeltaTime);
+	void SortExit();
 
 };

@@ -20,14 +20,18 @@ ABInventoryItem::ABInventoryItem()
 	UBFsm::FStateCallback WaitState;
 	UBFsm::FStateCallback MoveState;
 	UBFsm::FStateCallback PutState;
+	UBFsm::FStateCallback SortState;
 	MoveState.EnterDel.BindUObject(this, &ABInventoryItem::MoveEnter);
 	MoveState.UpdateDel.BindUObject(this, &ABInventoryItem::MoveUpdate);
 	PutState.EnterDel.BindUObject(this, &ABInventoryItem::PutEnter);
 	PutState.UpdateDel.BindUObject(this, &ABInventoryItem::PutUpdate);
+	SortState.UpdateDel.BindUObject(this, &ABInventoryItem::SortUpdate);
+	SortState.ExitDel.BindUObject(this, &ABInventoryItem::SortExit);
 
 	FSMComp->CreateState(TO_KEY(ItemState::Wait), WaitState);
 	FSMComp->CreateState(TO_KEY(ItemState::Move), MoveState);
 	FSMComp->CreateState(TO_KEY(ItemState::Put), PutState);
+	FSMComp->CreateState(TO_KEY(ItemState::Sort), SortState);
 
 	FSMComp->ChangeState(TO_KEY(ItemState::Wait));
 }
@@ -56,6 +60,14 @@ void ABInventoryItem::SetMove(const FVector& _Location)
 	StartLocation = RootComponent->GetRelativeLocation();
 	TargetLocation = _Location;
 	MoveAlpha = 0;
+}
+
+void ABInventoryItem::SetSortMove(const FVector& _Location)
+{
+	StartLocation = RootComponent->GetRelativeLocation();
+	TargetLocation = _Location;
+	SortTimer = 0;
+	FSMComp->ChangeState(TO_KEY(ItemState::Sort));
 }
 
 void ABInventoryItem::SetPut(const FVector& _Location)
@@ -142,4 +154,21 @@ void ABInventoryItem::PutUpdate(float DeltaTime)
 		Mesh->SetRelativeLocation(MeshLocation);
 		FSMComp->ChangeState(TO_KEY(ItemState::Wait));
 	}
+}
+
+void ABInventoryItem::SortUpdate(float DeltaTime)
+{
+	SortTimer += DeltaTime * 10;
+
+	RootComponent->SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, SortTimer));
+	if (1 < SortTimer)
+	{
+		FSMComp->ChangeState(TO_KEY(ItemState::Wait));
+		return;
+	}
+}
+
+void ABInventoryItem::SortExit()
+{
+	RootComponent->SetRelativeLocation(TargetLocation);
 }

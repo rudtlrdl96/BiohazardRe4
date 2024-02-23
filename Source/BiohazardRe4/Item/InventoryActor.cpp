@@ -197,7 +197,7 @@ void ABInventoryActor::BeginPlay()
 	Input->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Turn);
 	Input->BindAction(CancelAction, ETriggerEvent::Triggered, this, &ABInventoryActor::Cancel);
 	Input->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ABInventoryActor::InvestigateRotate);
-
+	Input->BindAction(SortAction, ETriggerEvent::Triggered, this, &ABInventoryActor::SortInventory);
 	// À§Á¬ »ý¼º
 	Widget = CreateWidget<UBInventoryWidgetMain>(GetWorld(), InventoryWidgetClass);
 	Widget->AddToViewport();
@@ -878,6 +878,15 @@ void ABInventoryActor::CloseCheckEnter()
 void ABInventoryActor::CloseCheckExit()
 {
 	Widget->DropWidgetOff();
+}
+
+void ABInventoryActor::SortInventory()
+{
+	if (FSMComp->GetCurrentFSMKey() == TO_KEY(EInventoryState::Default))
+	{
+		Inventory->SortInventory();
+		UGameplayStatics::PlaySound2D(this, Sound_InventorySort);
+	}
 }
 
 void ABInventoryActor::RemoveQuickSlot(EItemCode Code)

@@ -916,6 +916,52 @@ void UBInventoryManager::RemoveAllItemInSubSlot()
 	}
 }
 
+void UBInventoryManager::SortInventory()
+{
+	for (int i = 0; i < MainSlot.Num(); i++)
+	{
+		MainSlot[i]->ClearItem();
+	}
+	for (int i = 0; i < SubSlot.Num(); i++)
+	{
+		SubSlot[i]->ClearItem();
+	}
+
+	// ItemCode에 따른 아이템의 크기를 검색
+	TArray<FName> RowNames = ItemDataTable->GetRowNames();
+	static TMap<EItemCode, int32> SizeMap;
+	for (int i = 0; i < RowNames.Num(); i++)
+	{
+		FBItemData* Data = ItemDataTable->FindRow<FBItemData>(RowNames[i], "");
+		SizeMap.Add(Data->ItemCode, Data->ItemSize.X * Data->ItemSize.Y);
+	}
+
+	// 아이템맵을 정렬
+	ItemMap.KeySort([&](EItemCode A, EItemCode B)
+		{
+			return SizeMap[A] > SizeMap[B];
+		});
+
+	// 정렬한 순서대로 아이템 배치
+	TMultiMap<EItemCode, ABInventoryItem*>::TIterator it = ItemMap.CreateIterator();
+	for (; it; ++it)
+	{
+		ABInventoryItem* Item = (*it).Value;
+		if (Item->GetIsTurn())
+		{
+			Item->Turn();
+		}
+		FIntPoint Pos = FindEmptySlot(Item->GetItemSize());
+		if (Pos == FIntPoint::NoneValue)
+		{
+			Item->Turn();
+			Pos = FindEmptySlot(Item->GetItemSize());
+		}
+		PlaceItemSlot(Item, Pos);
+		Item->SetSortMove(CaseLocation(Pos));
+	}
+}
+
 void UBInventoryManager::ClearSlot(const FIntPoint& Pos, const FIntPoint& Size, bool IsSubSlot)
 {
 	if (IsSubSlot)

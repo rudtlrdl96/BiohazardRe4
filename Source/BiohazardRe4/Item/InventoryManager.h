@@ -111,6 +111,8 @@ public:
 	int GetItemCount(EItemCode Code) const;
 	// 서브 슬롯에 있는 모든 아이템을 버립니다
 	void RemoveAllItemInSubSlot();
+	// 인벤토리를 정렬한다
+	void SortInventory();
 
 private:
 	// 아이템을 추가한다

@@ -208,6 +208,9 @@ public:
 	class UInputAction* RotateAction = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* SortAction = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Input)
 	class UEnhancedInputLocalPlayerSubsystem* Subsystem;	// EnhancedSubSystem
 
 	// _________Sound____________
@@ -239,6 +242,8 @@ public:
 	USoundBase* Sound_ItemInvestigate = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundBase* Sound_ItemQuickSlot = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundBase* Sound_InventorySort = nullptr;
 
 	// _________Inventory__________
 
@@ -308,4 +313,5 @@ private:
 	void CloseCheckEnter();
 	void CloseCheckExit();
 
+	void SortInventory();
 };
