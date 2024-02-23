@@ -161,6 +161,11 @@ void ABInventoryItem::SortUpdate(float DeltaTime)
 	SortTimer += DeltaTime * 10;
 
 	RootComponent->SetRelativeLocation(FMath::Lerp<FVector>(StartLocation, TargetLocation, SortTimer));
+	if (bIsCurrentTurn)
+	{
+		Mesh->SetRelativeLocation(MeshLocation);
+	}
+
 	if (1 < SortTimer)
 	{
 		FSMComp->ChangeState(TO_KEY(ItemState::Wait));
@@ -171,4 +176,8 @@ void ABInventoryItem::SortUpdate(float DeltaTime)
 void ABInventoryItem::SortExit()
 {
 	RootComponent->SetRelativeLocation(TargetLocation);
+	if (bIsCurrentTurn)
+	{
+		Mesh->SetRelativeLocation(MeshTargetLocation);
+	}
 }
