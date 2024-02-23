@@ -11,6 +11,7 @@
 #include "Navigation/NavLinkProxy.h"
 #include "NavLinkCustomComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Particles/ParticleSystem.h"
 
 #include "BiohazardRe4.h"
 #include "Actor/Monster/Define/MonsterDefine.h"
@@ -29,6 +30,12 @@ ABMonsterBase::ABMonsterBase()
 	GeneralSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("GeneralSound"));
 	LeftFootSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("LeftFootSound"));
 	RightFootSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("RightFootSound"));
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> BloodParticleRef(TEXT("/Script/Engine.ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Blood/P_Blood_Splat_Cone.P_Blood_Splat_Cone'"));
+	if (BloodParticleRef.Object != nullptr)
+	{
+		BloodParticle = BloodParticleRef.Object;
+	}
 
 	LoadFootSoundCue();
 }

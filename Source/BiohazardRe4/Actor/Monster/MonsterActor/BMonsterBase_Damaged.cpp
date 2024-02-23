@@ -6,6 +6,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 #include "BiohazardRe4.h"
 #include "Actor/Monster/Define/MonsterDefine.h"
@@ -56,6 +58,8 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, const AAc
 
 	EPlayerDamageType DamagedType = CastedDamageType->DamageType;
 	FString DamagedPart = GetDamagedPartToString(PointDamage);
+
+	CreateBloodParticle(PointDamage->HitInfo.Location, PointDamage->ShotDirection.Rotation());
 
 	if (DamagedMontageSectionNums.Contains(DamagedPart) == false)
 	{
@@ -938,4 +942,18 @@ void ABMonsterBase::BurstJumpUpdate()
 			OnLandedByBurstJump.Unbind();
 		}
 	}
+}
+
+
+
+void ABMonsterBase::CreateBloodParticle(FVector _Location, FRotator _Rotator)
+{
+	_Rotator.Normalize();
+	FTransform ParticleTransform;
+
+	ParticleTransform.SetScale3D(FVector(0.5f, 0.5f, 0.5f));
+	ParticleTransform.SetLocation(_Location);
+	ParticleTransform.SetRotation(_Rotator.Quaternion());
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodParticle, ParticleTransform, true);
 }

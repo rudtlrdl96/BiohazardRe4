@@ -213,10 +213,13 @@ protected:
 	void CrossWindowJumpUpdate();
 	void CrossWindowJumpEnd();
 
+	void CreateBloodParticle(FVector _Location, FRotator _Rotator);
+
 	bool isSetTargetInBlackBoard();
 
 	UFUNCTION(BlueprintCallable)
 	void SetTeleport(class ANavLinkProxy* _Proxy);
+
 	//State Variable
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = "true"))
@@ -239,4 +242,8 @@ private:
 	FTimerHandle CollisionOffTimer;
 
 	float GroggyAmount = 0.0f;
+
+	//particle
+private:
+	UParticleSystem* BloodParticle;
 };
