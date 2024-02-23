@@ -922,10 +922,6 @@ void UBInventoryManager::SortInventory()
 	{
 		MainSlot[i]->ClearItem();
 	}
-	for (int i = 0; i < SubSlot.Num(); i++)
-	{
-		SubSlot[i]->ClearItem();
-	}
 
 	// ItemCode에 따른 아이템의 크기를 검색
 	TArray<FName> RowNames = ItemDataTable->GetRowNames();
@@ -947,6 +943,10 @@ void UBInventoryManager::SortInventory()
 	for (; it; ++it)
 	{
 		ABInventoryItem* Item = (*it).Value;
+		if (Item->IsSubSlot())
+		{
+			continue;
+		}
 		if (Item->GetIsTurn())
 		{
 			Item->Turn();
