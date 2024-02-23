@@ -261,8 +261,21 @@ void ABInventoryActor::AddItem(EItemCode ItemCode, int Num)
 
 void ABInventoryActor::AddItemRowName(FName ItemRowName, int Num)
 {
-	Inventory->AddItem(ItemRowName, Num);
+	ABInventoryItem* Item = Inventory->AddItem(ItemRowName, Num);
 	Widget->AddItemRowName(ItemRowName, Num);
+
+	if (ABInventoryWeapon* Weapon = Cast<ABInventoryWeapon>(Item))
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			if (QuickSlot[i] == nullptr)
+			{
+				QuickSlot[i] = Weapon;
+				HUD->QuickSlotUpdate(QuickSlot);
+				break;
+			}
+		}
+	}
 }
 
 void ABInventoryActor::AddMoney(int Num)
