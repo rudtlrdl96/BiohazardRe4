@@ -162,13 +162,14 @@ void ABAIBasicMonsterController::Announce(UObject* _Target)
 		{
 			continue;
 		}
-		HitCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 
 		ABAIBasicMonsterController* HitController = Cast<ABAIBasicMonsterController>(HitCharacter->GetController());
 		if (HitController == nullptr)
 		{
 			continue;
 		}
+
+		HitCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 
 		HitController->PerceptionOff();
 		HitController->GetBlackboardComponent()->SetValueAsBool(BBKEY_ISDETECTED, true);
