@@ -86,15 +86,40 @@ void ABBasicMonsterBase::SetWeaponSkeletalMeshByRandomInBeginPlay()
 void ABBasicMonsterBase::InitAI()
 {
 	AIControllerClass = ABAIBasicMonsterController::StaticClass();
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AutoPossessAI = EAutoPossessAI::Disabled;
 }
 
 void ABBasicMonsterBase::SetAIMode(EAIMode _AIMode)
 {
 	AController* MyController = GetController();
-	AAIController* MyAIController = Cast<AAIController>(MyController);
+	if (MyController == nullptr)
+	{
+		return;
+	}
 
+	AAIController* MyAIController = Cast<AAIController>(MyController);
 	MyAIController->GetBlackboardComponent()->SetValueAsEnum(BBKEY_AIMODE, StaticCast<uint8>(_AIMode));
+}
+
+void ABBasicMonsterBase::AIOff()
+{
+	if (Controller != nullptr)
+	{
+		Controller->UnPossess();
+	}	
+}
+
+void ABBasicMonsterBase::AIOn()
+{
+	if(Controller == nullptr)
+	{
+		Controller = GetWorld()->SpawnActor<ABAIBasicMonsterController>(AIControllerClass, GetActorLocation(), GetActorRotation());
+	}
+
+	if (Controller != nullptr)
+	{
+		Controller->Possess(this);
+	}
 }
 
 void ABBasicMonsterBase::SetClothesSkeletalMeshByRandomInBeginPlay()

@@ -30,6 +30,11 @@ class BIOHAZARDRE4_API ABBasicMonsterBase : public ABMonsterBase
 public:
 	ABBasicMonsterBase();
 	void SetAIMode(EAIMode _AIMode);
+	
+	UFUNCTION(BlueprintCallable)
+	void AIOff();
+	UFUNCTION(BlueprintCallable)
+	void AIOn();
 
 protected:
 	virtual void BeginPlay() override;
@@ -63,4 +68,5 @@ private:
 	virtual void SetDamagedSectionNums() override;
 
 	static TArray<TPair<FString, TObjectPtr<class USkeletalMesh>>> LoadedWeaponMesh;
+	//class ABAIBasicMonsterController* MyAIController = nullptr;
 };
