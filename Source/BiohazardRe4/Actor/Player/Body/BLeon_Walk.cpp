@@ -5,6 +5,7 @@
 #include "Generic/BFsm.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BiohazardRe4.h"
 
 void ABLeon::WalkEnter()
 {
@@ -12,6 +13,7 @@ void ABLeon::WalkEnter()
 	bIsMove = true;
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 void ABLeon::WalkUpdate(float _DeltaTime)

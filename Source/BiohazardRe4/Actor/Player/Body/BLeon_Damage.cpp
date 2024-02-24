@@ -91,4 +91,6 @@ void ABLeon::DamageUpdate(float _DeltaTime)
 void ABLeon::DamageExit()
 {
 	bIsHitEnd = false;
+
+	DamageCoolTime = -0.25f;
 }

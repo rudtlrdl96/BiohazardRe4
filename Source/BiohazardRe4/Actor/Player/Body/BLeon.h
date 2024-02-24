@@ -799,6 +799,8 @@ private:
 
 	ABInventoryActor* InventoryActor = nullptr;
 
+	float DamageCoolTime = 0.0f;
+
 	//************************ UI ***************************//
 
 	class ABHUDBase* HUD = nullptr;								// HUD

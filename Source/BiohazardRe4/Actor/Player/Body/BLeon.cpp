@@ -233,7 +233,12 @@ float ABLeon::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 	case ELeonState::CutScene00:
 		return 0.0f;
 	}
-	
+
+	if (0.0f > DamageCoolTime)
+	{
+		return 0.0f;
+	}
+
 	bool bIsSafeDamage = false;
 
 	FVector AttackerLocation = DamageCauser->GetActorLocation();
@@ -1430,7 +1435,7 @@ void ABLeon::SocketSwapUpdate(float _DeltaTime)
 
 void ABLeon::HealthStateUpdate(float _DeltaTime)
 {
-
+	DamageCoolTime += _DeltaTime;
 
 	if (0.15f <= Stat.CurrentHp / Stat.MaxHp)
 	{
