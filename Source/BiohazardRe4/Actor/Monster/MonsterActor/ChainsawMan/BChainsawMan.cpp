@@ -253,62 +253,72 @@ void ABChainsawMan::CreateSkeletalMeshComponent()
 		ShirtMesh->SetSkeletalMesh(ShirtMeshRef.Object);
 	}
 
-	HeadMesh->AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
-	ShirtMesh->AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
-	PantsMesh->AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
+	HeadMesh->SetupAttachment(RootComponent);
+	ShirtMesh->SetupAttachment(RootComponent);
+	PantsMesh->SetupAttachment(RootComponent);
 }
 
 void ABChainsawMan::AttachDamagedCollisionComponentToMesh()
 {
 	UCapsuleComponent* LUpperArmColComp = DamagedCollisions[TEXT("LUpperArm")].Value;
-	LUpperArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LUpperArm")].Key));
+	LUpperArmColComp->SetupAttachment(ShirtMesh, FName(DamagedCollisions[TEXT("LUpperArm")].Key));
 	LUpperArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LUpperArmColComp->SetCapsuleSize(10.0f, 15.0f);
+	//LUpperArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LUpperArm")].Key));
 
 	UCapsuleComponent* RUpperArmColComp = DamagedCollisions[TEXT("RUpperArm")].Value;
-	RUpperArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RUpperArm")].Key));
+	RUpperArmColComp->SetupAttachment(ShirtMesh, FName(DamagedCollisions[TEXT("RUpperArm")].Key));
 	RUpperArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RUpperArmColComp->SetCapsuleSize(10.0f, 15.0f);
+	//RUpperArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RUpperArm")].Key));
 
 	UCapsuleComponent* LForeArmColComp = DamagedCollisions[TEXT("LForeArm")].Value;
-	LForeArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LForeArm")].Key));
+	LForeArmColComp->SetupAttachment(ShirtMesh, FName(DamagedCollisions[TEXT("LForeArm")].Key));
 	LForeArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LForeArmColComp->SetCapsuleSize(10.0f, 12.0f);
+	//LForeArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LForeArm")].Key));
 
 	UCapsuleComponent* RForeArmColComp = DamagedCollisions[TEXT("RForeArm")].Value;
-	RForeArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RForeArm")].Key));
+	RForeArmColComp->SetupAttachment(ShirtMesh, FName(DamagedCollisions[TEXT("RForeArm")].Key));
 	RForeArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RForeArmColComp->SetCapsuleSize(10.0f, 12.0f);
+	//RForeArmColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RForeArm")].Key));
 
 	UCapsuleComponent* UpperBodyColComp = DamagedCollisions[TEXT("UpperBody")].Value;
-	UpperBodyColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("UpperBody")].Key));
+	UpperBodyColComp->SetupAttachment(ShirtMesh, FName(DamagedCollisions[TEXT("UpperBody")].Key));
 	UpperBodyColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	UpperBodyColComp->SetCapsuleSize(25.0f, 36.0f);
+	//UpperBodyColComp->AttachToComponent(ShirtMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("UpperBody")].Key));
 	
 	UCapsuleComponent* HeadColComp = DamagedCollisions[TEXT("Head")].Value;
-	HeadColComp->AttachToComponent(HeadMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("Head")].Key));
+	HeadColComp->SetupAttachment(HeadMesh, FName(DamagedCollisions[TEXT("Head")].Key));
 	HeadColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	HeadColComp->SetCapsuleSize(15.0f, 18.0f);
+	//HeadColComp->AttachToComponent(HeadMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("Head")].Key));
 
 	UCapsuleComponent* LThighColComp = DamagedCollisions[TEXT("LThigh")].Value;
-	LThighColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LThigh")].Key));
+	LThighColComp->SetupAttachment(PantsMesh, FName(DamagedCollisions[TEXT("LThigh")].Key));
 	LThighColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LThighColComp->SetCapsuleSize(14.0f, 22.0f);
+	//LThighColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LThigh")].Key));
 
 	UCapsuleComponent* RThighColComp = DamagedCollisions[TEXT("RThigh")].Value;
-	RThighColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RThigh")].Key));
+	RThighColComp->SetupAttachment(PantsMesh, FName(DamagedCollisions[TEXT("RThigh")].Key));
 	RThighColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RThighColComp->SetCapsuleSize(14.0f, 22.0f);
+	//RThighColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RThigh")].Key));
 
 	UCapsuleComponent* LShinColComp = DamagedCollisions[TEXT("LShin")].Value;
-	LShinColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LShin")].Key));
+	LShinColComp->SetupAttachment(PantsMesh, FName(DamagedCollisions[TEXT("LShin")].Key));
 	LShinColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LShinColComp->SetCapsuleSize(14.0f, 22.0f);
+	//LShinColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LShin")].Key));
 
 	UCapsuleComponent* RShinColComp = DamagedCollisions[TEXT("RShin")].Value;
-	RShinColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RShin")].Key));
+	RShinColComp->SetupAttachment(PantsMesh, FName(DamagedCollisions[TEXT("RShin")].Key));
 	RShinColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RShinColComp->SetCapsuleSize(14.0f, 22.0f);
+	//RShinColComp->AttachToComponent(PantsMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RShin")].Key));
 }
 
 

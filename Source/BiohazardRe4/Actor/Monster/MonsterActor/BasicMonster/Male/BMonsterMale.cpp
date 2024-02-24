@@ -434,52 +434,67 @@ void ABMonsterMale::CreateDamagedCollisionComponent()
 void ABMonsterMale::AttachDamagedCollisionComponentToMesh()
 {
 	UCapsuleComponent* LUpperArmColComp = DamagedCollisions[TEXT("LUpperArm")].Value;
-	LUpperArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LUpperArm")].Key));
+	LUpperArmColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("LUpperArm")].Key));
 	LUpperArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LUpperArmColComp->SetCapsuleSize(10.0f, 15.0f);
-
+	//LUpperArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LUpperArm")].Key));
+	
 	UCapsuleComponent* RUpperArmColComp = DamagedCollisions[TEXT("RUpperArm")].Value;
-	RUpperArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RUpperArm")].Key));
+	RUpperArmColComp->SetupAttachment(GetMesh(),FName(DamagedCollisions[TEXT("RUpperArm")].Key));
 	RUpperArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RUpperArmColComp->SetCapsuleSize(10.0f, 15.0f);
+	//RUpperArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RUpperArm")].Key));
 
 	UCapsuleComponent* LForeArmColComp = DamagedCollisions[TEXT("LForeArm")].Value;
-	LForeArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LForeArm")].Key));
+	LForeArmColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("LForeArm")].Key));
 	LForeArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LForeArmColComp->SetCapsuleSize(10.0f, 12.0f);
+	//LForeArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LForeArm")].Key));
 
 	UCapsuleComponent* RForeArmColComp = DamagedCollisions[TEXT("RForeArm")].Value;
-	RForeArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RForeArm")].Key));
+	RForeArmColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("RForeArm")].Key));
 	RForeArmColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RForeArmColComp->SetCapsuleSize(10.0f, 12.0f);
+	//RForeArmColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RForeArm")].Key));
 
 	UCapsuleComponent* UpperBodyColComp = DamagedCollisions[TEXT("UpperBody")].Value;
-	UpperBodyColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("UpperBody")].Key));
+	UpperBodyColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("UpperBody")].Key));
 	UpperBodyColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	UpperBodyColComp->SetCapsuleSize(25.0f, 36.0f);
+	//UpperBodyColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("UpperBody")].Key));
 
 	UCapsuleComponent* HeadColComp = DamagedCollisions[TEXT("Head")].Value;
-	HeadColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("Head")].Key));
+	HeadColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("Head")].Key));
 	HeadColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	HeadColComp->SetCapsuleSize(15.0f, 18.0f);
+	//HeadColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("Head")].Key));
 
 	UCapsuleComponent* LThighColComp = DamagedCollisions[TEXT("LThigh")].Value;
-	LThighColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LThigh")].Key));
+	LThighColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("LThigh")].Key));
 	LThighColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LThighColComp->SetCapsuleSize(14.0f, 22.0f);
+	//LThighColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LThigh")].Key));
 
 	UCapsuleComponent* RThighColComp = DamagedCollisions[TEXT("RThigh")].Value;
-	RThighColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RThigh")].Key));
+	RThighColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("RThigh")].Key));
 	RThighColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RThighColComp->SetCapsuleSize(14.0f, 22.0f);
+	//RThighColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RThigh")].Key));
 
 	UCapsuleComponent* LShinColComp = DamagedCollisions[TEXT("LShin")].Value;
-	LShinColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LShin")].Key));
+	LShinColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("LShin")].Key));
 	LShinColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	LShinColComp->SetCapsuleSize(14.0f, 22.0f);
+	//LShinColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("LShin")].Key));
 
 	UCapsuleComponent* RShinColComp = DamagedCollisions[TEXT("RShin")].Value;
-	RShinColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RShin")].Key));
+	RShinColComp->SetupAttachment(GetMesh(), FName(DamagedCollisions[TEXT("RShin")].Key));
 	RShinColComp->SetCollisionProfileName(TEXT("MonsterCollision"));
 	RShinColComp->SetCapsuleSize(14.0f, 22.0f);
+	//RShinColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RShin")].Key));
+
+	for (TPair<FString, TPair<FString, TObjectPtr<class UCapsuleComponent>>> Pair : DamagedCollisions)
+	{
+		Pair.Value.Value->SetHiddenInGame(false);
+	}
 }
