@@ -67,6 +67,7 @@ protected:
 
 	UFUNCTION()
 	virtual void BeginPlay() override;
+	virtual void Tick(float _DeltaTIme) override;
 
 protected:
 	virtual void SetClothesSkeletalMeshByRandomInBeginPlay() override;
@@ -84,10 +85,13 @@ private:
 	void MontageLoad();
 	void AnimInstanceLoad();
 
+	void AttachDamagedCollisionComponentToMesh();
+	void CreateDamagedCollisionComponent();
+
 private:
 	static TMap<EMeshType, TArray<TObjectPtr<class USkeletalMesh>>> LoadedMesh;
 	static TMap<EMeshAnimType, TSubclassOf<class UAnimInstance>> LoadedAnimInstance;
 	static TMap<EWeaponType, FMontageStruct> LoadedMontage;
 	
-	virtual void Tick(float _DeltaTIme) override;
+	TMap<FString, TPair<FString, TObjectPtr<class UCapsuleComponent>>> DamagedCollisions;
 };

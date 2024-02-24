@@ -29,4 +29,21 @@ private:
 	virtual void SetDamagedSectionNums() override;
 
 	virtual void AllCollisionOff() override;
+
+	void AttachDamagedCollisionComponentToMesh();
+	void CreateDamagedCollisionComponent();
+	void CreateSkeletalMeshComponent();
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh Components")
+	USkeletalMeshComponent* HeadMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh Components")
+	USkeletalMeshComponent* ShirtMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh Components")
+	USkeletalMeshComponent* PantsMesh = nullptr;
+
+private:
+	TMap<FString, TPair<FString, TObjectPtr<class UCapsuleComponent>>> DamagedCollisions;
 };

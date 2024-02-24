@@ -824,59 +824,37 @@ float ABMonsterBase::CaculateCriticalDamage(float _OriginDamage, const EPlayerDa
 const FString ABMonsterBase::GetDamagedPartToString(const FPointDamageEvent* const& _DamageEvent)
 {
 	UPrimitiveComponent* DamagedComponent = _DamageEvent->HitInfo.GetComponent();
-	FName DamagedBoneName = _DamageEvent->HitInfo.BoneName;
+	FString ComponentName = DamagedComponent->GetName();
+	ComponentName = ComponentName.ToUpper();
 
-	USkeletalMeshComponent* SkeletalMeshComponent = nullptr;
-
-	if (DamagedComponent && DamagedComponent->IsA(USkeletalMeshComponent::StaticClass()))
+	if (ComponentName.Compare("HEADCOLLISION") == 0)
 	{
-		SkeletalMeshComponent = Cast<USkeletalMeshComponent>(DamagedComponent);
-	}
-
-	if (SkeletalMeshComponent == nullptr)
-	{
-		//LOG_WARNING(TEXT("SkeletalMesh is nullptr"));
-		return TEXT("");
-	}
-
-	//LOG_MSG(TEXT("Damaged Bone Name is %s"), *(DamagedBoneName.ToString()));
-
-	bool bisHead = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("NECK_0")));
-	if (bisHead == true || DamagedBoneName == FName(TEXT("NECK_0")))
-	{
-		//LOG_MSG(TEXT("Head Shot"));
 		return TEXT("HEAD");
 	}
-
-	bool bisLArm = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("L_SHOULDER")));
-	if (bisLArm == true || DamagedBoneName == FName(TEXT("L_SHOULDER")))
+	else if (ComponentName.Compare("BODYCOLLISION") == 0)
 	{
-		//LOG_MSG(TEXT("LArm Shot"));
+		return TEXT("BODY");
+	}
+	else if (ComponentName.Compare("LFOREARMCOLLISION") == 0 || ComponentName.Compare("LUPPERARMCOLLISION") == 0)
+	{
 		return TEXT("LARM");
 	}
-
-	bool bisRArm = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("R_SHOULDER")));
-	if (bisRArm == true || DamagedBoneName == FName(TEXT("R_SHOULDER")))
+	else if (ComponentName.Compare("RFOREARMCOLLISION") == 0 || ComponentName.Compare("RUPPERARMCOLLISION") == 0)
 	{
-		//LOG_MSG(TEXT("RArm Shot"));
 		return TEXT("RARM");
 	}
-
-	bool bisLLeg = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("L_THIGH")));
-	if (bisLLeg == true || DamagedBoneName == FName(TEXT("L_THIGH")))
+	else if (ComponentName.Compare("LTHIGHCOLLISION") == 0 || ComponentName.Compare("LSHINCOLLISION") == 0)
 	{
-		//LOG_MSG(TEXT("LLeg Shot"));
 		return TEXT("LLEG");
 	}
-
-	bool bisRLeg = SkeletalMeshComponent->BoneIsChildOf(DamagedBoneName, FName(TEXT("R_THIGH")));
-	if (bisRLeg == true || DamagedBoneName == FName(TEXT("R_THIGH")))
+	else if (ComponentName.Compare("RTHIGHCOLLISION") == 0 || ComponentName.Compare("RSHINCOLLISION") == 0)
 	{
-		//LOG_MSG(TEXT("RLeg Shot"));
 		return TEXT("RLEG");
 	}
-
-	return TEXT("BODY");
+	else
+	{
+		return TEXT("NONE");
+	}
 }
 
 void ABMonsterBase::Parry()
