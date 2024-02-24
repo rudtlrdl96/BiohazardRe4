@@ -181,7 +181,7 @@ float ABMonsterBase::TakeRadialDamage(const FDamageEvent& _DamageEvent, const AA
 
 	if (GetCurrentState() == EMonsterState::CrossWindowStart)
 	{
-		return;
+		return 0.0f;
 	}
 
 	EPlayerDamageType DamagedType = CastedDamageType->DamageType;
