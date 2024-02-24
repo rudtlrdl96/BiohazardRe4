@@ -82,6 +82,11 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, const AAc
 		return ResultDamage;
 	}
 
+	if (GetCurrentState() == EMonsterState::CrossWindowStart)
+	{
+		return ResultDamage;
+	}
+
 	if (GetCurrentState() == EMonsterState::Groggy && DamagedPart.Compare(TEXT("HEAD")) != 0)
 	{
 		return ResultDamage;
@@ -677,7 +682,7 @@ const FString ABMonsterBase::GetBurstJumpSectionName(FVector _MyLocation, FVecto
 	double DotProductValue = FVector::DotProduct(MonsterToCauserVector, MyForwardVector);
 	double Radian = FMath::Acos(DotProductValue);
 	double Degree = FMath::RadiansToDegrees(Radian);
-
+	
 	FString ReturnSectionStr = TEXT("Burst");
 
 	if (Degree >= 0.0f && Degree < 45.0f)
