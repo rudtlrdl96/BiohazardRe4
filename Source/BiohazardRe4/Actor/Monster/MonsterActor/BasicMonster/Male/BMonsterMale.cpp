@@ -493,8 +493,8 @@ void ABMonsterMale::AttachDamagedCollisionComponentToMesh()
 	RShinColComp->SetCapsuleSize(14.0f, 22.0f);
 	//RShinColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RShin")].Key));
 
-	for (TPair<FString, TPair<FString, TObjectPtr<class UCapsuleComponent>>> Pair : DamagedCollisions)
-	{
-		Pair.Value.Value->SetHiddenInGame(false);
-	}
+	//for (TPair<FString, TPair<FString, TObjectPtr<class UCapsuleComponent>>> Pair : DamagedCollisions)
+	//{
+	//	Pair.Value.Value->SetHiddenInGame(false);
+	//}
 }

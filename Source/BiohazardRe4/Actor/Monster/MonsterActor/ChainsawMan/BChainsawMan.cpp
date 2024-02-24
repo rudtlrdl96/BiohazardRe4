@@ -63,7 +63,7 @@ ABChainsawMan::ABChainsawMan()
 
 	CreateDamagedCollisionComponent();
 	AttachDamagedCollisionComponentToMesh();
-
+	InitSoundCues();
 	InitDamageTypes();
 }
 
@@ -181,6 +181,16 @@ void ABChainsawMan::SetDamagedSectionNums()
 		DamagedMontageSectionNums.Add(TEXT("RLEG"), Maps);
 		DamagedMontageSectionNums[TEXT("RLEG")].Add(TEXT("SMALL"), 1);
 		DamagedMontageSectionNums[TEXT("RLEG")].Add(TEXT("MEDIUM"), 1);
+	}
+}
+
+void ABChainsawMan::InitSoundCues()
+{
+	static ConstructorHelpers::FObjectFinder<USoundCue> HeadShotSoundRef(TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Actor/Monster/SoundCue/ChainsawMan/SC_ChainsawHeadShot.SC_ChainsawHeadShot'"));
+	if (HeadShotSoundRef.Object != nullptr)
+	{
+		USoundCue* HeadShotCue = HeadShotSoundRef.Object;
+		GeneralSoundCues.Add(ESoundType::HeadShotGroggy, HeadShotCue);
 	}
 }
 

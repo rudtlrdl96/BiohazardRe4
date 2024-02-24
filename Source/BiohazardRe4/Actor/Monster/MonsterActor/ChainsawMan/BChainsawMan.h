@@ -27,6 +27,7 @@ private:
 
 	virtual void InitDamageTypes() override;
 	virtual void SetDamagedSectionNums() override;
+	void InitSoundCues();
 
 	virtual void AllCollisionOff() override;
 
