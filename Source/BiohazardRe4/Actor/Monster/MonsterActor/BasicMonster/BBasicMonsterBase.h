@@ -29,6 +29,8 @@ class BIOHAZARDRE4_API ABBasicMonsterBase : public ABMonsterBase
 
 public:
 	ABBasicMonsterBase();
+
+	UFUNCTION(BlueprintCallable)
 	void SetAIMode(EAIMode _AIMode);
 	
 	UFUNCTION(BlueprintCallable)
