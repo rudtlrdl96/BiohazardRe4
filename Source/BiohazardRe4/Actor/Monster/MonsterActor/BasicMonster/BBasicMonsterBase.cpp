@@ -99,6 +99,8 @@ void ABBasicMonsterBase::SetAIMode(EAIMode _AIMode)
 
 	AAIController* MyAIController = Cast<AAIController>(MyController);
 	MyAIController->GetBlackboardComponent()->SetValueAsEnum(BBKEY_AIMODE, StaticCast<uint8>(_AIMode));
+
+	AIMode = _AIMode;
 }
 
 void ABBasicMonsterBase::AIOff()
