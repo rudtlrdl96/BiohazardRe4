@@ -17,18 +17,23 @@
 #include "Actor/Monster/AIController/BAIBasicMonsterController.h"
 
 TArray<TPair<FString, TObjectPtr<USkeletalMesh>>> ABBasicMonsterBase::LoadedWeaponMesh;
+TSubclassOf<class UAnimInstance> ABBasicMonsterBase::LoadedAnimInstance;
+TMap<EWeaponType, FMontageStruct> ABBasicMonsterBase::LoadedMontage;
+
 ABBasicMonsterBase::ABBasicMonsterBase()
 {
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
-	
-	LoadWeaponMesh();
 
 	static ConstructorHelpers::FObjectFinder<UBMonsterStatData> BasicMonsterStatDataRef(TEXT("/Script/BiohazardRe4.BMonsterStatData'/Game/Blueprints/Actor/Monster/DataAsset/DA_BasicMonsterStat.DA_BasicMonsterStat'"));
-
 	if (BasicMonsterStatDataRef.Object != nullptr)
 	{
 		StatInit(BasicMonsterStatDataRef.Object);
 	}
+
+	LoadWeaponMesh();
+	AnimInstanceLoad();
+	MontageLoad();
+	InitAI();
 }
 
 void ABBasicMonsterBase::BeginPlay()
@@ -39,6 +44,25 @@ void ABBasicMonsterBase::BeginPlay()
 	InitDamageTypes();
 
 	SetAIMode(AIMode);
+}
+void ABBasicMonsterBase::AnimInstanceLoad()
+{
+	static ConstructorHelpers::FClassFinder<UAnimInstance> BaseAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale_C"));
+	LoadedAnimInstance = BaseAnimRef.Class;
+}
+
+void ABBasicMonsterBase::MontageLoad()
+{
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> None_AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_BareHands.AM_MonsterMale_Attack_BareHands'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> None_DamagedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_BareHands.AM_MonsterMale_Damaged_BareHands'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> None_ParriedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_Bare_Hands.AM_MonsterMale_Parry_Bare_Hands'"));
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> One_AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_OneHand.AM_MonsterMale_Attack_OneHand'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> One_DamagedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_OneHand.AM_MonsterMale_Damaged_OneHand'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> One_ParriedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_One_Hand.AM_MonsterMale_Parry_One_Hand'"));
+
+	LoadedMontage.Add(EWeaponType::None, { None_AttackMontageRef.Object, None_DamagedMontageRef.Object, None_ParriedMontageRef.Object });
+	LoadedMontage.Add(EWeaponType::OneHand, { One_AttackMontageRef.Object, One_DamagedMontageRef.Object, One_ParriedMontageRef.Object });
 }
 
 void ABBasicMonsterBase::SetlMeshAndAnimationByRandomInBeginPlay()

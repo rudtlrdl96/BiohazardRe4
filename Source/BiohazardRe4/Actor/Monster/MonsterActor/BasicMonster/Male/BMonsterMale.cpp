@@ -12,8 +12,6 @@
 #include "Actor/Monster/Interface/BMonsterAnimInterface.h"
 
 TMap<EMeshType, TArray<TObjectPtr<USkeletalMesh>>> ABMonsterMale::LoadedMesh;
-TMap<EMeshAnimType, TSubclassOf<UAnimInstance>> ABMonsterMale::LoadedAnimInstance;
-TMap<EWeaponType, FMontageStruct> ABMonsterMale::LoadedMontage;
 
 ABMonsterMale::ABMonsterMale()
 {
@@ -21,13 +19,7 @@ ABMonsterMale::ABMonsterMale()
 	CreateDamagedCollisionComponent();
 
 	MeshLoad();
-	AnimInstanceLoad();
-	MontageLoad();
-
-	InitValue();
-	InitAI();
 	InitSoundCues();
-
 	AttachDamagedCollisionComponentToMesh();
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -56,24 +48,15 @@ void ABMonsterMale::CreateComponent()
 	Hat->SetupAttachment(RootComponent);
 }
 
-void ABMonsterMale::InitValue()
-{
-	GetCharacterMovement()->MaxWalkSpeed = 50.0f;
-}
 
 void ABMonsterMale::SetAnimInstanceAndAnimationMontageInBeginPlay()
 {
-	if (LoadedAnimInstance[EMeshAnimType::Base] == nullptr)
+	if (LoadedAnimInstance == nullptr)
 	{
 		//LOG_MSG(TEXT("Anim Instance is NullPtr"));
 	}
 
-	if (LoadedAnimInstance[EMeshAnimType::Copy] == nullptr)
-	{
-		//LOG_MSG(TEXT("Copy Anim Instance is NullPtr"));
-	}
-
-	GetMesh()->SetAnimInstanceClass(LoadedAnimInstance[EMeshAnimType::Base]);
+	GetMesh()->SetAnimInstanceClass(LoadedAnimInstance);
 
 	Head->SetMasterPoseComponent(GetMesh());
 	Hat->SetMasterPoseComponent(GetMesh());
@@ -294,29 +277,6 @@ void ABMonsterMale::MeshLoad()
 	}
 }
 
-void ABMonsterMale::MontageLoad()
-{
-		static ConstructorHelpers::FObjectFinder<UAnimMontage> None_AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_BareHands.AM_MonsterMale_Attack_BareHands'"));
-		static ConstructorHelpers::FObjectFinder<UAnimMontage> None_DamagedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_BareHands.AM_MonsterMale_Damaged_BareHands'"));
-		static ConstructorHelpers::FObjectFinder<UAnimMontage> None_ParriedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_Bare_Hands.AM_MonsterMale_Parry_Bare_Hands'"));
-	
-		static ConstructorHelpers::FObjectFinder<UAnimMontage> One_AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Attack_OneHand.AM_MonsterMale_Attack_OneHand'"));
-		static ConstructorHelpers::FObjectFinder<UAnimMontage> One_DamagedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Damaged_OneHand.AM_MonsterMale_Damaged_OneHand'"));
-		static ConstructorHelpers::FObjectFinder<UAnimMontage> One_ParriedMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Blueprints/Actor/Monster/Animation/AM_MonsterMale_Parry_One_Hand.AM_MonsterMale_Parry_One_Hand'"));
-
-		LoadedMontage.Add(EWeaponType::None, { None_AttackMontageRef.Object, None_DamagedMontageRef.Object, None_ParriedMontageRef.Object });
-		LoadedMontage.Add(EWeaponType::OneHand, { One_AttackMontageRef.Object, One_DamagedMontageRef.Object, One_ParriedMontageRef.Object });
-}
-
-void ABMonsterMale::AnimInstanceLoad()
-{
-	static ConstructorHelpers::FClassFinder<UAnimInstance> BaseAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMale.ABP_BasicMonsterMale_C"));
-	static ConstructorHelpers::FClassFinder<UAnimInstance> CopyAnimRef(TEXT("/Game/Blueprints/Actor/Monster/ABP_BasicMonsterMaleCopy.ABP_BasicMonsterMaleCopy_C"));
-	
-	LoadedAnimInstance.Add(EMeshAnimType::Base, BaseAnimRef.Class);
-	LoadedAnimInstance.Add(EMeshAnimType::Copy, CopyAnimRef.Class);
-}
-
 void ABMonsterMale::Tick(float _DeltaTIme)
 {
 	Super::Tick(_DeltaTIme);
@@ -494,7 +454,7 @@ void ABMonsterMale::AttachDamagedCollisionComponentToMesh()
 	//RShinColComp->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), FName(DamagedCollisions[TEXT("RShin")].Key));
 
 	//for (TPair<FString, TPair<FString, TObjectPtr<class UCapsuleComponent>>> Pair : DamagedCollisions)
-	//{
+	//{ 
 	//	Pair.Value.Value->SetHiddenInGame(false);
 	//}
 }

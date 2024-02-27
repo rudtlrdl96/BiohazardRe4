@@ -6,6 +6,37 @@
 #include "Actor/Monster/MonsterActor/BMonsterBase.h"
 #include "BBasicMonsterBase.generated.h"
 
+UENUM()
+enum class EMeshType
+{
+	Weapon,
+	Hat,
+	Head,
+	Jacket,
+	Pants,
+};
+
+USTRUCT()
+struct FMontageStruct
+{
+	GENERATED_BODY()
+
+	FMontageStruct()
+	{
+
+	}
+
+	FMontageStruct(TObjectPtr<class UAnimMontage> _AttackMontage, TObjectPtr<class UAnimMontage> _DamagedMontage, TObjectPtr<class UAnimMontage> _ParriedMontage)
+		:AttackMontage(_AttackMontage), DamagedMontage(_DamagedMontage), ParriedMontage(_ParriedMontage)
+	{
+
+	}
+
+	TObjectPtr<class UAnimMontage> AttackMontage;
+	TObjectPtr<class UAnimMontage> DamagedMontage;
+	TObjectPtr<class UAnimMontage> ParriedMontage;
+};
+
 enum class EWeaponName : uint8
 {
 	HandAxe,
@@ -54,6 +85,8 @@ protected:
 
 	virtual void SetWeaponCollision(EWeaponName _WeaponName);
 	void LoadWeaponMesh();
+	void AnimInstanceLoad();
+	void MontageLoad();
 
 protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -65,10 +98,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIMode")
 	EAIMode AIMode;
 
+protected:
+	static TArray<TPair<FString, TObjectPtr<class USkeletalMesh>>> LoadedWeaponMesh;
+	static TSubclassOf<class UAnimInstance> LoadedAnimInstance;
+	static TMap<EWeaponType, FMontageStruct> LoadedMontage;
+
 private:
 	virtual void InitDamageTypes() override;
 	virtual void SetDamagedSectionNums() override;
 
-	static TArray<TPair<FString, TObjectPtr<class USkeletalMesh>>> LoadedWeaponMesh;
 	//class ABAIBasicMonsterController* MyAIController = nullptr;
 };

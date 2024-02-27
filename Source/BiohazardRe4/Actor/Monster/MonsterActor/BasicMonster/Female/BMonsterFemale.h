@@ -22,7 +22,7 @@ protected:
 	USkeletalMeshComponent* Head = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
-	USkeletalMeshComponent* Shirt = nullptr;
+	USkeletalMeshComponent* Jacket = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh Components")
 	USkeletalMeshComponent* Pants = nullptr;
@@ -35,9 +35,14 @@ protected:
 	
 private:
 	void CreateComponent();
-	void InitAI();
-	void InitValue();
+	void MeshLoad();
+	void CreateDamagedCollisionComponent();
+	void AttachDamagedCollisionComponentToMesh();
+	void SetClothesSkeletalMeshByRandomInBeginPlay() override;
+	virtual void SetAnimInstanceAndAnimationMontageInBeginPlay() override;
 
-	void SetSkeletalMeshByRandomInBeginPlay();
-	void SetSkeletalMeshInConstructor();
+private:
+	static TMap<EMeshType, TArray<TObjectPtr<class USkeletalMesh>>> LoadedMesh;
+
+	TMap<FString, TPair<FString, TObjectPtr<class UCapsuleComponent>>> DamagedCollisions;
 };

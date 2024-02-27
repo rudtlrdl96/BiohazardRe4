@@ -69,7 +69,6 @@ float ABMonsterBase::TakePointDamage(const FDamageEvent& _DamageEvent, const AAc
 	}
 
 	float ResultDamage = CaculatePointDamage(_DamagedAmount, DamagedPart, DamagedType);
-
 	Stat->DecreaseHp(ResultDamage);
 	if (Stat->isDeath() == true)
 	{
@@ -650,9 +649,9 @@ void ABMonsterBase::SmallDamaged(const FString& _DamagedPart)
 	FString DamagedPower = TEXT("SMALL");
 
 	int SectionIndex = FMath::RandRange(1, DamagedMontageSectionNums[_DamagedPart][DamagedPower]);
-
 	FString SectionNameStr = _DamagedPart + DamagedPower + FString::FromInt(SectionIndex);
 	FName SectionName(SectionNameStr);
+
 	if (DamagedMontage->IsValidSectionName(SectionName) == false)
 	{
 		//LOG_WARNING(TEXT("Damaged Montage Section Name is isvalid : %s"), *SectionNameStr);
